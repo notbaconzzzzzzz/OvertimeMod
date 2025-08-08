@@ -1,6 +1,3 @@
-/*
-BugMidnightManager.public void OnDie() // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -243,17 +240,16 @@ public class BugMidnightOrdeal : BugOrdeal
 
 		// Token: 0x06003C55 RID: 15445 RVA: 0x0017A940 File Offset: 0x00178B40
 		public void OnDie()
-		{ // <Mod>
-			/*
+		{
 			foreach (BugOrdealCreature bugOrdealCreature in this.spawns)
 			{
 				if (bugOrdealCreature.model.hp <= 0f)
 				{
-					continue;
+					break;
 				}
 				bugOrdealCreature.model.hp = 0f;
 				bugOrdealCreature.model.Suppressed();
-			}*/
+			}
 		}
 
 		// Token: 0x06003C56 RID: 15446 RVA: 0x000354F4 File Offset: 0x000336F4

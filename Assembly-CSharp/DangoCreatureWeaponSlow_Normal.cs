@@ -13,13 +13,18 @@ public class DangoCreatureWeaponSlow_Normal : UnitBuf
 
 	// Token: 0x0600360B RID: 13835 RVA: 0x00161E18 File Offset: 0x00160018
 	public override void Init(UnitModel model)
-	{ // <Mod>
+	{
 		base.Init(model);
 		this.remainTime = 1f;
 		UnitBuf unitBufByType = model.GetUnitBufByType(UnitBufType.DANGO_CREATURE_WEAPON_SLOW_SPECIAL);
 		if (unitBufByType != null)
 		{
 			model.RemoveUnitBuf(unitBufByType);
+		}
+		if (model is CreatureModel)
+		{
+			this.creature = (model as CreatureModel);
+			this.creature.movementScale = this.creature.movementScale * this.MovementScale();
 		}
 	}
 
@@ -34,6 +39,16 @@ public class DangoCreatureWeaponSlow_Normal : UnitBuf
 	{
 		base.OnUnitDie();
 		this.Destroy();
+	}
+
+	// Token: 0x0600360E RID: 13838 RVA: 0x0003122D File Offset: 0x0002F42D
+	public override void OnDestroy()
+	{
+		base.OnDestroy();
+		if (this.creature != null)
+		{
+			this.creature.movementScale = this.creature.movementScale / this.MovementScale();
+		}
 	}
 
 	// Token: 0x0400320A RID: 12810

@@ -207,7 +207,7 @@ public class ReverseClock : CreatureBase
 			}
 			foreach (OrdealCreatureModel ordealCreatureModel in OrdealManager.instance.GetOrdealCreatureList())
 			{
-				if (ordealCreatureModel.OrdealBase.level != OrdealLevel.MIDNIGHT && ordealCreatureModel.OrdealBase.level != OrdealLevel.OVERTIME_MIDNIGHT)
+				if (ordealCreatureModel.OrdealBase.level != OrdealLevel.MIDNIGHT)
 				{
 					ordealCreatureModel.Suppressed();
 				}

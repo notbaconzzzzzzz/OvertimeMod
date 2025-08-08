@@ -1,10 +1,6 @@
-/*
-public void Load() // Load external file instead
-*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO; // 
 using System.Xml;
 using UnityEngine;
 
@@ -18,15 +14,10 @@ public class AgentTitleDataLoader
 
 	// Token: 0x06002E71 RID: 11889 RVA: 0x00135B20 File Offset: 0x00133D20
 	public void Load()
-	{ // <Mod> Load external file instead of resources file so that Title Bonuses can be modified
+	{
+		TextAsset textAsset = Resources.Load<TextAsset>("xml/AgentTitle/AgentTitleList");
 		XmlDocument xmlDocument = new XmlDocument();
-		if (!File.Exists(Application.dataPath + "/Managed/BaseMod/AgentTitleList.txt"))
-		{
-			TextAsset textAsset = Resources.Load<TextAsset>("xml/AgentTitle/AgentTitleList");
-			File.WriteAllText(Application.dataPath + "/Managed/BaseMod/AgentTitleList.txt", textAsset.text);
-		}
-		string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/AgentTitleList.txt");
-		xmlDocument.LoadXml(xml);
+		xmlDocument.LoadXml(textAsset.text);
 		List<AgentTitleTypeInfo> list = new List<AgentTitleTypeInfo>();
 		XmlNode xmlNode = xmlDocument.SelectSingleNode("root");
 		IEnumerator enumerator = xmlNode.SelectNodes("list").GetEnumerator();

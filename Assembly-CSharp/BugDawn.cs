@@ -95,7 +95,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EE5 RID: 7909 RVA: 0x00020F05 File Offset: 0x0001F105
-	public virtual void Init()
+	public void Init()
 	{
 		this.animScript.SetScript(this);
 		this.model.movementScale = BugDawn.speed;
@@ -181,7 +181,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EE9 RID: 7913 RVA: 0x000F62B4 File Offset: 0x000F44B4
-	public virtual void FindTarget()
+	public void FindTarget()
 	{
 		if (this.currentPassage != null)
 		{
@@ -209,7 +209,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EEA RID: 7914 RVA: 0x000F6364 File Offset: 0x000F4564
-	public virtual void ProcessMoving()
+	public void ProcessMoving()
 	{
 		if (this._currentTarget != null && (!this._currentTarget.IsAttackTargetable() || this._currentTarget.GetMovableNode().GetPassage() != this.currentPassage || this._currentTarget.GetMovableNode().GetPassage() == null))
 		{
@@ -369,7 +369,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF2 RID: 7922 RVA: 0x000F6704 File Offset: 0x000F4904
-	public virtual void OnEndDigIn()
+	public void OnEndDigIn()
 	{
 		if (this._targetNode == null)
 		{
@@ -384,7 +384,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF3 RID: 7923 RVA: 0x00020F8F File Offset: 0x0001F18F
-	public virtual void OnEndDigOut()
+	public void OnEndDigOut()
 	{
 		this._phase = BugOrdealCreature.BugPhase.Moving;
 		this.teleportDelayTimer.StartTimer(BugDawn.teleportDelay);
@@ -394,7 +394,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF4 RID: 7924 RVA: 0x000F6780 File Offset: 0x000F4980
-	public virtual void StartAttack()
+	public void StartAttack()
 	{
 		if (this._currentTarget == null)
 		{
@@ -425,7 +425,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF5 RID: 7925 RVA: 0x000F68B0 File Offset: 0x000F4AB0
-	public virtual void ProcessAttack(float baseRange)
+	public void ProcessAttack(float baseRange)
 	{
 		if (this._currentTarget == null || this._currentTarget.hp <= 0f)
 		{
@@ -464,7 +464,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF6 RID: 7926 RVA: 0x00020FC9 File Offset: 0x0001F1C9
-	public virtual void OnEndAttack()
+	public void OnEndAttack()
 	{
 		this.StopMovement();
 		this.model.movementScale = BugDawn.speed;
@@ -483,7 +483,7 @@ public class BugDawn : BugOrdealCreature
 	}
 
 	// Token: 0x06001EF8 RID: 7928 RVA: 0x000F6AA8 File Offset: 0x000F4CA8
-	public virtual void GiveAppearDmg(float baseRange)
+	public void GiveAppearDmg(float baseRange)
 	{
 		if (this.currentPassage == null)
 		{

@@ -1,5 +1,4 @@
 using System;
-using LobotomyBaseMod; // 
 using UnityEngine;
 using UnityEngine.UI;
 using WhiteNightSpace;
@@ -46,18 +45,12 @@ namespace CreatureSelect
 
 		// Token: 0x06004922 RID: 18722 RVA: 0x0003D32E File Offset: 0x0003B52E
 		private void LateInit()
-		{ // <Patch>
-			if (this.savedIdMod != -1L)
-			{
-				this.Init_Mod(this.savedIdMod);
-				this.savedIdMod = new LobotomyBaseMod.LcIdLong(-1L);
-			}
-            /*
+		{
 			if (this.savedId != -1L)
 			{
 				this.Init(this.savedId);
 				this.savedId = -1L;
-			}*/
+			}
 		}
 
 		// Token: 0x06004923 RID: 18723 RVA: 0x0003D351 File Offset: 0x0003B551
@@ -76,9 +69,7 @@ namespace CreatureSelect
 
 		// Token: 0x06004925 RID: 18725 RVA: 0x001B7CF0 File Offset: 0x001B5EF0
 		public void Init(long creatureId)
-		{ // <Patch>
-            Init_Mod(new LobotomyBaseMod.LcIdLong(creatureId));
-            /*
+		{
 			if (this.isChanging)
 			{
 				this.savedId = creatureId;
@@ -114,7 +105,7 @@ namespace CreatureSelect
 			{
 				this.NormalCreatureFrame.SetActive(true);
 				this.CreditCreatureFrame.SetActive(false);
-			}*/
+			}
 		}
 
 		// Token: 0x06004926 RID: 18726 RVA: 0x000043CD File Offset: 0x000025CD
@@ -209,13 +200,13 @@ namespace CreatureSelect
 
 		// Token: 0x0600492F RID: 18735 RVA: 0x001B7EE4 File Offset: 0x001B60E4
 		private string GetName()
-		{ // <Patch>
+		{
 			if (this.metaInfo == null)
 			{
 				return string.Empty;
 			}
 			string result = string.Empty;
-			CreatureObserveInfoModel observeInfo = CreatureManager.instance.GetObserveInfo_Mod(this._creatureIdMod);
+			CreatureObserveInfoModel observeInfo = CreatureManager.instance.GetObserveInfo(this.metaInfo.id);
 			if (observeInfo != null)
 			{
 				result = CreatureModel.GetUnitName(this.metaInfo, observeInfo);
@@ -303,69 +294,12 @@ namespace CreatureSelect
 
 		// Token: 0x0600493B RID: 18747 RVA: 0x0003D41E File Offset: 0x0003B61E
 		public string GetText()
-		{ // <Mod>
-			if (this.metaInfo == null || SpecialModeConfig.instance.GetValue<bool>("UnknownAbnos"))
+		{
+			if (this.metaInfo == null)
 			{
 				return string.Empty;
 			}
 			return this.metaInfo.openText;
-		}
-
-        // <Patch>
-		public void Init_Mod(LobotomyBaseMod.LcIdLong creatureId)
-		{ // <Mod>
-			bool flag = this.isChanging;
-			if (flag)
-			{
-				this.savedId = creatureId.id;
-				this.savedIdMod = creatureId;
-				LobotomyBaseMod.ModDebug.Log("IsChanging - " + creatureId.ToString());
-			}
-			else
-			{
-				bool flag2 = creatureId == 100014L && PlagueDoctor.CheckAdvent();
-				if (flag2)
-				{
-					creatureId = new LobotomyBaseMod.LcIdLong(100015L);
-				}
-				this._creatureIdMod = creatureId;
-				bool flag3 = this._creatureIdMod == -1L;
-				if (flag3)
-				{
-					this.SetDisabled();
-				}
-				else
-				{
-					this.gameObject.SetActive(true);
-					this.TransSelected = false;
-					this.metaInfo = CreatureTypeList.instance.GetData_Mod(creatureId);
-					this.IdText.text = this.GetName();
-					this.DullTimer.StartTimer(this.DullFreq);
-					this.DullAnimCTRL.SetFloat("Speed", 0.2f);
-					Image[] frame = this.Frame;
-					foreach (Image image in frame)
-					{
-						image.enabled = false;
-					}
-					bool flag4 = this._creatureIdMod.packageId == string.Empty && CreatureGenerateInfo.IsCreditCreature(this._creatureIdMod.id);
-					if (SpecialModeConfig.instance.GetValue<bool>("UnknownAbnos"))
-					{
-						IdText.text = "?-??-??";
-						flag4 = false;
-					}
-					if (flag4)
-					{
-						this.NormalCreatureFrame.SetActive(false);
-						this.CreditCreatureFrame.SetActive(true);
-					}
-					else
-					{
-						this.NormalCreatureFrame.SetActive(true);
-						this.CreditCreatureFrame.SetActive(false);
-					}
-					LobotomyBaseMod.ModDebug.Log("Active Generate Model");
-				}
-			}
 		}
 
 		// Token: 0x0400437A RID: 17274
@@ -424,13 +358,5 @@ namespace CreatureSelect
 
 		// Token: 0x0400438C RID: 17292
 		private bool isChanging;
-
-		// <Patch>
-		[NonSerialized]
-		public LobotomyBaseMod.LcIdLong savedIdMod;
-
-		// <Patch>
-		[NonSerialized]
-		public LobotomyBaseMod.LcIdLong _creatureIdMod;
 	}
 }

@@ -1,8 +1,4 @@
-/*
-private void Awake() // 
-*/
 using System;
-using System.Collections.Generic; // 
 using UnityEngine;
 
 // Token: 0x02000AB3 RID: 2739
@@ -59,7 +55,7 @@ public class UIColorManager : MonoBehaviour
 
 	// Token: 0x06005221 RID: 21025 RVA: 0x00042DAD File Offset: 0x00040FAD
 	private void Awake()
-	{ // <Mod>
+	{
 		if (UIColorManager._instance != null)
 		{
 			UnityEngine.Object.DestroyImmediate(base.gameObject);
@@ -67,21 +63,6 @@ public class UIColorManager : MonoBehaviour
 		}
 		UIColorManager._instance = this;
 		UnityEngine.Object.DontDestroyOnLoad(base.gameObject);
-        List<Color>	colors = new List<Color>(OverloadColor);
-		Color col = new Color();
-		ColorUtility.TryParseHtmlString("#DE142A", out col);
-		colors.Add(col);
-		ColorUtility.TryParseHtmlString("#E5FFF6", out col);
-		colors.Add(col);
-		ColorUtility.TryParseHtmlString("#604860", out col);
-		colors.Add(col);
-		ColorUtility.TryParseHtmlString("#60EDF6", out col);
-		colors.Add(col);
-		ColorUtility.TryParseHtmlString("#14802A", out col);
-		colors.Add(col);
-		ColorUtility.TryParseHtmlString("#60F6DD", out col);
-		colors.Add(col);
-		OverloadColor = colors.ToArray();
 	}
 
 	// Token: 0x06005222 RID: 21026 RVA: 0x001DA94C File Offset: 0x001D8B4C

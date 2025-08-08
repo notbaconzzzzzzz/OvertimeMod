@@ -1,6 +1,3 @@
-/*
-Report PromotedAgents public void Make() // 
-*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -674,7 +671,7 @@ public class ResultScreen : MonoBehaviour, IAnimatorEventCalled
 
 			// Token: 0x0600547A RID: 21626 RVA: 0x001E4FD8 File Offset: 0x001E31D8
 			public void Make()
-			{ // <Mod> Added old level to the notice send
+			{
 				foreach (ResultScreenAgentSlot resultScreenAgentSlot in this.slots)
 				{
 					UnityEngine.Object.Destroy(resultScreenAgentSlot.gameObject);
@@ -701,9 +698,7 @@ public class ResultScreen : MonoBehaviour, IAnimatorEventCalled
 								this.promoted++;
 								Notice.instance.Send(NoticeName.OnAgentPromote, new object[]
 								{
-									agentModel,
-                                    level,
-                                    oldStatLevels
+									agentModel
 								});
 							}
 							GameObject gameObject = Prefab.LoadPrefab("UIComponent/ResultScreenAgentSlot");

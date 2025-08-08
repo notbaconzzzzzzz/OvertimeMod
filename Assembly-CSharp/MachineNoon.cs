@@ -71,7 +71,7 @@ public class MachineNoon : MachineOrdealCreature
 		this.animScript.SetScript(this);
 		this.motionDelayTimer.StartTimer(1f);
 		this.coolDownCoolTimer.StartTimer(MachineNoon._coolDownCoolTime);
-		if (this._ordealScript is MachineDuskOrdeal || this._ordealScript is MachineMidnightOrdeal)
+		if (this._ordealScript is MachineDuskOrdeal)
 		{
 			this.spawnByDuskTimer.StartTimer(MachineOrdealCreature.spawnByDuskTime);
 		}
@@ -97,7 +97,7 @@ public class MachineNoon : MachineOrdealCreature
 			}
 			return;
 		}
-		if (this.currentPassage != null && EnergizedLevel < 2 && this.coolDownCoolTimer.RunTimer())
+		if (this.coolDownCoolTimer.RunTimer())
 		{
 			this.CoolDownStart();
 			return;
@@ -153,7 +153,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024E4 RID: 9444 RVA: 0x00025950 File Offset: 0x00023B50
-	public virtual void CoolDownStart()
+	private void CoolDownStart()
 	{
 		this.coolDownTimer.StartTimer(MachineNoon._coolDownTime);
 		this.animScript.OnCoolDownStart();
@@ -161,14 +161,14 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024E5 RID: 9445 RVA: 0x00025973 File Offset: 0x00023B73
-	public virtual void CoolDownEnd()
+	private void CoolDownEnd()
 	{
 		this.animScript.OnCoolDownEnd();
 		this.coolDownCoolTimer.StartTimer(MachineNoon._coolDownCoolTime);
 	}
 
 	// Token: 0x060024E6 RID: 9446 RVA: 0x0010D26C File Offset: 0x0010B46C
-	public void MakeMovement()
+	private void MakeMovement()
 	{
 		MapNode creatureRoamingPoint = MapGraph.instance.GetCreatureRoamingPoint();
 		this.model.MoveToNode(creatureRoamingPoint);
@@ -176,14 +176,14 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024E7 RID: 9447 RVA: 0x00025990 File Offset: 0x00023B90
-	public void StopMovement()
+	private void StopMovement()
 	{
 		this.movable.StopMoving();
 		this.animScript.OnStop();
 	}
 
 	// Token: 0x060024E8 RID: 9448 RVA: 0x000259A8 File Offset: 0x00023BA8
-	public void AttackStart()
+	private void AttackStart()
 	{
 		this.animScript.OnAttackStart();
 	}
@@ -195,7 +195,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024EA RID: 9450 RVA: 0x0010D29C File Offset: 0x0010B49C
-	public virtual void OnAttackDamageTimeCalled()
+	public void OnAttackDamageTimeCalled()
 	{
 		List<UnitModel> targetsInRange = this.GetTargetsInRange(4f, true);
 		foreach (UnitModel unitModel in targetsInRange)
@@ -206,7 +206,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024EB RID: 9451 RVA: 0x0010D320 File Offset: 0x0010B520
-	public virtual void OnMovingDamageTimeCalled()
+	public void OnMovingDamageTimeCalled()
 	{
 		UnitModel nearestInRange = this.GetNearestInRange(float.MaxValue, true);
 		float num = 1f;
@@ -261,7 +261,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024EC RID: 9452 RVA: 0x0010D4E0 File Offset: 0x0010B6E0
-	public List<UnitModel> GetTargetsInRange(float range, bool hasDir = true)
+	private List<UnitModel> GetTargetsInRange(float range, bool hasDir = true)
 	{
 		List<UnitModel> list = new List<UnitModel>();
 		if (this.currentPassage != null)
@@ -295,7 +295,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024ED RID: 9453 RVA: 0x0010D5BC File Offset: 0x0010B7BC
-	public UnitModel GetNearestInRange(float range, bool hasDir = true)
+	private UnitModel GetNearestInRange(float range, bool hasDir = true)
 	{
 		List<UnitModel> targetsInRange = this.GetTargetsInRange(range, hasDir);
 		UnitModel result = null;
@@ -316,7 +316,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024EE RID: 9454 RVA: 0x0010D648 File Offset: 0x0010B848
-	public bool IsInRange(UnitModel target, float range, bool hasDir = true)
+	private bool IsInRange(UnitModel target, float range, bool hasDir = true)
 	{
 		try
 		{
@@ -350,7 +350,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024EF RID: 9455 RVA: 0x0010C98C File Offset: 0x0010AB8C
-	public float GetDistance(UnitModel target)
+	private float GetDistance(UnitModel target)
 	{
 		float x = target.GetCurrentViewPosition().x;
 		float x2 = this.movable.GetCurrentViewPosition().x;
@@ -363,7 +363,7 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x060024F0 RID: 9456 RVA: 0x0010D6F0 File Offset: 0x0010B8F0
-	public GameObject MakeEffect(string src, Vector3 position, float scaleForEffect = 1f, bool isGlobal = false)
+	private GameObject MakeEffect(string src, Vector3 position, float scaleForEffect = 1f, bool isGlobal = false)
 	{
 		float d = 1f;
 		if (this.currentPassage != null)
@@ -398,13 +398,13 @@ public class MachineNoon : MachineOrdealCreature
 	}
 
 	// Token: 0x040023DB RID: 9179
-	public Timer motionDelayTimer = new Timer();
+	private Timer motionDelayTimer = new Timer();
 
 	// Token: 0x040023DC RID: 9180
 	private const float _motionDelayTime = 1f;
 
 	// Token: 0x040023DD RID: 9181
-	public Timer coolDownTimer = new Timer();
+	private Timer coolDownTimer = new Timer();
 
 	// Token: 0x040023DE RID: 9182
 	private const float _coolDownTimeMin = 4f;
@@ -413,7 +413,7 @@ public class MachineNoon : MachineOrdealCreature
 	private const float _coolDownTimeMax = 6.5f;
 
 	// Token: 0x040023E0 RID: 9184
-	public Timer coolDownCoolTimer = new Timer();
+	private Timer coolDownCoolTimer = new Timer();
 
 	// Token: 0x040023E1 RID: 9185
 	private const float _coolDownCoolTimeMin = 9.5f;

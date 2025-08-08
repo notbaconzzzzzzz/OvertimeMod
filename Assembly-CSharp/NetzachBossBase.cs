@@ -1,6 +1,3 @@
-/*
-+public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -174,15 +171,6 @@ public class NetzachBossBase : SefiraBossBase
 		}
 		SefiraBossManager.Instance.SetRecoverBlockState(true);
 	}
-
-    // <Mod>
-    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
-    {
-        if (_ordealSpawnTime[1] >= 5)
-		{
-			_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 5);
-		}
-    }
 
 	// Token: 0x04003B5F RID: 15199
 	private const string animSrc = "NetzachCoreAnim";

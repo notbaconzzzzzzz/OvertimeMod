@@ -1,6 +1,3 @@
-/*
-private int GetSkillProb(UseSkill skill) // Filter out chances less than 3%
-*/
 using System;
 using UnityEngine;
 
@@ -122,7 +119,7 @@ public class ViscusSnake : CreatureBase
 
 	// Token: 0x06002AFD RID: 11005 RVA: 0x001262A4 File Offset: 0x001244A4
 	private int GetSkillProb(UseSkill skill)
-	{ // <Mod>
+	{
 		int num = ViscusSnake.Result_ProbValue[(int)skill.GetCurrentFeelingState()];
 		if (skill.agent.hp == 0f || skill.agent.maxHp == 0)
 		{
@@ -130,10 +127,6 @@ public class ViscusSnake : CreatureBase
 		}
 		float num2 = ((float)skill.agent.maxHp - skill.agent.hp) / (float)skill.agent.maxHp;
 		num = (int)((float)num * num2);
-        if (num < 3)
-        {
-            num = 0;
-        }
 		ViscusSnake.Log("Prob :" + num);
 		return num;
 	}

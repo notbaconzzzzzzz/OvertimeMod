@@ -1,7 +1,3 @@
-/*
-public override void OnGamemanagerInit() // 
-public void ChangeIsolateRoom() // 
-*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -153,18 +149,7 @@ namespace WhiteNightSpace
 
 		// Token: 0x06002742 RID: 10050 RVA: 0x0002706E File Offset: 0x0002526E
 		public override void OnGamemanagerInit()
-		{ // <Mod>
-			foreach (AgentModel agentModel in AgentManager.instance.GetAgentList())
-			{
-				if (CheckApostle(agentModel))
-				{
-					if (!agentModel.HasEquipment(giftId))
-					{
-						EGOgiftModel gift = InventoryModel.Instance.CreateEquipmentForcely(PlagueDoctor.giftId) as EGOgiftModel;
-						agentModel.AttachEGOgift(gift);
-					}
-				}
-			}
+		{
 			if (this._genDay < PlayerModel.instance.GetDay())
 			{
 				this.ChangeIsolateRoom();
@@ -423,11 +408,7 @@ namespace WhiteNightSpace
 
 		// Token: 0x06002754 RID: 10068 RVA: 0x00115DCC File Offset: 0x00113FCC
 		public void ChangeIsolateRoom()
-		{ // <Mod>
-			if (SpecialModeConfig.instance.GetValue<bool>("WhiteNightImmobilize"))
-			{
-				return;
-			}
+		{
 			Sefira sefira = this.model.sefira;
 			CreatureModel creatureModel = CreatureManager.instance.PickOtherSefiraCreatureByRandom(this.model);
 			if (creatureModel != null)

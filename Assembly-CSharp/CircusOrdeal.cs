@@ -1,11 +1,3 @@
-/*
-private void SetColor() // 
-public override void OrdealEnd() // Overtime Core Suppressions
-+public MapNode GetForcefulTeleportDestination(UnitModel unit) // 
-+private List<MapNode> _validWorkerDestinations // 
-+private List<MapNode> _validCreatureDestinations // 
-Various private static arrays // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,10 +13,9 @@ public class CircusOrdeal : OrdealBase
 
 	// Token: 0x06003C1F RID: 15391 RVA: 0x00034E3F File Offset: 0x0003303F
 	private void SetColor()
-	{ // <Mod>
+	{
 		ColorUtility.TryParseHtmlString("#DC143CFF", out this._color);
 		this.OrdealColor = this._color;
-		_ordeal_name = _ordealName;
 	}
 
 	// Token: 0x06003C20 RID: 15392 RVA: 0x00177D18 File Offset: 0x00175F18
@@ -113,7 +104,7 @@ public class CircusOrdeal : OrdealBase
 
 	// Token: 0x06003C28 RID: 15400 RVA: 0x00177E74 File Offset: 0x00176074
 	public override void OrdealEnd()
-	{ // <Mod>
+	{
 		base.OrdealEnd();
 		this.SetColor();
 		int num = this.ordealRewards[(int)this.level];
@@ -121,60 +112,12 @@ public class CircusOrdeal : OrdealBase
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
-		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Circus/Circus_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
 		soundEffectPlayer.transform.localPosition = Vector3.zero;
 	}
-
-	// <Mod>
-    public MapNode GetForcefulTeleportDestination(UnitModel unit)
-    {
-		if (_validWorkerDestinations == null || _validCreatureDestinations == null)
-		{
-			_validWorkerDestinations = new List<MapNode>();
-			_validCreatureDestinations = new List<MapNode>();
-			foreach (Sefira sefira in PlayerModel.instance.GetOpenedAreaList())
-			{
-				foreach (PassageObjectModel passage in sefira.passageList)
-				{
-					if (passage.isActivate)
-					{
-						if (passage.type == PassageType.SEFIRA || passage.type == PassageType.DEPARTMENT)
-						{
-							_validWorkerDestinations.AddRange(passage.GetNodeList());
-						}
-						else if (passage.type == PassageType.HORIZONTAL)
-						{
-							_validCreatureDestinations.AddRange(passage.GetNodeList());
-						}
-					}
-				}
-			}
-		}
-        List<MapNode> mapNodes = null;
-        if (unit is WorkerModel)
-        {
-			mapNodes = _validWorkerDestinations;
-        }
-        else
-        {
-			mapNodes = _validCreatureDestinations;
-        }
-		if (mapNodes == null || mapNodes.Count <= 0)
-		{
-			return null;
-		}
-		return mapNodes[UnityEngine.Random.Range(0, mapNodes.Count)];
-    }
-
-	// <Mod>
-	private List<MapNode> _validWorkerDestinations = null;
-
-	// <Mod>
-	private List<MapNode> _validCreatureDestinations = null;
 
 	// Token: 0x06003C29 RID: 15401 RVA: 0x00177F18 File Offset: 0x00176118
 	// Note: this type is marked as 'beforefieldinit'.
@@ -190,40 +133,25 @@ public class CircusOrdeal : OrdealBase
 
 	// Token: 0x04003702 RID: 14082
 	private static int[] ids = new int[]
-	{ // <Mod>
+	{
 		200005,
 		200006,
-		200007,
-		200007,
-		200105,
-		200106,
-		200107,
-		200107
+		200007
 	};
 
 	// Token: 0x04003703 RID: 14083
 	private static RiskLevel[] risks = new RiskLevel[]
-	{ // <Mod>
+	{
 		RiskLevel.TETH,
 		RiskLevel.HE,
-		RiskLevel.WAW,
-		RiskLevel.WAW,
-		RiskLevel.TETH,
-		RiskLevel.HE,
-		RiskLevel.WAW,
 		RiskLevel.WAW
 	};
 
 	// Token: 0x04003704 RID: 14084
 	private static string[] names = new string[]
-	{ // <Mod>
+	{
 		"circus_dawn",
 		"circus_noon",
-		"circus_dusk",
-		"circus_dusk",
-		"circus_dawn",
-		"circus_noon",
-		"circus_dusk",
 		"circus_dusk"
 	};
 

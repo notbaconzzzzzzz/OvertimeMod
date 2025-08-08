@@ -50,37 +50,6 @@ public class MachineOrdealCreature : CreatureBase
 		}
 	}
 
-    //>
-    public OvertimeMachineEnergized EnergizedBuf
-    {
-        get
-        {
-            if (_energizedBuf == null)
-            {
-				int lvl = (int)_level % 4;
-                _energizedBuf = new OvertimeMachineEnergized(lvl);
-				model.AddUnitBuf(_energizedBuf);
-            }
-			return _energizedBuf;
-        }
-    }
-
-    public int EnergizedLevel
-    {
-        get
-        {
-            if (_energizedBuf == null)
-            {
-				return 0;
-            }
-			return _energizedBuf.Level;
-        }
-    }
-
-    private OvertimeMachineEnergized _energizedBuf;
-
-    //<
-
 	// Token: 0x040023C4 RID: 9156
 	protected MachineOrdeal _ordealScript;
 

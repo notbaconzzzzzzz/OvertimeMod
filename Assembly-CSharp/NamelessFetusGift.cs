@@ -10,12 +10,9 @@ public class NamelessFetusGift : EquipmentScriptBase
 
 	// Token: 0x060035CB RID: 13771 RVA: 0x0003111D File Offset: 0x0002F31D
 	public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
-	{ // <Mod>
-		if (dmg.type == RwbpType.W)
-		{
-			dmg.min *= 0.9f;
-			dmg.max *= 0.9f;
-		}
+	{
+		dmg.min *= 0.95f;
+		dmg.max *= 0.95f;
 		return base.OnTakeDamage(actor, ref dmg);
 	}
 }

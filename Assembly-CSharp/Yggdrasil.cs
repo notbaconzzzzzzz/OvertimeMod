@@ -1,9 +1,3 @@
-/*
-public override void OnFixedUpdate(CreatureModel creature) // Rework
-public override void OnEnterRoom(UseSkill skill) // Rework
-public void OnNotice(string notice, params object[] param) // Rework
-+private Timer stallTimer // Rework
-*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,7 +159,7 @@ public class Yggdrasil : CreatureBase, IObserver
 
 	// Token: 0x06002B7A RID: 11130 RVA: 0x001297DC File Offset: 0x001279DC
 	public override void OnFixedUpdate(CreatureModel creature)
-	{ // <Mod>
+	{
 		base.OnFixedUpdate(creature);
 		if (GameManager.currentGameManager.state != GameState.PLAYING)
 		{
@@ -197,26 +191,13 @@ public class Yggdrasil : CreatureBase, IObserver
 			this.defaultSoundTimer.StartTimer(Yggdrasil.DEFAULT_SOUND_FREQ);
 			this.MakeSound(Yggdrasil.SoundKey.DEFAULT, base.Unit.gameObject.transform.position, 1f);
 		}
-        if (stallTimer.started && stallTimer.RunTimer())
-        {
-            if (Unit.room.IsWorkAllocated)
-            {
-                stallTimer.StartTimer(1f);
-            }
-            else
-            {
-                ResetWorkCount();
-                SubQliphothCounter();
-            }
-        }
 	}
 
 	// Token: 0x06002B7B RID: 11131 RVA: 0x0002A957 File Offset: 0x00028B57
 	public override void OnEnterRoom(UseSkill skill)
-	{ // <Mod>
+	{
 		base.OnEnterRoom(skill);
 		this.ResetWorkCount();
-        stallTimer.StopTimer();
 	}
 
 	// Token: 0x06002B7C RID: 11132 RVA: 0x0002A966 File Offset: 0x00028B66
@@ -514,8 +495,7 @@ public class Yggdrasil : CreatureBase, IObserver
 
 	// Token: 0x06002B90 RID: 11152 RVA: 0x0002AA58 File Offset: 0x00028C58
 	private void AddWorkCount()
-	{ // <Mod>
-        if (workOtherCnt > SUB_QLIPHOTH_WORK_OHTER_CNT) return;
+	{
 		this.workOtherCnt++;
 		this.AddFilters(1f / (float)this.SUB_QLIPHOTH_WORK_OHTER_CNT);
 	}
@@ -530,7 +510,7 @@ public class Yggdrasil : CreatureBase, IObserver
 
 	// Token: 0x06002B92 RID: 11154 RVA: 0x00129FE4 File Offset: 0x001281E4
 	public void OnNotice(string notice, params object[] param)
-	{ // <Mod>
+	{
 		if (notice == NoticeName.OnReleaseWork)
 		{
 			CreatureModel creatureModel = param[0] as CreatureModel;
@@ -549,15 +529,8 @@ public class Yggdrasil : CreatureBase, IObserver
 					this.AddWorkCount();
 					if (this.workOtherCnt >= this.SUB_QLIPHOTH_WORK_OHTER_CNT)
 					{
-                        if (SpecialModeConfig.instance.GetValue<bool>("ParasiteTreeStall"))
-                        {
-                            stallTimer.StartTimer(10f);
-                        }
-                        else
-                        {
-                            this.ResetWorkCount();
-                            this.SubQliphothCounter();
-                        }
+						this.ResetWorkCount();
+						this.SubQliphothCounter();
 					}
 				}
 			}
@@ -600,18 +573,7 @@ public class Yggdrasil : CreatureBase, IObserver
 					float value = UnityEngine.Random.value;
 					if (value <= this.SUB_QLIPHOTH_ESCAPE_PROB)
 					{
-                        if (SpecialModeConfig.instance.GetValue<bool>("ParasiteTreeStall"))
-                        {
-                            for (int i = 0; i < SUB_QLIPHOTH_WORK_OHTER_CNT; i++)
-                            {
-                                AddWorkCount();
-                            }
-                            stallTimer.StartTimer(10f);
-                        }
-                        else
-                        {
-                            this.SubQliphothCounter();
-                        }
+						this.SubQliphothCounter();
 					}
 				}
 			}
@@ -889,9 +851,6 @@ public class Yggdrasil : CreatureBase, IObserver
 
 	// Token: 0x04002978 RID: 10616
 	private YggdrasilAnim _animScript;
-
-    // <Mod>
-	private Timer stallTimer = new Timer();
 
 	// Token: 0x020004A7 RID: 1191
 	public class SoundKey

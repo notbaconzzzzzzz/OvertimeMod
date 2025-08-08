@@ -1,6 +1,3 @@
-/*
-public void CheckCurrentSkill() // 
-*/
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,7 +43,7 @@ namespace CommandWindow
 
 		// Token: 0x06004876 RID: 18550 RVA: 0x001B147C File Offset: 0x001AF67C
 		public void CheckCurrentSkill()
-		{ // <Mod>
+		{
 			if (this._current == null)
 			{
 				return;
@@ -89,53 +86,20 @@ namespace CommandWindow
 			{
 				this.WorkSuccess.gameObject.AddComponent<FontLoadScript>();
 			}
-			float num2 = 0f;
-            num2 += (float)this._currentCreature.GetRedusedWorkProbByCounter();
-            num2 += (float)this._currentCreature.ProbReductionValue;
+			float num2;
+			if (this._currentCreature.ProbReductionValue > 0)
+			{
+				num2 = (float)this._currentCreature.ProbReductionValue;
+			}
+			else
+			{
+				num2 = (float)this._currentCreature.GetRedusedWorkProbByCounter();
+			}
 			if (num != 6 && num != 7)
 			{
-				if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-				{
-					string text = LocalizeTextDataModel.instance.GetText("CannotCalculate");
-					if (num2 > 0f && !_currentCreature.Unit.room.GetOvertimeYesodHint(6))
-					{
-						if (SpecialModeConfig.instance.GetValue<bool>("AltReductionText"))
-						{
-							this.WorkSuccess.text = string.Format("<color=red>↓</color> {0}", text);
-						}
-						else
-						{
-							this.WorkSuccess.text = string.Format("<color=red>{0}</color>", text);
-						}
-					}
-					else
-					{
-						this.WorkSuccess.text = text;
-					}
-					if (_currentCreature.Unit.room.GetOvertimeYesodHint(2))
-					{
-						this.WorkSpeed.text = LocalizeTextDataModel.instance.GetText("CannotCalculate");
-					}
-					else
-					{
-						this.WorkSpeed.text = string.Format("{0}", Math.Ceiling((double)((float)this._currentCreature.metaInfo.feelingStateCubeBounds.GetLastBound() / (this._currentCreature.GetCubeSpeed() * (1f + (float)this._currentCreature.GetObserveBonusSpeed() / 100f) * (1f + this._currentAgent.workSpeed / 100f)))));
-					}
-				}
-				else if (this._currentCreature.observeInfo.GetObserveState(WorkData.prefix + WorkData.region[num - 1]))
+				if (this._currentCreature.observeInfo.GetObserveState(WorkData.prefix + WorkData.region[num - 1]))
 				{
 					float num3 = this._currentCreature.GetWorkSuccessProb(this._currentAgent, this._current) * 100f + (float)this._currentAgent.workProb / 5f;
-                    if (_currentCreature.metaInfo.id != 100029L && _currentCreature.metaInfo.id != 100019L)
-                    {
-                        num3 += (float)_currentCreature.GetObserveBonusProb();
-                    }
-                    num3 += _currentAgent.Equipment.GetWorkProbSpecialBonus(_currentAgent, _current);
-                    if (_currentAgent.GetUnitBufList().Count > 0)
-                    {
-                        foreach (UnitBuf unitBuf in _currentAgent.GetUnitBufList())
-                        {
-                            num3 += unitBuf.GetWorkProbSpecialBonus(_currentAgent, _current);
-                        }
-                    }
 					if (num3 > 95f)
 					{
 						num3 = 95f;
@@ -149,34 +113,20 @@ namespace CommandWindow
 					string percentText = UICommonTextConverter.GetPercentText(rate);
 					if (num2 > 0f)
 					{
-						if (SpecialModeConfig.instance.GetValue<bool>("AltReductionText"))
-						{
-							this.WorkSuccess.text = string.Format("<color=red>↓</color> {0}", percentText);
-						}
-						else
-						{
-							this.WorkSuccess.text = string.Format("<color=red>{0}</color>", percentText);
-						}
+						this.WorkSuccess.text = string.Format("<color=red>{0}</color>", percentText);
 					}
 					else
 					{
 						this.WorkSuccess.text = percentText;
 					}
-					this.WorkSpeed.text = string.Format("{0}", Math.Ceiling((double)((float)this._currentCreature.metaInfo.feelingStateCubeBounds.GetLastBound() / (this._currentCreature.GetCubeSpeed() * (1f + (float)this._currentCreature.GetObserveBonusSpeed() / 100f) * (1f + this._currentAgent.workSpeed / 100f)))));
+					this.WorkSpeed.text = string.Format("{0}", Math.Ceiling((double)((float)this._currentCreature.metaInfo.feelingStateCubeBounds.GetLastBound() / (this._currentCreature.GetCubeSpeed() * (1f + (float)(this._currentCreature.GetObserveBonusSpeed() + this._currentAgent.workSpeed) / 100f)))));
 				}
 				else
 				{
 					string text = LocalizeTextDataModel.instance.GetText("CannotCalculate");
 					if (num2 > 0f)
 					{
-						if (SpecialModeConfig.instance.GetValue<bool>("AltReductionText"))
-						{
-							this.WorkSuccess.text = string.Format("<color=red>↓</color> {0}", text);
-						}
-						else
-						{
-							this.WorkSuccess.text = string.Format("<color=red>{0}</color>", text);
-						}
+						this.WorkSuccess.text = string.Format("<color=red>{0}</color>", text);
 					}
 					else
 					{

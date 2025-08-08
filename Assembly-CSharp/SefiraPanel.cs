@@ -1,11 +1,6 @@
-/*
-public void Init(SefiraEnum sefira) // Upgrade Officer Bonuses research; Double Abno
-public void SetBossState() // Overtime Core Suppressions
-*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO; // 
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -155,7 +150,7 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 	// Token: 0x06004A58 RID: 19032 RVA: 0x001B7A00 File Offset: 0x001B5C00
 	private void OnOverlayPanel(SefiraPanel.PanelDataState state)
-	{ // <Mod>
+	{
 		this._overlayState = state;
 		switch (state)
 		{
@@ -164,46 +159,24 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			this.leftRoot.gameObject.SetActive(false);
 			this.rightRoot.gameObject.SetActive(false);
 			this.functionRoot.gameObject.SetActive(false);
-			if (switchViewButton == null) break;
-			if (Sefira.creatureList.Count > (Sefira.sefiraEnum == SefiraEnum.KETHER ? 8 : 4))
-			{
-				switchViewButton.gameObject.SetActive(true);
-			}
-			else
-			{
-				switchViewButton.gameObject.SetActive(false);
-			}
 			break;
 		case SefiraPanel.PanelDataState.RESEARCH:
 			this.mainRoot.gameObject.SetActive(false);
 			this.leftRoot.gameObject.SetActive(true);
 			this.rightRoot.gameObject.SetActive(false);
 			this.functionRoot.gameObject.SetActive(false);
-			if (switchViewButton == null) break;
-			if (ResearchDataModel.instance.GetRemainResearchListBySefira(Sefira.indexString).Count < 3)
-			{
-				switchViewButton.gameObject.SetActive(true);
-			}
-			else
-			{
-				switchViewButton.gameObject.SetActive(false);
-			}
 			break;
 		case SefiraPanel.PanelDataState.DESCRIPTION:
 			this.mainRoot.gameObject.SetActive(false);
 			this.leftRoot.gameObject.SetActive(false);
 			this.rightRoot.gameObject.SetActive(true);
 			this.functionRoot.gameObject.SetActive(false);
-			if (switchViewButton == null) break;
-			switchViewButton.gameObject.SetActive(false);
 			break;
 		case SefiraPanel.PanelDataState.FUNCTION:
 			this.mainRoot.gameObject.SetActive(false);
 			this.leftRoot.gameObject.SetActive(false);
 			this.rightRoot.gameObject.SetActive(false);
 			this.functionRoot.gameObject.SetActive(true);
-			if (switchViewButton == null) break;
-			switchViewButton.gameObject.SetActive(false);
 			break;
 		}
 	}
@@ -248,15 +221,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			{
 				this.mainRoot.GetChild(0).gameObject.SetActive(true);
 			}
-			if (switchViewButton == null) break;
-			if (Sefira.creatureList.Count > (Sefira.sefiraEnum == SefiraEnum.KETHER ? 8 : 4))
-			{
-				switchViewButton.gameObject.SetActive(true);
-			}
-			else
-			{
-				switchViewButton.gameObject.SetActive(false);
-			}
 			break;
 		case SefiraPanel.PanelDataState.RESEARCH:
 			this.DescriptionButton.interactable = true;
@@ -275,15 +239,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			this.leftRoot.gameObject.SetActive(true);
 			this.rightRoot.gameObject.SetActive(false);
 			this.functionRoot.gameObject.SetActive(false);
-			if (switchViewButton == null) break;
-			if (ResearchDataModel.instance.GetRemainResearchListBySefira(Sefira.indexString).Count < 3)
-			{
-				switchViewButton.gameObject.SetActive(true);
-			}
-			else
-			{
-				switchViewButton.gameObject.SetActive(false);
-			}
 			break;
 		case SefiraPanel.PanelDataState.DESCRIPTION:
 			this.DescriptionButton.interactable = false;
@@ -302,8 +257,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			this.leftRoot.gameObject.SetActive(false);
 			this.rightRoot.gameObject.SetActive(true);
 			this.functionRoot.gameObject.SetActive(false);
-			if (switchViewButton == null) break;
-			switchViewButton.gameObject.SetActive(false);
 			break;
 		case SefiraPanel.PanelDataState.FUNCTION:
 			this.DescriptionButton.interactable = true;
@@ -322,8 +275,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			this.leftRoot.gameObject.SetActive(false);
 			this.rightRoot.gameObject.SetActive(false);
 			this.functionRoot.gameObject.SetActive(true);
-			if (switchViewButton == null) break;
-			switchViewButton.gameObject.SetActive(false);
 			break;
 		}
 	}
@@ -369,7 +320,7 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 	// Token: 0x06004A5C RID: 19036 RVA: 0x001B7FF0 File Offset: 0x001B61F0
 	public void Init(SefiraEnum sefira)
-	{ // <Mod> Upgrade Officer Bonuses research; Double Abno
+	{
 		this._sefira = SefiraManager.instance.GetSefira(sefira);
 		this._sefiraColor = UIColorManager.instance.GetSefiraColor(this.Sefira).imageColor;
 		this.ActiveControl.SetActive(SefiraManager.instance.IsOpened(sefira));
@@ -554,12 +505,7 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 			{
 				sefira2 = SefiraManager.instance.GetSefira(SefiraEnum.TIPERERTH1);
 			}
-			int num = 1;
-			if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
-			{
-				num = 2;
-			}
-			this.Function_SefiraFunction_Context.text = string.Format(LocalizeTextDataModel.instance.GetText("officer_alive_ability_desc_" + sefira2.name.ToLower()), officerAliveValues[1] * num, officerAliveValues[2] * num, officerAliveValues[3] * num);
+			this.Function_SefiraFunction_Context.text = string.Format(LocalizeTextDataModel.instance.GetText("officer_alive_ability_desc_" + sefira2.name.ToLower()), officerAliveValues[1], officerAliveValues[2], officerAliveValues[3]);
 		}
 		if (this.Function_SefiraTenure_Context != null)
 		{
@@ -575,125 +521,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 		if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.KETHER && this.SefiraBossButton != null)
 		{
 			this.SefiraBossButton.gameObject.SetActive(false);
-		}
-		try
-		{
-			if (switchViewButton == null)
-			{
-				Transform sefiraTransform = null;
-				Transform buttonTransform = null;
-				if (Sefira.sefiraEnum == SefiraEnum.TIPERERTH2)
-				{
-					SefiraPanel tiph = DeployUI.instance.sefiraList.sefiraPanels[4].script;
-					sefiraTransform = tiph.SefiraName.transform;
-					buttonTransform = sefiraTransform.Find("ChagneView2");
-				}
-				else
-				{
-					if (SefiraName == null) return;
-					sefiraTransform = SefiraName.transform;
-					buttonTransform = sefiraTransform.Find("ChagneView");
-				}
-				if (buttonTransform != null)
-				{
-					switchViewButton = buttonTransform.gameObject.GetComponent<Button>();
-				}
-				else
-				{
-					GameObject gameObject;
-					if (Sefira.sefiraEnum == SefiraEnum.TIPERERTH2)
-					{
-						gameObject = new GameObject("ChagneView2");
-					}
-					else
-					{
-						gameObject = new GameObject("ChagneView");
-					}
-					Image image = gameObject.AddComponent<Image>();
-					image.transform.SetParent(sefiraTransform);
-					Button button = gameObject.AddComponent<Button>();
-					switchViewButton = button;
-					Texture2D texture2D = new Texture2D(2, 2);
-					texture2D.LoadImage(File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/ChangeButton.png"));
-					Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
-					image.sprite = sprite;
-					gameObject.layer = sefiraTransform.gameObject.layer;
-					image.rectTransform.sizeDelta = new Vector2((float)texture2D.width, (float)texture2D.height) / 2f;
-					button.targetGraphic = image;/*
-					int x = -1;
-					for (int i = 0; i < DeployUI.instance.sefiraList.sefiraPanels.Count; i++)
-					{
-						if (DeployUI.instance.sefiraList.sefiraPanels[i].script == this)
-						{
-							x = i;
-							break;
-						}
-					}*/
-					button.onClick.AddListener(delegate()
-					{
-						SefiraPanel.OnClickChangeViewButtonStatic(this);
-					});
-					gameObject.AddComponent<SwitchViewButtonHandler>();
-					gameObject.SetActive(true);
-					image.color = SefiraColor;
-					Vector3 offset;
-					switch (Sefira.sefiraEnum)
-					{
-						case SefiraEnum.MALKUT:
-						case SefiraEnum.CHOKHMAH:
-						case SefiraEnum.KETHER:
-							offset = new Vector3(115f, -180f, 0f);
-							break;
-						case SefiraEnum.YESOD:
-							offset = new Vector3(-375f, -225f, 0f);
-							break;
-						case SefiraEnum.HOD:
-						case SefiraEnum.BINAH:
-							offset = new Vector3(-375f, -180f, 0f);
-							break;
-						case SefiraEnum.NETZACH:
-							offset = new Vector3(115f, -135f, 0f);
-							break;
-						case SefiraEnum.TIPERERTH1:
-							offset = new Vector3(-375f, -135f, 0f);
-							break;
-						case SefiraEnum.TIPERERTH2:
-							offset = new Vector3(115f, -425f, 0f);
-							break;
-						case SefiraEnum.GEBURAH:
-							offset = new Vector3(-375f, -320f, 0f);
-							break;
-						case SefiraEnum.CHESED:
-							offset = new Vector3(115f, -320f, 0f);
-							break;
-						default:
-							offset = new Vector3(120f, 0f, 0f);
-							break;
-					}
-					gameObject.transform.localPosition = offset;
-					gameObject.transform.localScale *= 0.4f;
-					gameObject.transform.rotation = Quaternion.identity;
-					foreach (GameObject gameObject2 in this.activateEffected)
-					{
-						if (gameObject2 != null)
-						{
-							LobotomyBaseMod.ModDebug.Debug_LogError("Switch Button Offset : " + (gameObject2.transform.position.z - gameObject.transform.position.z).ToString());
-						}
-					}
-				}
-			}
-			if (creatureList.Count > (Sefira.sefiraEnum == SefiraEnum.KETHER ? 8 : 4))
-			{
-				switchViewButton.gameObject.SetActive(true);
-			}
-			else
-			{
-				switchViewButton.gameObject.SetActive(false);
-			}
-		}
-		catch (Exception ex)
-		{
-			LobotomyBaseMod.ModDebug.Debug_Log("Switch Button Load : " + ex.Message + " : " + ex.StackTrace);
 		}
 	}
 
@@ -1183,14 +1010,14 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 	// Token: 0x06004A7C RID: 19068 RVA: 0x001B92BC File Offset: 0x001B74BC
 	public void OnClickCreaturePortriat(int i)
-	{ // <Patch>
+	{
 		if (this.creatureSlots[i].isInit)
 		{
 			if (!this.creatureSlots[i].creature.script.OnOpenCollectionWindow())
 			{
 				return;
 			}
-			CreatureInfoWindow.CreateWindow_Mod(CreatureTypeList.instance.GetLcId(this.creatureSlots[i].creature.metaInfo));
+			CreatureInfoWindow.CreateWindow(this.creatureSlots[i].creature.metadataId);
 			this.SefiraSound.OnPlayInList(1);
 		}
 	}
@@ -1269,7 +1096,7 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 	// Token: 0x06004A82 RID: 19074 RVA: 0x001B94DC File Offset: 0x001B76DC
 	public void SetBossState()
-	{ // <Mod>
+	{
 		if (this.sefiraBossDescPanel != null)
 		{
 			this.sefiraBossDescPanel.gameObject.SetActive(false);
@@ -1336,29 +1163,13 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 		}
 		else
 		{
-			Mission bossMission = MissionManager.instance.GetBossMission(sefiraEnum);
-			bool isOvertime = false;
-			if (bossMission != null)
-			{
-				isOvertime = bossMission.metaInfo.sefira_Level > 5;
-			}
 			if (this.SefiraBossDesc_Clear != null)
 			{
-				string format = "boss_{0}_clear";
-				if (isOvertime)
-				{
-					format = "boss2_{0}_clear";
-				}
-				this.SefiraBossDesc_Clear.text = LocalizeTextDataModel.instance.GetText(string.Format(format, sefiraEnum.ToString().ToLower()));
+				this.SefiraBossDesc_Clear.text = LocalizeTextDataModel.instance.GetText(string.Format("boss_{0}_clear", sefiraEnum.ToString().ToLower()));
 			}
 			if (this.SefiraBossDesc_Condition != null)
 			{
-				string format = "boss_{0}_condition";
-				if (isOvertime)
-				{
-					format = "boss2_{0}_condition";
-				}
-				this.SefiraBossDesc_Condition.text = LocalizeTextDataModel.instance.GetText(string.Format(format, sefiraEnum.ToString().ToLower()));
+				this.SefiraBossDesc_Condition.text = LocalizeTextDataModel.instance.GetText(string.Format("boss_{0}_condition", sefiraEnum.ToString().ToLower()));
 			}
 		}
 		if (SefiraBossManager.Instance.IsKetherBoss() && sefiraEnum == SefiraEnum.KETHER)
@@ -1448,72 +1259,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 		if (this.sefiraBossDescPanel != null)
 		{
 			this.sefiraBossDescPanel.Hide();
-		}
-	}
-
-	// <Mod>
-	public void OnClickChangeViewButton()
-	{
-		if (_dataState == PanelDataState.MAIN)
-		{
-			List<CreatureModel> creatureList = this.Sefira.creatureList;
-			int count = creatureList.Count;
-			int abno = abnoStartIndex;
-			abnoStartIndex += 4;
-			if (abnoStartIndex >= count) abnoStartIndex = 0;
-			if (abnoStartIndex != abno)
-			{
-				int sefiraLevel = (int)this.Sefira.sefiraEnum / (int)SefiraEnum.TIPERERTH1;
-				for (int i = 0; i < ((this.Sefira.sefiraEnum == SefiraEnum.KETHER) ? 8 : 4); i++)
-				{
-					SefiraPanel.CreaturePortrait creaturePortrait = this.creatureSlots[i];
-					creaturePortrait.index = i;
-					if (i + abnoStartIndex < count)
-					{
-						creaturePortrait.portrait.color = new Color(1f, 1f, 1f);
-						creaturePortrait.SetCreature(creatureList[i + abnoStartIndex], sefiraLevel, this.SefiraColor);
-					}
-					else
-					{
-						creaturePortrait.isInit = false;
-						creaturePortrait.SetEmpty(this._sefiraColor);
-					}
-				}
-			}
-			int emp = workerStartIndex;
-			workerStartIndex += 5;
-			if (workerStartIndex > allocateAgents.Count || workerStartIndex >= _allocateMax) workerStartIndex = 0;
-			if (workerStartIndex != emp)
-			{
-			}
-		}
-		else if (_dataState == PanelDataState.RESEARCH)
-		{
-			int a = researchStartIndex;
-			researchStartIndex += 3;
-			if (researchStartIndex >= 6) researchStartIndex = 0;
-			if (researchStartIndex != a)
-			{
-				researchPanelController.ChangeOffset(researchStartIndex);
-			}
-		}
-	}
-
-	public static void OnClickChangeViewButtonStatic(SefiraPanel panel)
-	{
-		//UnityEngine.SceneManagement.SceneManager.LoadScene("ForceExitScene");
-		try
-		{
-			panel.OnClickChangeViewButton();
-			AudioClip audioClip = Resources.Load<AudioClip>(string.Format("Sounds/{0}", "uisound/newuisound/Interactions_TinyDoor_Open_08"));
-			if (audioClip != null)
-			{
-				GlobalAudioManager.instance.PlayLocalClip(audioClip);
-			}
-		}
-		catch (Exception ex)
-		{
-			LobotomyBaseMod.ModDebug.Debug_Log("Switch Button Click : " + ex.Message + " : " + ex.StackTrace);
 		}
 	}
 
@@ -1692,18 +1437,6 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 	// Token: 0x0400450E RID: 17678
 	private Timer missionPanelStartTimer = new Timer();
-
-	// <Mod>
-	private Button switchViewButton;
-
-	// <Mod>
-	private int abnoStartIndex;
-
-	// <Mod>
-	private int researchStartIndex;
-
-	// <Mod>
-	private int workerStartIndex;
 
 	// Token: 0x02000993 RID: 2451
 	public enum PanelDataState
@@ -1955,17 +1688,5 @@ public class SefiraPanel : MonoBehaviour, IDeployResetCalled
 
 		// Token: 0x04004523 RID: 17699
 		private bool fadeIn = true;
-	}
-
-	// <Mod>
-	public class SwitchViewButtonHandler : MonoBehaviour, IPointerEnterHandler
-	{
-		public void OnPointerEnter(PointerEventData eventData)
-		{
-			if (enterSound == null) enterSound = Resources.Load<AudioClip>(string.Format("Sounds/{0}", "uisound/newuisound/011. App Button Slide Cool 2"));
-			GlobalAudioManager.instance.PlayLocalClip(enterSound);
-		}
-
-		private AudioClip enterSound;
 	}
 }

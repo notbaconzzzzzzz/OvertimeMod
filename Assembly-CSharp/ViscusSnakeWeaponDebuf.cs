@@ -35,5 +35,5 @@ public class ViscusSnakeWeaponDebuf : UnitBuf
 	private const float _debufDmgRatio = 1.5f;
 
 	// Token: 0x04003293 RID: 12947
-	private const float _remain_time = 5f; // <Mod> changed from 3 seconds
+	private const float _remain_time = 3f;
 }

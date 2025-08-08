@@ -248,20 +248,13 @@ public class AlterTitleController : MonoBehaviour
 
 	// Token: 0x0600528E RID: 21134 RVA: 0x00043585 File Offset: 0x00041785
 	private void CallNewgame()
-	{ // <Mod>
-		try
-		{
-			GlobalGameManager.instance.isPlayingTutorial = false;
-			GlobalGameManager.instance.LoadGlobalData();
-			CreatureGenerateInfoManager.Instance.Init();
-			GlobalGameManager.instance.InitStoryMode();
-			PlayerModel.instance.InitAddingCreatures();
-			this.LoadStoryMode();
-		}
-		catch (Exception ex)
-		{
-			LobotomyBaseMod.ModDebug.Log("CallNewGame : " + ex.Message + " : " + ex.StackTrace);
-		}
+	{
+		GlobalGameManager.instance.isPlayingTutorial = false;
+		GlobalGameManager.instance.LoadGlobalData();
+		CreatureGenerateInfoManager.Instance.Init();
+		GlobalGameManager.instance.InitStoryMode();
+		PlayerModel.instance.InitAddingCreatures();
+		this.LoadStoryMode();
 	}
 
 	// Token: 0x0600528F RID: 21135 RVA: 0x001E205C File Offset: 0x001E025C
@@ -284,7 +277,7 @@ public class AlterTitleController : MonoBehaviour
 		}
 		catch (Exception message)
 		{
-			LobotomyBaseMod.ModDebug.Log("CallContiune : " + message.Message + " : " + message.StackTrace);
+			Debug.LogError(message);
 			GlobalGameManager.instance.ReleaseGame();
 		}
 	}
@@ -359,9 +352,9 @@ public class AlterTitleController : MonoBehaviour
 
 	// Token: 0x06005298 RID: 21144 RVA: 0x001E2150 File Offset: 0x001E0350
 	public void OnSetLanguage(string ln)
-	{ // <Patch>
+	{
 		this.GetPlayer().OnPlayInList(1);
-		GlobalGameManager.instance.ChangeLanguage_new(ln);
+		GlobalGameManager.instance.ChangeLanguage(GlobalGameManager.instance.GetLanguage(ln));
 		this._languageCTRL.Hide();
 		this._buttonCTRL.Show();
 		base.StartCoroutine(this.Reload());

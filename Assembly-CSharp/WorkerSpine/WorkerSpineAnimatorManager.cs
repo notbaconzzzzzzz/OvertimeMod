@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq; // 
 using Spine;
 using Spine.Unity;
 using UnityEngine;
@@ -42,46 +41,42 @@ namespace WorkerSpine
 
 		// Token: 0x060044AC RID: 17580 RVA: 0x001A62B4 File Offset: 0x001A44B4
 		public void Init(List<WorkerSpineAnimatorData> data)
-		{ // <Patch>
+		{
 			try
 			{
-				this.nameDicMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, WorkerSpineAnimatorData>();
-				Dictionary<LobotomyBaseMod.KeyValuePairSS, object> dictionary = new Dictionary<LobotomyBaseMod.KeyValuePairSS, object>();
-				Dictionary<LobotomyBaseMod.KeyValuePairSS, string> dictionary2 = new Dictionary<LobotomyBaseMod.KeyValuePairSS, string>();
+				Dictionary<string, object> dictionary = new Dictionary<string, object>();
+				Dictionary<string, string> dictionary2 = new Dictionary<string, string>();
 				new Dictionary<string, string>();
 				if (Add_On.instance.DirList.Count > 0)
 				{
-					foreach (ModInfo modInfo_patch in Add_On.instance.ModList)
+					foreach (DirectoryInfo dir in Add_On.instance.DirList)
 					{
-						DirectoryInfo directoryInfo = Add_On.CheckNamedDir(modInfo_patch.modpath, "AgentAnimation");
-						string modid = modInfo_patch.modid;
+						DirectoryInfo directoryInfo = Add_On.CheckNamedDir(dir, "AgentAnimation");
 						if (directoryInfo != null && directoryInfo.GetDirectories().Length != 0)
 						{
 							foreach (DirectoryInfo directoryInfo2 in directoryInfo.GetDirectories())
 							{
-								LobotomyBaseMod.KeyValuePairSS key = new LobotomyBaseMod.KeyValuePairSS(modid, directoryInfo2.Name);
 								if (File.Exists(directoryInfo2.FullName + "/json.txt"))
 								{
-									dictionary.Add(key, File.ReadAllText(directoryInfo2.FullName + "/json.txt"));
+									dictionary.Add(directoryInfo2.Name, File.ReadAllText(directoryInfo2.FullName + "/json.txt"));
 								}
 								else if (File.Exists(directoryInfo2.FullName + "/skeleton.skel"))
 								{
-									dictionary.Add(key, File.ReadAllBytes(directoryInfo2.FullName + "/skeleton.skel"));
+									dictionary.Add(directoryInfo2.Name, File.ReadAllBytes(directoryInfo2.FullName + "/skeleton.skel"));
 								}
-								dictionary2.Add(key, directoryInfo2.FullName);
+								dictionary2.Add(directoryInfo2.Name, directoryInfo2.FullName);
 							}
 						}
 					}
 				}
-				Dictionary<LobotomyBaseMod.KeyValuePairSS, object> dictionary3 = new Dictionary<LobotomyBaseMod.KeyValuePairSS, object>(dictionary);
-				Dictionary<LobotomyBaseMod.KeyValuePairSS, string> dictionary4 = new Dictionary<LobotomyBaseMod.KeyValuePairSS, string>(dictionary2);
+				Dictionary<string, object> dictionary3 = new Dictionary<string, object>(dictionary);
+				Dictionary<string, string> dictionary4 = new Dictionary<string, string>(dictionary2);
 				foreach (WorkerSpineAnimatorData workerSpineAnimatorData in data)
 				{
 					try
 					{
-						this.FindNewSkinandSkel_Mod(workerSpineAnimatorData, dictionary, dictionary2, dictionary3, dictionary4);
+						this.FindNewSkinandSkel(workerSpineAnimatorData, dictionary, dictionary2, dictionary3, dictionary4);
 						this.nameDic.Add(workerSpineAnimatorData.name, workerSpineAnimatorData);
-						this.nameDicMod.Add(new LobotomyBaseMod.KeyValuePairSS(string.Empty, workerSpineAnimatorData.name), workerSpineAnimatorData);
 						this.idDic.Add(workerSpineAnimatorData.id, workerSpineAnimatorData);
 					}
 					catch (Exception arg)
@@ -92,17 +87,17 @@ namespace WorkerSpine
 				}
 				if (dictionary3.Count > 0)
 				{
-					foreach (KeyValuePair<LobotomyBaseMod.KeyValuePairSS, object> keyValuePair in dictionary3)
+					foreach (KeyValuePair<string, object> keyValuePair in dictionary3)
 					{
 						char[] separator = new char[]
 						{
 							'_'
 						};
-						string text = keyValuePair.Key.value.Split(separator)[0];
+						string text = keyValuePair.Key.Split(separator)[0];
 						if (this.nameDic.ContainsKey(text))
 						{
 							WorkerSpineAnimatorData workerSpineAnimatorData2 = this.nameDic[text];
-							WorkerSpineAnimatorData workerSpineAnimatorData3 = new WorkerSpineAnimatorData(workerSpineAnimatorData2.id + 10000000, keyValuePair.Key.value, workerSpineAnimatorData2.animatorSrc, workerSpineAnimatorData2.skeletonSrc);
+							WorkerSpineAnimatorData workerSpineAnimatorData3 = new WorkerSpineAnimatorData(workerSpineAnimatorData2.id + 10000000, keyValuePair.Key, workerSpineAnimatorData2.animatorSrc, workerSpineAnimatorData2.skeletonSrc);
 							workerSpineAnimatorData3.LoadData();
 							DirectoryInfo directoryInfo3 = new DirectoryInfo(dictionary4[keyValuePair.Key]);
 							List<Texture2D> list = new List<Texture2D>();
@@ -134,11 +129,11 @@ namespace WorkerSpine
 								skeletonData = SkeletonDataAsset.CreateRuntimeInstance((byte[])keyValuePair.Value, atlasAsset, true, workerSpineAnimatorData3.skeletonData.scale);
 							}
 							workerSpineAnimatorData3.skeletonData = skeletonData;
-							this.nameDicMod.Add(keyValuePair.Key, workerSpineAnimatorData3);
+							this.nameDic.Add(keyValuePair.Key, workerSpineAnimatorData3);
 						}
 						else if (text == "Custom")
 						{
-							WorkerSpineAnimatorData workerSpineAnimatorData4 = new WorkerSpineAnimatorData(keyValuePair.Key.GetHashCode(), keyValuePair.Key.value);
+							WorkerSpineAnimatorData workerSpineAnimatorData4 = new WorkerSpineAnimatorData(keyValuePair.Key.GetHashCode(), keyValuePair.Key);
 							DirectoryInfo directoryInfo4 = new DirectoryInfo(dictionary4[keyValuePair.Key]);
 							List<Texture2D> list2 = new List<Texture2D>();
 							foreach (FileInfo fileInfo2 in directoryInfo4.GetFiles())
@@ -173,7 +168,7 @@ namespace WorkerSpine
 							{
 								File.WriteAllText(Application.dataPath + "/BaseMods/controller.txt", "");
 							}
-							this.nameDicMod.Add(keyValuePair.Key, workerSpineAnimatorData4);
+							this.nameDic.Add(keyValuePair.Key, workerSpineAnimatorData4);
 						}
 					}
 				}
@@ -215,9 +210,8 @@ namespace WorkerSpine
 
 		// Token: 0x060044B0 RID: 17584 RVA: 0x0003A469 File Offset: 0x00038669
 		public bool GetDataWithCheck(string name, out WorkerSpineAnimatorData output)
-		{ // <Patch>
-            return GetDataWithCheck_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name), out output);
-			// return this.nameDic.TryGetValue(name, out output);
+		{
+			return this.nameDic.TryGetValue(name, out output);
 		}
 
 		// Token: 0x060044B1 RID: 17585 RVA: 0x001A6920 File Offset: 0x001A4B20
@@ -587,41 +581,6 @@ namespace WorkerSpine
 			}
 		}
 
-		// <Patch>
-		public bool GetDataWithCheck_Mod(LobotomyBaseMod.KeyValuePairSS name, out WorkerSpineAnimatorData output)
-		{
-			return this.nameDicMod.TryGetValue(name, out output);
-		}
-
-		// <Patch>
-		public void FindNewSkinandSkel_Mod(WorkerSpineAnimatorData data, Dictionary<LobotomyBaseMod.KeyValuePairSS, object> dic, Dictionary<LobotomyBaseMod.KeyValuePairSS, string> dic2, Dictionary<LobotomyBaseMod.KeyValuePairSS, object> dic_c, Dictionary<LobotomyBaseMod.KeyValuePairSS, string> dic2_c)
-		{
-			data.LoadData();
-			foreach (LobotomyBaseMod.KeyValuePairSS keyValuePairSS in dic.Keys.ToList<LobotomyBaseMod.KeyValuePairSS>())
-			{
-				if (keyValuePairSS.value == data.name)
-				{
-					if (dic[keyValuePairSS] is string)
-					{
-						this.FNSS_skel(data, (string)dic[keyValuePairSS]);
-					}
-					else
-					{
-						this.FNSS_skel(data, (byte[])dic[keyValuePairSS]);
-					}
-					dic_c.Remove(keyValuePairSS);
-				}
-			}
-			foreach (LobotomyBaseMod.KeyValuePairSS keyValuePairSS2 in dic2.Keys.ToList<LobotomyBaseMod.KeyValuePairSS>())
-			{
-				if (keyValuePairSS2.value == data.name)
-				{
-					this.FNSS_skin(data, dic2[keyValuePairSS2]);
-					dic2_c.Remove(keyValuePairSS2);
-				}
-			}
-		}
-
 		// Token: 0x04003F52 RID: 16210
 		private static WorkerSpineAnimatorManager _instance;
 
@@ -636,8 +595,5 @@ namespace WorkerSpine
 
 		// Token: 0x04003F56 RID: 16214
 		public static WorkerSpineAnimatorData basicspecial;
-
-		// <Patch>
-		private Dictionary<LobotomyBaseMod.KeyValuePairSS, WorkerSpineAnimatorData> nameDicMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, WorkerSpineAnimatorData>();
 	}
 }

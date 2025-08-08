@@ -13,15 +13,21 @@ public class SnowQueenSlow : UnitBuf
 
 	// Token: 0x0600594C RID: 22860 RVA: 0x001FADEC File Offset: 0x001F8FEC
 	public override void Init(UnitModel model)
-	{ // <Mod>
+	{
 		base.Init(model);
 		this.remainTime = 3f;
+		if (model is CreatureModel)
+		{
+			this.creature = (model as CreatureModel);
+			this.creature.movementScale = this.creature.movementScale * this.MovementScale();
+		}
+		Debug.Log(model.GetUnitName() + " slow start");
 	}
 
 	// Token: 0x0600594D RID: 22861 RVA: 0x00026A30 File Offset: 0x00024C30
 	public override float MovementScale()
-	{ // <Mod>
-		return 0.7f;
+	{
+		return 0.5f;
 	}
 
 	// Token: 0x0600594E RID: 22862 RVA: 0x000239A2 File Offset: 0x00021BA2
@@ -29,6 +35,17 @@ public class SnowQueenSlow : UnitBuf
 	{
 		base.OnUnitDie();
 		this.Destroy();
+	}
+
+	// Token: 0x0600594F RID: 22863 RVA: 0x001FAE54 File Offset: 0x001F9054
+	public override void OnDestroy()
+	{
+		base.OnDestroy();
+		if (this.creature != null)
+		{
+			this.creature.movementScale = this.creature.movementScale / this.MovementScale();
+		}
+		Debug.Log(this.model.GetUnitName() + " slow end");
 	}
 
 	// Token: 0x0400525A RID: 21082

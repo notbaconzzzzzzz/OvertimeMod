@@ -1,13 +1,4 @@
-/*
-public void OnStageStart() // 
-public void AddEnergy(float added) // 
-public void SubEnergy(float sub) // 
-public void OnNotice(string notice, params object[] param) // 
-+public EnergyIncome AddIncome(EnergyIncome income) // 
-+buncha stuff
-*/
 using System;
-using System.Collections.Generic; // 
 using GameStatusUI;
 using UnityEngine;
 
@@ -53,76 +44,34 @@ public class EnergyModel : IObserver
 
 	// Token: 0x06003516 RID: 13590 RVA: 0x00030855 File Offset: 0x0002EA55
 	public void OnStageStart()
-	{ // <Mod>
+	{
 		this.energy = 0f;
 		this.finishCounter = 0;
 		this.finishTimer = 0f;
 		this.fillBlock = false;
 		this.halfSay = false;
 		this.fullSay = false;
-		energyIncomes.Clear();
 	}
 
 	// Token: 0x06003517 RID: 13591 RVA: 0x0015EB84 File Offset: 0x0015CD84
 	public void AddEnergy(float added)
-	{ // <Mod>
+	{
 		int day = PlayerModel.instance.GetDay();
 		float energyNeed = StageTypeInfo.instnace.GetEnergyNeed(day);
 		this.energy += added;
-		if (this.energy > energyNeed)
+		if (this.energy >= energyNeed)
 		{
-            float extraEnergy = energy - energyNeed;
-            Notice.instance.Send(NoticeName.AddExcessEnergy, new object[]
-            {
-                extraEnergy
-            });
 			this.energy = energyNeed;
-			if (ResearchDataModel.instance.IsUpgradedAbility("reuse_rabbit_team") && !Rabbit.RabbitProtocolWindow.Window.ProtocolActivationButton.interactable)
-			{
-				Rabbit.RabbitProtocolWindow.Window.ProtocolActivationButton.interactable = true;
-				Rabbit.RabbitProtocolWindow.Window.ProtocolActivationButton.gameObject.SetActive(true);
-			}
 		}
 	}
 
 	// Token: 0x06003518 RID: 13592 RVA: 0x00030889 File Offset: 0x0002EA89
 	public void SubEnergy(float sub)
-	{ // <Mod>
+	{
 		this.energy -= sub;
 		if (this.energy < 0f)
 		{
 			this.energy = 0f;
-		}
-		if (energyIncomes.Count <= 0)
-		{
-			return;
-		}
-		int total = 0;
-		for (int i = 0; i < energyIncomes.Count; i++)
-		{
-			total += energyIncomes[i].current;
-		}
-		if (total < sub)
-		{
-			for (int i = 0; i < energyIncomes.Count; i++)
-			{
-				energyIncomes[i].current = 0;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < energyIncomes.Count; i++)
-			{
-				if (sub <= 0f || total <= 0)
-				{
-					return;
-				}
-				int num = energyIncomes[i].current;
-				int num2 = (int)(sub / (float)total * (float)num);
-				energyIncomes[i].current -= num2;
-				sub -= num2;
-				total -= num;
-			}
 		}
 	}
 
@@ -289,25 +238,14 @@ public class EnergyModel : IObserver
 
 	// Token: 0x0600351E RID: 13598 RVA: 0x000308C4 File Offset: 0x0002EAC4
 	public void OnNotice(string notice, params object[] param)
-	{ // <Mod>
-		if (notice == NoticeName.FixedUpdate)
+	{
+		if (!(notice == NoticeName.EnergyTimer))
 		{
-			this.OnFixedUpdate();
-		}
-		else if (notice == NoticeName.EnergyTimer)
-		{
-			foreach (EnergyIncome income in energyIncomes)
+			if (notice == NoticeName.FixedUpdate)
 			{
-				income.EnergyTick();
+				this.OnFixedUpdate();
 			}
 		}
-	}
-
-	// <Mod>
-	public EnergyIncome AddIncome(EnergyIncome income)
-	{
-		energyIncomes.Add(income);
-		return income;
 	}
 
 	// Token: 0x0600351F RID: 13599 RVA: 0x0000431D File Offset: 0x0000251D
@@ -336,57 +274,4 @@ public class EnergyModel : IObserver
 
 	// Token: 0x04003171 RID: 12657
 	private bool _fillBlock;
-
-	//> <Mod>
-	private List<EnergyIncome> energyIncomes = new List<EnergyIncome>();
-
-	public class EnergyIncome
-	{
-		public virtual void EnergyTick()
-		{
-			int cap = energyCap;
-			int amount = flatRate;
-			amount += (int)(scaleRate * (energyCap - current));
-			if (amount + current > energyCap)
-			{
-				amount = energyCap - current;
-			}
-			if (amount > 0)
-			{
-				current += amount;
-				AddEnergy(amount);
-			}
-		}
-
-		public virtual void AddEnergy(int amount)
-		{
-			EnergyModel.instance.AddEnergy(amount);
-		}
-
-		public virtual int energyCap
-		{
-			get
-			{
-				return baseCap * CreatureOverloadManager.instance.GetQliphothOverloadLevel();
-			}
-		}
-
-		public int baseCap = 5;
-
-		public int current = 0;
-
-		public int flatRate = 1;
-
-		public float scaleRate = 0f;
-	}
-
-	public class CreatureEnergyIncome : EnergyIncome
-	{
-        public override void AddEnergy(int amount)
-        {
-            EnergyModel.instance.ManualAdd(model, amount);
-        }
-
-		public CreatureModel model;
-	}
 }

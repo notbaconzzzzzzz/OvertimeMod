@@ -1,7 +1,3 @@
-/*
-public override void OrdealEnd() // Overtime Core Suppressions
-Various private static arrays // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,15 +89,14 @@ public class MachineOrdeal : OrdealBase
 
 	// Token: 0x06003C5A RID: 15450 RVA: 0x001799AC File Offset: 0x00177BAC
 	public override void OrdealEnd()
-	{ // <Mod>
+	{
 		base.OrdealEnd();
 		int num = this.ordealRewards[(int)this.level];
 		if (!base.canTakeRewards)
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
-		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Machine/Machine_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
@@ -122,24 +117,16 @@ public class MachineOrdeal : OrdealBase
 
 	// Token: 0x0400371C RID: 14108
 	private static int[] ids = new int[]
-	{ // <Mod>
+	{
 		200001,
 		200002,
 		200003,
-		200004,
-		200101,
-		200102,
-		200103,
-		200104
+		200004
 	};
 
 	// Token: 0x0400371D RID: 14109
 	private static RiskLevel[] risks = new RiskLevel[]
-	{ // <Mod>
-		RiskLevel.TETH,
-		RiskLevel.HE,
-		RiskLevel.WAW,
-		RiskLevel.ALEPH,
+	{
 		RiskLevel.TETH,
 		RiskLevel.HE,
 		RiskLevel.WAW,
@@ -148,11 +135,7 @@ public class MachineOrdeal : OrdealBase
 
 	// Token: 0x0400371E RID: 14110
 	private static string[] names = new string[]
-	{ // <Mod>
-		"machine_dawn",
-		"machine_noon",
-		"machine_dusk",
-		"machine_midnight",
+	{
 		"machine_dawn",
 		"machine_noon",
 		"machine_dusk",

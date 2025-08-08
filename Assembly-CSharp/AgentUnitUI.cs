@@ -20,7 +20,7 @@ public class AgentUnitUI
 	// Token: 0x060054EA RID: 21738 RVA: 0x001E7CAC File Offset: 0x001E5EAC
 	public void activateUI(AgentModel model)
 	{
-		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
+		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
 		{
 			this.DeactivateAllUI();
 			return;

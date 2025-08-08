@@ -309,16 +309,13 @@ public class DontTouchMe : CreatureBase
 	// Token: 0x060021CD RID: 8653 RVA: 0x00103C74 File Offset: 0x00101E74
 	private void ExitGame()
 	{
-        if (!SpecialModeConfig.instance.GetValue<bool>("DontTouchMeFix"))
-        {
-            int observationLevel = this.model.GetObservationLevel();
-            this.model.observeInfo.OnObserveRegion("stat");
-            if (observationLevel < this.model.GetObservationLevel())
-            {
-                this.model.AddObservationLevel();
-            }
-            GlobalGameManager.instance.SaveGlobalData();
-        }
+		int observationLevel = this.model.GetObservationLevel();
+		this.model.observeInfo.OnObserveRegion("stat");
+		if (observationLevel < this.model.GetObservationLevel())
+		{
+			this.model.AddObservationLevel();
+		}
+		GlobalGameManager.instance.SaveGlobalData();
 		SceneManager.LoadScene("ForceExitScene");
 	}
 

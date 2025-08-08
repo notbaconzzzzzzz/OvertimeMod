@@ -90,10 +90,8 @@ public class SpecialEventManager
 
 	// Token: 0x06004450 RID: 17488 RVA: 0x001A4DA0 File Offset: 0x001A2FA0
 	public EventCreatureModel AddCreature(long metadataId, MapNode pos, EventBase eventBase)
-	{ // <Patch>
-        return AddCreature_Mod(new LobotomyBaseMod.LcIdLong(metadataId), pos, eventBase);
-		/*
-        EventCreatureModel eventCreatureModel = new EventCreatureModel((long)this.nextInstId++);
+	{
+		EventCreatureModel eventCreatureModel = new EventCreatureModel((long)this.nextInstId++);
 		this.BuildCreature(eventCreatureModel, metadataId);
 		eventCreatureModel.GetMovableNode().SetCurrentNode(pos);
 		eventCreatureModel.GetMovableNode().SetActive(true);
@@ -109,14 +107,12 @@ public class SpecialEventManager
 		Sefira sefira = SefiraManager.instance.GetSefira(pos.GetAttachedPassage().GetSefiraName());
 		eventCreatureModel.sefira = sefira;
 		eventCreatureModel.sefiraNum = sefira.indexString;
-		return eventCreatureModel;*/
+		return eventCreatureModel;
 	}
 
 	// Token: 0x06004451 RID: 17489 RVA: 0x001A4E6C File Offset: 0x001A306C
 	private void BuildCreature(EventCreatureModel model, long metadataId)
-	{ // <Patch>
-        BuildCreature_Mod(model, new LobotomyBaseMod.LcIdLong(metadataId));
-        /*
+	{
 		model.observeInfo = new CreatureObserveInfoModel(metadataId);
 		string text = "1";
 		model.sefira = SefiraManager.instance.GetSefira(text);
@@ -152,7 +148,7 @@ public class SpecialEventManager
 			Debug.Log("Creature Script not found");
 		}
 		model.script.SetModel(model);
-		model.script.OnInitialBuild();*/
+		model.script.OnInitialBuild();
 	}
 
 	// Token: 0x06004452 RID: 17490 RVA: 0x0003A0E0 File Offset: 0x000382E0
@@ -181,62 +177,6 @@ public class SpecialEventManager
 		}
 		return false;
 	}
-
-    // <Patch>
-    private void BuildCreature_Mod(EventCreatureModel model, LobotomyBaseMod.LcIdLong metadataId)
-    {
-        model.observeInfo = new CreatureObserveInfoModel(metadataId.id);
-        model.observeInfo.InitData_Mod(metadataId);
-        string text = "1";
-        model.sefira = SefiraManager.instance.GetSefira(text);
-        model.sefiraNum = text;
-        CreatureTypeInfo data_Mod = CreatureTypeList.instance.GetData_Mod(metadataId);
-        model.metadataId = metadataId.id;
-        model.metaInfo = data_Mod;
-        if (CreatureTypeList.instance.GetSkillTipData_Mod(metadataId) != null)
-        {
-            model.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(metadataId).GetCopy();
-        }
-        object obj = LobotomyBaseMod.ExtenionUtil.GetTypeInstance<CreatureBase>(data_Mod.script);
-        if (obj == null)
-        {
-            obj = Activator.CreateInstance(Type.GetType(data_Mod.script));
-        }
-        if (obj is CreatureBase)
-        {
-            model.script = (CreatureBase)obj;
-        }
-        else
-        {
-            Debug.Log("Creature Script not found");
-        }
-        model.script.SetModel(model);
-        model.script.OnInitialBuild();
-    }
-
-    // <Patch>
-    public EventCreatureModel AddCreature_Mod(LobotomyBaseMod.LcIdLong metadataId, MapNode pos, EventBase eventBase)
-    {
-        int num = this.nextInstId;
-        this.nextInstId = num + 1;
-        EventCreatureModel eventCreatureModel = new EventCreatureModel((long)num);
-        this.BuildCreature_Mod(eventCreatureModel, metadataId);
-        eventCreatureModel.GetMovableNode().SetCurrentNode(pos);
-        eventCreatureModel.GetMovableNode().SetActive(true);
-        eventCreatureModel.baseMaxHp = eventCreatureModel.metaInfo.maxHp;
-        eventCreatureModel.hp = (float)eventCreatureModel.metaInfo.maxHp;
-        eventCreatureModel.SetEventBase(eventBase);
-        this.eventCreatureList.Add(eventCreatureModel);
-        Notice.instance.Send(NoticeName.AddEventCreature, new object[]
-        {
-            eventCreatureModel
-        });
-        eventCreatureModel.script.OnInit();
-        Sefira sefira = SefiraManager.instance.GetSefira(pos.GetAttachedPassage().GetSefiraName());
-        eventCreatureModel.sefira = sefira;
-        eventCreatureModel.sefiraNum = sefira.indexString;
-        return eventCreatureModel;
-    }
 
 	// Token: 0x04003EDA RID: 16090
 	private static SpecialEventManager _instance;

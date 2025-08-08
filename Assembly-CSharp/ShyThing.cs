@@ -1,6 +1,3 @@
-/*
-public override void OnFixedUpdate(CreatureModel creature) // Freeze if work allocated
-*/
 using System;
 using UnityEngine;
 
@@ -61,9 +58,9 @@ public class ShyThing : CreatureBase
 
 	// Token: 0x06002958 RID: 10584 RVA: 0x001203D0 File Offset: 0x0011E5D0
 	public override void OnFixedUpdate(CreatureModel creature)
-	{ // <Mod>
+	{
 		base.OnFixedUpdate(creature);
-		if (!(SpecialModeConfig.instance.GetValue<bool>("ShyLookFreeze") && Unit.room.IsWorkAllocated) && this.changeFaceTimer.RunTimer())
+		if (this.changeFaceTimer.RunTimer())
 		{
 			int faceType = UnityEngine.Random.Range(0, 5);
 			this.animScript.SetFaceType(faceType);

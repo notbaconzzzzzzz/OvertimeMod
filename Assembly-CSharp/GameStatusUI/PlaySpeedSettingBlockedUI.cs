@@ -108,7 +108,7 @@ namespace GameStatusUI
 		}
 
 		// Token: 0x04004E0F RID: 19983
-		public PlaySpeedSettingBlockFunction blockFunction = PlaySpeedSettingBlockFunction.ALL;
+		public PlaySpeedSettingBlockFunction blockFunction = PlaySpeedSettingBlockFunction.SPEEDMULTIPLIER;
 
 		// Token: 0x04004E10 RID: 19984
 		public PlaySpeedSettingBlockedUI.voidAction closeAction;

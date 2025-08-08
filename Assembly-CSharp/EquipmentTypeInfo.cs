@@ -1,7 +1,3 @@
-/*
-public int MaxNum // (!) 
-+many public static arrays
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -65,11 +61,10 @@ public class EquipmentTypeInfo
 	// Token: 0x17000552 RID: 1362
 	// (get) Token: 0x06003996 RID: 14742 RVA: 0x00170C68 File Offset: 0x0016EE68
 	public int MaxNum
-	{ // <Patch> <Mod>
+	{
 		get
 		{
-			LobotomyBaseMod.LcId lhs = new LobotomyBaseMod.LcId(this.modid, this.id);
-			if (this.type != EquipmentTypeInfo.EquipmentType.SPECIAL && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.GEBURAH) && lhs != 200038 && lhs != 300038 && lhs != 200015)
+			if (this.type != EquipmentTypeInfo.EquipmentType.SPECIAL && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.GEBURAH) && this.id != 200038 && this.id != 300038 && this.id != 200015 && this.id != 200061)
 			{
 				return Mathf.Min(5, this.maxNum + 1);
 			}
@@ -165,25 +160,6 @@ public class EquipmentTypeInfo
 		};
 	}
 
-	// <Patch>
-	public LobotomyBaseMod.LcId LcId
-	{
-		get
-		{
-			return EquipmentTypeInfo.GetLcId(this);
-		}
-	}
-
-	// <Patch>
-	public static LobotomyBaseMod.LcId GetLcId(EquipmentTypeInfo equip)
-	{
-		if (equip.modid == null)
-		{
-			return new LobotomyBaseMod.LcId(string.Empty, equip.id);
-		}
-		return new LobotomyBaseMod.LcId(equip.modid, equip.id);
-	}
-
 	// Token: 0x040034AB RID: 13483
 	public int id;
 
@@ -260,10 +236,6 @@ public class EquipmentTypeInfo
 	// Token: 0x040034C1 RID: 13505
 	public EGOgiftAttachType attachType;
 
-	// <Patch>
-	[NonSerialized]
-	public string modid = string.Empty;
-
 	// Token: 0x0200070C RID: 1804
 	public enum EquipmentType
 	{
@@ -274,100 +246,4 @@ public class EquipmentTypeInfo
 		// Token: 0x040034C5 RID: 13509
 		SPECIAL
 	}
-
-    //> <Mod> added many arrays
-	public static LobotomyBaseMod.LcId[] BossIds = new LobotomyBaseMod.LcId[] {
-		new LobotomyBaseMod.LcId(200015),
-		new LobotomyBaseMod.LcId(300015),
-		new LobotomyBaseMod.LcId(400015),
-		new LobotomyBaseMod.LcId(200038),
-		new LobotomyBaseMod.LcId(300038),
-		new LobotomyBaseMod.LcId(400038)
-	};
-
-	public static LobotomyBaseMod.LcIdLong[] BossLongIds = new LobotomyBaseMod.LcIdLong[] {
-		new LobotomyBaseMod.LcIdLong(100015L),
-		new LobotomyBaseMod.LcIdLong(100038L)
-	};
-
-	public static float[] WeaponUpgrade = new float[] {
-		1f,
-		1.6f,
-		1.4f,
-		1.3f,
-		1.25f,
-		1.22f,
-		1.2f,
-	};
-
-	public static float[] WeaponDowngrade = new float[] {
-		1f,
-		0.6f,
-		0.4f,
-		0.24f,
-		0.16f,
-		0.1f,
-		0.06f
-	};
-
-	public static float[] ArmorUpgrade = new float[] {
-		0f,
-		-0.2f,
-		-0.15f,
-		-0.12f,
-		-0.1f,
-		-0.2f / 3f,
-		-0.05f,
-	};
-
-	public static float[] ArmorDowngrade = new float[] {
-		0f,
-		0.1f,
-		0.15f,
-		0.2f,
-		0.25f,
-		0.3f,
-		0.35f
-	};
-
-	public static LobotomyBaseMod.LcId[] NonScaleWeaponIds = new LobotomyBaseMod.LcId[] {
-		new LobotomyBaseMod.LcId(200028),
-		new LobotomyBaseMod.LcId(200020),
-		new LobotomyBaseMod.LcId(200021),
-		new LobotomyBaseMod.LcId(200052),
-		new LobotomyBaseMod.LcId(200034),
-		new LobotomyBaseMod.LcId(200059),
-		new LobotomyBaseMod.LcId(200060),
-		new LobotomyBaseMod.LcId(200057),
-		new LobotomyBaseMod.LcId(200049),
-		new LobotomyBaseMod.LcId(200048),
-		new LobotomyBaseMod.LcId(200103),
-		new LobotomyBaseMod.LcId(200045),
-		new LobotomyBaseMod.LcId(200043),
-		new LobotomyBaseMod.LcId(200032),
-		new LobotomyBaseMod.LcId(200033),
-		new LobotomyBaseMod.LcId(200004),
-		new LobotomyBaseMod.LcId(200104),
-		new LobotomyBaseMod.LcId(200061),
-		new LobotomyBaseMod.LcId(200105),
-		new LobotomyBaseMod.LcId(200047),
-		new LobotomyBaseMod.LcId(200065),
-		new LobotomyBaseMod.LcId(200042),
-		new LobotomyBaseMod.LcId(200056),
-		new LobotomyBaseMod.LcId(200058),
-		new LobotomyBaseMod.LcId(200063),
-		new LobotomyBaseMod.LcId(200064),
-		new LobotomyBaseMod.LcId(200015),
-		new LobotomyBaseMod.LcId(200038)
-	};
-
-	public static int[] NonScaleJust = new int[] {
-		20,
-		35,
-		55,
-		80,
-		100,
-		115
-	};
-    //< <Mod>
 }

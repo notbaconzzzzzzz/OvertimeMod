@@ -10,13 +10,13 @@ public class RedshoesGift : EquipmentScriptBase
 
 	// Token: 0x0600359E RID: 13726 RVA: 0x0015F450 File Offset: 0x0015D650
 	public override EGObonusInfo GetBonus(UnitModel actor)
-	{ // <Mod> changed workProb from 10 to -10
+	{
 		EGObonusInfo egobonusInfo = new EGObonusInfo();
 		if (actor.HasEquipment(200003))
 		{
 			egobonusInfo.cubeSpeed = -10;
 			egobonusInfo.attackSpeed = 10;
-			egobonusInfo.workProb = -10;
+			egobonusInfo.workProb = 10;
 		}
 		return base.GetBonus(actor) + egobonusInfo;
 	}

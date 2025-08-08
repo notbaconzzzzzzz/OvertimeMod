@@ -1,13 +1,3 @@
-/*
-private static float rHealValue // 
-private static float wHealValue // 
-private static float bHealValue // 
-private static float pHealValue // 
-public bool CheckHit(UnitModel target, RwbpType type) // 
-+public bool CheckHit(UnitModel target, RwbpType type, ref int healed) // 
-private void Heal(WorkerModel worker, RwbpType type) // 
-+private void Heal(WorkerModel worker, RwbpType type, ref int healed) // 
-*/
 using System;
 using UnityEngine;
 
@@ -97,40 +87,40 @@ public class MagicalGirlWeapon : EquipmentScriptBase
 	// Token: 0x17000521 RID: 1313
 	// (get) Token: 0x060036B7 RID: 14007 RVA: 0x00024A14 File Offset: 0x00022C14
 	private static float rHealValue
-	{ // <Mod>
+	{
 		get
 		{
-			return UnityEngine.Random.Range(5f, 8f); // return UnityEngine.Random.Range(2f, 3f);
+			return UnityEngine.Random.Range(2f, 3f);
 		}
 	}
 
 	// Token: 0x17000522 RID: 1314
 	// (get) Token: 0x060036B8 RID: 14008 RVA: 0x00024A14 File Offset: 0x00022C14
 	private static float wHealValue
-	{ // <Mod>
+	{
 		get
 		{
-			return UnityEngine.Random.Range(5f, 8f); // return UnityEngine.Random.Range(2f, 3f);
+			return UnityEngine.Random.Range(2f, 3f);
 		}
 	}
 
 	// Token: 0x17000523 RID: 1315
 	// (get) Token: 0x060036B9 RID: 14009 RVA: 0x00024A14 File Offset: 0x00022C14
 	private static float bHealValue
-	{ // <Mod>
+	{
 		get
 		{
-			return UnityEngine.Random.Range(5f, 8f); // return UnityEngine.Random.Range(2f, 3f);
+			return UnityEngine.Random.Range(2f, 3f);
 		}
 	}
 
 	// Token: 0x17000524 RID: 1316
 	// (get) Token: 0x060036BA RID: 14010 RVA: 0x00024A14 File Offset: 0x00022C14
 	private static float pHealValue
-	{ // <Mod>
+	{
 		get
 		{
-			return UnityEngine.Random.Range(5f, 8f); // return UnityEngine.Random.Range(2f, 3f);
+			return UnityEngine.Random.Range(2f, 3f);
 		}
 	}
 
@@ -209,13 +199,6 @@ public class MagicalGirlWeapon : EquipmentScriptBase
 
 	// Token: 0x060036BD RID: 14013 RVA: 0x001686F8 File Offset: 0x001668F8
 	public bool CheckHit(UnitModel target, RwbpType type)
-	{ // <Mod>
-        int healed = 0;
-		return CheckHit(target, type, ref healed);
-	}
-
-	// <Mod>
-	public bool CheckHit(UnitModel target, RwbpType type, ref int healed)
 	{
 		if (!target.IsAttackTargetable())
 		{
@@ -291,43 +274,21 @@ public class MagicalGirlWeapon : EquipmentScriptBase
 
 	// Token: 0x060036BF RID: 14015 RVA: 0x00168898 File Offset: 0x00166A98
 	private void Heal(WorkerModel worker, RwbpType type)
-	{ // <Mod>
-        int healed = 0;
-		Heal(worker, type, ref healed);
-	}
-
-	// <Mod>
-	private void Heal(WorkerModel worker, RwbpType type, ref int healed)
 	{
-		UnitModel owner = base.model.owner;
-        float mult = owner.GetDamageFactorByEquipment();
-		mult *= owner.GetDamageFactorBySefiraAbility();
-		mult *= base.GetReinforcementDmg();
-        mult /= (float)(healed + 1);
 		switch (type)
 		{
 		case RwbpType.R:
-            if ((float)worker.maxHp - worker.hp < 5f * mult) return;
-			healed += 1;
-			worker.RecoverHP(MagicalGirlWeapon.rHealValue * mult);
+			worker.RecoverHP(MagicalGirlWeapon.rHealValue);
 			break;
 		case RwbpType.W:
-            if ((float)worker.maxMental - worker.mental < 5f * mult) return;
-			healed += 1;
-			worker.RecoverMental(MagicalGirlWeapon.wHealValue * mult);
+			worker.RecoverMental(MagicalGirlWeapon.wHealValue);
 			break;
 		case RwbpType.B:
-            mult /= 2f;
-            if ((float)worker.maxHp - worker.hp < 5f * mult && (float)worker.maxMental - worker.mental < 5f * mult) return;
-			healed += 1;
-			worker.RecoverHP(MagicalGirlWeapon.bHealValue * mult);
-			worker.RecoverMental(MagicalGirlWeapon.bHealValue * mult);
+			worker.RecoverHP(MagicalGirlWeapon.bHealValue / 2f);
+			worker.RecoverMental(MagicalGirlWeapon.bHealValue / 2f);
 			break;
 		case RwbpType.P:
-            if ((float)worker.maxHp - worker.hp < 5f * mult && (float)worker.maxMental - worker.mental < 5f * mult) return;
-			healed += 1;
-			worker.RecoverHP(MagicalGirlWeapon.pHealValue * mult);
-			worker.RecoverMental(MagicalGirlWeapon.pHealValue * mult);
+			worker.RecoverHP((float)worker.maxHp * MagicalGirlWeapon.pHealValue / 100f);
 			break;
 		}
 	}

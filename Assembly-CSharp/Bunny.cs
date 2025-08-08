@@ -1,6 +1,3 @@
-/*
-private List<PassageObjectModel> GetPassages() // Made it so that Meat Lantern can't spawn in the hallways outside of its containment unit
-*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,7 +195,7 @@ public class Bunny : CreatureBase
 
 	// Token: 0x06001F65 RID: 8037 RVA: 0x000FAC68 File Offset: 0x000F8E68
 	private List<PassageObjectModel> GetPassages()
-	{ // <Mod>
+	{
 		Sefira[] openedAreaList = PlayerModel.instance.GetOpenedAreaList();
 		List<PassageObjectModel> list = new List<PassageObjectModel>();
 		for (int i = 0; i < openedAreaList.Length; i++)
@@ -213,7 +210,7 @@ public class Bunny : CreatureBase
 						{
 							if (SefiraMapLayer.instance.GetPassageObject(passageObjectModel).type != SpaceObjectType.HUBSHORT)
 							{
-								if (passageObjectModel != this.currentPassage && passageObjectModel != model.entryNode.GetAttachedPassage())
+								if (passageObjectModel != this.currentPassage)
 								{
 									list.Add(passageObjectModel);
 								}

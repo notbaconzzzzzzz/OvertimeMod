@@ -1,7 +1,3 @@
-/*
-buncha stuff for Overtime Yesod Suppression (!)
-+public static bool silenceNonCamera // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,9 +89,7 @@ public class SoundEffectPlayer : MonoBehaviour
 
 	// Token: 0x06002FE6 RID: 12262 RVA: 0x001445B4 File Offset: 0x001427B4
 	public static SoundEffectPlayer PlayOnce(string filename, Vector2 position)
-	{ // <Patch>
-		return SoundEffectPlayer.PlayOnce_legacy(filename, 1f, 1f, position, AudioRolloffMode.Logarithmic);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -108,18 +102,12 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.clip = audioClip;
 		component2.Play();
 		component.destroyTime = audioClip.length;
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FE7 RID: 12263 RVA: 0x0014464C File Offset: 0x0014284C
 	public static SoundEffectPlayer PlayOnce(string filename, float pitch, Vector2 position)
-	{ // <Patch>
-		return SoundEffectPlayer.PlayOnce_legacy(filename, pitch, 1f, position, AudioRolloffMode.Logarithmic);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -133,18 +121,12 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.clip = audioClip;
 		component2.Play();
 		component.destroyTime = audioClip.length;
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FE8 RID: 12264 RVA: 0x001446E8 File Offset: 0x001428E8
 	public static SoundEffectPlayer PlayOnce(string filename, Vector2 position, float volume)
-	{ // <Patch>
-		return SoundEffectPlayer.PlayOnce_legacy(filename, 1f, volume, position, AudioRolloffMode.Logarithmic);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -158,18 +140,12 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.volume = volume;
 		component2.Play();
 		component.destroyTime = audioClip.length;
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FE9 RID: 12265 RVA: 0x00144784 File Offset: 0x00142984
 	public static SoundEffectPlayer PlayOnce(string filename, Vector2 position, AudioRolloffMode mode)
-	{ // <Patch>
-		return SoundEffectPlayer.PlayOnce_legacy(filename, 1f, 1f, position, mode);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -183,18 +159,12 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.clip = audioClip;
 		component2.Play();
 		component.destroyTime = audioClip.length;
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FEA RID: 12266 RVA: 0x00144820 File Offset: 0x00142A20
 	public static SoundEffectPlayer Play(string filename, Transform transf)
-	{ // <Patch>
-		return SoundEffectPlayer.Play(filename, transf, 1f);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -211,18 +181,12 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.clip = audioClip;
 		component2.loop = true;
 		component2.Play();
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FEB RID: 12267 RVA: 0x001448E4 File Offset: 0x00142AE4
 	public static SoundEffectPlayer Play(string filename, Transform transf, float volume)
-	{ // <Patch>
-		return SoundEffectPlayer.Play_Mod(string.Empty, filename, transf, 1f, volume, AudioRolloffMode.Logarithmic);
-		/*
+	{
 		AudioClip audioClip = Resources.Load<AudioClip>("Sounds/" + filename);
 		if (audioClip == null)
 		{
@@ -240,11 +204,7 @@ public class SoundEffectPlayer : MonoBehaviour
 		component2.loop = true;
 		component2.volume = volume;
 		component2.Play();
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;*/
+		return component;
 	}
 
 	// Token: 0x06002FEC RID: 12268 RVA: 0x0002D212 File Offset: 0x0002B412
@@ -280,98 +240,6 @@ public class SoundEffectPlayer : MonoBehaviour
 		this.destroyTime = destroyTime;
 	}
 
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_Mod(string modid, string soundname, Vector2 position, float pitch, float volume, AudioRolloffMode mode)
-	{ // <Mod>
-		AudioClip audioClip = LobotomyBaseMod.ModAudioClipManager.Instance.GetAudioClip(modid, soundname);
-		if (audioClip == null)
-		{
-			audioClip = Resources.Load<AudioClip>("Sounds/" + soundname);
-		}
-		if (audioClip == null)
-		{
-			return null;
-		}
-		GameObject gameObject = Prefab.LoadPrefab("SoundEffectPlayer");
-		SoundEffectPlayer component = gameObject.GetComponent<SoundEffectPlayer>();
-		AudioSource component2 = gameObject.GetComponent<AudioSource>();
-		component2.pitch = pitch;
-		gameObject.transform.position = new Vector3(position.x, position.y, Camera.main.transform.position.z);
-		component2.clip = audioClip;
-		component2.volume = volume;
-		component2.rolloffMode = mode;
-		component2.Play();
-		component.destroyTime = audioClip.length;
-		if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-		{
-			gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-		}
-		return component;
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_Mod(string modid, string filename, Vector2 position)
-	{
-		return SoundEffectPlayer.PlayOnce_Mod(modid, filename, position, 1f, 1f, AudioRolloffMode.Logarithmic);
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_Mod(string modid, string filename, float pitch, Vector2 position)
-	{
-		return SoundEffectPlayer.PlayOnce_Mod(modid, filename, position, pitch, 1f, AudioRolloffMode.Logarithmic);
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_Mod(string modid, string filename, Vector2 position, float volume)
-	{
-		return SoundEffectPlayer.PlayOnce_Mod(modid, filename, position, 1f, volume, AudioRolloffMode.Logarithmic);
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_Mod(string modid, string filename, Vector2 position, AudioRolloffMode mode)
-	{
-		return SoundEffectPlayer.PlayOnce_Mod(modid, filename, position, 1f, 1f, mode);
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer PlayOnce_legacy(string filename, float pitch, float volume, Vector2 position, AudioRolloffMode mode)
-	{
-		return SoundEffectPlayer.PlayOnce_Mod(string.Empty, filename, position, pitch, volume, mode);
-	}
-
-	// <Patch>
-	public static SoundEffectPlayer Play_Mod(string modid, string soundname, Transform transf, float pitch, float volume, AudioRolloffMode mode)
-	{ // <Mod>
-		AudioClip audioClip = LobotomyBaseMod.ModAudioClipManager.Instance.GetAudioClip(modid, soundname);
-		if (audioClip == null)
-		{
-			audioClip = Resources.Load<AudioClip>("Sounds/" + soundname);
-		}
-		if (audioClip == null)
-		{
-			return null;
-		}
-		GameObject gameObject = Prefab.LoadPrefab("SoundEffectPlayer");
-		Vector2 vector = transf.position;
-		gameObject.transform.SetParent(transf);
-		gameObject.transform.localScale = Vector3.one;
-		SoundEffectPlayer component = gameObject.GetComponent<SoundEffectPlayer>();
-		component.onshot = false;
-		AudioSource component2 = gameObject.GetComponent<AudioSource>();
-		component2.pitch = pitch;
-		gameObject.transform.position = new Vector3(vector.x, vector.y, Camera.main.transform.position.z);
-		component2.clip = audioClip;
-		component2.loop = true;
-		component2.volume = volume;
-		component2.rolloffMode = mode;
-		component2.Play();
-        if (silenceNonCamera && gameObject.transform.parent != Camera.main.transform)
-        {
-            gameObject.transform.localPosition = new Vector3(0f, 0f, 999999f);
-        }
-		return component;
-	}
-
 	// Token: 0x04002D63 RID: 11619
 	private float destroyTime;
 
@@ -389,7 +257,4 @@ public class SoundEffectPlayer : MonoBehaviour
 
 	// Token: 0x04002D68 RID: 11624
 	private Queue<AudioClip> clips = new Queue<AudioClip>();
-
-    // <Mod>
-    public static bool silenceNonCamera;
 }

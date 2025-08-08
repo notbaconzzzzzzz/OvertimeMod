@@ -1,9 +1,3 @@
-/*
-public override void OnStageStart() // 
-public override void OnFinishWork(UseSkill skill) // 
-private void ActivateSkill(UseSkill skill) // 
-+private EnergyModel.CreatureEnergyIncome energyIncome // 
-*/
 using System;
 using UnityEngine;
 using WorkerSprite;
@@ -59,27 +53,18 @@ public class SpiderMom : CreatureBase
 
 	// Token: 0x06002AC0 RID: 10944 RVA: 0x00029DFE File Offset: 0x00027FFE
 	public override void OnStageStart()
-	{ // <Mod>
+	{
 		if (this.amb == null)
 		{
 			this.amb = base.Unit.PlaySoundLoop(SpiderMom.SpiderMomSoundKey.loop);
 		}
 		this.ParamInit();
-        energyIncome = new EnergyModel.CreatureEnergyIncome();
-        energyIncome.model = model;
-        energyIncome.baseCap = 0;
-        energyIncome.flatRate = 3;
-        energyIncome.scaleRate = 0.05f;
-        EnergyModel.instance.AddIncome(energyIncome);
 	}
 
 	// Token: 0x06002AC1 RID: 10945 RVA: 0x00125D10 File Offset: 0x00123F10
 	public override void OnFinishWork(UseSkill skill)
-	{ // <Mod>
-		if (!SpecialModeConfig.instance.GetValue<bool>("SpiderBudAndBloodbathEnergy"))
-		{
-			skill.successCount += this.cocoonCount;
-		}
+	{
+		skill.successCount += this.cocoonCount;
 		Debug.Log("successCount : " + skill.successCount);
 		if (!skill.agent.invincible && (skill.skillTypeInfo.id == 2L || skill.agent.prudenceLevel < 2))
 		{
@@ -133,16 +118,12 @@ public class SpiderMom : CreatureBase
 
 	// Token: 0x06002AC4 RID: 10948 RVA: 0x00125EFC File Offset: 0x001240FC
 	private void ActivateSkill(UseSkill skill)
-	{ // <Mod>
+	{
 		this.target = skill.agent;
 		this.eventStarted = true;
 		this.animScript.SpiderMomMove(true);
 		base.Unit.PlaySound(SpiderMom.SpiderMomSoundKey.spiderMomMove);
 		this.skillActivateTimer.StartTimer(10f);
-        if (SpecialModeConfig.instance.GetValue<bool>("SpiderBudAndBloodbathEnergy") && cocoonCount < 8)
-        {
-            energyIncome.baseCap += 8 - cocoonCount;
-        }
 		this.cocoonCount++;
 		this.target.LoseControl();
 		this.target.MoveToNode(this.model.GetCustomNode(), false);
@@ -216,9 +197,6 @@ public class SpiderMom : CreatureBase
 
 	// Token: 0x040028E2 RID: 10466
 	private SpiderMomCocoonScript _cocoonScript;
-
-    // <Mod>
-    private EnergyModel.CreatureEnergyIncome energyIncome;
 
 	// Token: 0x02000497 RID: 1175
 	public class SpiderMomSoundKey

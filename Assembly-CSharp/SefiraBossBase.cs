@@ -1,6 +1,3 @@
-/*
-+public virtual void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -241,12 +238,6 @@ public class SefiraBossBase
 	public virtual bool IsStartEmergencyBgm()
 	{
 		return true;
-	}
-
-	// <Mod>
-	public virtual void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
-	{
-
 	}
 
 	// Token: 0x06003F3A RID: 16186 RVA: 0x00187ABC File Offset: 0x00185CBC

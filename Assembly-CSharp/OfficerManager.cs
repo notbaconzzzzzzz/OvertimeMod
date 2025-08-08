@@ -1,6 +1,3 @@
-/*
-public OfficerModel CreateOfficerModel(string sefira) // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -60,7 +57,7 @@ public class OfficerManager
 
 	// Token: 0x06005A8A RID: 23178 RVA: 0x00202E50 File Offset: 0x00201050
 	public OfficerModel CreateOfficerModel(string sefira)
-	{ // <Mod>
+	{
 		long id;
 		this.nextInstId = (id = this.nextInstId) + 1L;
 		OfficerModel officerModel = new OfficerModel(id, sefira);
@@ -69,23 +66,12 @@ public class OfficerManager
 		int num = 0;
 		if (ResearchDataModel.instance.IsUpgradedAbility("officer_stat"))
 		{
-			num += 5;
-		}
-		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_defense"))
-		{
-			num += 10;
+			num = 5;
 		}
 		officerModel.baseMaxHp = UnityEngine.Random.Range(10, 16) + num;
 		officerModel.hp = (float)officerModel.maxHp;
 		officerModel.mental = (float)(officerModel.baseMaxMental = UnityEngine.Random.Range(10, 16) + num);
-		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT))
-		{
-			officerModel.baseMovement = UnityEngine.Random.Range(5f, 5.5f);
-		}
-		else
-		{
-			officerModel.baseMovement = UnityEngine.Random.Range(4f, 4.5f);
-		}
+		officerModel.baseMovement = UnityEngine.Random.Range(4f, 4.5f);
 		officerModel.GetMovableNode().SetActive(true);
 		this.officerList.Add(officerModel);
 		SefiraManager.instance.GetSefira(sefira).AddUnit(officerModel);

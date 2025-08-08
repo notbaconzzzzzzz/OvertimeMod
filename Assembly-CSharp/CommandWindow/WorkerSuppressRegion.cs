@@ -1,6 +1,3 @@
-/*
-public void SetData(WorkerModel worker) // Resistances will use 2 decimal points
-*/
 using System;
 using Assets.Scripts.UI.Utils;
 using Inventory;
@@ -32,7 +29,7 @@ namespace CommandWindow
 
 		// Token: 0x060047E9 RID: 18409 RVA: 0x001ACE08 File Offset: 0x001AB008
 		public void SetData(WorkerModel worker)
-		{ // <Mod> resistances will now use 2 decimal points
+		{
 			if (worker is AgentModel)
 			{
 				AgentModel agentModel = worker as AgentModel;
@@ -111,7 +108,7 @@ namespace CommandWindow
 				this.Weapon.slots[0].SetText(text);
 				DefenseInfo defense = agentModel.defense;
 				UIUtil.DefenseSetOnlyText(defense, this.DefenseType);
-				UIUtil.DefenseSetFactor(defense, this.DefenseFactor, false);
+				UIUtil.DefenseSetFactor(defense, this.DefenseFactor, true);
 				if (agentModel.Equipment.armor != null)
 				{
 					this.ArmorName.text = agentModel.Equipment.armor.metaInfo.Name;

@@ -574,12 +574,6 @@ public class SnowWhite : CreatureBase
 			this.movableNode.Assign(m);
 			this.movableNode.StopMoving();
 		}
-
-		// <Mod>
-		public override bool IsEtcUnit()
-		{
-			return true;
-		}
 	}
 
 	// Token: 0x02000498 RID: 1176

@@ -11,12 +11,12 @@ public class SingingMachineGiftBuf : UnitStatBuf
 
 	// Token: 0x060035C5 RID: 13765 RVA: 0x00031047 File Offset: 0x0002F247
 	public override void Init(UnitModel model)
-	{ // <Mod>
+	{
 		base.Init(model);
 		this.agent = (model as AgentModel);
 		if (this.agent != null)
 		{
-			primaryStat.battle = 10;
+			this.attackSpeed = 10f;
 		}
 		this.remainTime = SingingMachineGiftBuf.REMAIN;
 	}
@@ -35,7 +35,7 @@ public class SingingMachineGiftBuf : UnitStatBuf
 	}
 
 	// Token: 0x040031D1 RID: 12753
-	private static float REMAIN = 60f;  // <Mod> Changed from 5f
+	private static float REMAIN = 5f;
 
 	// Token: 0x040031D2 RID: 12754
 	private const int ATTACK_SPEED_BUF = 10;

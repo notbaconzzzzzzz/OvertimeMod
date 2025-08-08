@@ -13,7 +13,7 @@ public class SefiraPanelMissionUI : MonoBehaviour
 
 	// Token: 0x06004358 RID: 17240 RVA: 0x0019CAD0 File Offset: 0x0019ACD0
 	public void InitProgressMission(Mission mission)
-	{ // <Mod> Overtime Dawn Mission
+	{
 		this.MissionPrefix.text = LocalizeTextDataModel.instance.GetTextAppend(new string[]
 		{
 			"Mission",
@@ -21,12 +21,12 @@ public class SefiraPanelMissionUI : MonoBehaviour
 		});
 		this.MissionTitle.text = LocalizeTextDataModel.instance.GetText(mission.metaInfo.title);
 		string str = string.Empty;
-		if (mission.metaInfo.id == 104 || mission.metaInfo.id == 109)
+		if (mission.metaInfo.id == 104)
 		{
-			int num = 20;
+			int num = 19;
 			if (PlayerModel.instance.GetDay() < num)
 			{
-				str = string.Format(LocalizeTextDataModel.instance.GetText("SefiraBossCondition_day"), num, num) + "\n";
+				str = string.Format(LocalizeTextDataModel.instance.GetText("SefiraBossCondition_day"), num + 1, num) + "\n";
 			}
 		}
 		this.MissionContext.text = str + LocalizeTextDataModel.instance.GetText(mission.metaInfo.desc);

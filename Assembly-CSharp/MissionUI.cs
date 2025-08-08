@@ -1,7 +1,3 @@
-/*
-public void Init() // 
-public void OncePerSecond() // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,7 +42,7 @@ public class MissionUI : MonoBehaviour, IObserver
 
 	// Token: 0x06004BB1 RID: 19377 RVA: 0x001BDD3C File Offset: 0x001BBF3C
 	public void Init()
-	{ // <Mod> Multiline Missions
+	{
 		this.perSecondTimer.Init();
 		this.perSecondTimer.StartTimer(1f, new AutoTimer.TargetMethod(this.OncePerSecond), false, AutoTimer.UpdateMode.FIXEDUPDATE);
 		foreach (MissionSlot missionSlot in this.missions)
@@ -76,37 +72,13 @@ public class MissionUI : MonoBehaviour, IObserver
 				Mission mission = missionsInProgress[i];
 				if (mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
 				{
-					if (mission.missionScript != null && mission.missionScript.GetLineNum() > 1)
-					{
-						for (int j = 0; j < mission.missionScript.GetLineNum(); j++)
-						{
-							GameObject gameObject2 = Prefab.LoadPrefab("UIComponent/MissionSlot_List");
-							CanvasGroup canvasGroup2 = gameObject2.AddComponent<CanvasGroup>();
-							canvasGroup2.interactable = false;
-							canvasGroup2.blocksRaycasts = false;
-							MissionSlot component2 = gameObject2.GetComponent<MissionSlot>();
-							component2.Init(mission, j);
-							if (j == 0)
-							{
-								component2.rect.sizeDelta = new Vector2(component2.rect.sizeDelta.x, component2.rect.sizeDelta.y * 0.75f);
-							}
-							else if (j < mission.missionScript.GetLineNum() - 1)
-							{
-								component2.rect.sizeDelta = new Vector2(component2.rect.sizeDelta.x, component2.rect.sizeDelta.y * 0.5f);
-							}
-							missions.Add(component2);
-						}
-					}
-					else
-					{
-						GameObject gameObject2 = Prefab.LoadPrefab("UIComponent/MissionSlot_List");
-						CanvasGroup canvasGroup2 = gameObject2.AddComponent<CanvasGroup>();
-						canvasGroup2.interactable = false;
-						canvasGroup2.blocksRaycasts = false;
-						MissionSlot component2 = gameObject2.GetComponent<MissionSlot>();
-						component2.Init(mission);
-						this.missions.Add(component2);
-					}
+					GameObject gameObject2 = Prefab.LoadPrefab("UIComponent/MissionSlot_List");
+					CanvasGroup canvasGroup2 = gameObject2.AddComponent<CanvasGroup>();
+					canvasGroup2.interactable = false;
+					canvasGroup2.blocksRaycasts = false;
+					MissionSlot component2 = gameObject2.GetComponent<MissionSlot>();
+					component2.Init(mission);
+					this.missions.Add(component2);
 				}
 			}
 		}
@@ -163,11 +135,11 @@ public class MissionUI : MonoBehaviour, IObserver
 
 	// Token: 0x06004BB7 RID: 19383 RVA: 0x001BE0B4 File Offset: 0x001BC2B4
 	public void OncePerSecond()
-	{ // <Mod>
+	{
 		this.perSecondTimer.StartTimer(1f, new AutoTimer.TargetMethod(this.OncePerSecond), false, AutoTimer.UpdateMode.FIXEDUPDATE);
 		foreach (MissionSlot missionSlot in this.missions)
 		{
-			if (missionSlot.hasTimerCondition)
+			if (missionSlot.mission.successCondition.condition_Type == ConditionType.CLEAR_TIME)
 			{
 				missionSlot.Refresh();
 			}

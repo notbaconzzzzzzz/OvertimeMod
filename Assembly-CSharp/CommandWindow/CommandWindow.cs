@@ -1,12 +1,3 @@
-/*
-+public bool SelectionMode // 
-+private bool _selectionMode // 
-+public static CommandWindow CreateWindow(CommandType type, UnitModel target, bool mode) // 
-public static CommandWindow CreateWindow(CommandType type, UnitModel target) // 
-private void CheckMalkutBoss() // 
-public void OnClick(AgentModel actor) // 
-private void UpdateMouseSelectedList() // Fixed scrolling improperly
-*/
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.UI.Utils;
@@ -70,17 +61,6 @@ namespace CommandWindow
 			}
 		}
 
-		// <Mod>
-		public bool SelectionMode
-		{
-			get
-			{
-				return _selectionMode;
-			}
-		}
-
-		private bool _selectionMode = false;
-
 		// Token: 0x1700069F RID: 1695
 		// (get) Token: 0x06004851 RID: 18513 RVA: 0x0003CA89 File Offset: 0x0003AC89
 		public UnitModel CurrentTarget
@@ -127,141 +107,14 @@ namespace CommandWindow
 			}
 		}
 
-		// <Mod>
-		public static CommandWindow CreateWindow(CommandType type, UnitModel target, bool mode)
-		{
-			if (mode && type == CommandType.Management)
-			{
-				if (!CurrentWindow.IsEnabled)
-				{
-					CurrentWindow.IsEnabled = true;
-				}
-				CurrentWindow._currentWindowType = CommandType.Management;
-				CurrentWindow._selectionMode = true;
-				CurrentWindow._currentTarget = target;
-				Sefira sefira = null;
-				if (target is CreatureModel)
-				{
-					sefira = (target as CreatureModel).sefira;
-				}
-				else if (target is WorkerModel)
-				{
-					sefira = (target as WorkerModel).GetCurrentSefira();
-				}
-				CurrentWindow.SefiraMovementUI.ActiveControl.SetActive(false);
-				if (CurrentWindow.CurrentSefira == null || CurrentWindow.CurrentSefira != sefira)
-				{
-					CurrentWindow._currentSefira = sefira;
-				}
-				if (UnitMouseEventManager.instance.GetSelectedAgents().Count > 0)
-				{
-					CurrentWindow.SefiraMovementUI.ActiveControl.SetActive(false);
-					CurrentWindow.page = 0;
-					CurrentWindow.UpdateMouseSelectedList();
-				}
-				else
-				{
-					CurrentWindow.WorkScrollUp.SetActive(false);
-					CurrentWindow.WorkScrollDown.SetActive(false);
-					CurrentWindow.SetAgentList(type, CurrentWindow.CurrentSefira);
-					if (CurrentWindow.CheckSefiraMovementEnable())
-					{
-						CurrentWindow.SefiraMovementUI.ActiveControl.SetActive(true);
-					}
-					else
-					{
-						CurrentWindow.SefiraMovementUI.ActiveControl.SetActive(false);
-					}
-				}
-				CurrentWindow.PositionPivot.anchoredPosition = CurrentWindow.WorkCommmandPosition;
-				CurrentWindow.SefiraMovementPivot.anchoredPosition = CurrentWindow.Position_Work;
-				CurrentWindow.Suppress_ActiveControl.SetActive(false);
-				CurrentWindow.WorkAllocate_ActiveControl.SetActive(true);
-				CurrentWindow.Management_ActiveControl.SetActive(true);
-				CurrentWindow.KitCreature_ActiveControl.SetActive(false);
-				CurrentWindow.WorkAllocate.SetData(target);
-				Button[] workButton = CurrentWindow.WorkButton;
-				for (int i = 0; i < workButton.Length; i++)
-				{
-					workButton[i].interactable = true;
-				}
-				if (target is CreatureModel)
-				{
-					CreatureModel creatureModel = target as CreatureModel;
-					for (int j = 1; j <= 4; j++)
-					{
-						Button button = CurrentWindow.WorkButton[j - 1];
-						Image component = button.transform.Find("Icon").GetComponent<Image>();
-						LocalizeTextLoadScript component2 = button.transform.Find("WorkName").GetComponent<LocalizeTextLoadScript>();
-						switch (j)
-						{
-						case 1:
-							component.sprite = CurrentWindow.Work_R;
-							component2.SetText("Rwork");
-							break;
-						case 2:
-							component.sprite = CurrentWindow.Work_W;
-							component2.SetText("Wwork");
-							break;
-						case 3:
-							component.sprite = CurrentWindow.Work_B;
-							component2.SetText("Bwork");
-							break;
-						case 4:
-							component.sprite = CurrentWindow.Work_P;
-							component2.SetText("Pwork");
-							break;
-						}
-					}
-					if (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-					{
-						creatureModel.script.OnOpenCommandWindow(CurrentWindow.WorkButton);
-					}
-					if (creatureModel.isOverloaded && creatureModel.overloadType == OverloadType.SIN)
-					{
-						for (int i = 1; i <= 4; i++)
-						{
-							Button button = CommandWindow.CurrentWindow.WorkButton[i - 1];
-							Image component = button.transform.Find("Icon").GetComponent<Image>();
-							LocalizeTextLoadScript component2 = button.transform.Find("WorkName").GetComponent<LocalizeTextLoadScript>();
-							switch (i)
-							{
-							case 1:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 2:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 3:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 4:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							}
-						}
-					}
-				}
-				CurrentWindow.SelectedWork = -1L;
-				CurrentWindow.CheckMalkutBoss();
-				return CurrentWindow;
-			}
-			return CreateWindow(type, target);
-		}
-
 		// Token: 0x06004855 RID: 18517 RVA: 0x001B0240 File Offset: 0x001AE440
 		public static CommandWindow CreateWindow(CommandType type, UnitModel target)
-		{ // <Mod> Something?; Overtime Yesod Suppression
+		{
 			if (!CommandWindow.CurrentWindow.IsEnabled)
 			{
 				CommandWindow.CurrentWindow.IsEnabled = true;
 			}
 			CommandWindow.CurrentWindow._currentWindowType = type;
-			CurrentWindow._selectionMode = false;
 			CommandWindow.CurrentWindow._currentTarget = target;
 			Sefira sefira = null;
 			if (target is CreatureModel)
@@ -339,38 +192,7 @@ namespace CommandWindow
 							break;
 						}
 					}
-					if (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-					{
-						creatureModel.script.OnOpenCommandWindow(CommandWindow.CurrentWindow.WorkButton);
-					}
-					if (creatureModel.isOverloaded && creatureModel.overloadType == OverloadType.SIN)
-					{
-						for (int i = 1; i <= 4; i++)
-						{
-							Button button = CommandWindow.CurrentWindow.WorkButton[i - 1];
-							Image component = button.transform.Find("Icon").GetComponent<Image>();
-							LocalizeTextLoadScript component2 = button.transform.Find("WorkName").GetComponent<LocalizeTextLoadScript>();
-							switch (i)
-							{
-							case 1:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 2:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 3:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							case 4:
-								component.sprite = CommandWindow.CurrentWindow.Work_C;
-								component2.SetText("Cwork");
-								break;
-							}
-						}
-					}
+					creatureModel.script.OnOpenCommandWindow(CommandWindow.CurrentWindow.WorkButton);
 				}
 				CommandWindow.CurrentWindow.SelectedWork = -1L;
 			}
@@ -470,8 +292,8 @@ namespace CommandWindow
 
 		// Token: 0x06004856 RID: 18518 RVA: 0x001B090C File Offset: 0x001AEB0C
 		private void CheckMalkutBoss()
-		{ // <Mod>
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.MALKUT, false) || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
+		{
+			if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.MALKUT || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
 			{
 				LocalizeTextLoadScript[] array = this.workNames;
 				for (int i = 0; i < array.Length; i++)
@@ -649,94 +471,22 @@ namespace CommandWindow
 
 		// Token: 0x06004860 RID: 18528 RVA: 0x001B0D08 File Offset: 0x001AEF08
 		public void OnClick(AgentModel actor)
-		{ // <Mod>
+		{
 			if (actor == null)
 			{
 				return;
 			}
 			if (this.CurrentWindowType == CommandType.Management)
 			{
-				if (CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
-				{
-					actor.ClearWorkOrderQueue();
-					return;
-				}
-				CreatureModel creature = CurrentTarget as CreatureModel;
-				IsolateRoom room = creature.Unit.room;
-				if (SelectionMode || CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || !(!creature.isTranquilized && !room.IsWorking && !room.IsWorkAllocated && !creature.IsEscaped() && creature.script.IsWorkable() && creature.script.CanEnterRoom())))
-				{
-					string txt = "";
-					if (!actor.CanQueueWorkOrder())
-					{
-						/*
-						txt = "Cannot Queue -- Agent Invalid\n";
-						txt += "Agent Queue:\n";
-						foreach (QueuedWorkOrder order2 in actor.GetWorkOrderQueue())
-						{
-							txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-						}
-						txt += "Creature Queue:\n";
-						foreach (QueuedWorkOrder order2 in room.GetWorkOrderQueue())
-						{
-							txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-						}
-						Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-						{
-							txt
-						});*/
-						return;
-					}
-					if (!room.CanQueueWorkOrder())
-					{
-						/*
-						txt = "Cannot Queue -- Creature Invalid\n";
-						txt += "Agent Queue:\n";
-						foreach (QueuedWorkOrder order2 in actor.GetWorkOrderQueue())
-						{
-							txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-						}
-						txt += "Creature Queue:\n";
-						foreach (QueuedWorkOrder order2 in room.GetWorkOrderQueue())
-						{
-							txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-						}
-						Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-						{
-							txt
-						});*/
-						return;
-					}
-					SkillTypeInfo data2 = SkillTypeList.instance.GetData(SelectedWork);
-					QueuedWorkOrder.QueueConditionInfo condition = WorkQueuePreferanceManager.instance.GetDefaultCondition(creature);
-					QueuedWorkOrder order = new QueuedWorkOrder(actor, creature, data2, condition);
-					actor.EnqueueWorkOrder(order);
-					room.EnqueueWorkOrder(order);
-					/*
-					txt = "Successfully Queued\n";
-					txt += "Agent Queue:\n";
-					foreach (QueuedWorkOrder order2 in actor.GetWorkOrderQueue())
-					{
-						txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-					}
-					txt += "Creature Queue:\n";
-					foreach (QueuedWorkOrder order2 in room.GetWorkOrderQueue())
-					{
-						txt += order2.agent.instanceId + " (" + order2.isAgentFront + "), " + order2.creature.instanceId + " (" + order2.isCreatureFront + ")\n";
-					}
-					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-					{
-						txt
-					});*/
-					return;
-				}
 				if (!actor.CheckWorkCommand())
 				{
 					CommandWindow.CurrentWindow.SetAgentList(this.CurrentWindowType, CommandWindow.CurrentWindow.CurrentSefira);
 					return;
 				}
+				CreatureModel creatureModel = this.CurrentTarget as CreatureModel;
 				if (actor.GetState() == AgentAIState.MANAGE)
 				{
-					if (creature == actor.target)
+					if (creatureModel == actor.target)
 					{
 						if (actor.currentSkill == null)
 						{
@@ -754,15 +504,15 @@ namespace CommandWindow
 					}
 				}
 				SkillTypeInfo data = SkillTypeList.instance.GetData(this.SelectedWork);
-				actor.ManageCreature(creature, data, this.GetWorkSprite((RwbpType)this.SelectedWork));
+				actor.ManageCreature(creatureModel, data, this.GetWorkSprite((RwbpType)this.SelectedWork));
 				actor.counterAttackEnabled = false;
-				room.OnWorkAllocated(actor);
-				creature.script.OnWorkAllocated(data, actor);
+				creatureModel.Unit.room.OnWorkAllocated(actor);
+				creatureModel.script.OnWorkAllocated(data, actor);
 				AngelaConversation.instance.MakeMessage(AngelaMessageState.MANAGE_START, new object[]
 				{
 					actor,
 					data,
-					creature
+					this.CurrentTarget as CreatureModel
 				});
 				this.CloseWindow();
 				return;
@@ -820,23 +570,16 @@ namespace CommandWindow
 
 		// Token: 0x06004862 RID: 18530 RVA: 0x001B0EC8 File Offset: 0x001AF0C8
 		public void OnWorkSelect(int id)
-		{ // <Mod>
+		{
 			if (CommandWindow.CurrentWindow._currentTarget is CreatureModel)
 			{
 				CreatureModel creatureModel = CommandWindow.CurrentWindow._currentTarget as CreatureModel;
-				if (creatureModel.isOverloaded && creatureModel.overloadType == OverloadType.SIN)
+				id = creatureModel.script.HasUniqueWorkSelect(id);
+				if (creatureModel.script.HasUniqueCommandAction(id))
 				{
-					id = 6;
-				}
-				else
-				{
-					id = creatureModel.script.HasUniqueWorkSelect(id);
-					if (creatureModel.script.HasUniqueCommandAction(id))
-					{
-						CommandWindow.CurrentWindow.audioClipPlayer.OnPlayInList(1);
-						this.CloseWindow();
-						return;
-					}
+					CommandWindow.CurrentWindow.audioClipPlayer.OnPlayInList(1);
+					this.CloseWindow();
+					return;
 				}
 			}
 			if (id == 7)
@@ -1003,7 +746,7 @@ namespace CommandWindow
 
 		// Token: 0x0600486C RID: 18540 RVA: 0x001B1228 File Offset: 0x001AF428
 		private void UpdateMouseSelectedList()
-		{ // <Mod>
+		{
 			List<AgentModel> selectedAgents = UnitMouseEventManager.instance.GetSelectedAgents();
 			List<AgentModel> list = new List<AgentModel>();
 			foreach (AgentModel agentModel in selectedAgents)
@@ -1024,7 +767,7 @@ namespace CommandWindow
 			{
 				selectedAgents.Remove(item);
 			}
-			this.SetAgentList(this.CurrentWindowType, selectedAgents.GetRange(this.page * 5, Mathf.Min(5, selectedAgents.Count - this.page * 5)));
+			this.SetAgentList(this.CurrentWindowType, selectedAgents.GetRange(this.page, Mathf.Min(5, selectedAgents.Count - this.page * 5)));
 			if (this.page <= 0)
 			{
 				this.WorkScrollUp.SetActive(false);
@@ -1091,19 +834,6 @@ namespace CommandWindow
 					return this.Work_I;
 				}
 				return this.Work_R;
-			}
-		}
-
-		// <Mod>
-		public static bool isWorkOrderQueueEnabled
-		{
-			get
-			{
-				if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
-				{
-					return ResearchDataModel.instance.IsUpgradedAbility("work_order_queue");
-				}
-				return SpecialModeConfig.instance.GetValue<bool>("WorkOrderQueue");
 			}
 		}
 

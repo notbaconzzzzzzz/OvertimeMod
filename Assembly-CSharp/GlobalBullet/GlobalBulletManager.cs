@@ -1,6 +1,3 @@
-/*
-buncha fuckin shit // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +9,7 @@ namespace GlobalBullet
 	{
 		// Token: 0x06003758 RID: 14168 RVA: 0x00165AAC File Offset: 0x00163CAC
 		private GlobalBulletManager()
-		{ // <Mod>
+		{
 			this._funcs = new Dictionary<GlobalBulletType, GlobalBulletManager.BulletFunc>();
 			this._funcs.Add(GlobalBulletType.RECOVER_HP, new GlobalBulletManager.BulletFunc(this.RecoverHPBullet));
 			this._funcs.Add(GlobalBulletType.RECOVER_MENTAL, new GlobalBulletManager.BulletFunc(this.RecoverMentalBullet));
@@ -22,14 +19,6 @@ namespace GlobalBullet
 			this._funcs.Add(GlobalBulletType.RESIST_P, new GlobalBulletManager.BulletFunc(this.ResistPBullet));
 			this._funcs.Add(GlobalBulletType.SLOW, new GlobalBulletManager.BulletFunc(this.SlowBullet));
 			this._funcs.Add(GlobalBulletType.EXCUTE, new GlobalBulletManager.BulletFunc(this.ExcuteBullet));
-			_funcs.Add(GlobalBulletType.STIM, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.TRANQ, new BulletFunc(TranqBullet));
-			_funcs.Add(GlobalBulletType.LOCK_HP, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.LOCK_MENTAL, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.DAMAGE_R, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.DAMAGE_W, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.DAMAGE_B, new BulletFunc(StimBullet));
-			_funcs.Add(GlobalBulletType.DAMAGE_P, new BulletFunc(StimBullet));
 		}
 
 		// Token: 0x1700051B RID: 1307
@@ -48,15 +37,10 @@ namespace GlobalBullet
 
 		// Token: 0x0600375A RID: 14170 RVA: 0x00165BA4 File Offset: 0x00163DA4
 		public void OnStageStart()
-		{ // <Mod>
+		{
 			GlobalBulletWindow currentWindow = GlobalBulletWindow.CurrentWindow;
 			currentWindow.SetBulletCountMax(this.maxBullet);
-			this.Reload();/*
-			refillsAvailable = 0;
-			if (ResearchDataModel.instance.IsUpgradedAbility("bullet_refill"))
-			{
-				refillsAvailable += 1;
-			}*/
+			this.Reload();
 			bool active = false;
 			if (ResearchDataModel.instance.IsUpgradedBullet(GlobalBulletType.RECOVER_HP))
 			{
@@ -152,19 +136,7 @@ namespace GlobalBullet
 
 		// Token: 0x0600375D RID: 14173 RVA: 0x00165CDC File Offset: 0x00163EDC
 		private void UpdateUI()
-		{ // <Mod>
-			if (currentBullet <= 0 && ResearchDataModel.instance.IsUpgradedAbility("bullet_refill") && currentBullet > -maxBullet)
-			{
-				float cost = 5f;
-				cost *= (float)maxBullet / (float)(maxBullet + currentBullet) + (float)(-currentBullet) / 5f;
-				if (cost > 50f) cost = 50f;
-				cost = Mathf.Floor(cost / 5f) * 5f;
-				bulletCost = cost;
-			}
-			else
-			{
-				bulletCost = -1f;
-			}
+		{
 			if (GlobalBulletWindow.CurrentWindow == null)
 			{
 				return;
@@ -189,27 +161,14 @@ namespace GlobalBullet
 
 		// Token: 0x0600375F RID: 14175 RVA: 0x00165D3C File Offset: 0x00163F3C
 		public void UpdateMaxBullet()
-		{ // <Mod>
+		{
 			GlobalBulletWindow currentWindow = GlobalBulletWindow.CurrentWindow;
 			this.maxBullet = this.initialMaxBullet;
-			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1))
-			{
-				maxBullet += (int)Mathf.Round((float)maxBullet * 0.5f);
-			}
-			else if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.TIPERERTH1))
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.TIPERERTH1))
 			{
 				this.maxBullet += (int)Mathf.Round((float)this.maxBullet * 0.3f);
 			}
-			this.maxBullet += SefiraAbilityValueInfo.chesedOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHESED)] * (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses") ? 2 : 1);
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
-			{
-				int num = 0;
-				foreach (AgentModel agent in AgentManager.instance.GetAgentList())
-				{
-					if (!agent.IsDead()) num++;
-				}
-				maxBullet += num / 2;
-			}
+			this.maxBullet += SefiraAbilityValueInfo.chesedOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHESED)];
 			if (this.currentBullet > this.maxBullet)
 			{
 				this.currentBullet = this.maxBullet;
@@ -217,8 +176,8 @@ namespace GlobalBullet
 			if (currentWindow != null)
 			{
 				currentWindow.SetBulletCountMax(this.maxBullet);
-				currentWindow.SetBulletCount(this.currentBullet);
 			}
+			GlobalBulletWindow.CurrentWindow.SetBulletCount(this.currentBullet);
 		}
 
 		// Token: 0x06003760 RID: 14176 RVA: 0x0003186E File Offset: 0x0002FA6E
@@ -226,309 +185,128 @@ namespace GlobalBullet
 		{
 			this.currentBullet = this.maxBullet;
 			this.UpdateUI();
-			if (GlobalBulletWindow.CurrentWindow != null)
-			{
-				GlobalBulletWindow.CurrentWindow.SetBulletCountMax(this.maxBullet);
-			}
 		}
 
 		// Token: 0x06003761 RID: 14177 RVA: 0x00165DF0 File Offset: 0x00163FF0
 		public bool ActivateBullet(GlobalBulletType type, List<UnitModel> targets)
-		{ // <Mod>
-			if (type == GlobalBulletType.TRANQ)
-			{
-				if (targets.Count != 1 || !(targets[0] is CreatureModel))
-				{
-					CursorManager.instance.CannotAnim();
-					SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero);
-					if (soundEffectPlayer != null)
-					{
-						soundEffectPlayer.AttachToCamera();
-					}
-					return false;
-				}
-			}
-			generalBulletMult = 1f;
+		{
 			if (this.currentBullet <= 0)
 			{
-				/*
-				if (refillsAvailable > 0)
+				CursorManager.instance.CannotAnim();
+				SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero);
+				if (soundEffectPlayer != null)
 				{
-					refillsAvailable--;
-					Reload();
-					SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Kit_Equip", Vector2.zero, 4f);
-					if (soundEffectPlayer != null)
-					{
-						soundEffectPlayer.AttachToCamera();
-					}
-				}*/
-				if (ResearchDataModel.instance.IsUpgradedAbility("bullet_refill") && currentBullet > -maxBullet)
-				{
-					if (bulletCost == -1f) UpdateUI();
-					float cost = bulletCost;
-					if (EnergyModel.instance.GetEnergy() < cost)
-					{
-						CursorManager.instance.CannotAnim();
-						SoundEffectPlayer soundEffectPlayer3 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero);
-						if (soundEffectPlayer3 != null)
-						{
-							soundEffectPlayer3.AttachToCamera();
-						}
-						return false;
-					}
-					EnergyModel.instance.SubEnergy(cost);
-					SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero, 0.33f);
-					if (soundEffectPlayer != null)
-					{
-						soundEffectPlayer.AttachToCamera();
-						soundEffectPlayer.src.pitch = 0.8f;
-					}
-					generalBulletMult = 0.5f;
+					soundEffectPlayer.AttachToCamera();
 				}
-				else
-				{
-					CursorManager.instance.CannotAnim();
-					SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero);
-					if (soundEffectPlayer != null)
-					{
-						soundEffectPlayer.AttachToCamera();
-					}
-					return false;
-				}
+				return false;
 			}
 			SoundEffectPlayer soundEffectPlayer2 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Fire", Vector2.zero);
 			if (soundEffectPlayer2 != null)
 			{
 				soundEffectPlayer2.AttachToCamera();
 			}
-			Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			//Vector2 mousePos = Vector2.zero;
-			SoundEffectPlayer soundEffectPlayer4 = null;
 			switch (type)
 			{
 			case GlobalBulletType.RECOVER_HP:
 			case GlobalBulletType.RECOVER_MENTAL:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Heal", mousePos);
+				SoundEffectPlayer.PlayOnce("Bullet/Bullet_Heal", Vector2.zero);
 				break;
 			case GlobalBulletType.RESIST_R:
 			case GlobalBulletType.RESIST_W:
 			case GlobalBulletType.RESIST_B:
 			case GlobalBulletType.RESIST_P:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Shield", mousePos);
+				SoundEffectPlayer.PlayOnce("Bullet/Bullet_Shield", Vector2.zero);
 				break;
 			case GlobalBulletType.SLOW:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Slow", mousePos);
+				SoundEffectPlayer.PlayOnce("Bullet/Bullet_Slow", Vector2.zero);
 				break;
 			case GlobalBulletType.EXCUTE:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Execution", mousePos);
+				SoundEffectPlayer.PlayOnce("Bullet/Bullet_Execution", Vector2.zero);
 				break;
-			case GlobalBulletType.STIM:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Heal", mousePos);
-				break;
-			case GlobalBulletType.TRANQ:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Slow", mousePos);
-				break;
-			case GlobalBulletType.LOCK_HP:
-			case GlobalBulletType.LOCK_MENTAL:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Shield", mousePos);
-				break;
-			case GlobalBulletType.DAMAGE_R:
-			case GlobalBulletType.DAMAGE_W:
-			case GlobalBulletType.DAMAGE_B:
-			case GlobalBulletType.DAMAGE_P:
-				soundEffectPlayer4 = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Execution", mousePos);
-				break;
-			}
-			if (soundEffectPlayer4 != null)
-			{
-				//soundEffectPlayer4.AttachToCamera();
-				soundEffectPlayer4.src.minDistance = 50f;
-				soundEffectPlayer4.src.maxDistance = 2500f;
-				soundEffectPlayer4.src.volume = 0.25f;
-			}
-			int num = 0;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) && (type == GlobalBulletType.RECOVER_HP || type == GlobalBulletType.RECOVER_MENTAL))
-			{
-				num = 1;
-				UnitModel weakest = null;
-				float weakestPercent = 999f;
-				foreach (UnitModel target in targets.ToArray())
-				{
-					if (target is AgentModel)
-					{
-						float percent = type == GlobalBulletType.RECOVER_HP ? target.hp / (float)target.maxHp : target.mental / (float)target.maxMental;
-						if (percent < weakestPercent)
-						{
-							weakest = target;
-							weakestPercent = percent;
-						}
-						targets.Remove(target);
-					}
-				}
-				if (weakest != null)
-				{
-					targets.Add(weakest);
-				}
-			}
-			else
-			{
-				foreach (UnitModel target in targets)
-				{
-					if (target is AgentModel)
-					{
-						num++;
-					}
-				}
-			}
-			targetedBulletMult = 1f;
-			if (num > 0)
-			{
-				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1))
-				{
-					targetedBulletMult *= 1f + 1f / (float)num;
-				}
-				else if (ResearchDataModel.instance.IsUpgradedAbility("targeted_bullets"))
-				{
-					targetedBulletMult *= 1f + 0.5f / (float)num;
-				}
 			}
 			foreach (UnitModel target in targets)
 			{
 				this._funcs[type](target);
 			}
 			this.currentBullet--;
-			Notice.instance.Send(NoticeName.OnUseBullet, new object[]
-			{
-				type
-			});
 			this.UpdateUI();
 			return true;
 		}
 
 		// Token: 0x06003762 RID: 14178 RVA: 0x00165F24 File Offset: 0x00164124
 		private void RecoverHPBullet(UnitModel target)
-		{ // <Mod> Made Chesed's upgrade bullet research add +10 instead of +15
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null && !workerModel.HasUnitBuf(UnitBufType.QUEENBEE_SPORE))
 			{
-				OvertimeNetzachBossBuf.IsBullet = true;
-				float num = 25f;
+				int num = 25;
 				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_recover_bullet"))
 				{
-					num += 10f;
+					num += 15;
 				}
-				num *= targetedBulletMult * generalBulletMult;
-                float prevHP = workerModel.hp;
-				float HPrecovered = workerModel.RecoverHPv2(num);
-				prevHP = workerModel.maxHp - prevHP;
-				if (HPrecovered > prevHP)
-				{
-					HPrecovered = prevHP;
-				}
-				OvertimeNetzachBossBuf.IsBullet = false;
-				Notice.instance.Send(NoticeName.RecoverByBullet, new object[]
-				{
-					workerModel,
-					HPrecovered,
-					1
-				});
+				workerModel.RecoverHP((float)num);
 			}
 		}
 
 		// Token: 0x06003763 RID: 14179 RVA: 0x00165F70 File Offset: 0x00164170
 		private void RecoverMentalBullet(UnitModel target)
-		{ // <Mod> Made Chesed's upgrade bullet research add +10 instead of +15
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null && !workerModel.IsPanic())
 			{
-				OvertimeNetzachBossBuf.IsBullet = true;
-				float num = 25f;
+				int num = 25;
 				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_recover_bullet"))
 				{
-					num += 10f;
+					num += 15;
 				}
-				num *= targetedBulletMult * generalBulletMult;
-                float prevSP = workerModel.mental;
-				float SPrecovered = workerModel.RecoverMentalv2(num);
-				prevSP = workerModel.maxMental - prevSP;
-				if (SPrecovered > prevSP)
-				{
-					SPrecovered = prevSP;
-				}
-				OvertimeNetzachBossBuf.IsBullet = false;
-				Notice.instance.Send(NoticeName.RecoverByBullet, new object[]
-				{
-					workerModel,
-					SPrecovered,
-					2
-				});
+				workerModel.RecoverMental((float)num);
 			}
 		}
 
 		// Token: 0x06003764 RID: 14180 RVA: 0x00165FBC File Offset: 0x001641BC
 		private void ResistRBullet(UnitModel target)
-		{ // <Mod>
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null)
 			{
-				float num = 50f;
-				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_shield_bullet"))
-				{
-					num += 10f;
-				}
-				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.R, num * targetedBulletMult * generalBulletMult, 15f * targetedBulletMult));
+				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.R, 50f, 15f));
 			}
 		}
 
 		// Token: 0x06003765 RID: 14181 RVA: 0x00165FF0 File Offset: 0x001641F0
 		private void ResistWBullet(UnitModel target)
-		{ // <Mod>
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null)
 			{
-				float num = 50f;
-				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_shield_bullet"))
-				{
-					num += 10f;
-				}
-				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.W, num * targetedBulletMult * generalBulletMult, 15f * targetedBulletMult));
+				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.W, 50f, 15f));
 			}
 		}
 
 		// Token: 0x06003766 RID: 14182 RVA: 0x00166024 File Offset: 0x00164224
 		private void ResistBBullet(UnitModel target)
-		{ // <Mod>
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null)
 			{
-				float num = 50f;
-				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_shield_bullet"))
-				{
-					num += 10f;
-				}
-				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.B, num * targetedBulletMult * generalBulletMult, 15f * targetedBulletMult));
+				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.B, 50f, 15f));
 			}
 		}
 
 		// Token: 0x06003767 RID: 14183 RVA: 0x00166058 File Offset: 0x00164258
 		private void ResistPBullet(UnitModel target)
-		{ // <Mod>
+		{
 			WorkerModel workerModel = target as WorkerModel;
 			if (workerModel != null)
 			{
-				float num = 50f;
-				if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_shield_bullet"))
-				{
-					num += 10f;
-				}
-				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.P, num * targetedBulletMult * generalBulletMult, 15f * targetedBulletMult));
+				workerModel.AddUnitBuf(new BarrierBuf(RwbpType.P, 50f, 15f));
 			}
 		}
 
 		// Token: 0x06003768 RID: 14184 RVA: 0x00031882 File Offset: 0x0002FA82
 		private void SlowBullet(UnitModel target)
 		{
-			target.AddUnitBuf(new SlowBulletBuf(10f * generalBulletMult));
+			target.AddUnitBuf(new SlowBulletBuf(10f));
 		}
 
 		// Token: 0x06003769 RID: 14185 RVA: 0x0016608C File Offset: 0x0016428C
@@ -559,37 +337,6 @@ namespace GlobalBullet
 			}
 		}
 
-		private void StimBullet(UnitModel target)
-		{
-			if (target is CreatureModel)
-			{
-				target.AddUnitBuf(new StimBulletBufCreature(30f * generalBulletMult));
-				return;
-			}
-			target.AddUnitBuf(new StimBulletBuf(10f * targetedBulletMult * generalBulletMult));
-			//
-		}
-
-		private void TranqBullet(UnitModel target)
-		{
-			if (!(target is CreatureModel)) return;
-			CreatureModel creature = target as CreatureModel;
-			float effectiveness = creature.GetTranqEffectiveness() * generalBulletMult;
-			if (effectiveness <= 0)
-			{
-				this.currentBullet++;
-				return;
-			}
-			if (creature.TryTranquilize(effectiveness))
-			{
-				creature.ReduceTranqEffectiveness();
-			}
-			else
-			{
-				this.currentBullet++;
-			}
-		}
-
 		// Token: 0x040032D1 RID: 13009
 		private static GlobalBulletManager _instance;
 
@@ -614,18 +361,5 @@ namespace GlobalBullet
 		// Token: 0x020006AE RID: 1710
 		// (Invoke) Token: 0x0600376B RID: 14187
 		private delegate void BulletFunc(UnitModel target);
-
-		// <Mod>
-		private float targetedBulletMult = 1f;
-
-		// <Mod>
-		public float bulletCost = -1f;
-
-		// <Mod>
-		private float generalBulletMult = 1f;
-
-
-		// <Mod>
-		// public int refillsAvailable;
 	}
 }

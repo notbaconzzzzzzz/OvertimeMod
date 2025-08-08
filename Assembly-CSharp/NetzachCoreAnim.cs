@@ -12,24 +12,16 @@ public class NetzachCoreAnim : CreatureAnimEventCalled
 	// Token: 0x17000154 RID: 340
 	// (get) Token: 0x06001245 RID: 4677 RVA: 0x00017ADD File Offset: 0x00015CDD
 	private UnscaledTimer closeTimer
-	{ // <Mod>
+	{
 		get
 		{
-            if (overtimeScript != null)
-            {
-                return overtimeScript.bossBase._closeTimer;
-            }
 			return this.script.bossBase._closeTimer;
 		}
 	}
 
 	// Token: 0x06001246 RID: 4678 RVA: 0x00017AEF File Offset: 0x00015CEF
 	public void SetScript(NetzachCoreScript script)
-	{ // <Mod>
-		if (script is OvertimeNetzachCoreScript)
-		{
-			overtimeScript = script as OvertimeNetzachCoreScript;
-		}
+	{
 		this.script = script;
 	}
 
@@ -57,9 +49,6 @@ public class NetzachCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x04001654 RID: 5716
 	private NetzachCoreScript script;
-
-	// <Mod>
-	private OvertimeNetzachCoreScript overtimeScript;
 
 	// Token: 0x04001655 RID: 5717
 	public Transform middlePivot;

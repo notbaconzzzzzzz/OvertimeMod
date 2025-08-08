@@ -1,9 +1,3 @@
-/*
-private void UpdateSefiraAce() // 
-private void InitRecovoerPassages() // 
-public void OnFixedUpdate() // 
-public void ReturnAgentsToSefira() // 
-*/
 using System;
 using System.Collections.Generic;
 using GameStatusUI;
@@ -425,8 +419,8 @@ public class Sefira
 
 	// Token: 0x06003E7F RID: 15999 RVA: 0x00183108 File Offset: 0x00181308
 	private void UpdateSefiraAce()
-	{ // <Mod>
-		if (this.sefiraEnum == SefiraEnum.TIPERERTH2 && !SpecialModeConfig.instance.GetValue<bool>("TwoTipherethCaptains"))
+	{
+		if (this.sefiraEnum == SefiraEnum.TIPERERTH2)
 		{
 			return;
 		}
@@ -444,7 +438,7 @@ public class Sefira
 				list.Add(agentModel);
 			}
 		}
-		if (this.sefiraEnum == SefiraEnum.TIPERERTH1 && !SpecialModeConfig.instance.GetValue<bool>("TwoTipherethCaptains"))
+		if (this.sefiraEnum == SefiraEnum.TIPERERTH1)
 		{
 			foreach (AgentModel agentModel2 in SefiraManager.instance.GetSefira(SefiraEnum.TIPERERTH2).agentList)
 			{
@@ -536,7 +530,7 @@ public class Sefira
 
 	// Token: 0x06003E83 RID: 16003 RVA: 0x0018349C File Offset: 0x0018169C
 	private void InitRecovoerPassages()
-	{ // <Mod>
+	{
 		this._checkPassages = new List<PassageObjectModel>();
 		this._recoverPassages = new List<PassageObjectModel>();
 		this._recoverAdditionalPassages = new List<PassageObjectModel>();
@@ -587,15 +581,11 @@ public class Sefira
 				this._recoverAdditionalPassages.Remove(item);
 			}
 		}
-		foreach (PassageObjectModel item in _recoverPassages)
-		{
-			item.isRegenerator = true;
-		}
 	}
 
 	// Token: 0x06003E84 RID: 16004 RVA: 0x001836E0 File Offset: 0x001818E0
 	public void OnFixedUpdate()
-	{ // <Mod>
+	{
 		if (this.sefiraEnum == SefiraEnum.TIPERERTH2)
 		{
 			return;
@@ -632,7 +622,7 @@ public class Sefira
 		this.isRecoverActivated = true;
 		foreach (PassageObjectModel passageObjectModel in this._checkPassages)
 		{
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, false))
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH))
 			{
 				this.isRecoverActivated = false;
 				break;
@@ -656,33 +646,11 @@ public class Sefira
 		{
 			num *= 1.25f;
 		}
-		if (ResearchDataModel.instance.IsUpgradedAbility("officer_department_bonus") && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
-		{
-			switch (GetOfficerAliveLevel())
-			{
-				case 1:
-					num *= 10f/9.5f;
-					break;
-				case 2:
-					num *= 10f/8.5f;
-					break;
-				case 3:
-					num *= 10f/7.5f;
-					break;
-			}
-		}
 		if (!this.isRecoverActivated)
 		{
 			if (this._recoverUpgrade)
 			{
-				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
-				{
-					num /= 1.5f;
-				}
-				else
-				{
-					num /= 2f;
-				}
+				num /= 2f;
 			}
 			else
 			{
@@ -691,29 +659,10 @@ public class Sefira
 		}
 		this._recoverElapsedTime += num;
 		float num2 = 0f;
-		if (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
-		{
-			num2 += (float)(6 * SefiraAbilityValueInfo.netzachOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.NETZACH)]) / 100f;
-			if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
-			{
-				num2 *= 2;
-			}
-		}
+		num2 += (float)(6 * SefiraAbilityValueInfo.netzachOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.NETZACH)]) / 100f;
 		if (this._recoverElapsedTime > 10f)
 		{
-			OvertimeNetzachBossBuf.IsRegenerator = true;
 			this._recoverElapsedTime -= 10f;
-			float totalHPrecovered = 0f;
-			float totalSPrecovered = 0f;
-			float recoverFactor = 1f;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
-			{
-				recoverFactor = 2f;
-				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
-				{
-					recoverFactor = 1.5f;
-				}
-			}
 			foreach (PassageObjectModel passageObjectModel2 in this._recoverPassages)
 			{
 				foreach (MovableObjectNode movableObjectNode2 in passageObjectModel2.GetEnteredTargets())
@@ -728,46 +677,15 @@ public class Sefira
 							{
 								if (!workerModel.IsPanic())
 								{
-									float prevHP = workerModel.hp;
-									float HPrecovered = 0f;
 									if (!workerModel.HasUnitBuf(UnitBufType.QUEENBEE_SPORE))
 									{
-                                        prevHP = workerModel.hp;
-										HPrecovered = workerModel.RecoverHPv2((this.regenerationValue + num2) / recoverFactor);
+										workerModel.RecoverHP(this.regenerationValue + num2);
 									}
-                                    float prevSP = workerModel.mental;
-									float SPrecovered = workerModel.RecoverMentalv2((this.regenerationMentalValue + num2) / recoverFactor);
-									if (workerModel is AgentModel)
-									{
-										prevHP = workerModel.maxHp - prevHP;
-										if (HPrecovered > prevHP)
-										{
-											HPrecovered = prevHP;
-										}
-										totalHPrecovered += HPrecovered;
-										prevSP = workerModel.maxMental - prevSP;
-										if (SPrecovered > prevSP)
-										{
-											SPrecovered = prevSP;
-										}
-										totalSPrecovered += SPrecovered;
-									}
+									workerModel.RecoverMental(this.regenerationMentalValue + num2);
 								}
 							}
 						}
 					}
-				}
-			}
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
-			{
-				recoverFactor = 1f;
-			}
-			else
-			{
-				recoverFactor = 2f;
-				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
-				{
-					recoverFactor = 1.5f;
 				}
 			}
 			foreach (PassageObjectModel passageObjectModel3 in this._recoverAdditionalPassages)
@@ -777,82 +695,43 @@ public class Sefira
 					UnitModel unit3 = movableObjectNode3.GetUnit();
 					if (unit3 is WorkerModel)
 					{
-						WorkerModel workerModel = (WorkerModel)unit3;
-						if (!workerModel.IsDead())
+						WorkerModel workerModel2 = (WorkerModel)unit3;
+						if (!workerModel2.IsDead())
 						{
-							if (!workerModel.HasEquipment(200015))
+							if (!workerModel2.HasEquipment(200015))
 							{
-								if (!workerModel.IsPanic())
+								if (!workerModel2.IsPanic())
 								{
-									float prevHP = workerModel.hp;
-									float HPrecovered = 0f;
-									if (!workerModel.HasUnitBuf(UnitBufType.QUEENBEE_SPORE))
+									if (!workerModel2.HasUnitBuf(UnitBufType.QUEENBEE_SPORE))
 									{
-                                        prevHP = workerModel.hp;
-										HPrecovered = workerModel.RecoverHPv2((this.regenerationValue + num2) / recoverFactor);
+										workerModel2.RecoverHP((this.regenerationValue + num2) / 2f);
 									}
-                                    float prevSP = workerModel.mental;
-									float SPrecovered = workerModel.RecoverMentalv2((this.regenerationMentalValue + num2) / recoverFactor);
-									if (workerModel is AgentModel)
-									{
-										prevHP = workerModel.maxHp - prevHP;
-										if (HPrecovered > prevHP)
-										{
-											HPrecovered = prevHP;
-										}
-										totalHPrecovered += HPrecovered;
-										prevSP = workerModel.maxMental - prevSP;
-										if (SPrecovered > prevSP)
-										{
-											SPrecovered = prevSP;
-										}
-										totalSPrecovered += SPrecovered;
-									}
+									workerModel2.RecoverMental((this.regenerationMentalValue + num2) / 2f);
 								}
 							}
 						}
 					}
 				}
 			}
-			OvertimeNetzachBossBuf.IsRegenerator = false;
-			Notice.instance.Send(NoticeName.RecoverByRegenerator, new object[]
-			{
-				totalHPrecovered,
-				1,
-				this
-			});
-			Notice.instance.Send(NoticeName.RecoverByRegenerator, new object[]
-			{
-				totalSPrecovered,
-				2,
-				this
-			});
 		}
 	}
 
 	// Token: 0x06003E85 RID: 16005 RVA: 0x00183B58 File Offset: 0x00181D58
 	public void ReturnAgentsToSefira()
-	{ // <Mod>
+	{
 		Notice.instance.Send(NoticeName.OnClickRecallButton, new object[]
 		{
 			this
 		});
 		foreach (AgentModel agentModel in this.agentList)
 		{
-			if (!agentModel.IsDead())
+			if (!agentModel.IsDead() && !agentModel.IsCrazy())
 			{
-				if (!agentModel.IsCrazy() && agentModel.currentSkill == null && ((!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.MALKUT, false) && !SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1)) || agentModel.GetState() != AgentAIState.MANAGE))
+				if (agentModel.currentSkill == null)
 				{
-					agentModel.ResetWaitingPassage();
-				}
-				else
-				{
-					agentModel.SetWaitingPassage(sefiraPassage);
-					PassageObject passageObject = SefiraMapLayer.instance.GetPassageObject(sefiraPassage);
-					if (passageObject != null)
+					if ((SefiraBossManager.Instance.CurrentActivatedSefira != SefiraEnum.MALKUT && !SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1)) || agentModel.GetState() != AgentAIState.MANAGE)
 					{
-						passageObject.OnPointEnter();
-						passageObject.OnPointerClick();
+						agentModel.ResetWaitingPassage();
 					}
 				}
 			}

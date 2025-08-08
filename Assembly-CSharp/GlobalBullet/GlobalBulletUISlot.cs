@@ -109,25 +109,7 @@ namespace GlobalBullet
 
 		// Token: 0x06004C04 RID: 19460 RVA: 0x0003F21F File Offset: 0x0003D41F
 		public void OnClick()
-		{ // <Mod>
-			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-			{
-				if (SlotType == GlobalBulletType.SLOW && ResearchDataModel.instance.IsUpgradedBullet(GlobalBulletType.STIM))
-				{
-					GlobalBulletWindow.CurrentWindow.OnSlotSelected(GlobalBulletType.STIM);
-					return;
-				}
-				else if (SlotType == GlobalBulletType.EXCUTE && ResearchDataModel.instance.IsUpgradedBullet(GlobalBulletType.TRANQ))
-				{
-					GlobalBulletWindow.CurrentWindow.OnSlotSelected(GlobalBulletType.TRANQ);
-					return;
-				}
-				else if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1))
-				{
-					GlobalBulletWindow.CurrentWindow.OnSlotSelected(this.SlotType + (int)GlobalBulletType.TRANQ);
-					return;
-				}
-			}
+		{
 			if (!this.IsEnabled)
 			{
 				return;

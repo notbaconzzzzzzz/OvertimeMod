@@ -1,6 +1,3 @@
-/*
-Buncha stuff // Risk level fix
-*/
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -61,73 +58,13 @@ public class CreatureTypeInfo
 		return RiskLevel.ZAYIN;
 	}
 
-	// <Mod>
-	public static string GetRiskLevelIntToString(int level)
-	{
-		switch (level)
-		{
-		case 1:
-			return "ZAYIN";
-		case 2:
-			return "TETH";
-		case 3:
-			return "HE";
-		case 4:
-			return "WAW";
-		case 5:
-			return "ALEPH";
-		default:
-			return string.Empty;
-		}
-	}
-
-	// <Mod>
-	public static RiskLevel GetRiskLevelIntToEnum(int level)
-	{
-		if (level < 1 || level > 5) return RiskLevel.ZAYIN;
-		return (RiskLevel)(level - 1);
-	}
-
-	// <Mod>
-	public static int GetRiskLevelStringToInt(string level)
-	{
-		if (level == "ZAYIN")
-		{
-			return 1;
-		}
-		if (level == "TETH")
-		{
-			return 2;
-		}
-		if (level == "HE")
-		{
-			return 3;
-		}
-		if (level == "WAW")
-		{
-			return 4;
-		}
-		if (level == "ALEPH")
-		{
-			return 5;
-		}
-		return 1;
-	}
-
-	// <Mod>
-	public static int GetRiskLevelEnumToInt(RiskLevel level)
-	{
-		return (int)level + 1;
-	}
-
 	// Token: 0x17000547 RID: 1351
 	// (get) Token: 0x0600397E RID: 14718 RVA: 0x00033511 File Offset: 0x00031711
 	public int CurrentObserveLevel
-	{ // <Patch>
+	{
 		get
 		{
-			return CreatureManager.instance.GetObserveLevel_Mod(CreatureTypeInfo.GetLcId(this));
-			//return CreatureManager.instance.GetObserveLevel(this.id);
+			return CreatureManager.instance.GetObserveLevel(this.id);
 		}
 	}
 
@@ -185,10 +122,9 @@ public class CreatureTypeInfo
 	// Token: 0x1700054B RID: 1355
 	// (get) Token: 0x06003982 RID: 14722 RVA: 0x00170558 File Offset: 0x0016E758
 	public string riskLevelForce
-	{ // <Mod>
+	{
 		get
 		{
-			if (_riskLevel != 0) return GetRiskLevelIntToString(_riskLevel);
 			CreatureTypeInfo.CreatureDataList list = this.dataTable.GetList("riskLevel");
 			if (list == null)
 			{
@@ -206,10 +142,9 @@ public class CreatureTypeInfo
 	// Token: 0x1700054C RID: 1356
 	// (get) Token: 0x06003983 RID: 14723 RVA: 0x0017059C File Offset: 0x0016E79C
 	public virtual string riskLevel
-	{ // <Mod>
+	{
 		get
 		{
-			if (_riskLevel != 0) return GetRiskLevelIntToString(_riskLevel);
 			CreatureTypeInfo.CreatureDataList list = this.dataTable.GetList("riskLevel");
 			if (list == null)
 			{
@@ -292,8 +227,7 @@ public class CreatureTypeInfo
 
 	// Token: 0x06003988 RID: 14728 RVA: 0x0003352C File Offset: 0x0003172C
 	public virtual RiskLevel GetRiskLevel()
-	{ // <Mod>
-		if (_riskLevel != 0) return GetRiskLevelIntToEnum(_riskLevel);
+	{
 		return CreatureTypeInfo.GetRiskLevelStringToEnum(this.riskLevelForce);
 	}
 
@@ -307,31 +241,6 @@ public class CreatureTypeInfo
 	public void AddAgentName(int index, AgentName input)
 	{
 		this.collectionUsedAgentName.Add(index, input);
-	}
-
-	// <Patch>
-	public LobotomyBaseMod.LcIdLong LcId
-	{
-		get
-		{
-			return CreatureTypeInfo.GetLcId(this);
-		}
-	}
-
-	// <Patch>
-	public static LobotomyBaseMod.LcIdLong GetLcId(CreatureTypeInfo equip)
-	{
-		bool flag = equip.modid == null;
-		LobotomyBaseMod.LcIdLong result;
-		if (flag)
-		{
-			result = new LobotomyBaseMod.LcIdLong(string.Empty, equip.id);
-		}
-		else
-		{
-			result = new LobotomyBaseMod.LcIdLong(equip.modid, equip.id);
-		}
-		return result;
 	}
 
 	// Token: 0x0600398B RID: 14731 RVA: 0x001706CC File Offset: 0x0016E8CC
@@ -508,14 +417,6 @@ public class CreatureTypeInfo
 
 	// Token: 0x04003488 RID: 13448
 	public CreatureStaticData creatureStaticData = new CreatureStaticData();
-	
-	// <Patch>
-	[NonSerialized]
-	public string modid;
-	
-	// <Patch>
-	[NonSerialized]
-	public int _riskLevel;
 
 	// Token: 0x02000701 RID: 1793
 	public class CreatureData

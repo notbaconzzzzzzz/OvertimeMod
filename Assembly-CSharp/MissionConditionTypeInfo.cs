@@ -35,7 +35,4 @@ public class MissionConditionTypeInfo
 
 	// Token: 0x04003512 RID: 13586
 	public float var2 = 30f;
-
-    // <Mod>
-    public float percent = 0f;
 }

@@ -1,13 +1,7 @@
-/*
-private bool LoadStaticData() //
-public void CalculateDay() // 
-*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using System.IO; // 
-using LobotomyBaseMod; // 
 using UnityEngine;
 
 namespace CreatureGenerate
@@ -98,9 +92,7 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E54 RID: 15956 RVA: 0x00183F44 File Offset: 0x00182144
 		public void InitCreatureList()
-		{ // <Patch>
-			this.CreatureList.Clear();
-			/*
+		{
 			this.CreatureList.Clear();
 			foreach (CreatureTypeInfo creatureTypeInfo in CreatureTypeList.instance.GetList())
 			{
@@ -114,7 +106,7 @@ namespace CreatureGenerate
 					}
 					list2.Add(creatureTypeInfo.id);
 				}
-			}*/
+			}
 		}
 
 		// Token: 0x06003E55 RID: 15957 RVA: 0x000044AF File Offset: 0x000026AF
@@ -126,82 +118,6 @@ namespace CreatureGenerate
 		// Token: 0x06003E56 RID: 15958 RVA: 0x00183FD4 File Offset: 0x001821D4
 		public void Init()
 		{
-			this.InitCreatureList();
-			this.activateStateDic.Clear();
-			this._isInitiated = true;
-			foreach (long id in CreatureGenerateInfo.GetAll(false))
-			{
-				CreatureTypeInfo data = CreatureTypeList.instance.GetData(id);
-				RiskLevel riskLevel = data.GetRiskLevel();
-				long id2 = data.id;
-				bool isUsed = this.IsUsedCreature(id2);
-				bool isKit = data.creatureWorkType == CreatureWorkType.KIT;
-				ActivateStateModel activateStateModel = new ActivateStateModel
-				{
-					riskLevel = riskLevel,
-					id = id2,
-					isUsed = isUsed,
-					isKit = isKit
-				};
-				activateStateModel.modid = string.Empty;
-				ActivateStateList activateStateList = null;
-				bool flag = this.activateStateDic.TryGetValue(riskLevel, out activateStateList);
-				if (flag)
-				{
-					activateStateList.Add(activateStateModel);
-				}
-				else
-				{
-					activateStateList = new ActivateStateList
-					{
-						riskLevel = riskLevel
-					};
-					activateStateList.Add(activateStateModel);
-					this.activateStateDic.Add(riskLevel, activateStateList);
-				}
-			}
-			foreach (LobotomyBaseMod.LcIdLong lcIdLong in CreatureGenerateInfo.GetAll_Mod(false))
-			{
-				CreatureTypeInfo data_Mod = CreatureTypeList.instance.GetData_Mod(lcIdLong);
-				RiskLevel riskLevel2 = data_Mod.GetRiskLevel();
-				long id3 = data_Mod.id;
-				bool isUsed2 = CreatureManager.instance.IsCreatureActivated_Mod(lcIdLong);
-				bool isKit2 = data_Mod.creatureWorkType == CreatureWorkType.KIT;
-				ActivateStateModel activateStateModel2 = new ActivateStateModel
-				{
-					riskLevel = riskLevel2,
-					id = id3,
-					isUsed = isUsed2,
-					isKit = isKit2
-				};
-				activateStateModel2.modid = lcIdLong.packageId;
-				ActivateStateList activateStateList2 = null;
-				bool flag2 = this.activateStateDic.TryGetValue(riskLevel2, out activateStateList2);
-				if (flag2)
-				{
-					activateStateList2.Add(activateStateModel2);
-				}
-				else
-				{
-					activateStateList2 = new ActivateStateList
-					{
-						riskLevel = riskLevel2
-					};
-					activateStateList2.Add(activateStateModel2);
-					this.activateStateDic.Add(riskLevel2, activateStateList2);
-				}
-			}
-			this.CheckCreatureUseState();
-			bool isloadedDayData = IsloadedDayData;
-			if (isloadedDayData)
-			{
-				CreatureGenerateInfoManager.Log("Loaded", false);
-			}
-			else
-			{
-				CreatureGenerateInfoManager.Log("Load Fail", true);
-			}
-			/*
 			this.InitCreatureList();
 			this.activateStateDic.Clear();
 			this._isInitiated = true;
@@ -241,7 +157,7 @@ namespace CreatureGenerate
 				this.Print();
 				return;
 			}
-			CreatureGenerateInfoManager.Log("Load Fail", true);*/
+			CreatureGenerateInfoManager.Log("Load Fail", true);
 		}
 
 		// Token: 0x06003E57 RID: 15959 RVA: 0x0003676C File Offset: 0x0003496C
@@ -268,18 +184,13 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E5A RID: 15962 RVA: 0x00184144 File Offset: 0x00182344
 		private bool LoadStaticData()
-		{ // <Mod> Make load external
+		{
 			char c = ',';
 			try
 			{
-                if (!File.Exists(Application.dataPath + "/Managed/BaseMod/CreatureGenInfo.txt"))
-                {
-                    TextAsset textAsset = Resources.Load<TextAsset>("xml/CreatureGenInfo");
-                    File.WriteAllText(Application.dataPath + "/Managed/BaseMod/CreatureGenInfo.txt", textAsset.text);
-                }
-                string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/CreatureGenInfo.txt");
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.LoadXml(xml);
+				TextAsset textAsset = Resources.Load<TextAsset>("xml/CreatureGenInfo");
+				XmlDocument xmlDocument = new XmlDocument();
+				xmlDocument.LoadXml(textAsset.text);
 				XmlNodeList xmlNodeList = xmlDocument.SelectNodes("root/day");
 				IEnumerator enumerator = xmlNodeList.GetEnumerator();
 				try
@@ -446,7 +357,7 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E60 RID: 15968 RVA: 0x00184590 File Offset: 0x00182790
 		public void RemoveAction(long id)
-		{ // <Patch> ??? Does nothing ???
+		{
 			CreatureTypeInfo data = CreatureTypeList.instance.GetData(id);
 			ActivateStateList activateStateList = null;
 			if (this.GetCreatureState(data.GetRiskLevel(), out activateStateList))
@@ -516,23 +427,8 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E64 RID: 15972 RVA: 0x001846C8 File Offset: 0x001828C8
 		public void CalculateDay()
-		{ // <Mod>
+		{
 			int day = PlayerModel.instance.GetDay();
-            if (day == 0 && PlayerModel.instance.IsWaitingCreature(100009L))
-            {
-                _genDay = -1;
-                return;
-            }
-            this._genDay = day;
-			_genDay += (day + 1) / 5;
-            foreach (Sefira sefira in SefiraManager.instance.GetActivatedSefiras())
-			{
-				if (sefira.openLevel >= 5 && sefira.sefiraEnum != SefiraEnum.TIPERERTH1 && sefira.sefiraEnum != SefiraEnum.DAAT)
-				{
-					_genDay--;
-				}
-			}
-            /*
 			int num = CreatureManager.instance.GetCreatureList().Length;
 			this._genDay = day;
 			int num2 = day - day / 5;
@@ -553,7 +449,6 @@ namespace CreatureGenerate
 			{
 				this._genDay++;
 			}
-            */
 		}
 
 		// Token: 0x06003E65 RID: 15973 RVA: 0x00184758 File Offset: 0x00182958
@@ -582,53 +477,6 @@ namespace CreatureGenerate
 				}
 			}
 			return list.Count > 0;
-		}
-
-		// <Patch>
-		public void OnUsed_Mod(LobotomyBaseMod.LcIdLong id)
-		{
-			CreatureTypeInfo data_Mod = CreatureTypeList.instance.GetData_Mod(id);
-			ActivateStateList activateStateList = null;
-			if (this.activateStateDic.TryGetValue(data_Mod.GetRiskLevel(), out activateStateList))
-			{
-				activateStateList.OnUsed_Mod(id);
-			}
-		}
-
-		// <Patch>
-		public List<LobotomyBaseMod.LcIdLong> GetCreature_Mod()
-		{
-			CreatureGenerateModel creatureGenerateModel = null;
-			int key = GenDay;
-			List<LobotomyBaseMod.LcIdLong> result;
-			if (this.dayGenInfoDic.TryGetValue(key, out creatureGenerateModel))
-			{
-				try
-				{
-					creatureGenerateModel.SetCreature();
-				}
-				catch (CreatureGenerateInfoManager.ProbCheckExeption)
-				{
-					key = -2;
-					if (this.dayGenInfoDic.TryGetValue(key, out creatureGenerateModel))
-					{
-						try
-						{
-							creatureGenerateModel.SetCreature();
-						}
-						catch (CreatureGenerateInfoManager.ProbCheckExeption)
-						{
-							Debug.LogError("Failed To Gen Creature");
-						}
-					}
-				}
-				result = creatureGenerateModel.creatureMod;
-			}
-			else
-			{
-				result = null;
-			}
-			return result;
 		}
 
 		// Token: 0x06003E67 RID: 15975 RVA: 0x00036790 File Offset: 0x00034990

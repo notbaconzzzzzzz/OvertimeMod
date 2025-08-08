@@ -8,10 +8,9 @@ public class CreatureSpecialSkillTipTable
 {
 	// Token: 0x0600351B RID: 13595 RVA: 0x0003089D File Offset: 0x0002EA9D
 	public CreatureSpecialSkillTipTable(long creatureTypeId)
-	{ // <Patch>
+	{
 		this.creatureTypeId = creatureTypeId;
 		this.descList = new List<CreatureSpecialSkillDesc>();
-		this.modid = string.Empty;
 	}
 
 	// Token: 0x0600351C RID: 13596 RVA: 0x00161B1C File Offset: 0x0015FD1C
@@ -106,8 +105,4 @@ public class CreatureSpecialSkillTipTable
 
 	// Token: 0x0400315B RID: 12635
 	public long creatureTypeId;
-	
-	// <Patch>
-	[NonSerialized]
-	public string modid;
 }

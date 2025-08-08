@@ -1,6 +1,3 @@
-/*
-PassageDrugged public void Process() // Fixed hallway buf
-*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -567,7 +564,7 @@ public class Shark : CreatureBase
 
 		// Token: 0x0600292B RID: 10539 RVA: 0x0011E1A8 File Offset: 0x0011C3A8
 		public void Process()
-		{ // <Mod> fixed hallway buf being overriden every frame
+		{
 			if (this._passage != null)
 			{
 				foreach (MovableObjectNode movableObjectNode in this._passage.GetEnteredTargets())
@@ -576,12 +573,7 @@ public class Shark : CreatureBase
 					if (unit is WorkerModel)
 					{
 						WorkerModel workerModel = unit as WorkerModel;
-						UnitBuf buf = workerModel.GetUnitBufByType(UnitBufType.SHARK_DRUGGED);
-						if (buf != null) {
-							buf.remainTime = 1f;
-						} else {
-							workerModel.AddUnitBuf(new SharkDruggedBuf());
-						}
+						workerModel.AddUnitBuf(new SharkDruggedBuf());
 					}
 				}
 			}

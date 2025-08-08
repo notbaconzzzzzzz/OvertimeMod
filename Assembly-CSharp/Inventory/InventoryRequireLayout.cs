@@ -1,6 +1,3 @@
-/*
-public void Init(EquipmentTypeInfo info) // 
-*/
 using System;
 using System.Collections;
 using UnityEngine;
@@ -18,7 +15,7 @@ namespace Inventory
 
 		// Token: 0x06004C21 RID: 19489 RVA: 0x001C1110 File Offset: 0x001BF310
 		public void Init(EquipmentTypeInfo info)
-		{ // <Patch> <Mod> shorten stat type text to 4 letters
+		{
 			IEnumerator enumerator = this.parent.GetEnumerator();
 			try
 			{
@@ -45,8 +42,7 @@ namespace Inventory
 				InventoryRequireUnit component = gameObject.GetComponent<InventoryRequireUnit>();
 				gameObject.transform.SetParent(this.parent);
 				gameObject.transform.localScale = Vector3.one;
-				LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(info);
-				if (lcId == 300034 || lcId == 200034)
+				if (info.id == 300034 || info.id == 200034)
 				{
 					text = LocalizeTextDataModel.instance.GetText("Bald");
 					component.SetText(text);
@@ -74,10 +70,6 @@ namespace Inventory
 					{
 						grade = AgentModel.GetLevelGradeText(egoRequire.value);
 					}
-                    if (statType.Length > 5)
-                    {
-                        statType = statType.Substring(0, 4);
-                    }
 					GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.unit);
 					InventoryRequireUnit component2 = gameObject2.GetComponent<InventoryRequireUnit>();
 					gameObject2.transform.SetParent(this.parent);

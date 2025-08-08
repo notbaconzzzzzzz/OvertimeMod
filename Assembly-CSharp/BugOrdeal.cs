@@ -1,8 +1,3 @@
-/*
-private void SetColor() // 
-public override void OrdealEnd() // Overtime Core Suppressions
-Various private static arrays // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,10 +13,9 @@ public class BugOrdeal : OrdealBase
 
 	// Token: 0x06003BEE RID: 15342 RVA: 0x00034C14 File Offset: 0x00032E14
 	private void SetColor()
-	{ // <Mod>
+	{
 		ColorUtility.TryParseHtmlString("#FE960BFF", out this._color);
 		this.OrdealColor = this._color;
-		_ordeal_name = _ordealName;
 	}
 
 	// Token: 0x06003BEF RID: 15343 RVA: 0x001767D0 File Offset: 0x001749D0
@@ -121,7 +115,7 @@ public class BugOrdeal : OrdealBase
 
 	// Token: 0x06003BF7 RID: 15351 RVA: 0x00176974 File Offset: 0x00174B74
 	public override void OrdealEnd()
-	{ // <Mod>
+	{
 		base.OrdealEnd();
 		this.SetColor();
 		int num = this.ordealRewards[(int)this.level];
@@ -129,8 +123,7 @@ public class BugOrdeal : OrdealBase
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
-		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Bug/Bug_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
@@ -151,24 +144,16 @@ public class BugOrdeal : OrdealBase
 
 	// Token: 0x040036EA RID: 14058
 	private static int[] ids = new int[]
-	{ // <Mod>
+	{
 		200013,
 		200014,
 		200015,
-		200016,
-		200113,
-		200114,
-		200115,
-		200116
+		200016
 	};
 
 	// Token: 0x040036EB RID: 14059
 	private static RiskLevel[] risks = new RiskLevel[]
-	{ // <Mod>
-		RiskLevel.TETH,
-		RiskLevel.HE,
-		RiskLevel.WAW,
-		RiskLevel.ALEPH,
+	{
 		RiskLevel.TETH,
 		RiskLevel.HE,
 		RiskLevel.WAW,
@@ -177,11 +162,7 @@ public class BugOrdeal : OrdealBase
 
 	// Token: 0x040036EC RID: 14060
 	private static string[] names = new string[]
-	{ // <Mod>
-		"bug_dawn",
-		"bug_noon",
-		"bug_dusk",
-		"bug_midnight",
+	{
 		"bug_dawn",
 		"bug_noon",
 		"bug_dusk",

@@ -82,8 +82,7 @@ public class WeaponSetter : MonoBehaviour
 
 	// Token: 0x0600007C RID: 124 RVA: 0x00051C70 File Offset: 0x0004FE70
 	public void SetWeapon(WeaponModel weapon)
-	{ // <Patch> <Mod>
-		LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(weapon.metaInfo).packageId, weapon.metaInfo.sprite);
+	{
 		WeaponClassType weaponClassType = weapon.metaInfo.weaponClassType;
 		int num = (int)weaponClassType;
 		if (weaponClassType != WeaponClassType.SPECIAL)
@@ -96,29 +95,17 @@ public class WeaponSetter : MonoBehaviour
 				this.setter.SetRightWeapon(WeaponClassType.OFFICER, null);
 				if (weapon.metaInfo.sprite != string.Empty)
 				{
-					Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(weaponClassType, ss);
+					Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite(weaponClassType, weapon.metaInfo.sprite);
 					this.setter.SetRightWeapon(weaponClassType, weaponSprite);
 				}
 			}
 			else if (weaponClassType == WeaponClassType.FIST)
 			{
-				Sprite[] fistSprite = null;
-				if (ss.key != "")
+				int id = (int)float.Parse(weapon.metaInfo.sprite);
+				Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
+				if (fistSprite[0] == null || fistSprite[1] == null)
 				{
-					fistSprite = WorkerSpriteManager.instance.GetFistSprite(ss);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
-				}
-				else
-				{
-					int id = (int)float.Parse(weapon.metaInfo.sprite);
-					fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
+					return;
 				}
 				this.isTwohanded = true;
 				num -= 4;
@@ -156,7 +143,7 @@ public class WeaponSetter : MonoBehaviour
 				this.animator.SetBool("TwoHanded", this.isTwohanded);
 				if (weapon.metaInfo.sprite != string.Empty)
 				{
-					Sprite weaponSprite2 = WorkerSpriteManager.instance.GetWeaponSprite_Mod(weaponClassType, ss);
+					Sprite weaponSprite2 = WorkerSpriteManager.instance.GetWeaponSprite(weaponClassType, weapon.metaInfo.sprite);
 					this.setter.SetRightWeapon(weaponClassType, weaponSprite2);
 				}
 			}

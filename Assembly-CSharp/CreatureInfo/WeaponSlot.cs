@@ -1,7 +1,3 @@
-/*
-public override void SetModel(EquipmentModel Model) // 
-public override void SetModel(EquipmentTypeInfo info) // (!) 
-*/
 using System;
 using Inventory;
 using UnityEngine;
@@ -30,13 +26,12 @@ namespace CreatureInfo
 
 		// Token: 0x060052BE RID: 21182 RVA: 0x001DCE68 File Offset: 0x001DB068
 		public override void SetModel(EquipmentModel Model)
-		{ // <Mod>
+		{
 			base.SetModel(Model);
 			UnitModel owner = Model.owner;
 			this.ItemGrade.text = Model.metaInfo.Grade.ToString();
 			InventoryItemController.SetGradeText(Model.metaInfo.Grade, this.ItemGrade);
-			float dmgFactor = 1f + EGOrealizationManager.instance.WeaponUpgrade(Model.metaInfo);
-			this.DamageRange.text = (int)(this.WeaponModel.GetDamage(owner).min * dmgFactor) + "-" + (int)(this.WeaponModel.GetDamage(owner).max * dmgFactor);
+			this.DamageRange.text = (int)this.WeaponModel.GetDamage(owner).min + "-" + (int)this.WeaponModel.GetDamage(owner).max;
 			this.AttackSpeed.text = this.WeaponModel.metaInfo.attackSpeed + string.Empty;
 			this.AttackRange.text = this.WeaponModel.metaInfo.range + string.Empty;
 			this.CheckMakeCount();
@@ -44,15 +39,14 @@ namespace CreatureInfo
 
 		// Token: 0x060052BF RID: 21183 RVA: 0x001DCF5C File Offset: 0x001DB15C
 		public override void SetModel(EquipmentTypeInfo info)
-		{ // <Patch> <Mod>
+		{
 			base.SetModel(info);
 			string empty = string.Empty;
 			string empty2 = string.Empty;
 			InventoryItemDescGetter.GetWeaponDesc(info, out empty2, out empty);
 			this.ItemGrade.text = info.Grade.ToString();
 			InventoryItemController.SetGradeText(info.Grade, this.ItemGrade);
-			float dmgFactor = 1f + EGOrealizationManager.instance.WeaponUpgrade(info);
-			this.DamageRange.text = (int)(info.damageInfo.min * dmgFactor) + "-" + (int)(info.damageInfo.max * dmgFactor);
+			this.DamageRange.text = (int)info.damageInfo.min + "-" + (int)info.damageInfo.max;
 			this.AttackSpeed.text = empty2;
 			this.AttackRange.text = empty;
 			this.ItemName.text = info.Name;
@@ -81,7 +75,7 @@ namespace CreatureInfo
 			this.TypeText.color = white;
 			this.TypeFill.color = Color.white;
 			this.TypeFill.sprite = IconManager.instance.DamageIcon[type - RwbpType.R];
-			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(info.weaponClassType, new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(info).packageId, info.sprite));
+			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite(info.weaponClassType, info.sprite);
 			this.ItemImage.sprite = weaponSprite;
 			this.ItemImage.SetNativeSize();
 			if (weaponSprite == null)
@@ -97,10 +91,10 @@ namespace CreatureInfo
 
 		// Token: 0x060052C0 RID: 21184 RVA: 0x001DD160 File Offset: 0x001DB360
 		public void CheckMakeCount()
-		{ // <Patch>
+		{
 			int num = 0;
 			int num2 = 0;
-			if (InventoryModel.Instance.GetEquipCount_Mod(EquipmentTypeInfo.GetLcId(base.Info), out num, out num2))
+			if (InventoryModel.Instance.GetEquipCount(base.Info.id, out num, out num2))
 			{
 				this.cost = num + "/" + num2;
 				this.MakeCount.text = this.cost;

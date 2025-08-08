@@ -706,11 +706,5 @@ public class YoungPrinceFriend : CreatureBase
 			this.movableNode.Assign(m);
 			this.movableNode.StopMoving();
 		}
-
-		// <Mod>
-		public override bool IsEtcUnit()
-		{
-			return true;
-		}
 	}
 }

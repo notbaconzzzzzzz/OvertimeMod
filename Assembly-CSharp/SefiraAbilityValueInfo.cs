@@ -1,13 +1,4 @@
-﻿/*
-public static readonly int[] malkuthContinuousServiceValues // 
-public static readonly int[] netzachContinuousServiceValues // 
-public static readonly int[] chesedContinuousServiceValues // 
-public static readonly int[] geburahContinuousServiceValues // 
-public static readonly int[] binahContinuousServiceValues // 
-public static readonly int[] ketherContinuousServiceValues //
-+public static readonly int[] ketherContinuousServiceValues2 // 
-*/
-using System;
+﻿using System;
 
 // Token: 0x020006ED RID: 1773
 public class SefiraAbilityValueInfo
@@ -155,122 +146,91 @@ public class SefiraAbilityValueInfo
 
     // Token: 0x04003406 RID: 13318
     public static readonly int[] malkuthContinuousServiceValues = new int[]
-    { // <Mod> buffed from 3, 5, 7, 10
-        4,
+    {
+        3,
+        5,
         7,
-        10,
-        15,
-        15,
-        20
+        10
     };
 
     // Token: 0x04003407 RID: 13319
     public static readonly int[] yesodContinuousServiceValues = new int[]
-    { // <Mod>
+    {
         3,
         5,
         7,
-        10,
-        10,
-        15
+        10
     };
 
     // Token: 0x04003408 RID: 13320
     public static readonly int[] netzachContinuousServiceValues = new int[]
-    { // <Mod> nerfed from 3, 5, 7, 10
+    {
         3,
-        4,
         5,
-        7,
         7,
         10
     };
 
     // Token: 0x04003409 RID: 13321
     public static readonly int[] hodContinuousServiceValues = new int[]
-    { // <Mod>
-        5,
-        10,
-        15,
-        20,
-        5,
-        30
-    };
-
-    // Token: 0x0400340A RID: 13322
-    public static readonly int[] tipherethContinuousServiceValues = new int[]
-    { // <Mod>
-        1,
-        2,
-        3,
-        5,
-        4,
-        6
-    };
-
-    // Token: 0x0400340B RID: 13323
-    public static readonly int[] chesedContinuousServiceValues = new int[]
-    { // <Mod> buffed from 3, 6, 10, 20
-        5,
-        10,
-        15,
-        25,
-        20,
-        33
-    };
-
-    // Token: 0x0400340C RID: 13324
-    public static readonly int[] geburahContinuousServiceValues = new int[]
-    { // <Mod> buffed from 3, 6, 10, 20
-        5,
-        10,
-        15,
-        25,
-        20,
-        33
-    };
-
-    // Token: 0x0400340D RID: 13325
-    public static readonly int[] binahContinuousServiceValues = new int[]
-    { // <Mod> buffed from 3, 6, 10, 20
-        4,
-        8,
-        12,
-        20,
-        15,
-        25
-    };
-
-    // Token: 0x0400340E RID: 13326
-    public static readonly int[] hokmaContinuousServiceValues = new int[]
-    { // <Mod>
-        2,
-        3,
-        4,
-        6,
-        5,
-        7
-    };
-
-    // Token: 0x0400340F RID: 13327
-    public static readonly int[] ketherContinuousServiceValues = new int[]
-    { // <Mod> buffed from 3, 4, 5, 7
-        3,
-        5,
-        7,
-        10,
-        10,
-        15
-    };
-
-    // <Mod>
-    public static readonly int[] ketherContinuousServiceValues2 = new int[]
     {
         5,
         10,
         15,
-        25,
-        20,
-        33
+        4
+    };
+
+    // Token: 0x0400340A RID: 13322
+    public static readonly int[] tipherethContinuousServiceValues = new int[]
+    {
+        1,
+        2,
+        3,
+        5
+    };
+
+    // Token: 0x0400340B RID: 13323
+    public static readonly int[] chesedContinuousServiceValues = new int[]
+    {
+        3,
+        6,
+        10,
+        20
+    };
+
+    // Token: 0x0400340C RID: 13324
+    public static readonly int[] geburahContinuousServiceValues = new int[]
+    {
+        3,
+        6,
+        10,
+        20
+    };
+
+    // Token: 0x0400340D RID: 13325
+    public static readonly int[] binahContinuousServiceValues = new int[]
+    {
+        3,
+        6,
+        10,
+        20
+    };
+
+    // Token: 0x0400340E RID: 13326
+    public static readonly int[] hokmaContinuousServiceValues = new int[]
+    {
+        2,
+        3,
+        4,
+        6
+    };
+
+    // Token: 0x0400340F RID: 13327
+    public static readonly int[] ketherContinuousServiceValues = new int[]
+    {
+        3,
+        4,
+        5,
+        7
     };
 }

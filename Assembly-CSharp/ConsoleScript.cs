@@ -1,6 +1,3 @@
-/*
-public void OnExitEdit(string command) // (!) Unencrypted the console
-*/
 using System;
 using Assets.Scripts.UI.Utils;
 using UnityEngine;
@@ -73,14 +70,14 @@ public class ConsoleScript : MonoBehaviour
 
 	// Token: 0x06001BA6 RID: 7078 RVA: 0x000E5E90 File Offset: 0x000E4090
 	public void OnExitEdit(string command)
-	{ // <Mod>
+	{
 		if (!this.consoleActivated)
 		{
 			return;
 		}
 		try
 		{
-			// command = this.GetHmmCommand(command);
+			command = this.GetHmmCommand(command);
 			this.consoleActivated = false;
 			this.ConsoleWnd.gameObject.SetActive(false);
 			if (this.angelaLogEnter)
@@ -101,26 +98,21 @@ public class ConsoleScript : MonoBehaviour
 			{
 				char[] separator = new char[]
 				{
-					' '
+					' ',
+					'.'
 				};
 				string[] array = command.Split(separator);
 				string a = array[0].ToLower();
 				string text = array[1].ToLower();
-				if (text.EndsWith("_mod"))
-				{
-					text = text.Substring(0, text.Length - 4);
-				}
 				if (a == ConsoleCommand.RootCommand)
 				{
 					int num = ConsoleCommand.instance.rootCommand.IndexOf(text);
 					if (num != -1)
 					{
-						string[] para = new string[array.Length - 2];
-						for (int i = 0; i < para.Length; i++)
+						ConsoleCommand.instance.RootCommandOperation(num, new object[]
 						{
-							para[i] = array[i + 2];
-						}
-						ConsoleCommand.instance.RootCommandOperation(num, para);
+							array[2]
+						});
 					}
 				}
 				else if (a == ConsoleCommand.StandardCommand)
@@ -180,29 +172,14 @@ public class ConsoleScript : MonoBehaviour
 								array[3],
 								array[4]
 							});
-							break;/*
+							break;
 						case 8:
-							int num4 = 1;
-							if (array.Length > 3)
-							{
-								num4 = int.Parse(array[3]);
-							}
 							ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
 							{
-								array[2],
-								num4
+								array[2]
 							});
-							break;*/
+							break;
 						case 9:
-							if (array.Length > 3)
-							{
-								ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
-								{
-									array[2],
-									array[3]
-								});
-								break;
-							}
 							ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
 							{
 								array[2]
@@ -212,27 +189,11 @@ public class ConsoleScript : MonoBehaviour
 							ConsoleCommand.instance.StandardCommandOperation(10, new object[0]);
 							break;
 						case 11:
+						case 12:
 							ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
 							{
 								array[2]
 							});
-							break;
-						case 12:
-							if (array.Length >= 4)
-							{
-								ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
-								{
-									array[2],
-									bool.Parse(array[3])
-								});
-							}
-							else
-							{
-								ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
-								{
-									array[2]
-								});
-							}
 							break;
 						case 13:
 						{
@@ -253,13 +214,13 @@ public class ConsoleScript : MonoBehaviour
 								});
 							}
 							break;
-						}/*
+						}
 						case 14:
 							ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
 							{
 								array[2]
 							});
-							break;*/
+							break;
 						case 15:
 							ConsoleCommand.instance.StandardCommandOperation(num2, new object[]
 							{
@@ -280,14 +241,6 @@ public class ConsoleScript : MonoBehaviour
 							{
 								array[2]
 							});
-							break;
-						default:
-							string[] para = new string[array.Length - 2];
-							for (int i = 0; i < para.Length; i++)
-							{
-								para[i] = array[i + 2];
-							}
-							ConsoleCommand.instance.StandardCommandOperation(num2, para);
 							break;
 						}
 					}
@@ -311,17 +264,7 @@ public class ConsoleScript : MonoBehaviour
 						}
 						else if (float.TryParse(array[2], out num5))
 						{
-							if (num4 >= 7)
-							{
-								object[] para = new object[array.Length-2];
-								para[0] = (long)num5;
-								for (int i = 1; i < array.Length-2; i++)
-								{
-									para[i] = array[i+2];
-								}
-								ConsoleCommand.instance.CreatureCommandOperation(num4, false, para);
-							}
-							else if (array.Length >= 4)
+							if (array.Length >= 4)
 							{
 								float num6 = float.Parse(array[3]);
 								ConsoleCommand.instance.CreatureCommandOperation(num4, false, new object[]
@@ -330,16 +273,6 @@ public class ConsoleScript : MonoBehaviour
 									num6
 								});
 							}
-							else if (array.Length >= 5)
-							{
-								object[] para = new object[array.Length - 2];
-								para[0] = (long)num5;
-								for (int i = 1; i < para.Length; i++)
-								{
-									para[i] = array[i + 2];
-								}
-								ConsoleCommand.instance.CreatureCommandOperation(num4, false, para);
-							}
 							else
 							{
 								ConsoleCommand.instance.CreatureCommandOperation(num4, false, new object[]
@@ -347,16 +280,6 @@ public class ConsoleScript : MonoBehaviour
 									(long)num5
 								});
 							}
-						}
-						else if (array.Length >= 5)
-						{
-							object[] para = new object[array.Length - 2];
-							para[0] = (long)num5;
-							for (int i = 1; i < para.Length; i++)
-							{
-								para[i] = array[i + 2];
-							}
-							ConsoleCommand.instance.CreatureCommandOperation(num4, true, para);
 						}
 						else if (array.Length >= 4)
 						{
@@ -391,24 +314,7 @@ public class ConsoleScript : MonoBehaviour
 							num10
 						});
 					}
-					else if (num8 == 4 && array.Length >= 5)
-					{
-						float num11 = float.Parse(array[4]);
-						string str = array[3];
-						long num12 = long.Parse(array[2]);
-						Debug.Log(num11 + " " + num12);
-						Debug.Log(text);
-						if (num8 != -1)
-						{
-							ConsoleCommand.instance.AgentCommandOperation(num8, new object[]
-							{
-								num12,
-								str,
-								num11
-							});
-						}
-					}
-					else if (num8 < 7)
+					else
 					{
 						float num11 = float.Parse(array[3]);
 						long num12 = long.Parse(array[2]);
@@ -423,60 +329,21 @@ public class ConsoleScript : MonoBehaviour
 							});
 						}
 					}
-					else
-					{
-						string[] para = new string[array.Length - 2];
-						for (int i = 0; i < para.Length; i++)
-						{
-							para[i] = array[i + 2];
-						}
-						ConsoleCommand.instance.AgentCommandOperation(num8, para);
-					}
 				}
 				else if (a == ConsoleCommand.OfficerCommand)
 				{
 					int num13 = ConsoleCommand.instance.officerCommand.IndexOf(text);
 					if (num13 != -1)
 					{
-						if (num13 < 2)
-						{
 						ConsoleCommand.instance.OfficerCommandOperation(num13, new object[]
 						{
 							array[2]
 						});
-						}
-						else
-						{
-							string[] para = new string[array.Length - 2];
-							for (int i = 0; i < para.Length; i++)
-							{
-								para[i] = array[i + 2];
-							}
-							ConsoleCommand.instance.OfficerCommandOperation(num13, para);
-						}
 					}
 				}
 				else if (a == ConsoleCommand.BetaCommand)
 				{
 					ConsoleCommand.instance.BetaCommandOperation(text, array);
-				}
-				else if (a == ConsoleCommand.ConfigCommand)
-				{
-					int num2 = ConsoleCommand.instance.configCommand.IndexOf(text);
-					if (num2 != -1)
-					{
-						switch (num2)
-						{
-						default:
-							string[] para = new string[array.Length - 2];
-							for (int i = 0; i < para.Length; i++)
-							{
-								para[i] = array[i + 2];
-							}
-							ConsoleCommand.instance.ConfigCommandOperation(num2, para);
-							break;
-						}
-					}
 				}
 				else
 				{

@@ -1,7 +1,3 @@
-/*
-public override void UpdateUI() // 
-public void SetWeapon(WeaponModel weapon) // 
-*/
 using System;
 using System.Collections;
 using Assets.Scripts.UI.Utils;
@@ -21,15 +17,13 @@ namespace Inventory
 
 		// Token: 0x06004C48 RID: 19528 RVA: 0x001C1968 File Offset: 0x001BFB68
 		public override void UpdateUI()
-		{ // <Patch> <Mod>
+		{
 			base.UpdateUI();
-			float dmgFactor = 1f + EGOrealizationManager.instance.WeaponUpgrade(base.Info);
-			string text = string.Format("{0}-{1}", (int)(base.Info.damageInfo.min * dmgFactor), (int)(base.Info.damageInfo.max * dmgFactor));
+			string text = string.Format("{0}-{1}", (int)base.Info.damageInfo.min, (int)base.Info.damageInfo.max);
 			RwbpType type = base.Info.damageInfo.type;
 			Color color = Color.white;
 			color = UIColorManager.instance.GetRWBPTypeColor(type);
-			LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(this.Info);
-			if (lcId == 200038 || lcId == 200004)
+			if (base.Info.id == 200038 || base.Info.id == 200004)
 			{
 				this.Type.text = "???";
 				this.Type.color = Color.grey;
@@ -57,35 +51,21 @@ namespace Inventory
 
 		// Token: 0x06004C49 RID: 19529 RVA: 0x001C1B00 File Offset: 0x001BFD00
 		public override void ApplyPortrait()
-		{ // <Patch> <Mod>
+		{
 			Sprite sprite;
 			if (base.Info.weaponClassType == WeaponClassType.FIST)
 			{
-				if (EquipmentTypeInfo.GetLcId(this.Info).packageId != "")
+				int id = (int)float.Parse(base.Info.sprite);
+				Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
+				if (fistSprite[0] == null || fistSprite[1] == null)
 				{
-					LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(this.Info).packageId, this.Info.sprite);
-					Sprite[] fistSprite = WorkerSpriteManager.instance.GetFistSprite(ss);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
-					sprite = fistSprite[1];
+					return;
 				}
-				else
-				{
-					int id = (int)float.Parse(base.Info.sprite);
-					Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
-					sprite = fistSprite[1];
-				}
+				sprite = fistSprite[1];
 			}
 			else
 			{
-				LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(this.Info).packageId, this.Info.sprite);
-				sprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(this.Info.weaponClassType, ss);
+				sprite = WorkerSpriteManager.instance.GetWeaponSprite(base.Info.weaponClassType, base.Info.sprite);
 			}
 			this.Icon.sprite = sprite;
 			this.Icon.preserveAspect = true;
@@ -102,11 +82,10 @@ namespace Inventory
 
 		// Token: 0x06004C4A RID: 19530 RVA: 0x001C1BDC File Offset: 0x001BFDDC
 		public void SetWeapon(WeaponModel weapon)
-		{ // <Patch> <Mod>
+		{
 			UnitModel owner = weapon.owner;
 			this.Name.text = weapon.metaInfo.Name;
-			float dmgFactor = 1f + EGOrealizationManager.instance.WeaponUpgrade(weapon.metaInfo);
-			string text = (int)(weapon.GetDamage(owner).min * dmgFactor) + "-" + (int)(weapon.GetDamage(owner).max * dmgFactor);
+			string text = (int)weapon.GetDamage(owner).min + "-" + (int)weapon.GetDamage(owner).max;
 			RwbpType type = weapon.GetDamage(owner).type;
 			Color color;
 			Color color2;
@@ -126,31 +105,17 @@ namespace Inventory
 			Sprite sprite;
 			if (weapon.metaInfo.weaponClassType == WeaponClassType.FIST)
 			{
-				if (EquipmentTypeInfo.GetLcId(weapon.metaInfo).packageId != "")
+				int id = (int)float.Parse(weapon.metaInfo.sprite);
+				Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
+				if (fistSprite[0] == null || fistSprite[1] == null)
 				{
-					LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(weapon.metaInfo).packageId, weapon.metaInfo.sprite);
-					Sprite[] fistSprite = WorkerSpriteManager.instance.GetFistSprite(ss);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
-					sprite = fistSprite[1];
+					return;
 				}
-				else
-				{
-					int id = (int)float.Parse(weapon.metaInfo.sprite);
-					Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
-					if (fistSprite[0] == null || fistSprite[1] == null)
-					{
-						return;
-					}
-					sprite = fistSprite[1];
-				}
+				sprite = fistSprite[1];
 			}
 			else
 			{
-				LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(weapon.metaInfo).packageId, weapon.metaInfo.sprite);
-				sprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(weapon.metaInfo.weaponClassType, ss);
+				sprite = WorkerSpriteManager.instance.GetWeaponSprite(weapon.metaInfo.weaponClassType, weapon.metaInfo.sprite);
 			}
 			Debug.Log("Weapon sprite " + sprite);
 			this.Icon.sprite = sprite;

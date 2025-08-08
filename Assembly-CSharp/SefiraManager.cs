@@ -1,12 +1,3 @@
-/*
-private SefiraManager() // 
-public void LoadData(Dictionary<string, object> dic) // Tiphereth Elevators
-public void OnStageStart_first() // 
-public void OpenSefira(SefiraEnum sefiraEnum) // Overtime Mode check
-public void OpenSefiraWithCreature(SefiraEnum sefiraEnum) // Overtime Mode check
-private void OnFixedUpdate() // 
-+private EnergyModel.EnergyIncome energyIncome // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,11 +7,10 @@ public class SefiraManager : IObserver
 {
 	// Token: 0x060042E7 RID: 17127 RVA: 0x0019901C File Offset: 0x0019721C
 	private SefiraManager()
-	{ // <Mod>
+	{
 		this.Init();
 		Notice.instance.Observe(NoticeName.Update, this);
 		Notice.instance.Observe(NoticeName.FixedUpdate, this);
-		energyIncome = new EnergyModel.EnergyIncome();
 	}
 
 	// Token: 0x1700062A RID: 1578
@@ -115,7 +105,7 @@ public class SefiraManager : IObserver
 
 	// Token: 0x060042EF RID: 17135 RVA: 0x001992F4 File Offset: 0x001974F4
 	public void LoadData(Dictionary<string, object> dic)
-	{ // <Mod>
+	{
 		foreach (KeyValuePair<string, object> keyValuePair in dic)
 		{
 			Sefira sefira = this.GetSefira(keyValuePair.Key);
@@ -130,11 +120,6 @@ public class SefiraManager : IObserver
 						MapGraph.instance.ActivateArea(sefira.indexString, i.ToString());
 						SefiraCharacterManager.instance.OnOpenSefira(sefira.sefiraEnum);
 					}
-				}
-				if (sefira.sefiraEnum == SefiraEnum.TIPERERTH2 && sefira.openLevel > 0 && SpecialModeConfig.instance.GetValue<bool>("TipherethElevators"))
-				{
-					MapGraph.instance.ActivateArea("5", "6");
-					MapGraph.instance.ActivateArea("6", "6");
 				}
 			}
 		}
@@ -331,7 +316,7 @@ public class SefiraManager : IObserver
 
 	// Token: 0x060042FB RID: 17147 RVA: 0x001997F4 File Offset: 0x001979F4
 	public void OnStageStart_first()
-	{ // <Mod>
+	{
 		foreach (Sefira sefira in this.sefiraList)
 		{
 			sefira.OnStageStart_first();
@@ -339,14 +324,6 @@ public class SefiraManager : IObserver
 			{
 				this.AddActivatedSefira(sefira);
 			}
-		}
-		energyIncome = new EnergyModel.EnergyIncome();
-		energyIncome.baseCap = 0;
-		energyIncome.flatRate = 2;
-		energyIncome.scaleRate = 0.1f;
-		if (ResearchDataModel.instance.IsUpgradedAbility("officer_department_bonus"))
-		{
-			EnergyModel.instance.AddIncome(energyIncome);
 		}
 	}
 
@@ -406,7 +383,7 @@ public class SefiraManager : IObserver
 
 	// Token: 0x06004300 RID: 17152 RVA: 0x00199940 File Offset: 0x00197B40
 	public void OpenSefira(SefiraEnum sefiraEnum)
-	{ // <Mod>
+	{
 		Sefira sefira = this.GetSefira(sefiraEnum);
 		if (!sefira.activated)
 		{
@@ -425,11 +402,6 @@ public class SefiraManager : IObserver
 			{
 				sefira2.Activate();
 				MapGraph.instance.ActivateArea(sefira2.indexString, "1");
-				if (SpecialModeConfig.instance.GetValue<bool>("TipherethElevators"))
-				{
-					MapGraph.instance.ActivateArea("5", "6");
-					MapGraph.instance.ActivateArea("6", "6");
-				}
 				Notice.instance.Send(NoticeName.OpenArea, new object[]
 				{
 					sefira2
@@ -452,7 +424,6 @@ public class SefiraManager : IObserver
 			}
 		}
 		MapGraph.instance.ActivateArea(sefira.indexString, sefira.openLevel.ToString());
-		PlayerModel.instance.CheckOvertimeMode();
 	}
 
 	// Token: 0x06004301 RID: 17153 RVA: 0x0000403D File Offset: 0x0000223D
@@ -462,7 +433,7 @@ public class SefiraManager : IObserver
 
 	// Token: 0x06004302 RID: 17154 RVA: 0x00199A88 File Offset: 0x00197C88
 	public void OpenSefiraWithCreature(SefiraEnum sefiraEnum)
-	{ // <Patch> <Mod>
+	{
 		Sefira sefira = this.GetSefira(sefiraEnum);
 		if (!sefira.activated)
 		{
@@ -481,11 +452,6 @@ public class SefiraManager : IObserver
 			{
 				sefira2.Activate();
 				MapGraph.instance.ActivateArea(sefira2.indexString, "1");
-				if (SpecialModeConfig.instance.GetValue<bool>("TipherethElevators"))
-				{
-					MapGraph.instance.ActivateArea("5", "6");
-					MapGraph.instance.ActivateArea("6", "6");
-				}
 				Notice.instance.Send(NoticeName.OpenArea, new object[]
 				{
 					sefira2
@@ -515,24 +481,23 @@ public class SefiraManager : IObserver
 			{
 				if (sefira.openLevel <= 2)
 				{
-					this.AddCreature_Mod(this.GetCreatureGenerationList_Mod(sefira.openLevel), sefira);
+					this.AddCreature(this.GetCreatureGenerationList(sefira.openLevel), sefira);
 				}
 				else
 				{
 					Sefira sefira4 = this.GetSefira(SefiraEnum.TIPERERTH2);
-					this.AddCreature_Mod(this.GetCreatureGenerationList_Mod(sefira.openLevel), sefira4);
+					this.AddCreature(this.GetCreatureGenerationList(sefira.openLevel), sefira4);
 				}
 			}
 			else if (sefiraEnum == SefiraEnum.KETHER)
 			{
-				this.AddCreature_Mod(this.GetCreatureGenerationList_Mod(sefira.openLevel), sefira);
+				this.AddCreature(this.GetCreatureGenerationList(sefira.openLevel), sefira);
 			}
 			else if (sefiraEnum != SefiraEnum.DAAT)
 			{
-				this.AddCreature_Mod(this.GetCreatureGenerationList_Mod(sefira.openLevel), sefira);
+				this.AddCreature(this.GetCreatureGenerationList(sefira.openLevel), sefira);
 			}
 		}
-		PlayerModel.instance.CheckOvertimeMode();
 	}
 
 	// Token: 0x06004303 RID: 17155 RVA: 0x00199C80 File Offset: 0x00197E80
@@ -702,17 +667,11 @@ public class SefiraManager : IObserver
 
 	// Token: 0x0600430B RID: 17163 RVA: 0x0019A09C File Offset: 0x0019829C
 	private void OnFixedUpdate()
-	{ // <Mod>
+	{
 		foreach (Sefira sefira in this.sefiraList)
 		{
 			sefira.OnFixedUpdate();
 		}
-		int num = 0;
-		foreach (Sefira sefira in PlayerModel.instance.GetOpenedAreaList())
-		{
-			num += sefira.GetOfficerAliveLevel();
-		}
-		energyIncome.baseCap = num;
 	}
 
 	// Token: 0x0600430C RID: 17164 RVA: 0x0019A0F8 File Offset: 0x001982F8
@@ -777,57 +736,6 @@ public class SefiraManager : IObserver
 		}
 	}
 
-	// <Patch>
-	private void AddCreature_Mod(LobotomyBaseMod.LcIdLong[] list, Sefira sefira)
-	{
-		if (list.Length != 0)
-		{
-			List<LobotomyBaseMod.LcIdLong> list2 = new List<LobotomyBaseMod.LcIdLong>();
-			foreach (long id in new List<long>(CreatureGenerateInfo.GetAll(false)))
-			{
-				list2.Add(new LobotomyBaseMod.LcIdLong(id));
-			}
-			list2.AddRange(CreatureGenerateInfo.GetAll_Mod(false));
-			foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
-			{
-				LobotomyBaseMod.LcIdLong item = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creatureModel.metaInfo), creatureModel.metadataId);
-				list2.Remove(item);
-			}
-			List<LobotomyBaseMod.LcIdLong> list3 = new List<LobotomyBaseMod.LcIdLong>();
-			foreach (LobotomyBaseMod.LcIdLong item2 in list)
-			{
-				if (list2.Contains(item2))
-				{
-					list3.Add(item2);
-				}
-			}
-			if (list3.Count != 0)
-			{
-				SefiraIsolate[] array = sefira.isolateManagement.GenIsolateByCreatureAryByOrder_Mod(list3.ToArray());
-				foreach (SefiraIsolate sefiraIsolate in array)
-				{
-					CreatureManager.instance.AddCreature_Mod(sefiraIsolate.GetLcId(), sefiraIsolate, sefira.indexString);
-				}
-			}
-		}
-	}
-
-	// <Patch>
-	private LobotomyBaseMod.LcIdLong[] GetCreatureGenerationList_Mod(int openLevel)
-	{
-		if (openLevel > 4)
-		{
-			return new LobotomyBaseMod.LcIdLong[0];
-		}
-		List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>();
-		LobotomyBaseMod.LcIdLong item;
-		while (PlayerModel.instance.GetWaitingCreature_Mod(out item))
-		{
-			list.Add(item);
-		}
-		return list.ToArray();
-	}
-
 	// Token: 0x04003DBE RID: 15806
 	public const string SefiraCharacterSpritePrefix = "Sprites/Sefira/Character/";
 
@@ -857,7 +765,4 @@ public class SefiraManager : IObserver
 
 	// Token: 0x04003DC7 RID: 15815
 	private Dictionary<string, SefiraEnum> _GenNodeSefiraTable = new Dictionary<string, SefiraEnum>();
-
-	// <Mod>
-	private EnergyModel.EnergyIncome energyIncome;
 }

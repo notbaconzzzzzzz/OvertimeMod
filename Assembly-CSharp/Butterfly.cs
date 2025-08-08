@@ -6,7 +6,7 @@ using UnityEngine;
 using WorkerSpine;
 
 // Token: 0x020003CE RID: 974
-public class Butterfly : CreatureBase, IObserver // <Mod>
+public class Butterfly : CreatureBase
 {
 	// Token: 0x06001F67 RID: 8039 RVA: 0x000F9D4C File Offset: 0x000F7F4C
 	public Butterfly()
@@ -67,34 +67,15 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 
 	// Token: 0x06001F6D RID: 8045 RVA: 0x00021684 File Offset: 0x0001F884
 	public override void OnStageStart()
-	{ // <Mod>
+	{
 		base.OnStageStart();
 		this.ParamInit();
 		this.effects = new List<Butterfly.ButterflyEffect>();
-		_deadCount = 0;
-		_extinctCount = 0;
-		_clerkTotal = 0;
-		_departmentTotal = 0;
-		foreach (Sefira sefira in SefiraManager.instance.GetActivatedSefiras())
-		{
-			int num = sefira.GetAliveOfficerCnt();
-			_clerkTotal += num;
-			if (num > 0)
-			{
-				_departmentTotal++;
-			}
-		}
-        Notice.instance.Observe(NoticeName.OnOfficerDie, this);
-		deadList.Clear();
-		extinctList.Clear();
-        model.movementScale = 1f;
-        model.SetDefenseId("1");
 	}
 
 	// Token: 0x06001F6E RID: 8046 RVA: 0x0001F321 File Offset: 0x0001D521
 	public override void OnStageRelease()
 	{
-		Notice.instance.Remove(NoticeName.OnOfficerDie, this);
 		base.OnStageRelease();
 		this.ParamInit();
 	}
@@ -126,14 +107,9 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 
 	// Token: 0x06001F71 RID: 8049 RVA: 0x0002169D File Offset: 0x0001F89D
 	public override void Escape()
-	{ // <Mod>
+	{
 		base.Escape();
 		this.model.Escape();
-        if (ReworkedVersion)
-        {
-            model.baseMaxHp += 5 * _deadCount;
-            model.hp += 5f * (float)_deadCount;
-        }
 		this.skillCoolTimer.StartTimer(10f);
 		this.MakeMovement();
 	}
@@ -240,14 +216,10 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 			for (int i = list.Count - 1; i >= 0; i--)
 			{
 				UnitModel unit = list[i].GetUnit();
-				if (unit.IsEtcUnit())
+				if (unit.hp <= 0f)
 				{
 					list.RemoveAt(i);
 				}
-				else if (unit.hp <= 0f)
-				{
-					list.RemoveAt(i);
-				}/*
 				else if (unit is Butterfly.ButterflyEffect)
 				{
 					list.RemoveAt(i);
@@ -259,7 +231,7 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 				else if (unit is YoungPrinceFriend.Spore)
 				{
 					list.RemoveAt(i);
-				}*/
+				}
 			}
 			if (list.Count <= 0)
 			{
@@ -330,15 +302,10 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 
 	// Token: 0x06001F77 RID: 8055 RVA: 0x000FA4C8 File Offset: 0x000F86C8
 	public void AttackEnd()
-	{ // <Mod>
+	{
 		this.attackTarget = null;
 		this.attackAfterDelayTimer.StartTimer(1f);
-		float num = 4f;
-		if (ReworkedVersion && _clerkTotal > 0)
-		{
-			num *= 1f - 0.5f * (float)_deadCount / (float)_clerkTotal;
-		}
-		this.attackCoolTimer.StartTimer(num);
+		this.attackCoolTimer.StartTimer(4f);
 		this.animScript.animator.SetBool("Skill", false);
 		this.animScript.animator.SetBool("Attack", false);
 	}
@@ -373,7 +340,7 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 
 	// Token: 0x06001F7B RID: 8059 RVA: 0x000FA630 File Offset: 0x000F8830
 	public void AttackDamage()
-	{ // <Mod>
+	{
 		if (this.attackTarget != null)
 		{
 			if (this.attackTarget.hp <= 0f)
@@ -403,23 +370,8 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 			gameObject.transform.position = this.attackTarget.GetCurrentViewPosition() + new Vector3(0f, 1.5f * base.Unit.gameObject.transform.localScale.y, 0f);
 			gameObject.transform.localScale = new Vector3(base.Unit.gameObject.transform.localScale.y, base.Unit.gameObject.transform.localScale.y, base.Unit.gameObject.transform.localScale.z);
 			this.MakeSound("Attack", this.attackTarget);
-			float dmg = (float)Butterfly.attackDmg;
-			RwbpType type = RwbpType.W;
-			if (ReworkedVersion)
-			{
-				dmg += (float)_extinctCount * 1f;
-				if (IsExtinctArea)
-				{
-					type = RwbpType.P;
-					if (attackTarget is AgentModel)
-					{
-						AgentModel agentModel = attackTarget as AgentModel;
-						agentModel.SetSpecialDeadScene(WorkerSpine.AnimatorName.ButterflyAgentDead, false, true);
-					}
-				}
-			}
-			this.attackTarget.TakeDamage(this.model, new DamageInfo(type, dmg));
-			DamageParticleEffect damageParticleEffect = DamageParticleEffect.Invoker(this.attackTarget, type, this.model);
+			this.attackTarget.TakeDamage(this.model, new DamageInfo(RwbpType.W, (float)Butterfly.attackDmg));
+			DamageParticleEffect damageParticleEffect = DamageParticleEffect.Invoker(this.attackTarget, RwbpType.W, this.model);
 			if (this.attackTarget is OfficerModel)
 			{
 				OfficerModel officerModel2 = this.attackTarget as OfficerModel;
@@ -435,10 +387,6 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 				{
 					agentModel.SetSpecialDeadScene(WorkerSpine.AnimatorName.ButterflyAgentDead, false, true);
 					agentModel.Die();
-				}
-				else if (type != RwbpType.W)
-				{
-					agentModel.ResetSpecialDeadScene();
 				}
 			}
 		}
@@ -457,7 +405,7 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 
 	// Token: 0x06001F7D RID: 8061 RVA: 0x000FA8C0 File Offset: 0x000F8AC0
 	public void TrySkillAttack(UnitModel target)
-	{ // <Mod>
+	{
 		if (target == this.model)
 		{
 			return;
@@ -475,23 +423,8 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 			OfficerModel officerModel = target as OfficerModel;
 			officerModel.SetSpecialDeadScene(WorkerSpine.AnimatorName.ButterflyAgentDead, false, true);
 		}
-		float dmg = (float)Butterfly.skillDmg;
-		RwbpType type = RwbpType.W;
-		if (ReworkedVersion)
-		{
-			dmg += (float)_extinctCount * 0.5f;
-			if (IsExtinctArea)
-			{
-				type = RwbpType.P;
-				if (target is AgentModel)
-				{
-					AgentModel agentModel = target as AgentModel;
-					agentModel.SetSpecialDeadScene(WorkerSpine.AnimatorName.ButterflyAgentDead, false, true);
-				}
-			}
-		}
-		target.TakeDamage(this.model, new DamageInfo(type, dmg));
-		DamageParticleEffect damageParticleEffect = DamageParticleEffect.Invoker(target, type, this.model);
+		target.TakeDamage(this.model, new DamageInfo(RwbpType.W, (float)Butterfly.skillDmg));
+		DamageParticleEffect damageParticleEffect = DamageParticleEffect.Invoker(target, RwbpType.W, this.model);
 		if (target is OfficerModel)
 		{
 			OfficerModel officerModel2 = target as OfficerModel;
@@ -507,10 +440,6 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 			{
 				agentModel.SetSpecialDeadScene(WorkerSpine.AnimatorName.ButterflyAgentDead, false, true);
 				agentModel.Die();
-			}
-			else if (type != RwbpType.W)
-			{
-				agentModel.ResetSpecialDeadScene();
 			}
 		}
 		if (target.hp <= 0f)
@@ -544,91 +473,6 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 		}
 		return result;
 	}
-
-	//> <Mod> Funeral Rework
-	public bool ReworkedVersion
-	{
-		get
-		{
-			return SpecialModeConfig.instance.GetValue<bool>("FuneralRework");
-		}
-	}
-
-    public bool IsExtinctArea
-    {
-        get
-        {
-			if (currentPassage == null) return false;
-            return extinctList.Contains(currentPassage.GetSefira());
-        }
-    }
-	
-	public void OnNotice(string notice, params object[] param)
-	{
-		if (notice == NoticeName.OnOfficerDie)
-		{
-			OfficerModel officerModel = param[0] as OfficerModel;
-			if (officerModel == null)
-			{
-				return;
-			}
-			if (deadList.Contains(officerModel))
-			{
-				return;
-			}
-			deadList.Add(officerModel);
-            _deadCount++;
-            if (ReworkedVersion)
-            {
-                if (model.IsEscaped())
-                {
-                    model.baseMaxHp += 5;
-                    model.hp += 5f;
-                }
-				model.movementScale = 1f + _deadCount * 0.02f / 3f;
-                if (_deadCount >= _clerkTotal)
-                {
-                    model.SetDefenseId("2");
-                }
-            }
-			Sefira sefira = officerModel.GetCurrentSefira();
-			if (sefira.GetAliveOfficerCnt() <= 0)
-			{
-				if (extinctList.Contains(sefira))
-				{
-					return;
-				}
-				extinctList.Add(sefira);
-				_extinctCount++;
-				if (ReworkedVersion)
-				{
-					model.SubQliphothCounter();
-				}
-			}
-		}
-	}
-
-    public override void OnStageEnd()
-    {
-        Notice.instance.Remove(NoticeName.OnOfficerDie, this);
-		deadList.Clear();
-		extinctList.Clear();
-        model.movementScale = 1f;
-        model.SetDefenseId("1");
-    }
-
-	private int _deadCount;
-
-	private int _extinctCount;
-
-	private int _clerkTotal;
-
-	private int _departmentTotal;
-
-	private List<WorkerModel> deadList = new List<WorkerModel>();
-
-	private List<Sefira> extinctList = new List<Sefira>();
-    //<
 
 	// Token: 0x04001FD2 RID: 8146
 	private const int justiceCondition = 3;
@@ -810,11 +654,14 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 				foreach (MovableObjectNode movableObjectNode in this.passage.GetEnteredTargets(this.movableNode))
 				{
 					UnitModel unit = movableObjectNode.GetUnit();
-					if (unit != this.script.model)
+					if (!(unit is Butterfly.ButterflyEffect))
 					{
-						if (Math.Abs(movableObjectNode.GetCurrentViewPosition().x - this.movableNode.GetCurrentViewPosition().x) <= 0.2f)
+						if (unit != this.script.model)
 						{
-							this.script.TrySkillAttack(unit);
+							if (Math.Abs(movableObjectNode.GetCurrentViewPosition().x - this.movableNode.GetCurrentViewPosition().x) <= 0.2f)
+							{
+								this.script.TrySkillAttack(unit);
+							}
 						}
 					}
 				}
@@ -846,24 +693,6 @@ public class Butterfly : CreatureBase, IObserver // <Mod>
 		public void OnArrive()
 		{
 			this.enable = false;
-		}
-
-		// <Mod>
-		public override bool IsEtcUnit()
-		{
-			return true;
-		}
-
-		// <Mod>
-		public override bool CanOpenDoor()
-		{
-			return false;
-		}
-
-		// <Mod>
-		public override bool IgnoreDoors()
-		{
-			return true;
 		}
 
 		// Token: 0x04001FF0 RID: 8176

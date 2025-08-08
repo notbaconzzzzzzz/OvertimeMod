@@ -23,7 +23,7 @@ public class BlackSwanWeapon : EquipmentScriptBase
 
 	// Token: 0x060035D3 RID: 13779 RVA: 0x00160010 File Offset: 0x0015E210
 	public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
-	{ // <Mod> Made not trigger against Punishing Bird
+	{
 		WorkerModel workerModel = base.model.owner as WorkerModel;
 		UnitDirection direction = workerModel.GetMovableNode().GetDirection();
 		bool flag = true;
@@ -34,10 +34,6 @@ public class BlackSwanWeapon : EquipmentScriptBase
 		if ((workerModel as AgentModel).currentSkill != null)
 		{
 			Debug.Log("working");
-			return base.OnTakeDamage(actor, ref dmg);
-		}
-		if (actor is CreatureModel && (actor as CreatureModel).script is SmallBird && !actor.HasUnitBuf(UnitBufType.SMALLBIRD_MAD))
-		{
 			return base.OnTakeDamage(actor, ref dmg);
 		}
 		if (direction == UnitDirection.LEFT)

@@ -1,7 +1,3 @@
-/*
-public override void TakeDamageWithoutEffect(UnitModel actor, DamageInfo dmg) // 
-public override void TakeDamage(UnitModel actor, DamageInfo dmg) // 
-*/
 using System;
 using System.Collections.Generic;
 using DeadEffect;
@@ -134,50 +130,27 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 
 	// Token: 0x060038F3 RID: 14579 RVA: 0x001703B4 File Offset: 0x0016E5B4
 	public override void TakeDamageWithoutEffect(UnitModel actor, DamageInfo dmg)
-	{ // <Mod> Damage Result
-		if (dmg.result.activated)
-		{
-			dmg.result.activated = false;
-			dmg = dmg.Copy();
-			dmg.result.activated = true;
-		}
-		else
-		{
-			dmg.result.activated = true;
-			dmg = dmg.Copy();
-		}
-		DamageResult result = dmg.result;
-		result.ResetValues(dmg);
+	{
 		if (this.IsDead())
 		{
 			return;
 		}
 		base.TakeDamageWithoutEffect(actor, dmg);
 		float num = dmg.GetDamage();
-		result.beforeShield = num;
-		result.byResist = num;
-		result.originDamage = num;
 		if (dmg.type == RwbpType.R)
 		{
-			result.resultDamage = num;
-			result.hpDamage = num;
 			float hp = this.hp;
 			this.hp -= num;
 			float num2 = hp - this.hp;
 		}
 		else if (dmg.type == RwbpType.W)
 		{
-			result.resultDamage = num;
-			result.spDamage = num;
 			float mental = this.mental;
 			this.mental -= num;
 			float num3 = mental - this.mental;
 		}
 		else if (dmg.type == RwbpType.B)
 		{
-			result.resultDamage = num;
-			result.hpDamage = num;
-			result.spDamage = num;
 			float hp2 = this.hp;
 			this.hp -= num;
 			this.mental -= num;
@@ -186,15 +159,10 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 		{
 			float num4 = num / 100f;
 			num = (float)this.maxHp * num4;
-			result.scaling = maxHp / 100f;
-			result.resultDamage = num;
-			result.hpDamage = num;
 			this.hp -= num;
 		}
 		else if (dmg.type == RwbpType.N)
 		{
-			result.resultDamage = num;
-			result.hpDamage = num;
 			float hp3 = this.hp;
 			this.hp -= num;
 			float num5 = hp3 - this.hp;
@@ -209,35 +177,12 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 		{
 			this.OnDieByMental();
 		}
-		foreach (UnitBuf unitBuf in _bufList)
-		{
-			unitBuf.OnTakeDamage_After(actor, dmg);
-		}
 	}
 
 	// Token: 0x060038F4 RID: 14580 RVA: 0x00170544 File Offset: 0x0016E744
 	public override void TakeDamage(UnitModel actor, DamageInfo dmg)
-	{ // <Mod> Damage Result
-		if (dmg.result.activated)
-		{
-			dmg.result.activated = false;
-			dmg = dmg.Copy();
-			dmg.result.activated = true;
-		}
-		else
-		{
-			dmg.result.activated = true;
-			dmg = dmg.Copy();
-		}
-		if (actor is CreatureModel)
-		{
-			float mult = 1f;
-			mult = actor.GetDamageFactorByEquipment();
-			dmg.min *= mult;
-			dmg.max *= mult;
-		}
-		DamageResult result = dmg.result;
-		result.ResetValues(dmg);
+	{
+		dmg = dmg.Copy();
 		if (this.IsDead())
 		{
 			return;
@@ -250,24 +195,15 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 		}
 		num *= this.GetBufDamageMultiplier(actor, dmg);
 		float num2 = dmg.GetDamageWithDefenseInfo(this.defense) * num;
-		result.beforeShield = num2;
-		float originalDamage = num2;
-		originalDamage /= num;
-		result.byResist = originalDamage;
-		originalDamage /= defense.GetMultiplier(dmg.type);
-		result.originDamage = originalDamage;
 		if (dmg.type == RwbpType.R)
 		{
 			foreach (BarrierBuf barrierBuf in this._barrierBufList.ToArray())
 			{
 				num2 = barrierBuf.UseBarrier(RwbpType.R, num2);
 			}
-			result.resultDamage = num2;
-			result.hpDamage = num2;
 			float hp = this.hp;
 			this.hp -= num2;
 			float value = (float)((int)hp - (int)this.hp);
-			result.resultNumber = (int)value;
 			this.MakeDamageEffect(RwbpType.R, value, this.defense.GetDefenseType(RwbpType.R));
 		}
 		else if (dmg.type == RwbpType.W)
@@ -276,12 +212,9 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 			{
 				num2 = barrierBuf2.UseBarrier(RwbpType.W, num2);
 			}
-			result.resultDamage = num2;
-			result.spDamage = num2;
 			float mental = this.mental;
 			this.mental -= num2;
 			float value2 = mental - this.mental;
-			result.resultNumber = (int)value2;
 			this.MakeDamageEffect(RwbpType.W, value2, this.defense.GetDefenseType(RwbpType.W));
 		}
 		else if (dmg.type == RwbpType.B)
@@ -290,41 +223,30 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 			{
 				num2 = barrierBuf3.UseBarrier(RwbpType.B, num2);
 			}
-			result.resultDamage = num2;
-			result.hpDamage = num2;
-			result.spDamage = num2;
 			float hp2 = this.hp;
 			this.hp -= num2;
 			float value3 = (float)((int)hp2 - (int)this.hp);
 			this.mental -= num2;
-			result.resultNumber = (int)value3;
 			this.MakeDamageEffect(RwbpType.B, value3, this.defense.GetDefenseType(RwbpType.B));
 		}
 		else if (dmg.type == RwbpType.P)
 		{
 			float num3 = num2 / 100f;
 			num2 = (float)this.maxHp * num3;
-			result.scaling = maxHp / 100f;
 			foreach (BarrierBuf barrierBuf4 in this._barrierBufList.ToArray())
 			{
 				num2 = barrierBuf4.UseBarrier(RwbpType.P, num2);
 			}
-			result.resultDamage = num2;
-			result.hpDamage = num2;
 			float hp3 = this.hp;
 			this.hp -= num2;
 			float value4 = (float)((int)hp3 - (int)this.hp);
-			result.resultNumber = (int)value4;
 			this.MakeDamageEffect(RwbpType.P, value4, this.defense.GetDefenseType(RwbpType.P));
 		}
 		else if (dmg.type == RwbpType.N)
 		{
-			result.resultDamage = num2;
-			result.hpDamage = num2;
 			float hp4 = this.hp;
 			this.hp -= num2;
 			float value5 = hp4 - this.hp;
-			result.resultNumber = (int)value5;
 			this.MakeDamageEffect(RwbpType.N, value5, DefenseInfo.Type.NONE);
 		}
 		this.hp = Mathf.Clamp(this.hp, 0f, (float)this.maxHp);
@@ -336,10 +258,6 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 		else if (this.mental <= 0f)
 		{
 			this.OnDieByMental();
-		}
-		foreach (UnitBuf unitBuf in _bufList)
-		{
-			unitBuf.OnTakeDamage_After(actor, dmg);
 		}
 	}
 
@@ -453,14 +371,10 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 
 	// Token: 0x060038FC RID: 14588 RVA: 0x001709F8 File Offset: 0x0016EBF8
 	private void OnGiveDamageByRifle()
-	{ // <Mod>
+	{
 		PassageObjectModel passage = this.GetMovableNode().GetPassage();
 		DamageInfo damageInfo = base.Equipment.weapon.metaInfo.damageInfos[3].Copy();
 		damageInfo.type = this.rwbpType;
-		float mult = 1f;
-		mult = GetDamageFactorByEquipment();
-		damageInfo.min *= mult;
-		damageInfo.max *= mult;
 		damageInfo.soundInfo.PlaySound(this.GetCurrentViewPosition());
 		if (passage != null)
 		{

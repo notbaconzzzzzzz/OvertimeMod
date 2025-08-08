@@ -10,13 +10,5 @@ public enum OrdealLevel
 	// Token: 0x0400373F RID: 14143
 	DUSK,
 	// Token: 0x04003740 RID: 14144
-	MIDNIGHT,
-    //> <Mod>
-    OVERTIME_DAWN,
-
-    OVERTIME_NOON,
-
-    OVERTIME_DUSK,
-
-    OVERTIME_MIDNIGHT
+	MIDNIGHT
 }

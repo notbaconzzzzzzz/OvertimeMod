@@ -1,6 +1,3 @@
-/*
-public static void DefenseSetFactor(DefenseInfo defenseInfo, Text[] text, bool shortened = true) // Resistances will be shown as 2 decimal point in certain situations
-*/
 using System;
 using Assets.Scripts.UI.Utils;
 using UnityEngine;
@@ -49,18 +46,13 @@ public class UIUtil
 	}
 
 	// Token: 0x06005219 RID: 21017 RVA: 0x001DACAC File Offset: 0x001D8EAC
-	public static void DefenseSetFactor(DefenseInfo defenseInfo, Text[] text, bool shortened = true)
-	{ // <Mod> scripts can now choose to show 2 decimal places instead of 1
-		string format = (shortened) ? "({0:0.0})" : "({0:0.00})";
+	public static void DefenseSetFactor(DefenseInfo defenseInfo, Text[] text, bool bracket = false)
+	{
+		string format = (!bracket) ? "{0:0.0}" : "({0:0.0})";
 		text[0].text = string.Format(format, defenseInfo.R);
 		text[1].text = string.Format(format, defenseInfo.W);
 		text[2].text = string.Format(format, defenseInfo.B);
 		text[3].text = string.Format(format, defenseInfo.P);
-	}
-
-	public static void DefenseSetFactor(DefenseInfo defenseInfo, Text[] text)
-	{
-		DefenseSetFactor(defenseInfo, text, false);
 	}
 
 	// Token: 0x0600521A RID: 21018 RVA: 0x001DAD34 File Offset: 0x001D8F34

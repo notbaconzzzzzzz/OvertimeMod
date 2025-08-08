@@ -10,12 +10,12 @@ public class SnowWhiteWeapon : EquipmentScriptBase
 
 	// Token: 0x060036B0 RID: 14000 RVA: 0x00162EF0 File Offset: 0x001610F0
 	public override DamageInfo GetDamage(UnitModel actor)
-	{ // <Mod> change damage increase from 5 to 2
+	{
 		if (actor != null && actor.HasEquipment(400023))
 		{
 			DamageInfo damage = base.GetDamage(actor);
-			damage.min += 2f;
-			damage.max += 2f;
+			damage.min += 5f;
+			damage.max += 5f;
 			return damage;
 		}
 		return base.GetDamage(actor);

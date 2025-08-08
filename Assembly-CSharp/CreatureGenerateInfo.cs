@@ -1,10 +1,5 @@
-/*
-public static long[] GetAll(bool removeTool = false) // 
-+public static readonly long[] overtimeCreatures // 
-*/
 using System;
 using System.Collections.Generic;
-using LobotomyBaseMod; // 
 using UnityEngine;
 
 // Token: 0x020007DF RID: 2015
@@ -32,7 +27,7 @@ public class CreatureGenerateInfo : MonoBehaviour
 
 	// Token: 0x06003E44 RID: 15940 RVA: 0x0018490C File Offset: 0x00182B0C
 	public static long[] GetAll(bool removeTool = false)
-	{ // <Mod>
+	{
 		List<long> list;
 		if (GlobalGameManager.instance.dlcCreatureOn)
 		{
@@ -41,14 +36,7 @@ public class CreatureGenerateInfo : MonoBehaviour
 		else
 		{
 			list = new List<long>(CreatureGenerateInfo.all_except_creditCreatures);
-		}/*
-		if (!SpecialModeConfig.instance.GetValue<bool>("NewAbnormalities"))
-		{
-			foreach (long item in overtimeCreatures)
-			{
-				list.Remove(item);
-			}
-		}*/
+		}
 		if (removeTool)
 		{
 			foreach (long item in CreatureGenerateInfo.kitCreature)
@@ -68,32 +56,6 @@ public class CreatureGenerateInfo : MonoBehaviour
 	{
 		List<long> list = new List<long>(CreatureGenerateInfo.creditCreatures);
 		return list.Contains(id);
-	}
-
-	// <Patch>
-	public static List<LobotomyBaseMod.LcIdLong> GetAll_Mod(bool removeTool = false)
-	{
-		List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>(CreatureGenerateInfo.all_mod);
-		if (!SpecialModeConfig.instance.GetValue<bool>("NewAbnormalities"))
-		{
-			List<LobotomyBaseMod.LcIdLong> list2 = new List<LobotomyBaseMod.LcIdLong>();
-			foreach (LobotomyBaseMod.LcIdLong item in list)
-			{
-				if (item.packageId == "NotbaconOvertimeMod")
-				{
-					list2.Add(item);
-				}
-			}
-			foreach (LobotomyBaseMod.LcIdLong item in list2)
-			{
-				list.Remove(item);
-			}
-		}
-		if (removeTool)
-		{
-			list.RemoveAll((LobotomyBaseMod.LcIdLong x) => CreatureTypeList.instance.GetData_Mod(x).creatureWorkType == CreatureWorkType.KIT);
-		}
-		return list;
 	}
 
 	// Token: 0x06003E46 RID: 15942 RVA: 0x001849A4 File Offset: 0x00182BA4
@@ -709,17 +671,5 @@ public class CreatureGenerateInfo : MonoBehaviour
 		100104L,
 		300109L,
 		100015L
-	};
-
-	// <Patch>
-	public static List<LobotomyBaseMod.LcIdLong> all_mod = new List<LobotomyBaseMod.LcIdLong>();
-
-    // <Mod>
-	public static readonly long[] overtimeCreatures = new long[]
-	{
-		130905L,
-		130923L,
-		130938L,
-		130948L
 	};
 }

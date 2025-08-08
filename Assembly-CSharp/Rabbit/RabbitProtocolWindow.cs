@@ -1,7 +1,3 @@
-/*
-private void UpdateText() // 
-public void OnClickCommand() // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -164,18 +160,13 @@ namespace Rabbit
 
 		// Token: 0x06004EE0 RID: 20192 RVA: 0x001CDD58 File Offset: 0x001CBF58
 		private void UpdateText()
-		{ // <Mod>
+		{
 			this.Count.text = string.Format("{0}/{1}", this.currentSelected.Count, 4);
 			float num = (float)this.currentSelected.Count * 0.25f;
-			num /= StageTypeInfo.instnace.GetPercentEnergyFactor();
-			if (ResearchDataModel.instance.IsUpgradedAbility("energy_discount"))
-			{
-				num *= 0.9f;
-			}
 			float energy = EnergyModel.instance.GetEnergy();
 			float num2 = energy * num;
 			this.Cost.text = ((int)num2).ToString();
-			this.CostText.text = string.Format(LocalizeTextDataModel.instance.GetText("Rabbit_Info_CostCalc"), Mathf.RoundToInt(num * 100f));
+			this.CostText.text = string.Format(LocalizeTextDataModel.instance.GetText("Rabbit_Info_CostCalc"), (int)(num * 100f));
 		}
 
 		// Token: 0x06004EE1 RID: 20193 RVA: 0x001CDDFC File Offset: 0x001CBFFC
@@ -391,18 +382,13 @@ namespace Rabbit
 
 		// Token: 0x06004EEA RID: 20202 RVA: 0x001CE444 File Offset: 0x001CC644
 		public void OnClickCommand()
-		{ // <Mod>
+		{
 			if (this.currentSelected.Count > 0)
 			{
 				List<SefiraEnum> list = new List<SefiraEnum>(this.currentSelected.ToArray());
 				float num = (float)this.currentSelected.Count * 0.25f;
-				num /= StageTypeInfo.instnace.GetPercentEnergyFactor();
 				float energy = EnergyModel.instance.GetEnergy();
 				float num2 = energy * num;
-				if (ResearchDataModel.instance.IsUpgradedAbility("energy_discount"))
-				{
-					num2 *= 0.9f;
-				}
 				EnergyModel.instance.SubEnergy((float)((int)num2));
 				Notice.instance.Send(NoticeName.RabbitProtocolActivated, new object[]
 				{

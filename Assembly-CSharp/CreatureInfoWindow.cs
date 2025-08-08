@@ -134,9 +134,7 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x06005416 RID: 21526 RVA: 0x001E8BE8 File Offset: 0x001E6DE8
 	public static CreatureInfoWindow CreateWindow(long metaId)
-	{ // <Patch>
-        return CreateWindow_Mod(new LobotomyBaseMod.LcIdLong(metaId));
-        /*
+	{
 		CreatureInfoWindow.CurrentWindow.IsCodex = false;
 		CreatureInfoWindow.CurrentWindow.SetWindowType(false);
 		CreatureInfoWindow.CurrentWindow.CurrentMetaId = metaId;
@@ -149,15 +147,15 @@ public class CreatureInfoWindow : MonoBehaviour
 		catch (Exception ex)
 		{
 		}
-		return CreatureInfoWindow.CurrentWindow;*/
+		return CreatureInfoWindow.CurrentWindow;
 	}
 
 	// Token: 0x06005417 RID: 21527 RVA: 0x001E8C5C File Offset: 0x001E6E5C
 	public static CreatureInfoWindow CreateCodexWindow()
-	{ // <Patch>
+	{
 		CreatureInfoWindow.CurrentWindow.IsCodex = true;
 		CreatureInfoWindow.CurrentWindow.SetWindowType(true);
-		CreatureInfoWindow.CurrentWindow.CurrentMetaIdMod = new LobotomyBaseMod.LcIdLong(-1L);
+		CreatureInfoWindow.CurrentWindow.CurrentMetaId = -1L;
 		CreatureInfoWindow.CurrentWindow.IsEnabled = true;
 		CreatureInfoWindow.CurrentWindow.codex.OnOpen();
 		try
@@ -172,8 +170,8 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x06005418 RID: 21528 RVA: 0x00044425 File Offset: 0x00042625
 	public static bool IsCurrentMetaNull()
-	{ // <Patch>
-        return CreatureInfoWindow.CurrentWindow.CurrentMetaIdMod == -1L;
+	{
+		return CreatureInfoWindow.CurrentWindow.CurrentMetaId == -1L;
 	}
 
 	// Token: 0x06005419 RID: 21529 RVA: 0x00044435 File Offset: 0x00042635
@@ -184,9 +182,9 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x0600541A RID: 21530 RVA: 0x00044444 File Offset: 0x00042644
 	private void Awake()
-	{ // <Patch>
+	{
 		CreatureInfoWindow._currentWindow = this;
-		this.CurrentMetaIdMod = new LobotomyBaseMod.LcIdLong(-1L);
+		this.CurrentMetaId = -1L;
 	}
 
 	// Token: 0x0600541B RID: 21531 RVA: 0x001E8CD8 File Offset: 0x001E6ED8
@@ -289,24 +287,20 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x0600541E RID: 21534 RVA: 0x00044454 File Offset: 0x00042654
 	public void OpenCodexCreatureInfo(CreatureTypeInfo metaInfo)
-	{ // <Patch>
-        OpenCodexCreatureInfo_Mod(CreatureTypeList.instance.GetLcId(metaInfo));
-        /*
+	{
 		this.InfoCodexArrowRoot.SetActive(true);
 		this.SetWindowType(false);
 		this.CurrentMetaId = metaInfo.id;
-		this.OnChangeCreature();*/
+		this.OnChangeCreature();
 	}
 
 	// Token: 0x0600541F RID: 21535 RVA: 0x0004447B File Offset: 0x0004267B
 	public void OpenCodexCreatureInfo(long metaId)
-	{ // <Patch>
-        OpenCodexCreatureInfo_Mod(new LobotomyBaseMod.LcIdLong(metaId));
-        /*
+	{
 		this.InfoCodexArrowRoot.SetActive(true);
 		this.SetWindowType(false);
 		this.CurrentMetaId = metaId;
-		this.OnChangeCreature();*/
+		this.OnChangeCreature();
 	}
 
 	// Token: 0x06005420 RID: 21536 RVA: 0x001E9030 File Offset: 0x001E7230
@@ -426,15 +420,14 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x06005425 RID: 21541 RVA: 0x001E93A8 File Offset: 0x001E75A8
 	private void OnChangeCreature()
-	{ // <Mod>
+	{
 		if (this.MetaInfo.creatureWorkType == CreatureWorkType.NORMAL)
 		{
 			this.normalCreatureArea.SetActive(true);
 			this.kitCreatureArea.SetActive(false);
 			this._costTable.Clear();
-			for (int i = 0; i < this._controllers.Count; i++)
+			foreach (CreatureInfoController creatureInfoController in this._controllers)
 			{
-				CreatureInfoController creatureInfoController = this._controllers[i];
 				creatureInfoController.Initialize();
 			}
 			int observationLevel = this.ObserveInfo.GetObservationLevel();
@@ -472,17 +465,17 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x06005428 RID: 21544 RVA: 0x001E94B8 File Offset: 0x001E76B8
 	public void CloseWindow()
-	{ // <Patch>
+	{
 		if (this.IsCodex && !this.codex._activeControl.activeInHierarchy)
 		{
 			this.SetWindowType(true);
 			this.InfoCodexArrowRoot.SetActive(false);
 			this.codex.OnMetaClose();
 			this.codex.OnOpen();
-			this.CurrentMetaIdMod = new LobotomyBaseMod.LcIdLong(-1L);
+			this.CurrentMetaId = -1L;
 			return;
 		}
-		this.CurrentMetaIdMod = new LobotomyBaseMod.LcIdLong(-1L);
+		this.CurrentMetaId = -1L;
 		if (AlterTitleController.Controller)
 		{
 			AlterTitleController.Controller.InitEffect();
@@ -635,64 +628,6 @@ public class CreatureInfoWindow : MonoBehaviour
 	{
 		cost = 3;
 		return true;
-	}
-
-    // <Patch>
-    public static CreatureInfoWindow CreateWindow_Mod(LobotomyBaseMod.LcIdLong metaId)
-    {
-        CreatureInfoWindow.CurrentWindow.IsCodex = false;
-        CreatureInfoWindow.CurrentWindow.SetWindowType(false);
-        CreatureInfoWindow.CurrentWindow.CurrentMetaIdMod = metaId;
-        CreatureInfoWindow.CurrentWindow.IsEnabled = true;
-        CreatureInfoWindow.CurrentWindow.OnChangeCreature();
-        try
-        {
-            CreatureInfoWindow.CurrentWindow.InfoCodexArrowRoot.SetActive(false);
-        }
-        catch (Exception ex)
-        {
-        }
-        return CreatureInfoWindow.CurrentWindow;
-    }
-
-    // <Patch>
-    public void OpenCodexCreatureInfo_Mod(LobotomyBaseMod.LcIdLong metaId)
-    {
-        this.InfoCodexArrowRoot.SetActive(true);
-        this.SetWindowType(false);
-        this.CurrentMetaIdMod = metaId;
-        this.OnChangeCreature();
-    }
-
-    // <Patch>
-    public LobotomyBaseMod.LcIdLong CurrentMetaIdMod
-    {
-        get
-        {
-            return this._currentCreatureMetaIdMod;
-        }
-        private set
-        {
-            this._currentCreatureMetaIdMod = value;
-            if (value == -1L)
-            {
-                this._metaInfo = null;
-                this._observeInfo = null;
-                this._currentModel = null;
-            }
-            else
-            {
-                this._metaInfo = CreatureTypeList.instance.GetData_Mod(value);
-                this._observeInfo = CreatureManager.instance.GetObserveInfo_Mod(value);
-                this._currentModel = CreatureManager.instance.FindCreature_Mod(value);
-            }
-        }
-    }
-
-	// <Mod>
-	public void AddController(CreatureInfoController cont)
-	{
-		_controllers.Add(cont);
 	}
 
 	// Token: 0x0600542F RID: 21551 RVA: 0x001E9924 File Offset: 0x001E7B24
@@ -905,10 +840,6 @@ public class CreatureInfoWindow : MonoBehaviour
 
 	// Token: 0x04004D8B RID: 19851
 	private int _oldLevel = -1;
-
-    // <Patch>
-    [NonSerialized]
-    public LobotomyBaseMod.LcIdLong _currentCreatureMetaIdMod;
 
 	// Token: 0x02000AE3 RID: 2787
 	[Serializable]

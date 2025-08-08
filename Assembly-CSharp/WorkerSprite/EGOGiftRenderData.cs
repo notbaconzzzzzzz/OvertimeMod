@@ -7,15 +7,6 @@ namespace WorkerSprite
 	[Serializable]
 	public class EGOGiftRenderData
 	{
-		// <Patch>
-		public static LobotomyBaseMod.LcId GetLcId(EGOGiftRenderData data)
-		{
-			if (data.modid == null)
-			{
-				return new LobotomyBaseMod.LcId((int)data.metaId);
-			}
-			return new LobotomyBaseMod.LcId(data.modid, (int)data.metaId);
-		}
 		// Token: 0x04003FC7 RID: 16327
 		public Sprite Sprite;
 
@@ -39,9 +30,5 @@ namespace WorkerSprite
 
 		// Token: 0x04003FCE RID: 16334
 		public long metaId;
-
-		// <Patch>
-		[NonSerialized]
-		public string modid;
 	}
 }

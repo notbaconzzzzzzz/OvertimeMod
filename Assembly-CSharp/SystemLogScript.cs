@@ -21,7 +21,6 @@ public class SystemLogScript : MonoBehaviour, IObserver
 	{
 		Notice.instance.Observe(NoticeName.AddSystemLog, this);
 		Notice.instance.Observe(NoticeName.CreatureObserveLevelAdded, this);
-		Notice.instance.Observe(NoticeName.SetSystemLogSize, this);
 	}
 
 	// Token: 0x060051C8 RID: 20936 RVA: 0x00042C5C File Offset: 0x00040E5C
@@ -29,7 +28,6 @@ public class SystemLogScript : MonoBehaviour, IObserver
 	{
 		Notice.instance.Remove(NoticeName.AddSystemLog, this);
 		Notice.instance.Remove(NoticeName.CreatureObserveLevelAdded, this);
-		Notice.instance.Remove(NoticeName.SetSystemLogSize, this);
 	}
 
 	// Token: 0x060051C9 RID: 20937 RVA: 0x001DB8E4 File Offset: 0x001D9AE4
@@ -90,10 +88,6 @@ public class SystemLogScript : MonoBehaviour, IObserver
 					creatureSystemLog.OnObserveLevelUpdated(creatureModel);
 				}
 			}
-		}
-		else if (NoticeName.SetSystemLogSize == notice)
-		{
-			ScalePivot.gameObject.GetComponent<LogCanvasScaler>().ForcelySetScale((float)param[0]);
 		}
 	}
 
@@ -189,8 +183,7 @@ public class SystemLogScript : MonoBehaviour, IObserver
 
 		// Token: 0x060051D1 RID: 20945 RVA: 0x001DBB54 File Offset: 0x001D9D54
 		public void OnObserveLevelUpdated()
-		{ // <Mod>
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true)) return;
+		{
 			CreatureModel creature = CreatureManager.instance.GetCreature(this.targetId);
 			if (creature != null && creature.metaInfo.collectionName == creature.metaInfo.name)
 			{
@@ -200,8 +193,7 @@ public class SystemLogScript : MonoBehaviour, IObserver
 
 		// Token: 0x060051D2 RID: 20946 RVA: 0x00042D02 File Offset: 0x00040F02
 		public void OnObserveLevelUpdated(CreatureModel model)
-		{ // <Mod>
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true)) return;
+		{
 			if (model.metaInfo.collectionName == model.metaInfo.name)
 			{
 				this.ChangeText(model.metaInfo.codeId, model.metaInfo.collectionName);

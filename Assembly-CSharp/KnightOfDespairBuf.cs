@@ -1,6 +1,3 @@
-/*
-public override float OnTakeDamage(UnitModel attacker, DamageInfo damageInfo) // 
-*/
 using System;
 using System.Runtime.CompilerServices;
 
@@ -66,7 +63,7 @@ public class KnightOfDespairBuf : UnitBuf
 
 	// Token: 0x060023DD RID: 9181 RVA: 0x00107310 File Offset: 0x00105510
 	public override float OnTakeDamage(UnitModel attacker, DamageInfo damageInfo)
-	{ // <Mod> changed Pale damage multiplier from 1.5
+	{
 		float result = 1f;
 		switch (damageInfo.type)
 		{
@@ -76,7 +73,7 @@ public class KnightOfDespairBuf : UnitBuf
 			result = 0.5f;
 			break;
 		case RwbpType.P:
-			result = 2f;
+			result = 1.5f;
 			break;
 		}
 		return result;

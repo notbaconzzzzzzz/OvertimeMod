@@ -1,7 +1,3 @@
-/*
-public void OnDestroy() // 
-public override void OnFixedUpdate() // Movement scale fix
-*/
 using System;
 using UnityEngine;
 
@@ -56,15 +52,14 @@ public class OrdealCreatureModel : CreatureModel
 
 	// Token: 0x06003822 RID: 14370 RVA: 0x0003258F File Offset: 0x0003078F
 	public void OnDestroy()
-	{ // <Mod>
+	{
 		base.ClearCommand();
 		this.GetMovableNode().SetActive(false);
-        script.OnDestroy();
 	}
 
 	// Token: 0x06003823 RID: 14371 RVA: 0x0016AFB0 File Offset: 0x001691B0
 	public override void OnFixedUpdate()
-	{ // <Mod>
+	{
 		this.UpdateBufState();
 		this.tempAnim.OnFixedUpdate();
 		if (this._equipment.weapon != null)
@@ -87,7 +82,7 @@ public class OrdealCreatureModel : CreatureModel
 		{
 			this.script.OnFixedUpdate(this);
 		}
-		this.movableNode.ProcessMoveNode(this.metaInfo.speed * this.movementScale * base.GetMovementScaleByBuf());
+		this.movableNode.ProcessMoveNode(this.metaInfo.speed * this.movementScale);
 	}
 
 	// Token: 0x06003824 RID: 14372 RVA: 0x000325A3 File Offset: 0x000307A3

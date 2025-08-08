@@ -130,7 +130,7 @@ public class CircusDawn : CircusOrdealCreature
 	}
 
 	// Token: 0x06001FDB RID: 8155 RVA: 0x000FA558 File Offset: 0x000F8758
-	public virtual void EndTelport()
+	public void EndTelport()
 	{
 		CreatureModel currentWaitingCreature = this._currentWaitingCreature;
 		if (currentWaitingCreature == null)
@@ -385,40 +385,40 @@ public class CircusDawn : CircusOrdealCreature
 	private Timer _teleportDelayTimer = new Timer();
 
 	// Token: 0x04002022 RID: 8226
-	public bool _readyForTeleport;
+	private bool _readyForTeleport;
 
 	// Token: 0x04002023 RID: 8227
 	private GameObject _peBoxDownEffect;
 
 	// Token: 0x04002024 RID: 8228
-	public CreatureModel _currentTrickCreature;
+	private CreatureModel _currentTrickCreature;
 
 	// Token: 0x04002025 RID: 8229
-	public MapNode _currentTeleportNode;
+	private MapNode _currentTeleportNode;
 
 	// Token: 0x04002026 RID: 8230
-	public Timer _trickCastTimer = new Timer();
+	private Timer _trickCastTimer = new Timer();
 
 	// Token: 0x04002027 RID: 8231
-	public CreatureModel _currentWaitingCreature;
+	private CreatureModel _currentWaitingCreature;
 
 	// Token: 0x04002028 RID: 8232
-	public CircusDawnAnim animScript;
+	private CircusDawnAnim animScript;
 
 	// Token: 0x04002029 RID: 8233
-	public CircusDawn.State _state;
+	private CircusDawn.State _state;
 
 	// Token: 0x0400202A RID: 8234
-	public bool _readyToMove;
+	private bool _readyToMove;
 
 	// Token: 0x0400202B RID: 8235
-	public bool _isTeleporting;
+	private bool _isTeleporting;
 
 	// Token: 0x0400202C RID: 8236
-	public bool _isMoving;
+	private bool _isMoving;
 
 	// Token: 0x0400202D RID: 8237
-	public bool _isSuppressed;
+	private bool _isSuppressed;
 
 	// Token: 0x0400202E RID: 8238
 	private const int _explosionDamageMin = 10;

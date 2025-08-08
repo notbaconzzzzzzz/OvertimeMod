@@ -51,7 +51,7 @@ public class PorccuWeaponDebuf : UnitBuf
 	private const float _tickTime = 1f;
 
 	// Token: 0x0400325E RID: 12894
-	private const float _dmg = 3f;
+	private const float _dmg = 2f;
 
 	// Token: 0x0400325F RID: 12895
 	private RwbpType _dmgType = RwbpType.W;

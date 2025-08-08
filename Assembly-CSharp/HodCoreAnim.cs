@@ -11,24 +11,16 @@ public class HodCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x060010F4 RID: 4340 RVA: 0x000168B7 File Offset: 0x00014AB7
 	public void SetScript(HodCoreScript script)
-	{ // <Mod>
-		if (script is OvertimeHodCoreScript)
-		{
-			overtimeScript = script as OvertimeHodCoreScript;
-		}
+	{
 		this.script = script;
 	}
 
 	// Token: 0x1700014B RID: 331
 	// (get) Token: 0x060010F5 RID: 4341 RVA: 0x000168C0 File Offset: 0x00014AC0
 	private UnscaledTimer closeTimer
-	{ // <Mod>
+	{
 		get
 		{
-            if (overtimeScript != null)
-            {
-                return overtimeScript.bossBase._closeTimer;
-            }
 			return this.script.bossBase._closeTimer;
 		}
 	}
@@ -57,9 +49,6 @@ public class HodCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x04001566 RID: 5478
 	private HodCoreScript script;
-
-	// <Mod>
-	private OvertimeHodCoreScript overtimeScript;
 
 	// Token: 0x04001567 RID: 5479
 	public Transform middlePivot;

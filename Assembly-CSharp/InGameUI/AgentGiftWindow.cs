@@ -1,6 +1,3 @@
-/*
-public void SetAgent(AgentModel agent) // EGO gifts can now be locked/hidden at anytime and reguardless of employee level
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,7 +45,7 @@ namespace InGameUI
 
 		// Token: 0x06004CBB RID: 19643 RVA: 0x001C305C File Offset: 0x001C125C
 		public void SetAgent(AgentModel agent)
-		{ // <Mod> EGO gifts can now be locked/hidden at anytime and reguardless of employee level
+		{
 			this.DisableAllSlots();
 			if (agent == null)
 			{
@@ -58,8 +55,6 @@ namespace InGameUI
 			bool flag2 = agent.level >= 4;
 			flag = (flag && GameManager.currentGameManager.state == GameState.STOP);
 			flag2 = (flag2 && GameManager.currentGameManager.state == GameState.STOP);
-            flag = true;
-            flag2 = true;
 			List<EGOgiftModel> addedGifts = agent.Equipment.gifts.addedGifts;
 			foreach (EGOgiftModel gift in addedGifts)
 			{

@@ -1,8 +1,3 @@
-/*
-private static float ComeBackTime // 
-public override void OnTakeDamage(UnitModel actor, DamageInfo dmg, float value) // The first time an agent attacks Fiery Bird, update comeback time to 60 seconds
-public override void OnSuppressed() // An agent must attack Fiery Bird at least once or the weapon wont drop
-*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -35,10 +30,10 @@ public class FireBird : CreatureBase, IObserver
 	// Token: 0x170002D2 RID: 722
 	// (get) Token: 0x060021D5 RID: 8661 RVA: 0x00022A8C File Offset: 0x00020C8C
 	private static float ComeBackTime
-	{ // <Mod> changed from 45 to 90 seconds
+	{
 		get
 		{
-			return UnityEngine.Random.Range(30f, 45f);
+			return UnityEngine.Random.Range(45f, 90f);
 		}
 	}
 
@@ -106,7 +101,6 @@ public class FireBird : CreatureBase, IObserver
 		this.targetNode = null;
 		this.speedUp = false;
 		this.annoyed = false;
-		this.hunted = false; // <Mod>
 		this.damaged = new List<UnitModel>();
 		this._phase = FireBird.Phase.DEFAULT;
 		this.ResetQliphothCounter();
@@ -263,17 +257,11 @@ public class FireBird : CreatureBase, IObserver
 
 	// Token: 0x060021EB RID: 8683 RVA: 0x0010052C File Offset: 0x000FE72C
 	public override void OnTakeDamage(UnitModel actor, DamageInfo dmg, float value)
-	{ // <Mod> the first time an agent attacks Fiery Bird, update comeback time to 60 seconds; Sound of a Star also works to prevent blindness
+	{
 		base.OnTakeDamage(actor, dmg, value);
 		this.annoyed = true;
-		if (!(actor is AgentModel)) return;
-		if (!this.hunted)
-		{
-			this.comeBackTimer.StartTimer(60f);
-			this.hunted = true;
-		}
 		AgentModel agentModel = actor as AgentModel;
-		if (agentModel != null && !agentModel.HasUnitBuf(UnitBufType.FIREBIRD_DEBUF) && !agentModel.HasEquipment(400035) && !agentModel.HasEquipment(400058))
+		if (agentModel != null && !agentModel.HasUnitBuf(UnitBufType.FIREBIRD_DEBUF) && !agentModel.HasEquipment(400035))
 		{
 			agentModel.AddUnitBuf(new FireBirdDebuf());
 		}
@@ -284,7 +272,6 @@ public class FireBird : CreatureBase, IObserver
 	{
 		base.Escape();
 		this.annoyed = false;
-		this.hunted = false; // <Mod>
 		this.comeBackTimer.StartTimer(FireBird.ComeBackTime);
 		this.TreeOn();
 		this.animScript.OnEscape();
@@ -294,16 +281,16 @@ public class FireBird : CreatureBase, IObserver
 
 	// Token: 0x060021ED RID: 8685 RVA: 0x001005D0 File Offset: 0x000FE7D0
 	public override void OnSuppressed()
-	{ // <Mod> the weapon is not rewarded if Fiery Bird wasn't hit by an agent at least once
+	{
 		base.OnSuppressed();
 		this._phase = FireBird.Phase.SUPPRESSED;
 		if (this.model.hp <= 0f)
 		{
-			if (!this.isSuppressed && this.hunted)
+			if (!this.isSuppressed)
 			{
 				this.Present();
-				this.isSuppressed = true;
 			}
+			this.isSuppressed = true;
 		}
 		this.SpeedDown();
 		this.RemoveBurningPassage();
@@ -1066,9 +1053,6 @@ public class FireBird : CreatureBase, IObserver
 
 	// Token: 0x04002169 RID: 8553
 	private bool annoyed;
-
-	// <Mod>
-	private bool hunted;
 
 	// Token: 0x0400216A RID: 8554
 	private FireBirdAnim _animScript;

@@ -7,22 +7,19 @@ public static class SupportedLanguage
 {
 	// Token: 0x0600313B RID: 12603 RVA: 0x001528F4 File Offset: 0x00150AF4
 	public static List<string> GetSupprotedList()
-	{ // <Patch>
-        return new List<string>
-        {
-            "en",
-            "kr",
-            "cn",
-            "cn_tr",
-            "jp",
-            "ru",
-            "vn",
-            "bg",
-            "es",
-            "fr",
-            "pt_br",
-            "pt_pt"
-        };
+	{
+		return new List<string>
+		{
+			"en",
+			"kr",
+			"cn",
+			"cn_tr",
+			"jp",
+			"ru",
+			"vn",
+			"bg",
+			"es"
+		};
 	}
 
 	// Token: 0x0600313C RID: 12604 RVA: 0x0015296C File Offset: 0x00150B6C
@@ -71,7 +68,7 @@ public static class SupportedLanguage
 
 	// Token: 0x0600313D RID: 12605 RVA: 0x001529E8 File Offset: 0x00150BE8
 	public static string GetCurrentLanguageName(string language)
-	{ // <Patch>
+	{
 		switch (language)
 		{
 			case "en":
@@ -92,12 +89,6 @@ public static class SupportedLanguage
 				return "български";
 			case "es":
 				return "Español Latinoamérica";
-            case "fr":
-				return "français";
-            case "pt_br":
-				return "Português do Brasil";
-            case "pt_pt":
-				return "Português";
 		}
 		return "English";
 	}
@@ -155,16 +146,4 @@ public static class SupportedLanguage
 
 	// Token: 0x04002ED3 RID: 11987
 	public const string es_Name = "Español Latinoamérica";
-
-    // <Patch>
-    public const string pt_br = "pt_br";
-
-    // <Patch>
-    public const string pt_br_Name = "Português do Brasil";
-
-    // <Patch>
-    public const string pt_pt = "pt_pt";
-
-    // <Patch>
-    public const string pt_pt_Name = "Português";
 }

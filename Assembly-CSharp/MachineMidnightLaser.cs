@@ -1,6 +1,3 @@
-/*
-private void CheckCollision(Collider2D collision) // Does not hit Agents that are working
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,7 +65,7 @@ public class MachineMidnightLaser : MonoBehaviour
 
 	// Token: 0x06002D4C RID: 11596 RVA: 0x001308C0 File Offset: 0x0012EAC0
 	private void CheckCollision(Collider2D collision)
-	{ // <Mod> Does not hit Agents that are working
+	{
 		if (collision.GetComponent<UnitMouseEventTarget>() == null)
 		{
 			return;
@@ -103,10 +100,6 @@ public class MachineMidnightLaser : MonoBehaviour
 				return;
 			}
 			if (!model2.IsAttackTargetable())
-			{
-				return;
-			}
-			if (model2.currentSkill != null)
 			{
 				return;
 			}

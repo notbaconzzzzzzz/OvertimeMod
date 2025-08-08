@@ -1,14 +1,4 @@
-/*
-public virtual void Update() // Hp Bar Stacking, Display Abno Hp
-public void OnClickCollectionFunc() // (!) Add Notice Send; Overtime Yesod Suppression
-public void OnClickByRoom(PointerEventData pData) // Queue Work Orders
-+public void UpdateBarStacking() // Hp Bar Stacking
-+public void LiftHpBar(CreatureUnit unit, List<CreatureUUnit> obst) // Hp Bar Stacking
-+public float CurrentBarAdjust // Hp Bar Stacking
-+private float _currentBarAdjust // Hp Bar Stacking
-*/
 using System;
-using System.Collections.Generic; // 
 using CommandWindow;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -120,13 +110,13 @@ public class CreatureUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommand
 
 	// Token: 0x06005572 RID: 21874 RVA: 0x001E9A2C File Offset: 0x001E7C2C
 	public virtual void Update()
-	{ // <Mod>
+	{
 		if (this.oldState != this.model.state)
 		{
 			this.OnChangeState();
 			this.oldState = this.model.state;
 		}
-		if (this.model.state == CreatureState.ESCAPE && (ResearchDataModel.instance.IsUpgradedAbility("show_agent_ui") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1)) && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
+		if (this.model.state == CreatureState.ESCAPE && (ResearchDataModel.instance.IsUpgradedAbility("show_agent_ui") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1)) && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
 		{
 			if (!this.escapeUIRoot.activeInHierarchy && this.model.script.HasEscapeUI())
 			{
@@ -183,40 +173,6 @@ public class CreatureUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommand
 			else if (this.castingSlider.gameObject.activeInHierarchy)
 			{
 				this.castingSlider.gameObject.SetActive(false);
-			}
-		}
-		UpdateBarStacking();
-		if (hpSlider.gameObject.activeInHierarchy)
-		{
-			AbnoHpDisplayMode displayeMode = SpecialModeConfig.instance.GetValue<AbnoHpDisplayMode>("DisplayAbnoHp");
-			if (displayeMode == AbnoHpDisplayMode.NAME_AND_HP)
-			{
-				string str = string.Concat(new object[]
-				{
-					" (",
-					Math.Round((decimal)model.hp, 0),
-					"/",
-					model.maxHp,
-					")"
-				});
-				int num = escapeCreatureName.text.IndexOf("(");
-				if (num > 0)
-				{
-					escapeCreatureName.text = escapeCreatureName.text.Substring(0, num - 1);
-				}
-				escapeCreatureName.text += str;
-			}
-			else if (displayeMode == AbnoHpDisplayMode.HP_ONLY)
-			{
-				string str = string.Concat(new object[]
-				{
-					"(",
-					Math.Round((decimal)model.hp, 0),
-					"/",
-					model.maxHp,
-					")"
-				});
-				escapeCreatureName.text = str;
 			}
 		}
 	}
@@ -425,20 +381,12 @@ public class CreatureUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommand
 
 	// Token: 0x0600557F RID: 21887 RVA: 0x00044EB8 File Offset: 0x000430B8
 	public void OnClickCollectionFunc()
-	{ // <Patch> <Mod>
+	{
 		if (!this.model.script.OnOpenCollectionWindow())
 		{
 			return;
 		}
-		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-		{
-			return;
-		}
-		CreatureInfoWindow.CreateWindow_Mod(CreatureTypeList.instance.GetLcId(this.model.metaInfo));
-		Notice.instance.Send(NoticeName.OnOpenNameplate, new object[]
-		{
-			this
-		});
+		CreatureInfoWindow.CreateWindow(this.model.metadataId);
 	}
 
 	// Token: 0x06005580 RID: 21888 RVA: 0x001EA26C File Offset: 0x001E846C
@@ -482,19 +430,7 @@ public class CreatureUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommand
 
 	// Token: 0x06005582 RID: 21890 RVA: 0x001EA348 File Offset: 0x001E8548
 	public void OnClickByRoom(PointerEventData pData)
-	{ // <Mod>
-		if (CommandWindow.CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && model.metaInfo.creatureWorkType == CreatureWorkType.NORMAL)
-		{
-			CommandWindow.CommandWindow.CreateWindow(CommandType.Management, model, true);
-			room.audioClipPlayer.OnPlayInList(2);
-			return;
-		}
-		if (CommandWindow.CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && model.metaInfo.creatureWorkType == CreatureWorkType.NORMAL)
-		{
-			room.ClearWorkOrderQueue();
-			room.audioClipPlayer.OnPlayInList(2);
-			return;
-		}
+	{
 		if (this.model.state == CreatureState.ESCAPE || this.model.state == CreatureState.SUPPRESSED || this.model.state == CreatureState.SUPPRESSED_RETURN)
 		{
 			return;
@@ -580,128 +516,6 @@ public class CreatureUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommand
 	{
 		this.room.ActivatedSkill();
 	}
-
-	//> <Mod> Hp Bar Stacking
-	public void UpdateBarStacking()
-	{
-		if (!SpecialModeConfig.instance.GetValue<bool>("HpBarStackingAbnormality")) return;
-		if (GameManager.currentGameManager.state == GameState.STOP) return;
-		if (model.GetMovableNode().currentPassage == null) return;
-		if (!hpSlider.gameObject.activeInHierarchy) return;
-		float newBarAdjust = CurrentBarAdjust - 0.5f;
-		if (newBarAdjust < 0f)
-		{
-			newBarAdjust = 0f;
-		}
-		Vector3 position = transform.position;
-		List<CreatureUnit> obst = new List<CreatureUnit>();
-		foreach (MovableObjectNode node in model.GetMovableNode().currentPassage.GetEnteredTargets())
-		{
-			if (!(node.GetUnit() is CreatureModel)) continue;
-			CreatureModel creature = node.GetUnit() as CreatureModel;
-			if (model.instanceId == creature.instanceId) continue;
-			CreatureUnit unit = creature.Unit;
-			if (!unit.hpSlider.gameObject.activeInHierarchy) continue;
-			int ind = 0;
-			foreach (CreatureUnit unit2 in obst)
-			{
-				if (CurrentBarAdjust <= unit2.CurrentBarAdjust) break;
-				ind++;
-			}
-			obst.Insert(ind, unit);
-		}
-		foreach (CreatureUnit unit in obst)
-		{
-			Vector3 position2 = unit.transform.position;
-			float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
-			if (offset > 5f) continue;
-			float dest;
-			if (offset <= 4f)
-			{
-				if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
-				dest = unit.CurrentBarAdjust + 1f;
-			}
-			else
-			{
-				if (newBarAdjust - unit.CurrentBarAdjust > 4.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
-				dest = unit.CurrentBarAdjust + 5f - offset;
-			}
-			if (unit.CurrentBarAdjust > CurrentBarAdjust)
-			{
-				unit.LiftHpBar(this, obst);
-				continue;
-			}
-			if (dest > CurrentBarAdjust + 1f) continue;
-			newBarAdjust = dest;
-		}
-		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
-		CurrentBarAdjust = newBarAdjust;
-	}
-
-	public void LiftHpBar(CreatureUnit unit, List<CreatureUnit> obst)
-	{
-		float newBarAdjust = CurrentBarAdjust;
-		Vector3 position = transform.position;
-		Vector3 position2 = unit.transform.position;
-		float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
-		float dest;
-		if (offset <= 4f)
-		{
-			if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
-			dest = unit.CurrentBarAdjust + 1f;
-		}
-		else
-		{
-			if (newBarAdjust - unit.CurrentBarAdjust > 4.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
-			dest = unit.CurrentBarAdjust + 5f - offset;
-		}
-		if (dest > CurrentBarAdjust + 1f) return;
-		newBarAdjust = dest;
-		foreach (CreatureUnit unit2 in obst)
-		{
-			if (unit2 == this) continue;
-			position2 = unit2.transform.position;
-			offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
-			if (offset > 5f) continue;
-			if (offset <= 4f)
-			{
-				if (newBarAdjust - unit2.CurrentBarAdjust > 0.99f || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
-				dest = unit2.CurrentBarAdjust + 1f;
-			}
-			else
-			{
-				if (newBarAdjust - unit2.CurrentBarAdjust > 4.99f - offset || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
-				dest = unit2.CurrentBarAdjust + 5f - offset;
-			}
-			if (unit2.CurrentBarAdjust > CurrentBarAdjust)
-			{
-				unit2.LiftHpBar(this, obst);
-				continue;
-			}
-			if (dest > CurrentBarAdjust + 1f) continue;
-			newBarAdjust = dest;
-		}
-		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
-		CurrentBarAdjust = newBarAdjust;
-	}
-
-	public float CurrentBarAdjust
-	{
-		get
-		{
-			return _currentBarAdjust;
-		}
-		set
-		{
-			if (_currentBarAdjust == value) return;
-			escapeUIRoot.gameObject.transform.Translate(0f, -0.75f * (float)(value - _currentBarAdjust) * transform.localScale.x, 0f);
-			_currentBarAdjust = value;
-		}
-	}
-
-	private float _currentBarAdjust = 0f;
-
-	//< <Mod>
 
 	// Token: 0x04004EC1 RID: 20161
 	public CreatureModel model;

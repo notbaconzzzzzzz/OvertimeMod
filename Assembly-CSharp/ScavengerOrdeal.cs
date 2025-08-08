@@ -1,7 +1,3 @@
-/*
-public override void OrdealEnd() // Overtime Core Suppressions
-private static int[] ids // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -89,8 +85,7 @@ public class ScavengerOrdeal : OrdealBase
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
-		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Scavenger/Scavenger_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
@@ -111,15 +106,9 @@ public class ScavengerOrdeal : OrdealBase
 
 	// Token: 0x04003784 RID: 14212
 	private static int[] ids = new int[]
-	{ // <Mod>
+	{
 		200017,
-		200018,
-		200019,
-		200020,
-		200117,
-		200118,
-		200119,
-		200120
+		200018
 	};
 
 	// Token: 0x04003785 RID: 14213

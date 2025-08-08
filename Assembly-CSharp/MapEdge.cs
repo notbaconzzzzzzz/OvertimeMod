@@ -84,12 +84,4 @@ public class MapEdge
 
 	// Token: 0x04002FF0 RID: 12272
 	public bool activated;
-
-    //> <Mod>
-    public MapNode originalNode1;
-
-    public MapNode originalNode2;
-
-    public float originalCost = 1f;
-    //<
 }

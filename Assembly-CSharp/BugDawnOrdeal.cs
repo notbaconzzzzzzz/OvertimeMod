@@ -1,6 +1,3 @@
-/*
-private void MakeBugs() // Daat null Hallway Fix
-*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +86,7 @@ public class BugDawnOrdeal : BugOrdeal
 
 	// Token: 0x06003C13 RID: 15379 RVA: 0x00177DF4 File Offset: 0x00175FF4
 	private void MakeBugs()
-	{ // <Mod>
+	{
 		Sefira[] openedAreaList = PlayerModel.instance.GetOpenedAreaList();
 		Sefira[] array = openedAreaList;
 		int i = 0;
@@ -99,7 +96,7 @@ public class BugDawnOrdeal : BugOrdeal
 			BugDawnOrdeal.BugDawnManager bugDawnManager = new BugDawnOrdeal.BugDawnManager(this);
 			List<PassageObjectModel> list = new List<PassageObjectModel>();
 			List<PassageObjectModel> list2 = new List<PassageObjectModel>(sefira.passageList);
-            List<MapNode> list4 = new List<MapNode>();
+			List<MapNode> list4 = new List<MapNode>();
 			foreach (PassageObjectModel passageObjectModel in list2)
 			{
 				if (passageObjectModel.isActivate)
@@ -122,10 +119,6 @@ public class BugDawnOrdeal : BugOrdeal
 					}
 				}
 			}
-            if (list.Count <= 0)
-            {
-                continue;
-            }
 			do
 			{
 				PassageObjectModel passageObjectModel2 = list[UnityEngine.Random.Range(0, list.Count)];

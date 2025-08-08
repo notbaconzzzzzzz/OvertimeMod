@@ -1,11 +1,3 @@
-/*
-public void OnGameInit() // 
-public bool ActivateOrdeal(OrdealBase ordeal, bool remove = true) // 
-+public List<OrdealBase> GetOrdealList() // 
-+public void InitializeSpawnTimes() // 
-+public int GetOrdealSpawnTime(OrdealLevel level) // 
-+private int[] _ordealSpawnPhase // 
-*/
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -35,7 +27,7 @@ public class OrdealManager
 
 	// Token: 0x06003C82 RID: 15490 RVA: 0x001795A0 File Offset: 0x001777A0
 	public void OnGameInit()
-	{ // <Mod>
+	{
 		this.ordealCreatureList = new List<OrdealCreatureModel>();
 		int day = PlayerModel.instance.GetDay();
 		this.InitAvailableFixers();
@@ -46,15 +38,6 @@ public class OrdealManager
 		{
 			this._ordealList.Add(item);
 		}
-		_secondaryOrdealList.Clear();
-		if (SpecialModeConfig.instance.GetValue<bool>("SecondaryQliphothOverload"))
-		{
-			foreach (OrdealBase item in OrdealGenInfo.GenerateSecondaryOrdeals(day, _ordealList))
-			{
-				_secondaryOrdealList.Add(item);
-			}
-		}
-		InitializeSpawnTimes();
 		this.UpdateOrdealUI();
 	}
 
@@ -71,31 +54,11 @@ public class OrdealManager
 	public OrdealLevel GetMaxOrdealLevel()
 	{
 		OrdealLevel ordealLevel = OrdealLevel.DAWN;
-		if (SpecialModeConfig.instance.GetValue<bool>("EarlyOvertimeOrdeals"))
+		foreach (OrdealBase ordealBase in this._ordealList)
 		{
-			foreach (OrdealBase ordealBase in this._ordealList)
+			if (ordealLevel < ordealBase.level)
 			{
-				if ((int)ordealBase.level - 5 == (int)ordealLevel)
-				{
-					ordealLevel++;
-				}
-				else
-				{
-					if (ordealLevel != OrdealLevel.DAWN)
-					{
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			foreach (OrdealBase ordealBase in this._ordealList)
-			{
-				if (ordealBase.level < OrdealLevel.OVERTIME_DAWN && ordealLevel < ordealBase.level)
-				{
-					ordealLevel = ordealBase.level;
-				}
+				ordealLevel = ordealBase.level;
 			}
 		}
 		return ordealLevel;
@@ -129,14 +92,14 @@ public class OrdealManager
 
 	// Token: 0x06003C89 RID: 15497 RVA: 0x00179714 File Offset: 0x00177914
 	public bool ActivateOrdeal(OrdealBase ordeal, bool remove = true)
-	{ // <Mod>
+	{
 		if (!ordeal.IsStartable())
 		{
 			return false;
 		}
 		try
 		{
-			if (remove || !_activatedOrdeals.Contains(ordeal))
+			if (remove)
 			{
 				ordeal.isStarted = true;
 			}
@@ -149,7 +112,6 @@ public class OrdealManager
 			if (remove)
 			{
 				this._ordealList.Remove(ordeal);
-				_secondaryOrdealList.Remove(ordeal);
 			}
 			Debug.Log(string.Format("Ordeal : {0} Activated", ordeal.level));
 		}
@@ -182,9 +144,7 @@ public class OrdealManager
 
 	// Token: 0x06003C8B RID: 15499 RVA: 0x001798C8 File Offset: 0x00177AC8
 	public OrdealCreatureModel AddCreature(long metadataId, MapNode pos, OrdealBase ordealBase)
-	{ // <Patch>
-		return AddCreature_Mod(new LobotomyBaseMod.LcIdLong(metadataId), pos, ordealBase);
-		/*
+	{
 		OrdealCreatureModel ordealCreatureModel = new OrdealCreatureModel((long)this.nextInstId++);
 		this.BuildCreature(ordealCreatureModel, metadataId);
 		ordealCreatureModel.GetMovableNode().SetCurrentNode(pos);
@@ -201,14 +161,12 @@ public class OrdealManager
 		Sefira sefira = SefiraManager.instance.GetSefira(pos.GetAttachedPassage().GetSefiraName());
 		ordealCreatureModel.sefira = sefira;
 		ordealCreatureModel.sefiraNum = sefira.indexString;
-		return ordealCreatureModel;*/
+		return ordealCreatureModel;
 	}
 
 	// Token: 0x06003C8C RID: 15500 RVA: 0x00179994 File Offset: 0x00177B94
 	private void BuildCreature(OrdealCreatureModel model, long metadataId)
-	{ // <Patch>
-		BuildCreature_Mod(model, new LobotomyBaseMod.LcIdLong(metadataId));
-		/*
+	{
 		CreatureTypeInfo data = CreatureTypeList.instance.GetData(metadataId);
 		object obj = null;
 		foreach (Assembly assembly in Add_On.instance.AssemList)
@@ -237,7 +195,7 @@ public class OrdealManager
 			model.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(metadataId).GetCopy();
 		}
 		model.script.SetModel(model);
-		model.script.OnInitialBuild();*/
+		model.script.OnInitialBuild();
 	}
 
 	// Token: 0x06003C8D RID: 15501 RVA: 0x0000403D File Offset: 0x0000223D
@@ -278,85 +236,7 @@ public class OrdealManager
 	public bool CheckOrdealContains(OrdealLevel level, out OrdealBase ordeal)
 	{
 		ordeal = null;
-		if (SpecialModeConfig.instance.GetValue<bool>("EarlyOvertimeOrdeals"))
-		{
-			foreach (OrdealBase ordealBase in this._ordealList)
-			{
-				if ((int)ordealBase.level - 4 == (int)level)
-				{
-					ordeal = ordealBase;
-					break;
-				}
-			}
-		}
-		else
-		{
-			foreach (OrdealBase ordealBase in this._ordealList)
-			{
-				if (ordealBase.level == level)
-				{
-					ordeal = ordealBase;
-					break;
-				}
-			}
-		}
-		return ordeal != null;
-	}
-
-	// <Patch>
-	private void BuildCreature_Mod(OrdealCreatureModel model, LobotomyBaseMod.LcIdLong metadataId)
-	{
-		CreatureTypeInfo data_Mod = CreatureTypeList.instance.GetData_Mod(metadataId);
-		object obj = LobotomyBaseMod.ExtenionUtil.GetTypeInstance<CreatureBase>(data_Mod.script);
-		if (obj == null)
-		{
-			obj = Activator.CreateInstance(Type.GetType(data_Mod.script));
-		}
-		model.script = (CreatureBase)obj;
-		model.observeInfo = new CreatureObserveInfoModel(metadataId.id);
-		model.observeInfo.InitData_Mod(metadataId);
-		string text = "1";
-		model.sefira = SefiraManager.instance.GetSefira(text);
-		model.sefiraNum = text;
-		model.metadataId = metadataId.id;
-		model.metaInfo = data_Mod;
-		if (CreatureTypeList.instance.GetSkillTipData_Mod(metadataId) != null)
-		{
-			model.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(metadataId).GetCopy();
-		}
-		model.script.SetModel(model);
-		model.script.OnInitialBuild();
-	}
-
-	// <Patch>
-	public OrdealCreatureModel AddCreature_Mod(LobotomyBaseMod.LcIdLong metadataId, MapNode pos, OrdealBase ordealBase)
-	{
-		int num = this.nextInstId;
-		this.nextInstId = num + 1;
-		OrdealCreatureModel ordealCreatureModel = new OrdealCreatureModel((long)num);
-		this.BuildCreature_Mod(ordealCreatureModel, metadataId);
-		ordealCreatureModel.GetMovableNode().SetCurrentNode(pos);
-		ordealCreatureModel.GetMovableNode().SetActive(true);
-		ordealCreatureModel.baseMaxHp = ordealCreatureModel.metaInfo.maxHp;
-		ordealCreatureModel.hp = (float)ordealCreatureModel.metaInfo.maxHp;
-		ordealCreatureModel.SetOrdealBase(ordealBase);
-		this.ordealCreatureList.Add(ordealCreatureModel);
-		Notice.instance.Send(NoticeName.AddOrdealCreature, new object[]
-		{
-			ordealCreatureModel
-		});
-		ordealCreatureModel.script.OnInit();
-		Sefira sefira = SefiraManager.instance.GetSefira(pos.GetAttachedPassage().GetSefiraName());
-		ordealCreatureModel.sefira = sefira;
-		ordealCreatureModel.sefiraNum = sefira.indexString;
-		return ordealCreatureModel;
-	}
-
-    //> <Mod>
-	public bool CheckSecondaryOrdealContains(OrdealLevel level, out OrdealBase ordeal)
-	{
-		ordeal = null;
-		foreach (OrdealBase ordealBase in this._secondaryOrdealList)
+		foreach (OrdealBase ordealBase in this._ordealList)
 		{
 			if (ordealBase.level == level)
 			{
@@ -366,39 +246,6 @@ public class OrdealManager
 		}
 		return ordeal != null;
 	}
-
-    public List<OrdealBase> GetOrdealList()
-    {
-        return _ordealList;
-    }
-
-    public List<OrdealBase> GetSecondaryOrdealList()
-    {
-        return _secondaryOrdealList;
-    }
-
-	public void InitializeSpawnTimes()
-	{
-		_ordealSpawnTime[0] = 2;
-		_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 6);
-		_ordealSpawnTime[2] = UnityEngine.Random.Range(6, 8);
-		_ordealSpawnTime[3] = 8;
-		_ordealSpawnTime[4] = 12;
-		_ordealSpawnTime[5] = UnityEngine.Random.Range(13, 16);
-		_ordealSpawnTime[6] = UnityEngine.Random.Range(16, 18);
-		_ordealSpawnTime[7] = 18;
-	}
-
-	public int GetOrdealSpawnTime(OrdealLevel level)
-	{
-		return _ordealSpawnTime[(int)level];
-	}
-
-	public void AdjustSpawnTimeForSefiraBoss(SefiraBossBase sefiraBoss)
-	{
-		sefiraBoss.AdjustOrdealSpawnTime(_ordealSpawnTime);
-	}
-	//< <Mod>
 
 	// Token: 0x0400373F RID: 14143
 	private static OrdealManager _instance;
@@ -498,22 +345,6 @@ public class OrdealManager
 
 	// Token: 0x04003749 RID: 14153
 	private List<OrdealBase> _removedOrdeals = new List<OrdealBase>();
-
-	// <Mod>
-	private List<OrdealBase> _secondaryOrdealList = new List<OrdealBase>();
-
-	// <Mod>
-	private int[] _ordealSpawnTime = new int[]
-	{
-		2,
-		3,
-		6,
-		8,
-		12,
-		13,
-		16,
-		18
-	};
 
 	// Token: 0x0400374A RID: 14154
 	private readonly int[] needWorkCount = new int[]

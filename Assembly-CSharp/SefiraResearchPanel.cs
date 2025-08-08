@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq; // 
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +23,7 @@ public class SefiraResearchPanel : MonoBehaviour
 
 	// Token: 0x060043E0 RID: 17376 RVA: 0x001A3BBC File Offset: 0x001A1DBC
 	public void Init(Sefira sefira)
-	{ // <Mod>
+	{
 		this._currentSefira = sefira;
 		this.DescController.gameObject.SetActive(false);
 		List<ResearchItemModel> modelBySefira = ResearchDataModel.instance.GetModelBySefira(this.CurrentSefira.indexString);
@@ -34,8 +33,7 @@ public class SefiraResearchPanel : MonoBehaviour
 		this.blackColor = Color.black;
 		int count = modelBySefira.Count;
 		this._currentResearchMax = count;
-		if (count > 3) count = 3;
-		for (int i = 0; i < this.slots.Count; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			SefiraResearchSlot sefiraResearchSlot = this.slots[i];
 			Transform child = sefiraResearchSlot.RootObject.transform.GetChild(1);
@@ -167,56 +165,8 @@ public class SefiraResearchPanel : MonoBehaviour
 		this.SefiraSound.OnPlayInList(1);
 	}
 
-	// <Mod>
-	public void ChangeOffset(int offset)
-	{
-		ResetAll();
-		List<ResearchItemModel> modelBySefira = ResearchDataModel.instance.GetModelBySefira(this.CurrentSefira.indexString);
-		List<ResearchItemModel> remainResearchListBySefira = ResearchDataModel.instance.GetRemainResearchListBySefira(this.CurrentSefira.indexString);
-		SefiraUIColor sefiraColor = UIColorManager.instance.GetSefiraColor(CurrentSefira.sefiraEnum);
-		int count = modelBySefira.Count;
-		count -= offset;
-		if (count > 3) count = 3;
-		for (int i = 0; i < this.slots.Count; i++)
-		{
-			SefiraResearchSlot sefiraResearchSlot = this.slots[i];
-			Transform child = sefiraResearchSlot.RootObject.transform.GetChild(1);
-			if (child.GetComponent<Image>() != null)
-			{
-				sefiraResearchSlot.Frame = child.GetComponent<Image>();
-			}
-			if (i < count)
-			{
-				sefiraResearchSlot.RootObject.SetActive(true);
-				bool flag = true;
-				ResearchItemModel researchItemModel = modelBySefira[i + offset];
-				if (remainResearchListBySefira.Contains(researchItemModel))
-				{
-					flag = false;
-				}
-				if (flag)
-				{
-					sefiraResearchSlot.RootObject.SetActive(true);
-					sefiraResearchSlot.Icon.sprite = researchItemModel.info.GetIcon();
-					sefiraResearchSlot.name = researchItemModel.info.GetDesc().name;
-					sefiraResearchSlot.desc = researchItemModel.info.GetDesc().desc;
-					sefiraResearchSlot.Icon.color = sefiraColor.imageColor;
-					sefiraResearchSlot.Texture.color = sefiraColor.imageColor;
-				}
-				else
-				{
-					sefiraResearchSlot.RootObject.SetActive(false);
-				}
-			}
-			else
-			{
-				sefiraResearchSlot.RootObject.SetActive(false);
-			}
-		}
-	}
-
 	// Token: 0x04003E75 RID: 15989
-	public const int ResearchMax = 4; // changed from 4
+	public const int ResearchMax = 4;
 
 	// Token: 0x04003E76 RID: 15990
 	public List<SefiraResearchSlot> slots;
@@ -240,7 +190,7 @@ public class SefiraResearchPanel : MonoBehaviour
 	private int _picked = -1;
 
 	// Token: 0x04003E7D RID: 15997
-	private int _currentResearchMax = 4; // changed from 4
+	private int _currentResearchMax = 4;
 
 	// Token: 0x04003E7E RID: 15998
 	private int _current = -1;

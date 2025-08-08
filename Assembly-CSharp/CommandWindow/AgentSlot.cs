@@ -1,7 +1,5 @@
 /*
 public virtual void SetUI(AgentModel agent) // Ego Gift Helper
-public void OnClickInfo() // 
-public virtual void OnClick() // Queue Work Orders
 */
 using System;
 using System.Collections.Generic;
@@ -96,84 +94,9 @@ namespace CommandWindow
 
 		// Token: 0x060047E8 RID: 18408 RVA: 0x001AB994 File Offset: 0x001A9B94
 		public virtual void SetUI(AgentModel agent)
-		{ // <Mod> Ego Gift Healper
+		{
 			this.Grade.sprite = DeployUI.GetAgentGradeSprite(agent);
-            string Prefix = "";
-            bool hasGift = false;
-            if (SpecialModeConfig.instance.GetValue<bool>("EgoGiftHelper") && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-            {
-                if (CommandWindow.CurrentWindow.CurrentWindowType == CommandType.Management && CommandWindow.CurrentWindow.CurrentTarget != null && CommandWindow.CurrentWindow.CurrentTarget is CreatureModel)
-                {
-                    CreatureTypeInfo creatureInfo = ((CreatureModel)CommandWindow.CurrentWindow.CurrentTarget).metaInfo;
-                    LobotomyBaseMod.LcId gift = null;
-					if (creatureInfo.modid == "")
-					{
-						switch (creatureInfo.id)
-						{
-							case 100037L:
-								if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000371)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000372)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000373)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000374)))
-								{
-									hasGift = true;
-								}
-								break;
-							case 100102L:
-								gift = new LobotomyBaseMod.LcId(1023);
-								break;
-							default:
-								switch (creatureInfo.id)
-								{
-									case 100032L:
-									case 100033L:
-										if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(1033)))
-										{
-											Prefix += "(**) ";
-										}
-										break;
-									case 100008L:
-									case 100020L:
-									case 100035L:
-										if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(400038)))
-										{
-											Prefix += "(**) ";
-										}
-										break;
-								}
-								CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = creatureInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
-								if (creatureEquipmentMakeInfo != null)
-								{
-									gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
-								}
-								break;
-						}
-					}
-					else if (creatureInfo.modid == "NotbaconOvertimeMod")
-					{
-						CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = creatureInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
-						if (creatureEquipmentMakeInfo != null)
-						{
-							gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
-						}
-
-					}
-					else
-					{
-						CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = creatureInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
-						if (creatureEquipmentMakeInfo != null)
-						{
-							gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
-						}
-					}
-                    if (gift != null && agent.HasEquipment_Mod(gift))
-                    {
-                        hasGift = true;
-                    }
-                }
-            }
-            if (hasGift)
-            {
-                Prefix += "(*) ";
-            }
-			this.AgentName.text = Prefix + agent.GetUnitName();
+			this.AgentName.text = agent.GetUnitName();
 			this.CheckAgentState();
 			this.SetFilter(this.State);
 			this.portrait.SetWorker(agent);
@@ -222,19 +145,11 @@ namespace CommandWindow
 
 		// Token: 0x060047E9 RID: 18409 RVA: 0x001ABB0C File Offset: 0x001A9D0C
 		public virtual void UpdateUI()
-		{ // <Mod>
+		{
 			this.CheckAgentState();
 			this.SetFilter(this.State);
 			if (this.CurrentAgent == null)
 			{
-				return;
-			}
-			if (CurrentAgent.ForceHideUI)
-			{
-				this.HealthFill.fillAmount = AgentSlot.GetRate(0f, 1f);
-				this.MentalFill.fillAmount = AgentSlot.GetRate(0f, 1f);
-				this.HealthText.text = "???/???";
-				this.MentalText.text = "???/???";
 				return;
 			}
 			this.HealthFill.fillAmount = AgentSlot.GetRate(this.CurrentAgent.hp, (float)this.CurrentAgent.maxHp);
@@ -255,17 +170,12 @@ namespace CommandWindow
 
 		// Token: 0x060047EA RID: 18410 RVA: 0x001ABC08 File Offset: 0x001A9E08
 		public void OnClickInfo()
-		{ // <Mod>
+		{
 			if (this.CurrentAgent == null)
 			{
 				return;
 			}
-			bool pinned = AgentInfoWindow.currentWindow.PinnedAgent == this.CurrentAgent;
-			if (UnitMouseEventManager.instance.isAddSubtractSelectionEnabled)
-			{
-				UnitMouseEventManager.instance.SelectTarget(CurrentAgent.GetUnitMouseTarget());
-			}
-			if (pinned)
+			if (AgentInfoWindow.currentWindow.PinnedAgent == this.CurrentAgent)
 			{
 				AgentInfoWindow.currentWindow.UnPinCurrentAgent();
 			}
@@ -365,7 +275,7 @@ namespace CommandWindow
 									string text = string.Empty;
 									text = currentSkill.name;
 									string str = this.CurrentAgent.StatLevel((RwbpType)currentSkill.id).ToString();
-									if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.MALKUT && !SefiraBossManager.Instance.CurrentActivatedIsOvertime || CommandWindow.CurrentWindow.SelectedWork == 6L || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
+									if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.MALKUT || CommandWindow.CurrentWindow.SelectedWork == 6L || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
 									{
 										text = "???";
 										str = "?";
@@ -515,8 +425,8 @@ namespace CommandWindow
 
 		// Token: 0x060047F3 RID: 18419 RVA: 0x0003C556 File Offset: 0x0003A756
 		public virtual void OnClick()
-		{ // <Mod>
-			if (this.IsOrderable || CommandWindow.CurrentWindow.SelectionMode || CommandWindow.CurrentWindow.CurrentWindowType == CommandType.Management && CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
+		{
+			if (this.IsOrderable)
 			{
 				CommandWindow.CurrentWindow.OnClick(this.CurrentAgent);
 			}

@@ -1,6 +1,3 @@
-/*
-public virtual void OnExecute() // Meltdown fix
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -106,7 +103,7 @@ namespace BinahBoss
 		public virtual void CastOverload()
 		{
 			int overloadTargetCount = BinahOverload.GetOverloadTargetCount(this);
-			this.overloadedCreatures.AddRange(CreatureOverloadManager.instance.ActivateOverload(overloadTargetCount, this.overloadType, this.TimeLimit, false, false, false));
+			this.overloadedCreatures.AddRange(CreatureOverloadManager.instance.ActivateOverload(overloadTargetCount, this.overloadType, this.TimeLimit, false, false, false, new long[0]));
 			foreach (CreatureModel creatureModel in this.overloadedCreatures)
 			{
 				creatureModel.ProbReductionValue = this.ProbReductionValue;
@@ -217,21 +214,7 @@ namespace BinahBoss
 
 		// Token: 0x060040FC RID: 16636 RVA: 0x000040A1 File Offset: 0x000022A1
 		public virtual void OnExecute()
-		{ // <Mod> if a meltdown is unexpectedly canceled transfer it to a different abnormality
-			List<CreatureModel> list = new List<CreatureModel>();
-			foreach (CreatureModel creature in overloadedCreatures)
-			{
-				if (!creature.isOverloaded)
-				{
-					list.Add(creature);
-				}
-			}
-			if (list.Count <= 0) return;
-			foreach (CreatureModel creature in list)
-			{
-				overloadedCreatures.Remove(creature);
-				overloadedCreatures.AddRange(CreatureOverloadManager.instance.ActivateOverload(1, overloadType, TimeLimit, false, false, false));
-			}
+		{
 		}
 
 		// Token: 0x04003C11 RID: 15377

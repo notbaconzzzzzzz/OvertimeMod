@@ -1,6 +1,3 @@
-/*
-private void ProcessMoveByDistance(float distance) // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -271,7 +268,7 @@ public class MovableObjectNode
 
 	// Token: 0x06001B2B RID: 6955 RVA: 0x000E307C File Offset: 0x000E127C
 	private void ProcessMoveByDistance(float distance)
-	{ // <Mod> Modified the behavior of the Tiphereth elevator; IgnoreDoors()
+	{
 		if (this.blockedTimer > 0f)
 		{
 			this.blockedTimer -= Time.deltaTime;
@@ -408,18 +405,21 @@ public class MovableObjectNode
 						Debug.LogError("Invalid Movable State.. Please report this.");
 						this.StopMoving();
 					}
-					else if (goalNode.closed && goalNode.GetDoor() != null && (model == null || !model.IgnoreDoors()))
+					else if (goalNode.closed)
 					{
-						if (this.model != null && this.model.CanOpenDoor())
+						if (goalNode.GetDoor() != null)
 						{
-							goalNode.GetDoor().TryOpen();
+							if (this.model != null && this.model.CanOpenDoor())
+							{
+								goalNode.GetDoor().TryOpen();
+							}
+						}
+						else
+						{
+							this.StopMoving();
 						}
 					}
-					else if (goalNode.closed && goalNode.GetDoor() == null)
-					{
-						this.StopMoving();
-					}
-					else if (goalNode.GetElevator() != null && mapEdge2.type != "road") // 
+					else if (goalNode.GetElevator() != null)
 					{
 						this._isNextElevator = true;
 						if (this.pathIndex + 1 >= this.pathInfo.pathEdges.Length)
@@ -438,48 +438,24 @@ public class MovableObjectNode
 						{
 							MapEdge mapEdge3 = this.pathInfo.pathEdges[this.pathIndex + 1];
 							EdgeDirection direction2 = this.pathInfo.edgeDirections[this.pathIndex + 1];
-							MapNode goalNode2 = mapEdge3.GetGoalNode(direction2); //>
-							if (mapEdge3.type == "road")
-							{
-								_elevatorWaitElapsedTime = 0f;
-								SetCurrentNode(goalNode);
-							} //<
-							else if (this._elevatorWaitElapsedTime >= 0.5f)
+							MapNode goalNode2 = mapEdge3.GetGoalNode(direction2);
+							if (this._elevatorWaitElapsedTime >= 0.5f)
 							{
 								this._elevatorWaitElapsedTime = 0f;
 								this.SetCurrentNode(goalNode2);
 							}
 						}
-					} //>
-					else if (mapEdge2.type == "door" && mapEdge2.GetGoalNode((EdgeDirection)(EdgeDirection.BACKWARD - direction)).GetElevator() != null)
-					{
-						_elevatorWaitElapsedTime = 0f;
-						SetCurrentNode(goalNode);
-					} //<
+					}
 					else
 					{
-                        bool flag = true;
-                        if (goalNode.GetElevator() != null)
-                        {
-                            MapNode teleportNode;
-                            if (this._teleportable && this._currentNode != null && (teleportNode = this._currentNode.GetTeleportNode(this, true)) != null)
-                            {
-                                this._isNextElevator = false;
-                                this.TrySetCurrentNode(teleportNode);
-                                flag = false;
-                            }
-                        }
-                        if (flag)
-                        {
-                            this.edgeDirection = direction;
-                            this.edgePosRate = 0f;
-                            this.UpdateNodeEdge(null, mapEdge2);
-                            if (float.IsInfinity(num))
-                            {
-                                Debug.LogError("1");
-                            }
-                            this.ProcessMoveByDistance(distance);
-                        }
+						this.edgeDirection = direction;
+						this.edgePosRate = 0f;
+						this.UpdateNodeEdge(null, mapEdge2);
+						if (float.IsInfinity(num))
+						{
+							Debug.LogError("1");
+						}
+						this.ProcessMoveByDistance(distance);
 					}
 				}
 			}

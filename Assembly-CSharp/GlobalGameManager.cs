@@ -1,10 +1,3 @@
-/*
-public void SaveData(bool saveCheckPoint = false) // Keep extra referances to certain days
-private void LoadDay(Dictionary<string, object> data) // 
-public Dictionary<string, object> LoadEtcFile() // 
-+public bool ForcelyLoadDay(int key, SaveType saveType) // 
-public void RemoveGlobalData() // Special Modes
-*/
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -300,12 +293,9 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x06003125 RID: 12581 RVA: 0x0002DA4F File Offset: 0x0002BC4F
 	private void OnApplicationQuit()
-	{ // <Patch> <Mod>
+	{
 		this.SaveLogs();
 		this.SaveStateData();
-		AprilFoolsManager.instance.SaveDataFile();
-		//string sourceFileName = Application.dataPath + "/Managed/BaseMod/BackUp.dll";
-		//File.Copy(sourceFileName, Application.dataPath + "/Managed/Assembly-CSharp.dll", true);
 	}
 
 	// Token: 0x06003126 RID: 12582 RVA: 0x0014D9A0 File Offset: 0x0014BBA0
@@ -546,94 +536,35 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x06003134 RID: 12596 RVA: 0x0014DEF4 File Offset: 0x0014C0F4
 	public void SaveData(bool saveCheckPoint = false)
-	{ // <Mod>
-		int line = 0;
-		try
+	{
+		Dictionary<string, object> dictionary = new Dictionary<string, object>();
+		dictionary.Add("saveVer", "ver1");
+		dictionary.Add("playTime", this.playTime);
+		int day = PlayerModel.instance.GetDay();
+		dictionary.Add("lastDay", day);
+		Dictionary<int, Dictionary<string, object>> dictionary2 = new Dictionary<int, Dictionary<string, object>>();
+		Dictionary<string, object> saveDayData = this.GetSaveDayData();
+		dictionary2.Add(PlayerModel.instance.GetDay(), saveDayData);
+		if (saveCheckPoint)
 		{
-			line++;
-			Dictionary<string, object> dictionary = new Dictionary<string, object>();
-			line++;
-			dictionary.Add("saveVer", "ver1");
-			line++;
-			dictionary.Add("playTime", this.playTime);
-			line++;
-			int day = PlayerModel.instance.GetDay();
-			line++;
-			dictionary.Add("lastDay", day);
-			line++;
-			Dictionary<int, Dictionary<string, object>> dictionary2 = new Dictionary<int, Dictionary<string, object>>();
-			line++;
-			Dictionary<string, object> dic = null;
-			if (ExistSaveData())
-			{
-				dic = this.LoadSaveFile();
-			}
-			line++;
+			Dictionary<string, object> value = saveDayData;
+			dictionary.Add("checkPointDay", day + 10000);
+			dictionary2.Add(day + 10000, value);
+		}
+		else
+		{
+			Dictionary<string, object> dic = this.LoadSaveFile();
+			int num = 0;
+			Dictionary<string, object> value2 = null;
 			Dictionary<int, Dictionary<string, object>> dictionary3 = null;
-			line++;
-			if (dic != null && GameUtil.TryGetValue<Dictionary<int, Dictionary<string, object>>>(dic, "dayList", ref dictionary3))
+			if (GameUtil.TryGetValue<int>(dic, "checkPointDay", ref num) && GameUtil.TryGetValue<Dictionary<int, Dictionary<string, object>>>(dic, "dayList", ref dictionary3) && dictionary3.TryGetValue(num, out value2))
 			{
-				int temp = line;
-				line = 1001;
-				foreach (KeyValuePair<int, Dictionary<string, object>> checkPoint in dictionary3)
-				{
-					if (checkPoint.Key >= 10000 && (!saveCheckPoint || checkPoint.Key != day + 10000))
-					{
-						dictionary2.Add(checkPoint.Key, checkPoint.Value);
-					}
-					line++;
-				}
-				line = temp;
+				dictionary.Add("checkPointDay", num);
+				dictionary2.Add(num, value2);
 			}
-			line++;
-			Dictionary<string, object> saveDayData = this.GetSaveDayData();
-			line++;
-			dictionary2.Add(PlayerModel.instance.GetDay(), saveDayData);
-			line++;
-			if (saveCheckPoint)
-			{
-				int temp = line;
-				line = 2001;
-				Dictionary<string, object> value = saveDayData;
-				line++;
-				dictionary.Add("checkPointDay", day + 10000);
-				line++;
-				dictionary2.Add(day + 10000, value);
-				line = temp;
-			}
-			else
-			{
-				int temp = line;
-				line = 3001;
-				int num = 0;
-				line++;
-				if (dic == null)
-				{
-					dictionary.Add("checkPointDay", num);
-				}
-				else if (GameUtil.TryGetValue<int>(dic, "checkPointDay", ref num))
-				{
-					dictionary.Add("checkPointDay", num);
-				}
-				line++;
-				if (day == 4 || day == 9 || day == 19 || day == 24 || day == 34 || day == 44)
-				{
-					Dictionary<string, object> value = saveDayData;
-					//dictionary2.Add(day + 10000, value);
-				}
-				line++;
-				line = temp;
-			}
-			line++;
-			dictionary.Add("dayList", dictionary2);
-			line++;
-			SaveUtil.WriteSerializableFile(this.saveFileName, dictionary);
-			line++;
 		}
-		catch (Exception ex2)
-		{
-			File.WriteAllText(Application.dataPath + "/BaseMods/Deployerror.txt", ex2.Message + Environment.NewLine + ex2.StackTrace + Environment.NewLine + line);
-		}
+		dictionary.Add("dayList", dictionary2);
+		SaveUtil.WriteSerializableFile(this.saveFileName, dictionary);
 	}
 
 	// Token: 0x06003135 RID: 12597 RVA: 0x0014E018 File Offset: 0x0014C218
@@ -702,49 +633,39 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x06003138 RID: 12600 RVA: 0x0014E15C File Offset: 0x0014C35C
 	private void LoadDay(Dictionary<string, object> data)
-	{ // <Mod>
-		try
+	{
+		Dictionary<string, object> dic = null;
+		Dictionary<string, object> dic2 = null;
+		Dictionary<string, object> dic3 = null;
+		Dictionary<string, object> dic4 = null;
+		Dictionary<string, object> dic5 = null;
+		Dictionary<string, object> dic6 = null;
+		string text = "old";
+		GameUtil.TryGetValue<string>(data, "saveInnerVer", ref text);
+		int dayFromSaveData = this.GetDayFromSaveData(data);
+		GameUtil.TryGetValue<Dictionary<string, object>>(data, "money", ref dic);
+		GameUtil.TryGetValue<Dictionary<string, object>>(data, "agents", ref dic2);
+		GameUtil.TryGetValue<Dictionary<string, object>>(data, "creatures", ref dic3);
+		GameUtil.TryGetValue<Dictionary<string, object>>(data, "playerData", ref dic4);
+		GameUtil.TryGetValue<Dictionary<string, object>>(data, "sefiras", ref dic5);
+		GameUtil.TryGetValue<string>(data, "saveState", ref this.saveState);
+		if (GameUtil.TryGetValue<Dictionary<string, object>>(data, "agentName", ref dic6))
 		{
-			Dictionary<string, object> dic = null;
-			Dictionary<string, object> dic2 = null;
-			Dictionary<string, object> dic3 = null;
-			Dictionary<string, object> dic4 = null;
-			Dictionary<string, object> dic5 = null;
-			Dictionary<string, object> dic6 = null;
-			string text = "old";
-			GameUtil.TryGetValue<string>(data, "saveInnerVer", ref text);
-			int dayFromSaveData = this.GetDayFromSaveData(data);
-			GameUtil.TryGetValue<Dictionary<string, object>>(data, "money", ref dic);
-			GameUtil.TryGetValue<Dictionary<string, object>>(data, "agents", ref dic2);
-			GameUtil.TryGetValue<Dictionary<string, object>>(data, "creatures", ref dic3);
-			GameUtil.TryGetValue<Dictionary<string, object>>(data, "playerData", ref dic4);
-			GameUtil.TryGetValue<Dictionary<string, object>>(data, "sefiras", ref dic5);
-			GameUtil.TryGetValue<string>(data, "saveState", ref this.saveState);
-			if (GameUtil.TryGetValue<Dictionary<string, object>>(data, "agentName", ref dic6))
-			{
-				AgentNameList.instance.LoadData(dic6);
-			}
-			MoneyModel.instance.LoadData(dic);
-			PlayerModel.instance.LoadData(dic4);
-			SefiraManager.instance.LoadData(dic5);
-			PlayerModel.instance.CheckOvertimeMode();
-			AgentManager.instance.LoadCustomAgentData();
-			CreatureManager.instance.LoadData(dic3);
-			AgentManager.instance.LoadDelAgentData();
-			AgentManager.instance.LoadData(dic2);
-			this.gameMode = GameMode.STORY_MODE;
+			AgentNameList.instance.LoadData(dic6);
 		}
-		catch (Exception ex)
-		{
-			LobotomyBaseMod.ModDebug.Log("load save : " + ex.Message + " : " + ex.StackTrace);
-			throw ex;
-		}
+		MoneyModel.instance.LoadData(dic);
+		PlayerModel.instance.LoadData(dic4);
+		SefiraManager.instance.LoadData(dic5);
+		AgentManager.instance.LoadCustomAgentData();
+		CreatureManager.instance.LoadData(dic3);
+		AgentManager.instance.LoadDelAgentData();
+		AgentManager.instance.LoadData(dic2);
+		this.gameMode = GameMode.STORY_MODE;
 	}
 
 	// Token: 0x06003139 RID: 12601 RVA: 0x0002DAB2 File Offset: 0x0002BCB2
 	private void LoadData_preprocess()
-	{ // <Mod>
-		AprilFoolsManager.instance.OnLoadDay();
+	{
 		if (!File.Exists(this.saveFileName))
 		{
 			Debug.Log("save file don't exists");
@@ -763,43 +684,21 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x0600313B RID: 12603 RVA: 0x0014E264 File Offset: 0x0014C464
 	public Dictionary<string, object> LoadEtcFile()
-	{ // <Patch> <Mod>
+	{
 		Dictionary<string, object> dictionary = SaveUtil.ReadSerializableFile(this.saveEtcFileName);
 		try
 		{
-			bool flag = false;
-			List<KeyValuePair<string, long>> list = new List<KeyValuePair<string, long>>();
-			if (GameUtil.TryGetValue<List<KeyValuePair<string, long>>>(dictionary, "waitingCreatureMod", ref list))
+			List<long> list = new List<long>();
+			if (GameUtil.TryGetValue<List<long>>(dictionary, "waitingCreature", ref list))
 			{
-				foreach (KeyValuePair<string, long> keyValuePair in list)
+				foreach (long id in list)
 				{
-					LobotomyBaseMod.LcIdLong id = new LobotomyBaseMod.LcIdLong(keyValuePair.Key, keyValuePair.Value);
-					if (!PlayerModel.instance.IsWaitingCreature_Mod(id))
+					if (!PlayerModel.instance.IsWaitingCreature(id))
 					{
-						PlayerModel.instance.AddWaitingCreature_Mod(id);
-						flag = true;
+						PlayerModel.instance.AddWaitingCreature(id);
 					}
 				}
 			}
-			if (!flag)
-			{
-				List<long> list2 = new List<long>();
-				if (GameUtil.TryGetValue<List<long>>(dictionary, "waitingCreature", ref list2))
-				{
-					foreach (long id2 in list2)
-					{
-						if (!PlayerModel.instance.IsWaitingCreature(id2))
-						{
-							PlayerModel.instance.AddWaitingCreature(id2);
-						}
-					}
-				}
-			}/*
-			Dictionary<string, object> data = new Dictionary<string, object>();
-			if (GameUtil.TryGetValue<Dictionary<string, object>>(dictionary, "controlGroups", ref data))
-			{
-				ControlGroupManager.instance.LoadData(data);
-			}*/
 		}
 		catch
 		{
@@ -883,83 +782,6 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 		}
 	}
 
-	// <Mod>
-	public bool ForcelyLoadDay(int key, SaveType saveType)
-	{
-		this.LoadData_preprocess();
-		Dictionary<string, object> dic = this.LoadSaveFile();
-		string text = "old";
-		GameUtil.TryGetValue<string>(dic, "saveVer", ref text);
-		GameUtil.TryGetValue<float>(dic, "playTime", ref this.playTime);
-		Dictionary<int, Dictionary<string, object>> dictionary = null;
-		GameUtil.TryGetValue<Dictionary<int, Dictionary<string, object>>>(dic, "dayList", ref dictionary);
-		if (text == "old")
-		{
-			Dictionary<string, object> dictionary2 = null;
-			if (!dictionary.TryGetValue(key, out dictionary2))
-			{
-				return false;
-			}
-			this.LoadDay(dictionary2);
-			this.SaveData(true);
-			return true;
-		}
-		else
-		{
-			Dictionary<string, object> data2 = null;
-			if (!dictionary.TryGetValue(key, out data2))
-			{
-				return false;
-			}
-			if (saveType == SaveType.LASTDAY)
-			{
-				this.LoadDay(data2);
-				if (!GlobalGameManager.instance.dlcCreatureOn)
-				{
-					bool flag2 = CreatureManager.instance.ReplaceAllDlcCreature();
-					flag2 = (InventoryModel.Instance.RemoveAllDlcEquipment() || flag2);
-					flag2 = (AgentManager.instance.RemoveAllDlcEquipment() || flag2);
-					if (flag2)
-					{
-						Debug.Log("exists removed DLC data");
-						this.SaveData(false);
-						this.SaveGlobalData();
-					}
-				}
-				return true;
-			}
-			else
-			{
-				if (saveType != SaveType.CHECK_POINT)
-				{
-					return false;
-				}
-				this.LoadDay(data2);
-				if (GlobalGameManager.instance.dlcCreatureOn)
-				{
-					this.SaveData(false);
-				}
-				else
-				{
-					bool flag3 = CreatureManager.instance.ReplaceAllDlcCreature();
-					flag3 = (InventoryModel.Instance.RemoveAllDlcEquipment() || flag3);
-					flag3 = (AgentManager.instance.RemoveAllDlcEquipment() || flag3);
-					if (flag3)
-					{
-						Debug.Log("exists removed DLC data");
-						this.SaveData(true);
-						this.SaveGlobalData();
-					}
-					else
-					{
-						this.SaveData(false);
-					}
-				}
-				return true;
-			}
-		}
-	}
-
 	// Token: 0x0600313D RID: 12605 RVA: 0x0014E4F8 File Offset: 0x0014C6F8
 	public void SaveUnlimitData()
 	{
@@ -973,7 +795,7 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x0600313E RID: 12606 RVA: 0x0014E568 File Offset: 0x0014C768
 	public void SaveEtcData()
-	{ // <Patch>
+	{
 		Dictionary<string, object> dictionary = new Dictionary<string, object>();
 		try
 		{
@@ -987,21 +809,12 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 			List<long> list = new List<long>();
 			if (PlayerModel.instance.IsWaitingCreatureExist())
 			{
-				foreach (LobotomyBaseMod.LcIdLong lcIdLong in PlayerModel.instance.addedCreatureMod)
+				foreach (long item in PlayerModel.instance.addedCreature)
 				{
-					list.Add(lcIdLong.id);
+					list.Add(item);
 				}
 			}
 			dictionary.Add("waitingCreature", list);
-			List<KeyValuePair<string, long>> list2 = new List<KeyValuePair<string, long>>();
-			if (PlayerModel.instance.IsWaitingCreatureExist())
-			{
-				foreach (LobotomyBaseMod.LcIdLong lcIdLong2 in PlayerModel.instance.addedCreatureMod)
-				{
-					list2.Add(new KeyValuePair<string, long>(lcIdLong2.packageId, lcIdLong2.id));
-				}
-			}
-			dictionary.Add("waitingCreatureMod", list2);
 		}
 		catch
 		{
@@ -1196,7 +1009,7 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x0600314A RID: 12618 RVA: 0x0014E96C File Offset: 0x0014CB6C
 	public void RemoveGlobalData()
-	{ // <Mod> Reset Transient Modes
+	{
 		SaveUtil.DeleteSerializableFile(this.saveGlobalFileName);
 		CreatureManager.instance.ResetObserveData();
 		GlobalEtcDataModel.instance.ResetGlobalData();
@@ -1204,7 +1017,6 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 		InventoryModel.Instance.Init();
 		MissionManager.instance.Init();
 		SefiraCharacterManager.instance.Init();
-		SpecialModeConfig.instance.ResetTransients();
 	}
 
 	// Token: 0x0600314B RID: 12619 RVA: 0x0002DB82 File Offset: 0x0002BD82
@@ -1228,9 +1040,7 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 
 	// Token: 0x0600314D RID: 12621 RVA: 0x0014EA10 File Offset: 0x0014CC10
 	public string GetCurrentLanguage()
-	{ // <Patch>
-		return this.language;
-		/*
+	{
 		SystemLanguage systemLanguage = this.Language;
 		switch (systemLanguage)
 		{
@@ -1271,7 +1081,7 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 			}
 			break;
 		}
-		return "cn";*/
+		return "cn";
 	}
 
 	// Token: 0x0600314E RID: 12622 RVA: 0x0002DB94 File Offset: 0x0002BD94
@@ -1357,23 +1167,6 @@ public class GlobalGameManager : MonoBehaviour, IObserver
 		dictionary.Add("logIndex", this.logCount);
 		binaryFormatter.Serialize(fileStream, dictionary);
 		fileStream.Close();
-	}
-
-	// <Patch>
-	public void ChangeLanguage_new(string value)
-	{
-		this.language = value;
-		GameStaticDataLoader.ReloadData();
-		this.SetLanguageFont();
-		Notice.instance.Send(NoticeName.LanaguageChange, new object[0]);
-		ManualUI.Instance.Reload();
-		try
-		{
-			this.Language = GetLanguage(value);
-		}
-		catch
-		{
-		}
 	}
 
 	// Token: 0x06003151 RID: 12625 RVA: 0x000040A1 File Offset: 0x000022A1

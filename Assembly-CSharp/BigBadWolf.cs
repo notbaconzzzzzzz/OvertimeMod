@@ -1,6 +1,3 @@
-/*
-private void CheckPassage() // Does not get angry at Red Hood after being suppressed
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -156,11 +153,10 @@ public class BigBadWolf : CreatureBase, IObserver
 
 	// Token: 0x06001CFF RID: 7423 RVA: 0x0001F315 File Offset: 0x0001D515
 	public override void OnStageStart()
-	{ // <Mod>
+	{
 		this.ParamInit();
 		this.FindRedHood();
 		this.eatenWorker.Clear();
-		AnimScript.SetEatenSprite(0);
 	}
 
 	// Token: 0x06001D00 RID: 7424 RVA: 0x000EC3C8 File Offset: 0x000EA5C8
@@ -179,12 +175,7 @@ public class BigBadWolf : CreatureBase, IObserver
 
 	// Token: 0x06001D01 RID: 7425 RVA: 0x0001A435 File Offset: 0x00018635
 	public override void OnStageEnd()
-	{ // <Mod>
-		foreach (Uncontrollable_WolfEaten uncontrollable_WolfEaten in this.eatenWorker)
-		{
-			uncontrollable_WolfEaten.OnDieByWolf();
-		}
-		this.eatenWorker.Clear();
+	{
 		this.ParamInit();
 	}
 
@@ -265,7 +256,7 @@ public class BigBadWolf : CreatureBase, IObserver
 		{
 			this._activateEvent = true;
 		}
-		if (this._activateEvent && GameManager.currentGameManager.state != GameState.STOP)
+		if (this._activateEvent)
 		{
 			this.ActivateEatEvent(skill.agent);
 		}
@@ -395,7 +386,7 @@ public class BigBadWolf : CreatureBase, IObserver
 
 	// Token: 0x06001D0F RID: 7439 RVA: 0x000ECA74 File Offset: 0x000EAC74
 	private void CheckPassage()
-	{ // <Mod> does not get angry at Red Hood after being suppressed
+	{
 		foreach (MovableObjectNode movableObjectNode in this._entryPassage.GetEnteredTargets())
 		{
 			UnitModel unit = movableObjectNode.GetUnit();
@@ -403,7 +394,7 @@ public class BigBadWolf : CreatureBase, IObserver
 			{
 				if (unit.IsAttackTargetable())
 				{
-					if (this.IsRedHood(unit) && !_redHood.HasSuppressedWolf())
+					if (this.IsRedHood(unit))
 					{
 						this._qlipothSubCount = 2;
 						break;
@@ -420,7 +411,7 @@ public class BigBadWolf : CreatureBase, IObserver
 
 	// Token: 0x06001D10 RID: 7440 RVA: 0x000ECB38 File Offset: 0x000EAD38
 	public override void ParamInit()
-	{ // <Mod>
+	{
 		this.damageModule.curDamage = 0f;
 		this._filterElapSave = 0f;
 		this._qlipothSubCount = 0;
@@ -434,7 +425,6 @@ public class BigBadWolf : CreatureBase, IObserver
 		this._nextGetawaySefira = null;
 		this._howlingDelayTimer.StopTimer();
 		this.model.ResetQliphothCounter();
-		_filterTimer.StopTimer();
 	}
 
 	// Token: 0x06001D11 RID: 7441 RVA: 0x0001F3CF File Offset: 0x0001D5CF
@@ -1065,14 +1055,14 @@ public class BigBadWolf : CreatureBase, IObserver
 
 	// Token: 0x06001D38 RID: 7480 RVA: 0x000ED8F0 File Offset: 0x000EBAF0
 	public void OnRedHoodSuppressed()
-	{ // <Mod>
+	{
 		if (!this.model.IsEscapedOnlyEscape())
 		{
 			this.model.hp = (float)this.model.maxHp;
 			this._isRedHoodSuppressed = true;
 			foreach (Uncontrollable_WolfEaten uncontrollable_WolfEaten in this.eatenWorker)
 			{
-				uncontrollable_WolfEaten.OnDieByWolf();
+				uncontrollable_WolfEaten.agent.Die();
 			}
 			this.eatenWorker.Clear();
 		}

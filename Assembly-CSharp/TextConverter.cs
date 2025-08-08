@@ -1,7 +1,3 @@
-/*
-public static string GetTextFromFormatText(string format_text, CreatureModel model, params string[] param) // Overtime Yesod Suppression
-public static string[] GetTextFromFormatProcessText(string format_text, CreatureModel model, params string[] param) // Overtime Yesod Suppression
-*/
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -52,7 +48,7 @@ public class TextConverter
 
 	// Token: 0x06005BA4 RID: 23460 RVA: 0x00209FB0 File Offset: 0x002081B0
 	public static string GetTextFromFormatText(string format_text, CreatureModel model, params string[] param)
-	{ // <Mod> Overtime Yesod Suppression
+	{
 		string text = format_text;
 		Match match = Regex.Match(format_text, "\\[[^\\]]*\\]");
 		while (match.Success)
@@ -63,10 +59,6 @@ public class TextConverter
 		for (int i = 0; i < param.Length; i++)
 		{
 			text = text.Replace("#" + i, param[i]);
-		}
-        if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-		{
-			return text.Replace("$0", "????????");
 		}
 		return text.Replace("$0", model.metaInfo.collectionName);
 	}
@@ -108,8 +100,7 @@ public class TextConverter
 
 	// Token: 0x06005BA7 RID: 23463 RVA: 0x0020A158 File Offset: 0x00208358
 	public static string[] GetTextFromFormatProcessText(string format_text, CreatureModel model, params string[] param)
-	{ // <Mod> Overtime Yesod Suppression (this code is unused, but I thought I might as well)
-		bool isOvertimeYesod = SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true);
+	{
 		string[] array = new string[0];
 		Match match = Regex.Match(format_text, "\\[[^\\]]*\\]");
 		while (match.Success)
@@ -123,14 +114,7 @@ public class TextConverter
 				{
 					array[i] = array[i].Replace("#" + j, param[j]);
 				}
-				if (isOvertimeYesod)
-				{
-					array[i] = array[i].Replace("$0", "????????");
-				}
-				else
-				{
-					array[i] = array[i].Replace("$0", model.metaInfo.collectionName);
-				}
+				array[i] = array[i].Replace("$0", model.metaInfo.collectionName);
 			}
 			match = match.NextMatch();
 		}

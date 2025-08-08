@@ -1,9 +1,4 @@
-﻿/*
-public static string GetPercentText(float rate) // return number instead
-+public static string GetInfoPercentText(float rate) // return number without decimal points
-*/
-using System;
-using UnityEngine; // 
+﻿using System;
 
 // Token: 0x02000ACB RID: 2763
 public class UICommonTextConverter
@@ -40,42 +35,9 @@ public class UICommonTextConverter
         return LocalizeTextDataModel.instance.GetText(text);
     }
 
+    // Token: 0x0600530D RID: 21261 RVA: 0x00043082 File Offset: 0x00041282
     public static string GetPercentText(float rate)
-    { // <Mod> returns a number instead
-        int num = Mathf.RoundToInt(rate * 1000f);
-		string text = "";
-		switch (SpecialModeConfig.instance.GetValue<SuccessRateDisplayMode>("RealTimeSuccessRate"))
-		{
-			case SuccessRateDisplayMode.PERCENTAGE:
-				text = string.Format("{0}.{1}%", num / 10, num % 10);
-				break;
-			case SuccessRateDisplayMode.PERCENTAGE_AND_TEXT:
-				text = string.Format("{0}.{1}% ({2})", num / 10, num % 10, GetPercentText((int)(rate / 0.2f)));
-				break;
-			case SuccessRateDisplayMode.TEXT_ONLY:
-				text = GetPercentText((int)(rate / 0.2f));
-				break;
-		}
-        return text;
-    }
-
-    // <Mod> returns a number instead
-    public static string GetInfoPercentText(float rate)
     {
-        int num = Mathf.RoundToInt(rate * 100f);
-		string text = "";
-		switch (SpecialModeConfig.instance.GetValue<SuccessRateDisplayMode>("InfoWindowSuccessRate"))
-		{
-			case SuccessRateDisplayMode.PERCENTAGE:
-				text = string.Format("{0}%", num);
-				break;
-			case SuccessRateDisplayMode.PERCENTAGE_AND_TEXT:
-				text = string.Format("{0}% ({1})", num, GetPercentText((int)(rate / 0.2f)));
-				break;
-			case SuccessRateDisplayMode.TEXT_ONLY:
-				text = GetPercentText((int)(rate / 0.2f));
-				break;
-		}
-        return text;
+        return UICommonTextConverter.GetPercentText((int)(rate / 0.2f));
     }
 }

@@ -1,6 +1,3 @@
-/*
-public AgentModel AddAgentModelCustom(AgentData genData) // Title Specification
-*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -109,20 +106,12 @@ public class AgentManager : IObserver, ISerializablePlayData
 
 	// Token: 0x06005AD4 RID: 23252 RVA: 0x00209210 File Offset: 0x00207410
 	public AgentModel AddAgentModelCustom(AgentData genData)
-	{ // <Mod>
+	{
 		while (this.DeletedContain((long)this.nextInstId))
 		{
 			this.nextInstId++;
 		}
-		AgentModel agentModel = null;
-		if (genData.isCustomTitles)
-		{
-			agentModel = new AgentModel((long)this.nextInstId++, genData.customTitles);
-		}
-		else
-		{
-			agentModel = new AgentModel((long)this.nextInstId++);
-		}
+		AgentModel agentModel = new AgentModel((long)this.nextInstId++);
 		agentModel._agentName = genData.agentName;
 		agentModel.name = agentModel._agentName.GetName();
 		agentModel.primaryStat = genData.stat;
@@ -653,7 +642,7 @@ public class AgentManager : IObserver, ISerializablePlayData
 
 	// Token: 0x06005AF7 RID: 23287 RVA: 0x0020A01C File Offset: 0x0020821C
 	public bool RemoveAllDlcEquipment()
-	{ // <Patch>
+	{
 		bool result = false;
 		List<AgentModel> list = new List<AgentModel>(this.agentList);
 		list.AddRange(this.agentListSpare);
@@ -666,17 +655,17 @@ public class AgentManager : IObserver, ISerializablePlayData
 				{
 					foreach (CreatureEquipmentMakeInfo creatureEquipmentMakeInfo in data.equipMakeInfos)
 					{
-						if (agentModel.Equipment.weapon != null && EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo) == EquipmentTypeInfo.GetLcId(agentModel.Equipment.weapon.metaInfo))
+						if (agentModel.Equipment.weapon != null && creatureEquipmentMakeInfo.equipTypeInfo.id == agentModel.Equipment.weapon.metaInfo.id)
 						{
 							agentModel.ReleaseWeaponV2();
 							result = true;
 						}
-						else if (agentModel.Equipment.armor != null && EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo) == EquipmentTypeInfo.GetLcId(agentModel.Equipment.armor.metaInfo))
+						else if (agentModel.Equipment.armor != null && creatureEquipmentMakeInfo.equipTypeInfo.id == agentModel.Equipment.armor.metaInfo.id)
 						{
 							agentModel.ReleaseArmor();
 							result = true;
 						}
-						else if (agentModel.ReleaseEGOGift_Mod(EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo)))
+						else if (agentModel.ReleaseEGOGift(creatureEquipmentMakeInfo.equipTypeInfo.id))
 						{
 							result = true;
 						}

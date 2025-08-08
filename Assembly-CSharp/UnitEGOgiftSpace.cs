@@ -1,14 +1,5 @@
-/*
-public void AttachGift(UnitModel owner, EGOgiftModel model) // Allow EGO gifts to stack even if you occupy the same slot
-+Various new functions // 
-+public static int GetStackingMax() // 
-+public int GiftCount(EGOgiftAttachType type, string pos) // 
-+public static arrays // 
-*/
 using System;
-using System.Linq; //
 using System.Collections.Generic;
-using LobotomyBaseMod; // 
 using UnityEngine;
 
 // Token: 0x020006AA RID: 1706
@@ -118,117 +109,26 @@ public class UnitEGOgiftSpace
 
 	// Token: 0x06003749 RID: 14153 RVA: 0x00164C30 File Offset: 0x00162E30
 	public Dictionary<string, object> GetSaveData()
-	{ // <Patch>
+	{
 		Dictionary<string, object> dictionary = new Dictionary<string, object>();
 		List<int> list = new List<int>();
-		List<string> list2 = new List<string>();
 		foreach (EGOgiftModel egogiftModel in this.replacedGifts)
 		{
 			list.Add(egogiftModel.metaInfo.id);
-			list2.Add(EquipmentTypeInfo.GetLcId(egogiftModel.metaInfo).packageId);
 		}
 		foreach (EGOgiftModel egogiftModel2 in this.addedGifts)
 		{
 			list.Add(egogiftModel2.metaInfo.id);
-			list2.Add(EquipmentTypeInfo.GetLcId(egogiftModel2.metaInfo).packageId);
-		}
-		Dictionary<int, string> dictionary2 = new Dictionary<int, string>();
-		foreach (KeyValuePair<int, UnitEGOgiftSpace.GiftLockState> keyValuePair in this.lockState)
-		{
-			dictionary2[keyValuePair.Key] = keyValuePair.Value.modid;
 		}
 		dictionary.Add("giftTypeIdList", list);
-		dictionary.Add("giftTypeIdListMod", list2);
 		dictionary.Add("lockState", this.lockState);
-		dictionary.Add("lockStateMod", dictionary2);
 		dictionary.Add("displayState", this.displayState);
 		return dictionary;
-		/*
-		Dictionary<string, object> dictionary = new Dictionary<string, object>();
-		List<int> list = new List<int>();
-		foreach (EGOgiftModel egogiftModel in this.replacedGifts)
-		{
-			list.Add(egogiftModel.metaInfo.id);
-		}
-		foreach (EGOgiftModel egogiftModel2 in this.addedGifts)
-		{
-			list.Add(egogiftModel2.metaInfo.id);
-		}
-		dictionary.Add("giftTypeIdList", list);
-		dictionary.Add("lockState", this.lockState);
-		dictionary.Add("displayState", this.displayState);
-		return dictionary;*/
 	}
 
 	// Token: 0x0600374A RID: 14154 RVA: 0x00164D2C File Offset: 0x00162F2C
 	public void LoadDataAndAttach(UnitModel owner, Dictionary<string, object> dic)
-	{ // <Patch>
-		new Dictionary<string, object>();
-		List<int> list = new List<int>();
-		List<string> list2 = new List<string>();
-		GameUtil.TryGetValue<List<int>>(dic, "giftTypeIdList", ref list);
-		bool flag = GameUtil.TryGetValue<List<string>>(dic, "giftTypeIdListMod", ref list2);
-		try
-		{
-			GameUtil.TryGetValue<Dictionary<int, UnitEGOgiftSpace.GiftLockState>>(dic, "lockState", ref this.lockState);
-			GameUtil.TryGetValue<Dictionary<int, bool>>(dic, "displayState", ref this.displayState);
-			Dictionary<int, string> dictionary = new Dictionary<int, string>();
-			GameUtil.TryGetValue<Dictionary<int, string>>(dic, "lockStateMod", ref dictionary);
-			foreach (KeyValuePair<int, UnitEGOgiftSpace.GiftLockState> keyValuePair in this.lockState)
-			{
-				if (dictionary.ContainsKey(keyValuePair.Key))
-				{
-					keyValuePair.Value.modid = dictionary[keyValuePair.Key];
-				}
-				else
-				{
-					keyValuePair.Value.modid = string.Empty;
-				}
-			}
-		}
-		catch (Exception)
-		{
-			this.lockState.Clear();
-			this.displayState.Clear();
-		}
-		int num = 0;
-		foreach (int id in list)
-		{
-			if (flag)
-			{
-				EquipmentTypeInfo data_Mod = EquipmentTypeList.instance.GetData_Mod(new LobotomyBaseMod.LcId(list2[num], id));
-				if (data_Mod != null)
-				{
-					if (data_Mod.type != EquipmentTypeInfo.EquipmentType.SPECIAL)
-					{
-						LobotomyBaseMod.ModDebug.Log("id : " + id.ToString() + " is not gift");
-					}
-					else
-					{
-						EGOgiftModel gift = EGOgiftModel.MakeGift(data_Mod);
-						owner.AttachEGOgift(gift);
-					}
-				}
-			}
-			else
-			{
-				EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(id);
-				if (data != null)
-				{
-					if (data.type != EquipmentTypeInfo.EquipmentType.SPECIAL)
-					{
-						LobotomyBaseMod.ModDebug.Log("id : " + id.ToString() + " is not gift");
-					}
-					else
-					{
-						EGOgiftModel gift2 = EGOgiftModel.MakeGift(data);
-						owner.AttachEGOgift(gift2);
-					}
-				}
-			}
-			num++;
-		}
-		/*
+	{
 		new Dictionary<string, object>();
 		List<int> list = new List<int>();
 		GameUtil.TryGetValue<List<int>>(dic, "giftTypeIdList", ref list);
@@ -257,91 +157,53 @@ public class UnitEGOgiftSpace
 					owner.AttachEGOgift(gift);
 				}
 			}
-		}*/
+		}
 	}
 
 	// Token: 0x0600374B RID: 14155 RVA: 0x00164E1C File Offset: 0x0016301C
 	public void AttachGift(UnitModel owner, EGOgiftModel model)
-	{ // <Patch> <Mod> allow EGO gifts to stack even if you occupy the same slot, but not if they're exclusive to each other
-		int stackingMax = GetStackingMax();
-        if (stackingMax != 1)
-        {
-			LcId[] exclude = null;
-            foreach (LcId[] group in exclusiveGifts)
-            {
-                if (group.Contains(EquipmentTypeInfo.GetLcId(model.metaInfo)))
-				{
-					exclude = group;
-					break;
-				}
-            }
-			if (exclude != null)
-			{
-				EGOgiftModel egogiftModel = (model.metaInfo.attachType == EGOgiftAttachType.REPLACE ? this.replacedGifts : this.addedGifts).Find((EGOgiftModel x) => exclude.Contains(EquipmentTypeInfo.GetLcId(x.metaInfo)));
-				if (egogiftModel != null)
-				{
-					egogiftModel.OnRelease();
-					(egogiftModel.metaInfo.attachType == EGOgiftAttachType.REPLACE ? this.replacedGifts : this.addedGifts).Remove(egogiftModel);
-					Notice.instance.Send(NoticeName.OnChangeGift, new object[]
-					{
-						owner
-					});
-				}
-			}
-        }
+	{
 		if (model.metaInfo.attachType == EGOgiftAttachType.ADD)
 		{
-			if (stackingMax != -1)
+			EGOgiftModel egogiftModel = this.addedGifts.Find((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.ADD && x.metaInfo.attachPos == model.metaInfo.attachPos);
+			if (egogiftModel != null)
 			{
-				List<EGOgiftModel> stackedGifts = addedGifts.FindAll((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.ADD && x.metaInfo.attachPos == model.metaInfo.attachPos);
-				if (stackedGifts.Count >= stackingMax)
+				egogiftModel.OnRelease();
+				this.addedGifts.Remove(egogiftModel);
+				Notice.instance.Send(NoticeName.OnChangeGift, new object[]
 				{
-					EGOgiftModel egogiftModel = stackedGifts[0];
-                    egogiftModel.OnRelease();
-                    addedGifts.Remove(egogiftModel);
-					Notice.instance.Send(NoticeName.OnChangeGift, new object[]
-					{
-						owner
-					});
-				}
+					owner
+				});
 			}
 			this.addedGifts.Add(model);
 			model.OnEquip(owner);
 		}
 		else if (model.metaInfo.attachType == EGOgiftAttachType.SPECIAL_ADD)
 		{
-			if (stackingMax != -1)
+			EGOgiftModel egogiftModel2 = this.addedGifts.Find((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.SPECIAL_ADD && x.metaInfo.attachPos == model.metaInfo.attachPos);
+			if (egogiftModel2 != null)
 			{
-				List<EGOgiftModel> stackedGifts = addedGifts.FindAll((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.SPECIAL_ADD && x.metaInfo.attachPos == model.metaInfo.attachPos);
-				if (stackedGifts.Count >= stackingMax)
+				egogiftModel2.OnRelease();
+				this.addedGifts.Remove(egogiftModel2);
+				Notice.instance.Send(NoticeName.OnChangeGift, new object[]
 				{
-					EGOgiftModel egogiftModel = stackedGifts[0];
-                    egogiftModel.OnRelease();
-                    addedGifts.Remove(egogiftModel);
-					Notice.instance.Send(NoticeName.OnChangeGift, new object[]
-					{
-						owner
-					});
-				}
+					owner
+				});
 			}
 			this.addedGifts.Add(model);
 			model.OnEquip(owner);
 		}
 		else if (model.metaInfo.attachType == EGOgiftAttachType.REPLACE)
 		{
-			if (stackingMax != -1)
+			EGOgiftModel egogiftModel3 = this.replacedGifts.Find((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.REPLACE && x.metaInfo.attachPos == model.metaInfo.attachPos);
+			if (egogiftModel3 != null)
 			{
-				List<EGOgiftModel> stackedGifts = replacedGifts.FindAll((EGOgiftModel x) => x.metaInfo.attachType == EGOgiftAttachType.REPLACE && x.metaInfo.attachPos == model.metaInfo.attachPos);
-				if (stackedGifts.Count >= stackingMax)
+				egogiftModel3.OnRelease();
+				this.replacedGifts.Remove(egogiftModel3);
+				Notice.instance.Send(NoticeName.OnChangeGift, new object[]
 				{
-					EGOgiftModel egogiftModel = stackedGifts[0];
-                    egogiftModel.OnRelease();
-                    replacedGifts.Remove(egogiftModel);
-					Notice.instance.Send(NoticeName.OnChangeGift, new object[]
-					{
-						owner
-					});
-				}
+					owner
+				});
 			}
 			this.replacedGifts.Add(model);
 			model.OnEquip(owner);
@@ -357,7 +219,6 @@ public class UnitEGOgiftSpace
 				id = (long)model.metaInfo.id,
 				state = false
 			});
-			this.lockState[UnitEGOgiftSpace.GetRegionId(model.metaInfo)].modid = EquipmentTypeInfo.GetLcId(model.metaInfo).packageId; // 
 		}
 	}
 
@@ -387,12 +248,11 @@ public class UnitEGOgiftSpace
 
 	// Token: 0x0600374E RID: 14158 RVA: 0x0016510C File Offset: 0x0016330C
 	public void SetLockState(EGOgiftModel model, bool state)
-	{ // <Patch>
+	{
 		if (this.lockState.ContainsKey(UnitEGOgiftSpace.GetRegionId(model.metaInfo)))
 		{
 			UnitEGOgiftSpace.GiftLockState giftLockState = this.lockState[UnitEGOgiftSpace.GetRegionId(model.metaInfo)];
 			giftLockState.id = (long)model.metaInfo.id;
-			giftLockState.modid = EquipmentTypeInfo.GetLcId(model.metaInfo).packageId; // 
 			giftLockState.state = state;
 			this.lockState[UnitEGOgiftSpace.GetRegionId(model.metaInfo)] = giftLockState;
 		}
@@ -403,30 +263,28 @@ public class UnitEGOgiftSpace
 				id = (long)model.metaInfo.id,
 				state = false
 			});
-			this.lockState[UnitEGOgiftSpace.GetRegionId(model.metaInfo)].modid = EquipmentTypeInfo.GetLcId(model.metaInfo).packageId; // 
 		}
 	}
 
 	// Token: 0x0600374F RID: 14159 RVA: 0x001651B8 File Offset: 0x001633B8
 	public bool GetLockState(EquipmentTypeInfo info)
-	{ // <Patch>
+	{
 		if (this.lockState.ContainsKey(UnitEGOgiftSpace.GetRegionId(info)))
 		{
 			UnitEGOgiftSpace.GiftLockState giftLockState = this.lockState[UnitEGOgiftSpace.GetRegionId(info)];
-			return EquipmentTypeInfo.GetLcId(info) != UnitEGOgiftSpace.GiftLockState.GetLcId(giftLockState) && giftLockState.state; // return (long)info.id != giftLockState.id && giftLockState.state;
+			return (long)info.id != giftLockState.id && giftLockState.state;
 		}
 		this.lockState.Add(UnitEGOgiftSpace.GetRegionId(info), new UnitEGOgiftSpace.GiftLockState
 		{
 			id = (long)info.id,
 			state = false
 		});
-		this.lockState[UnitEGOgiftSpace.GetRegionId(info)].modid = EquipmentTypeInfo.GetLcId(info).packageId; // 
 		return false;
 	}
 
 	// Token: 0x06003750 RID: 14160 RVA: 0x00165238 File Offset: 0x00163438
 	public bool GetLockStateUI(EquipmentTypeInfo info)
-	{ // <Patch>
+	{
 		if (this.lockState.ContainsKey(UnitEGOgiftSpace.GetRegionId(info)))
 		{
 			return this.lockState[UnitEGOgiftSpace.GetRegionId(info)].state;
@@ -436,25 +294,13 @@ public class UnitEGOgiftSpace
 			id = (long)info.id,
 			state = false
 		});
-		this.lockState[UnitEGOgiftSpace.GetRegionId(info)].modid = EquipmentTypeInfo.GetLcId(info).packageId;
 		return false;
-		/*
-		if (this.lockState.ContainsKey(UnitEGOgiftSpace.GetRegionId(info)))
-		{
-			return this.lockState[UnitEGOgiftSpace.GetRegionId(info)].state;
-		}
-		this.lockState.Add(UnitEGOgiftSpace.GetRegionId(info), new UnitEGOgiftSpace.GiftLockState
-		{
-			id = (long)info.id,
-			state = false
-		});
-		return false;*/
 	}
 
 	// Token: 0x06003751 RID: 14161 RVA: 0x00031875 File Offset: 0x0002FA75
 	public void ReleaseGift(EGOgiftModel gift)
-	{ // <Patch>
-		this.displayState.Remove(UnitEGOgiftSpace.GetRegionId(gift.metaInfo)); // this.displayState.Remove(gift.metaInfo.id);
+	{
+		this.displayState.Remove(gift.metaInfo.id);
 		this.lockState.Remove(UnitEGOgiftSpace.GetRegionId(gift.metaInfo));
 	}
 
@@ -542,24 +388,9 @@ public class UnitEGOgiftSpace
 		}
 	}
 
-	// <Mod>
-	public void OnTakeDamage_After(UnitModel actor, DamageInfo dmg)
-	{
-		foreach (EGOgiftModel egogiftModel in this.replacedGifts)
-		{
-			egogiftModel.script.OnTakeDamage_After(actor, dmg);
-		}
-		foreach (EGOgiftModel egogiftModel2 in this.addedGifts)
-		{
-			egogiftModel2.script.OnTakeDamage_After(actor, dmg);
-		}
-	}
-
 	// Token: 0x06003758 RID: 14168 RVA: 0x001656EC File Offset: 0x001638EC
 	public bool HasEquipment(int id)
-	{ // <Patch>
-		return HasEquipment_Mod(new LobotomyBaseMod.LcId(id));
-		/*
+	{
 		foreach (EGOgiftModel egogiftModel in this.replacedGifts)
 		{
 			if (egogiftModel.metaInfo.id == id)
@@ -574,7 +405,7 @@ public class UnitEGOgiftSpace
 				return true;
 			}
 		}
-		return false;*/
+		return false;
 	}
 
 	// Token: 0x06003759 RID: 14169 RVA: 0x001657BC File Offset: 0x001639BC
@@ -630,97 +461,6 @@ public class UnitEGOgiftSpace
 		return result;
 	}
 
-	// <Patch>
-	public bool HasEquipment_Mod(LobotomyBaseMod.LcId id)
-	{
-		foreach (EGOgiftModel egogiftModel in this.replacedGifts)
-		{
-			if (EquipmentTypeInfo.GetLcId(egogiftModel.metaInfo) == id)
-			{
-				return true;
-			}
-		}
-		foreach (EGOgiftModel egogiftModel2 in this.addedGifts)
-		{
-			if (EquipmentTypeInfo.GetLcId(egogiftModel2.metaInfo) == id)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// <Mod>
-	public float RecoveryMultiplier(bool isMental, float amount)
-	{
-		float num = 1f;
-		foreach (EGOgiftModel egogiftModel in addedGifts)
-		{
-			if (egogiftModel.script != null)
-			{
-				num *= egogiftModel.script.RecoveryMultiplier(isMental, amount);
-			}
-		}
-		foreach (EGOgiftModel egogiftModel2 in replacedGifts)
-		{
-			if (egogiftModel2.script != null)
-			{
-				num *= egogiftModel2.script.RecoveryMultiplier(isMental, amount);
-			}
-		}
-		return num;
-	}
-
-	// <Mod>
-	public void OnStageStart()
-	{
-		foreach (EGOgiftModel egogiftModel in addedGifts)
-		{
-			if (egogiftModel.script != null)
-			{
-				egogiftModel.script.OnStageStart();
-			}
-		}
-		foreach (EGOgiftModel egogiftModel2 in replacedGifts)
-		{
-			if (egogiftModel2.script != null)
-			{
-				egogiftModel2.script.OnStageStart();
-			}
-		}
-	}
-
-	// <Mod>
-	public static int GetStackingMax()
-	{
-		if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
-		{
-			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.BINAH))
-			{
-				return -1;
-			}
-			if (ResearchDataModel.instance.IsUpgradedAbility("gift_stacking"))
-			{
-				return 2;
-			}
-			return 1;
-		}
-		if (SpecialModeConfig.instance.GetValue<bool>("StackableEgoGifts"))
-		{
-			return -1;
-		}
-		return 1;
-	}
-	
-
-	// <Mod>
-	public int GiftCount(EGOgiftAttachType type, string pos)
-	{
-		List<EGOgiftModel> stackedGifts = addedGifts.FindAll((EGOgiftModel x) => x.metaInfo.attachType == type && x.metaInfo.attachPos == pos);
-		stackedGifts.AddRange(replacedGifts.FindAll((EGOgiftModel x) => x.metaInfo.attachType == type && x.metaInfo.attachPos == pos));
-		return stackedGifts.Count;
-	}
-
 	// Token: 0x040032BF RID: 12991
 	public static readonly long[] uniqueLock = new long[]
 	{
@@ -730,17 +470,6 @@ public class UnitEGOgiftSpace
 		4000374L,
 		1021L,
 		1022L
-	};
-
-    // <Mod> Groups of EGO gifts that aren't allowed to co-exist on the same employee
-	public static readonly LcId[][] exclusiveGifts = new LcId[][]
-	{
-		new LcId[] {
-            new LcId(4000371),
-            new LcId(4000372),
-            new LcId(4000373),
-            new LcId(4000374)
-        }
 	};
 
 	// Token: 0x040032C0 RID: 12992
@@ -764,24 +493,10 @@ public class UnitEGOgiftSpace
 		{
 		}
 
-		// <Patch>
-		public static LobotomyBaseMod.LcId GetLcId(UnitEGOgiftSpace.GiftLockState LockState)
-		{
-			if (LockState.modid == null)
-			{
-				return new LobotomyBaseMod.LcId((int)LockState.id);
-			}
-			return new LobotomyBaseMod.LcId(LockState.modid, (int)LockState.id);
-		}
-
 		// Token: 0x040032C4 RID: 12996
 		public long id;
 
 		// Token: 0x040032C5 RID: 12997
 		public bool state;
-
-		// <Patch>
-		[NonSerialized]
-		public string modid;
 	}
 }

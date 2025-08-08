@@ -32,15 +32,6 @@ public class GeburahCoreScript : CreatureBase
 		}
 	}
 
-	// <Mod>
-	public virtual OvertimeGeburahBossBase OvertimeBossBase
-	{
-		get
-		{
-			return null;
-		}
-	}
-
 	// Token: 0x17000637 RID: 1591
 	// (get) Token: 0x06004321 RID: 17185 RVA: 0x0003964E File Offset: 0x0003784E
 	public GeburahCoreAnim AnimScript
@@ -222,8 +213,7 @@ public class GeburahCoreScript : CreatureBase
 			if (this._recoverTimer.RunTimer())
 			{
 				this.model.hp = (float)this.model.maxHp;
-				if (BossBase != null) BossBase.StartHexagonEffect();
-				if (OvertimeBossBase != null) OvertimeBossBase.StartHexagonEffect();
+				this.bossBase.StartHexagonEffect();
 			}
 			return;
 		}
@@ -457,7 +447,7 @@ public class GeburahCoreScript : CreatureBase
 		component.GenerateParts(this.AnimScript, target, (num != 0) ? 0.5f : 1f);
 		gameObject.transform.SetParent(EffectLayer.currentLayer.transform);
 		Vector3 vector;
-		// target.GetCurrentViewPosition().x = vector.x + UnityEngine.Random.Range(-1f, 1f) * target.GetMovableNode().currentScale;
+		target.GetCurrentViewPosition().x = vector.x + UnityEngine.Random.Range(-1f, 1f) * target.GetMovableNode().currentScale;
 		gameObject.transform.position = target.GetCurrentViewPosition();
 		gameObject.transform.localScale = target.GetMovableNode().currentScale * Vector3.one;
 		target.GetWorkerUnit().gameObject.SetActive(false);
@@ -548,8 +538,7 @@ public class GeburahCoreScript : CreatureBase
 			this._phaseExecution.OnPrevSuppressed();
 			if (this.Phase == GeburahPhase.P1 || this.Phase == GeburahPhase.P3)
 			{
-				if (BossBase != null) BossBase.OnChangePhase();
-				if (OvertimeBossBase != null) OvertimeBossBase.OnGeburaSuppress(Phase);
+				this.bossBase.OnChangePhase();
 			}
 		}
 	}
@@ -573,7 +562,7 @@ public class GeburahCoreScript : CreatureBase
 
 	// Token: 0x06004349 RID: 17225 RVA: 0x001A3A24 File Offset: 0x001A1C24
 	public void SetPhase(GeburahPhase phase)
-	{ // <Mod>
+	{
 		this._phase = phase;
 		GeburahCoreScript.Log("Phase : " + phase);
 		if (phase != GeburahPhase.START && phase != GeburahPhase.END)
@@ -583,7 +572,7 @@ public class GeburahCoreScript : CreatureBase
 			model.SetDefenseId(num.ToString());
 		}
 		this.AnimScript.SetPhase(phase);
-		if (BossBase != null && phase == GeburahPhase.END && SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E2))
+		if (phase == GeburahPhase.END && SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E2))
 		{
 			this.BossBase.OnCleared();
 		}
@@ -852,7 +841,7 @@ public class GeburahCoreScript : CreatureBase
 	public const string SpawnSrc = "GeburahSpawn";
 
 	// Token: 0x04003DE0 RID: 15840
-	public GeburahPhase _phase; // <Mod> changed to public
+	private GeburahPhase _phase;
 
 	// Token: 0x04003DE1 RID: 15841
 	private GeburahBossBase bossBase;
@@ -861,7 +850,7 @@ public class GeburahCoreScript : CreatureBase
 	public GeburahCoreScript.DamageCalculator damageCalculator = new GeburahCoreScript.DamageCalculator();
 
 	// Token: 0x04003DE3 RID: 15843
-	public Timer _recoverTimer = new Timer(); // <Mod> changed to public
+	private Timer _recoverTimer = new Timer();
 
 	// Token: 0x04003DE4 RID: 15844
 	private GeburahActionMethod _damageInvoked;

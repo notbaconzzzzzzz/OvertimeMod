@@ -1,11 +1,6 @@
-/*
-IsolateRoomUI.public void GetFeelingStateData(CreatureFeelingState state, out Sprite sprite, out Color color) // 
-+IsolateRoomUI.public static Sprite[] extraFeelingStateIcon; // 
-+IsolateRoomUI.public static Color[] extraFeelingStateColor; // 
-*/
 using System;
 using System.Collections.Generic;
-using System.IO; // 
+using System.IO;
 using System.Reflection;
 using Spine.Unity;
 using UnityEngine;
@@ -160,121 +155,7 @@ public class CreatureLayer : MonoBehaviour, IObserver
 
 	// Token: 0x060055B4 RID: 21940 RVA: 0x001EBE2C File Offset: 0x001EA02C
 	private void AddCreature(CreatureModel model)
-	{ // <Patch> <Mod>
-		bool flag = model == null;
-		if (!flag)
-		{
-			try
-			{
-				CreatureUnit component = ResourceCache.instance.LoadPrefab("Unit/CreatureBase").GetComponent<CreatureUnit>();
-				component.transform.SetParent(this.transform, false);
-				component.model = model;
-				model.SetUnit(component);
-				bool flag2 = model.metaInfo.animSrc != string.Empty;
-				if (flag2)
-				{
-					string[] array = model.metaInfo.animSrc.Split(new char[]
-					{
-						'/'
-					});
-					//if (AprilFoolsManager.instance.IsEventActive("AllDTM")) array = "Unit/CreatureAnimator/DontTouchMe".Split(new char[] { '/' });
-					bool flag3 = array[0] == "Custom";
-					if (flag3)
-					{
-						DirectoryInfo directoryInfo = null;
-						foreach (ModInfo modInfo in Add_On.instance.ModList)
-						{
-							bool flag4 = modInfo.modid == CreatureTypeInfo.GetLcId(model.metaInfo).packageId;
-							if (flag4)
-							{
-								bool flag5 = Directory.Exists(modInfo.modpath.FullName + "/CreatureAnimation/" + array[1]);
-								if (flag5)
-								{
-									directoryInfo = new DirectoryInfo(modInfo.modpath.FullName + "/CreatureAnimation/" + array[1]);
-									break;
-								}
-							}
-						}
-						bool flag6 = directoryInfo != null;
-						if (flag6)
-						{
-							List<Texture2D> list = new List<Texture2D>();
-							foreach (FileInfo fileInfo in directoryInfo.GetFiles())
-							{
-								bool flag7 = fileInfo.FullName.Contains(".png");
-								if (flag7)
-								{
-									byte[] data = File.ReadAllBytes(fileInfo.FullName);
-									Texture2D texture2D = new Texture2D(2, 2);
-									texture2D.LoadImage(data);
-									texture2D.name = Path.GetFileNameWithoutExtension(fileInfo.Name);
-									list.Add(texture2D);
-								}
-							}
-							string atlasText = File.ReadAllText(directoryInfo.FullName + "/atlas.txt");
-							Shader shader = null;
-							AtlasAsset atlasAsset = AtlasAsset.CreateRuntimeInstance(atlasText, list.ToArray(), shader, true);
-							bool flag8 = File.Exists(directoryInfo.FullName + "/json.txt");
-							GameObject gameObject;
-							if (flag8)
-							{
-								gameObject = SkeletonAnimation.NewSkeletonAnimationGameObject(SkeletonDataAsset.CreateRuntimeInstance(File.ReadAllText(directoryInfo.FullName + "/json.txt"), atlasAsset, true, 0.01f)).gameObject;
-							}
-							else
-							{
-								gameObject = SkeletonAnimation.NewSkeletonAnimationGameObject(SkeletonDataAsset.CreateRuntimeInstance(File.ReadAllBytes(directoryInfo.FullName + "/skeleton.skel"), atlasAsset, true, 0.01f)).gameObject;
-							}
-							Type type = LobotomyBaseMod.ExtenionUtil.GetType(array[1]);
-							gameObject.AddComponent(type);
-							component.animTarget = gameObject.GetComponent<CreatureAnimScript>();
-							gameObject.transform.SetParent(component.transform, false);
-						}
-					}
-					else
-					{
-						GameObject gameObject2 = Prefab.LoadPrefab(model.metaInfo.animSrc);
-						component.animTarget = gameObject2.GetComponent<CreatureAnimScript>();
-						gameObject2.transform.SetParent(component.transform, false);
-					}
-				}
-				bool flag9 = model.metaInfo.roomReturnSrc != string.Empty;
-				if (flag9)
-				{
-					component.returnObject = Prefab.LoadPrefab(model.metaInfo.roomReturnSrc);
-					component.returnObject.transform.SetParent(component.transform);
-					component.returnObject.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
-					component.returnObject.transform.localPosition = new Vector3(0f, -0.2f, 0f);
-					component.returnObject.SetActive(false);
-					component.returnSpriteRenderer.gameObject.SetActive(false);
-				}
-				else
-				{
-					component.returnObject = component.returnSpriteRenderer.gameObject;
-					component.returnObject.SetActive(false);
-				}
-				if (model.isolateRoomData != null)
-				{
-					GameObject gameObject3 = Prefab.LoadPrefab("IsolateRoom");
-					gameObject3.transform.SetParent(this.transform, false);
-					IsolateRoom component2 = gameObject3.GetComponent<IsolateRoom>();
-					int item = UnityEngine.Random.Range(1, 4);
-					this.tempIntforSprite.Add(item);
-					string name = this.directory + 1.ToString();
-					component2.RoomSpriteRenderer.sprite = ResourceCache.instance.GetSprite(name);
-					component2.SetCreature(component);
-					component2.Init();
-					gameObject3.transform.position = model.basePosition;
-					component.room = component2;
-				}
-				this.creatureList.Add(component);
-				this.creatureDic.Add(model.instanceId, component);
-			}
-			catch (Exception ex)
-			{
-				LobotomyBaseMod.ModDebug.Log("AddCreature error - " + ex.Message + Environment.NewLine + ex.StackTrace);
-			}
-		}
-		/*
+	{
 		if (model == null)
 		{
 			return;
@@ -387,7 +268,7 @@ public class CreatureLayer : MonoBehaviour, IObserver
 		catch (Exception ex)
 		{
 			File.WriteAllText(Application.dataPath + "/BaseMods/Cerror.txt", ex.Message + Environment.NewLine + ex.StackTrace);
-		}*/
+		}
 	}
 
 	// Token: 0x060055B5 RID: 21941 RVA: 0x001EC314 File Offset: 0x001EA514
@@ -546,7 +427,7 @@ public class CreatureLayer : MonoBehaviour, IObserver
 
 	// Token: 0x060055BB RID: 21947 RVA: 0x001EC898 File Offset: 0x001EAA98
 	public EtcUnit AddEtcUnit(UnitModel model)
-	{ // <Mod>
+	{
 		GameObject gameObject = null;
 		if (model is SnowWhite.VineArea)
 		{
@@ -563,24 +444,8 @@ public class CreatureLayer : MonoBehaviour, IObserver
 		else
 		{
 			Debug.Log("Invalid EtcUnit");
-			return null;
 		}
 		EtcUnit component = gameObject.GetComponent<EtcUnit>();
-		component.transform.SetParent(base.transform, false);
-		component.transform.localPosition = Vector3.zero;
-		component.transform.localScale = Vector3.one;
-		component.model = model;
-		this.etcList.Add(component);
-		return component;
-	}
-
-	// <Mod>
-	public EtcUnit AddEtcUnit(UnitModel model, GameObject gameObject)
-	{
-		if (gameObject == null) return null;
-		// gameObject = GameObject.Instantiate(gameObject);
-		EtcUnit component = gameObject.GetComponent<EtcUnit>();
-		if (component == null) component = gameObject.AddComponent<EtcUnit>();
 		component.transform.SetParent(base.transform, false);
 		component.transform.localPosition = Vector3.zero;
 		component.transform.localScale = Vector3.one;
@@ -608,7 +473,7 @@ public class CreatureLayer : MonoBehaviour, IObserver
 
 	// Token: 0x060055BE RID: 21950 RVA: 0x001EC9B8 File Offset: 0x001EABB8
 	public void OnNotice(string notice, params object[] param)
-	{ // <Mod>
+	{
 		if (notice == NoticeName.AddCreature)
 		{
 			foreach (object obj in param)
@@ -647,14 +512,7 @@ public class CreatureLayer : MonoBehaviour, IObserver
 		}
 		else if (notice == NoticeName.AddEtcUnit)
 		{
-			if (param.Length > 1)
-			{
-				this.AddEtcUnit((UnitModel)param[0], (GameObject)param[1]);
-			}
-			else
-			{
-				this.AddEtcUnit((UnitModel)param[0]);
-			}
+			this.AddEtcUnit((UnitModel)param[0]);
 		}
 		else if (notice == NoticeName.RemoveEtcUnit)
 		{
@@ -768,87 +626,24 @@ public class CreatureLayer : MonoBehaviour, IObserver
 
 		// Token: 0x060055C2 RID: 21954 RVA: 0x001ECD50 File Offset: 0x001EAF50
 		public void GetFeelingStateData(CreatureFeelingState state, out Sprite sprite, out Color color)
-		{ // <Mod>
-            try
-            {
-                if (extraFeelingStateIcon == null)
-                {
-                    extraFeelingStateIcon = new Sprite[2];
-                    String resultName = "Tranq";
-                    byte[] data = File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/" + resultName + "ResultIcon.png");
-                    Texture2D texture2D = new Texture2D(250, 250);
-                    texture2D.LoadImage(data);
-                    extraFeelingStateIcon[0] = Sprite.Create(texture2D, new Rect(0, 0, 250, 250), new Vector2(125, 125), 50, 0U, SpriteMeshType.Tight, new Vector4());
-                    resultName = "Unknown";
-                    data = File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/" + resultName + "ResultIcon.png");
-                    texture2D = new Texture2D(250, 250);
-                    texture2D.LoadImage(data);
-                    extraFeelingStateIcon[1] = Sprite.Create(texture2D, new Rect(0, 0, 250, 250), new Vector2(125, 125), 50, 0U, SpriteMeshType.Tight, new Vector4());
-                }
-                if (extraFeelingStateColor == null)
-                {
-                    extraFeelingStateColor = new Color[2];
-                    extraFeelingStateColor[0] = new Color(0.15f, 0.269f, 0.721f);
-                    extraFeelingStateColor[1] = new Color(0.575f, 0f, 0.741f);
-                }
-            }
-            catch (Exception ex)
-            {
-                Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-                {
-                    ex.Message + " : " + ex.StackTrace
-                });
-            }
-			sprite = null;
-			color = this.DisabledColor;
+		{
 			switch (state)
 			{
 			case CreatureFeelingState.GOOD:
 				sprite = this.FeelingStateIcon[2];
 				color = this.FeelingStateColor[2];
-				break;
+				return;
 			case CreatureFeelingState.NORM:
 				sprite = this.FeelingStateIcon[1];
 				color = this.FeelingStateColor[1];
-				break;
+				return;
 			case CreatureFeelingState.BAD:
 				sprite = this.FeelingStateIcon[0];
 				color = this.FeelingStateColor[0];
-				break;
-			case CreatureFeelingState.TRANQ:
-				sprite = extraFeelingStateIcon[0];
-				color = extraFeelingStateColor[0];
-				break;
-			case CreatureFeelingState.NONE:
-				sprite = extraFeelingStateIcon[1];
-				color = extraFeelingStateColor[1];
-				break;
-			}/*
-			Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-			{
-				(int)(color.r * 255f) + "-" + (int)(color.g * 255f) + "-" + (int)(color.b * 255f)
-			});
-			Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-			{
-				sprite.rect.ToString() + " : " + sprite.pivot.x + "-" + sprite.pivot.y + " : " + sprite.pixelsPerUnit + " : " + sprite.border.ToString()
-			});*/
-            /*
-            try
-            {
-                if (!File.Exists(Application.dataPath + "/Managed/BaseMod/AssetDump/" + resultName + "ResultIcon.png"))
-                {
-					Texture2D tex = new Texture2D(sprite.texture.width, sprite.texture.height);
-					tex.SetPixels(sprite.texture.GetPixels());
-                    File.WriteAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/" + resultName + "ResultIcon.png", tex.EncodeToPNG());
-                }
-            }
-            catch (Exception ex)
-            {
-                Notice.instance.Send(NoticeName.AddSystemLog, new object[]
-                {
-                    ex.Message + " : " + ex.StackTrace
-                });
-            }*/
+				return;
+			}
+			sprite = null;
+			color = this.DisabledColor;
 		}
 
 		// Token: 0x060055C3 RID: 21955 RVA: 0x001ECE00 File Offset: 0x001EB000
@@ -909,11 +704,5 @@ public class CreatureLayer : MonoBehaviour, IObserver
 
 		// Token: 0x04004F04 RID: 20228
 		public Color RoomEnabledColor;
-
-		// <Mod>
-        public static Sprite[] extraFeelingStateIcon;
-
-		// <Mod>
-        public static Color[] extraFeelingStateColor;
 	}
 }

@@ -1,13 +1,5 @@
-/*
-public float GetDamageFactor() // Weapons that don't scale with attack speed instead scale damage
-+public void OnTakeDamage_After(UnitModel actor, DamageInfo dmg) // 
-public bool CheckRequire(UnitModel unit) // 
-+public int GetUpgradeRisk // 
-*/
 using System;
-using System.Linq; //
 using UnityEngine;
-using LobotomyBaseMod; // 
 
 // Token: 0x02000693 RID: 1683
 public class EquipmentModel
@@ -41,27 +33,12 @@ public class EquipmentModel
 
 	// Token: 0x060036D7 RID: 14039 RVA: 0x00031407 File Offset: 0x0002F607
 	public float GetDamageFactor()
-	{ // <Mod>
-		float num = 1f;
-		if (this.owner is AgentModel && this.metaInfo.type == EquipmentTypeInfo.EquipmentType.WEAPON) {
-			if (this.metaInfo.weaponClassType == WeaponClassType.PISTOL || EquipmentTypeInfo.NonScaleWeaponIds.Contains(this.metaInfo.LcId)) {
-				int grade = this.GetUpgradeRisk;
-				float assume = (float)EquipmentTypeInfo.NonScaleJust[grade - 1];
-				AgentModel agent = this.owner as AgentModel;
-				float num2 = 1f;
-				if (this.metaInfo.weaponClassType != WeaponClassType.PISTOL) {
-					num2 = 0.8f + assume / 143f;
-				}
-				float num3 = (0.8f + agent.attackSpeed / 143f);
-				num *= num3 / num2;
-			}
-			num *= 1f + EGOrealizationManager.instance.WeaponUpgrade(this.metaInfo);
-		}
+	{
 		if (this.script == null)
 		{
-			return num;
+			return 1f;
 		}
-		return this.script.GetDamageFactor() * num;
+		return this.script.GetDamageFactor();
 	}
 
 	// Token: 0x060036D8 RID: 14040 RVA: 0x00031425 File Offset: 0x0002F625
@@ -98,22 +75,15 @@ public class EquipmentModel
 		this.script.OnTakeDamage_After(value, type);
 	}
 
-	// <Mod>
-	public void OnTakeDamage_After(UnitModel actor, DamageInfo dmg)
-	{
-		script.OnTakeDamage_After(actor, dmg);
-	}
-
 	// Token: 0x060036DD RID: 14045 RVA: 0x00163344 File Offset: 0x00161544
 	public bool CheckRequire(UnitModel unit)
-	{ // <Patch> <Mod>
+	{
 		if (!(unit is AgentModel))
 		{
 			return true;
 		}
 		AgentModel agent = (AgentModel)unit;
-		LcId lcId = EquipmentTypeInfo.GetLcId(this.metaInfo);
-		if (lcId == 300034 || lcId == 200034)
+		if (this.metaInfo.id == 300034 || this.metaInfo.id == 200034)
 		{
 			if (!agent.spriteData.FrontHair.Equals(Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald")))
 			{
@@ -124,37 +94,12 @@ public class EquipmentModel
 				return false;
 			}
 		}
-		if (lcId == new LcId("NotbaconOvertimeMod", 230905) || lcId == new LcId("NotbaconOvertimeMod", 330905))
+		if (this.metaInfo.id == 200038 || this.metaInfo.id == 300038)
 		{
-			return true;
+			return agent.maxHp >= 110 && agent.maxMental >= 110 && agent.workProb >= 110 && agent.workSpeed >= 110 && agent.attackSpeed >= 110f && agent.movement >= 110f;
 		}
-		foreach (EgoRequire egoRequire in metaInfo.requires)
-		{
-			int level = 1;
-			switch (egoRequire.type)
-			{
-				case EgoRequireType.level:
-					level = agent.level;
-					break;
-				case EgoRequireType.R:
-					level = AgentModel.CalculateStatLevelForCustomizing(agent.fortitudeStat);
-					break;
-				case EgoRequireType.W:
-					level = AgentModel.CalculateStatLevelForCustomizing(agent.prudenceStat);
-					break;
-				case EgoRequireType.B:
-					level = AgentModel.CalculateStatLevelForCustomizing(agent.temperanceStat);
-					break;
-				case EgoRequireType.P:
-					level = AgentModel.CalculateStatLevelForCustomizing(agent.justiceStat);
-					break;
-			}
-			if (level < egoRequire.value)
-			{
-				return false;
-			}
-		}
-		return true;
+		EgoRequire egoRequire = this.metaInfo.requires.Find((EgoRequire x) => (x.type == EgoRequireType.R && agent.fortitudeLevel < x.value) || (x.type == EgoRequireType.W && agent.prudenceLevel < x.value) || (x.type == EgoRequireType.B && agent.temperanceLevel < x.value) || (x.type == EgoRequireType.P && agent.justiceLevel < x.value) || (x.type == EgoRequireType.level && agent.level < x.value));
+		return egoRequire == null;
 	}
 
 	// Token: 0x060036DE RID: 14046 RVA: 0x0003148A File Offset: 0x0002F68A
@@ -167,18 +112,6 @@ public class EquipmentModel
 	public float GetWorkProbSpecialBonus(UnitModel actor, SkillTypeInfo skill)
 	{
 		return this.script.GetWorkProbSpecialBonus(actor, skill);
-	}
-    
-    // <Mod>
-    public int GetUpgradeRisk
-	{
-		get
-		{
-			if (EquipmentTypeInfo.BossIds.Contains(this.metaInfo.LcId)) {
-				return 6;
-			}
-			return (int)this.metaInfo.Grade + 1;
-		}
 	}
 
 	// Token: 0x0400329D RID: 12957

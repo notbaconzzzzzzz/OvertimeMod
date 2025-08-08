@@ -5,16 +5,12 @@ public class YggdrasilBlessBuf : UnitBuf
 {
 	// Token: 0x06002B9A RID: 11162 RVA: 0x0002A563 File Offset: 0x00028763
 	public YggdrasilBlessBuf(WorkerModel worker, Yggdrasil script)
-	{ // <Mod>
+	{
 		this.worker = worker;
 		this.script = script;
 		this.type = UnitBufType.YGGDRASIL_BLESS;
 		this.duplicateType = BufDuplicateType.ONLY_ONE;
 		this.remainTime = float.PositiveInfinity;
-        this.statBuf = new UnitStatBuf(float.PositiveInfinity, UnitBufType.YGGDRASIL_BLESS_STAT);
-		this.statBuf.maxMental = 10;
-		this.statBuf.cubeSpeed = 20;
-		this.worker.AddUnitBuf(statBuf);
 	}
 
 	// Token: 0x06002B9B RID: 11163 RVA: 0x0002A593 File Offset: 0x00028793
@@ -36,8 +32,7 @@ public class YggdrasilBlessBuf : UnitBuf
 
 	// Token: 0x06002B9D RID: 11165 RVA: 0x0002A5BD File Offset: 0x000287BD
 	public override void OnDestroy()
-	{ // <Mod>
-        this.statBuf.Destroy();
+	{
 		base.OnDestroy();
 		if (this.worker != null)
 		{
@@ -51,6 +46,4 @@ public class YggdrasilBlessBuf : UnitBuf
 
 	// Token: 0x04002971 RID: 10609
 	private Yggdrasil script;
-
-    private UnitStatBuf statBuf; // <Mod>
 }

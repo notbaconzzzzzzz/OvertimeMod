@@ -1,26 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.IO; // 
 using GlobalBullet;
 using Inventory;
 using Rabbit;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using LobotomyBaseMod; // 
 
 // Token: 0x0200037D RID: 893
 public class ConsoleCommand
 {
 	// Token: 0x06001B6A RID: 7018 RVA: 0x000E48F0 File Offset: 0x000E2AF0
 	public ConsoleCommand()
-	{ // <Mod>
+	{
 		this.lib = new Dictionary<string, string>();
 		this.creatureCommand = new List<string>();
 		this.standardCommand = new List<string>();
 		this.agentCommand = new List<string>();
 		this.officerCommand = new List<string>();
 		this.rootCommand = new List<string>();
-		this.configCommand = new List<string>();
 		this.SetList();
 	}
 
@@ -82,55 +79,6 @@ public class ConsoleCommand
 		this.officerCommand.Add(ConsoleCommand.MakePanicAll);
 		this.officerCommand.Add(ConsoleCommand.TakePhysicalDamage);
 		this.rootCommand.Add(ConsoleCommand.ChangeLanguage);
-		// <Mod>
-		creatureCommand.Add("meltdown");
-		configCommand.Add("changebasicmode");
-		configCommand.Add("changespecialmode");
-		configCommand.Add("changeovertimemode");
-		configCommand.Add("changereworkmode");
-		configCommand.Add("changebasicmodetrans");
-		configCommand.Add("changespecialmodetrans");
-		configCommand.Add("changeovertimemodetrans");
-		configCommand.Add("changereworkmodetrans");
-		configCommand.Add("changebasicmodetemp");
-		configCommand.Add("changespecialmodetemp");
-		configCommand.Add("changeovertimemodetemp");
-		configCommand.Add("changereworkmodetemp");
-		configCommand.Add("changebasicmodequiet");
-		configCommand.Add("changespecialmodequiet");
-		configCommand.Add("changeovertimemodequiet");
-		configCommand.Add("changereworkmodequiet");
-		configCommand.Add("overtimetoggle");
-		configCommand.Add("overtimetoggletrans");
-		configCommand.Add("overtimetoggletemp");
-		configCommand.Add("overtimetogglequiet");
-		configCommand.Add("reworktier");
-		configCommand.Add("reworktiertrans");
-		configCommand.Add("reworktiertemp");
-		configCommand.Add("reworktierquiet");
-		configCommand.Add("resetmodestransient");
-		configCommand.Add("resetmodesall");
-		standardCommand.Add("enterovertime");
-		standardCommand.Add("justgetonwithit");
-		standardCommand.Add("littlebabyman");
-		standardCommand.Add("samuraijack");
-		standardCommand.Add("allmine");
-		standardCommand.Add("trainingarc");
-		agentCommand.Add("removeallgifts");
-		agentCommand.Add("titlebonus");
-		creatureCommand.Add("replace");
-		standardCommand.Add("agentlist");
-		standardCommand.Add("creaturelist");
-		creatureCommand.Add("swap");
-		standardCommand.Add("imlosingmymind");
-		standardCommand.Add("redact");
-		standardCommand.Add("loadoutload");
-		standardCommand.Add("loadoutsave");
-		standardCommand.Add("secondaryoverload");
-		rootCommand.Add("resolution");
-		standardCommand.Add("recyclebin");
-		creatureCommand.Add("workdefault");
-		standardCommand.Add("workdefault");
 	}
 
 	// Token: 0x06001B6D RID: 7021 RVA: 0x000E4BEC File Offset: 0x000E2DEC
@@ -181,7 +129,7 @@ public class ConsoleCommand
 					Debug.Log("ADD : " + num2);
 					creatureModel4.observeInfo.cubeNum += num2;
 					creatureModel4.observeInfo.totalKitUseCount += num2;
-					creatureModel4.observeInfo.totalKitUseTime += num;
+					creatureModel4.observeInfo.totalKitUseTime += (float)num2;
 				}
 				foreach (CreatureModel creatureModel5 in CreatureManager.instance.GetCreatureList())
 				{
@@ -192,26 +140,6 @@ public class ConsoleCommand
 			case 6:
 				this.SuppressAllCommand();
 				goto IL_206;
-			case 10:
-				if ((string)param[1].ToLower() == "reset")
-				{
-					WorkQueuePreferanceManager.instance.SaveDefaultCondition(null);
-				}
-				else
-				{
-					QueuedWorkOrder.QueueConditionInfo condition = new QueuedWorkOrder.QueueConditionInfo();
-					condition.minHp = float.Parse((string)param[1]);
-					condition.minMental = float.Parse((string)param[2]);
-					condition.delay = float.Parse((string)param[3]);
-					condition.yieldAgent = bool.Parse((string)param[4]);
-					condition.yieldCreature = bool.Parse((string)param[5]);
-					condition.asapAgent = bool.Parse((string)param[6]);
-					condition.asapCreature = bool.Parse((string)param[7]);
-					condition.impassableAgent = bool.Parse((string)param[8]);
-					condition.impassableCreature = bool.Parse((string)param[9]);
-					WorkQueuePreferanceManager.instance.SaveDefaultCondition(condition);
-				}
-				break;
 			}
 			return;
 			IL_206:;
@@ -219,8 +147,6 @@ public class ConsoleCommand
 		else
 		{
 			long num3 = (long)param[0];
-			CreatureModel creature = CreatureManager.instance.GetCreature(num3);
-			if (creature == null) return;
 			switch (index)
 			{
 			case 0:
@@ -248,115 +174,40 @@ public class ConsoleCommand
 			{
 				float num4 = (float)param[1];
 				int num5 = (int)num4;
-				Debug.Log("ADD : " + num5);
-				creature.observeInfo.cubeNum += num5;
-				creature.observeInfo.totalKitUseCount += num5;
-				creature.observeInfo.totalKitUseTime += num4;
+				foreach (CreatureModel creatureModel6 in CreatureManager.instance.GetCreatureList())
+				{
+					Debug.Log("ADD : " + num5);
+					creatureModel6.observeInfo.cubeNum += num5;
+					creatureModel6.observeInfo.totalKitUseCount += num5;
+					creatureModel6.observeInfo.totalKitUseTime += (float)num5;
+				}
 				break;
 			}
 			case 5:
 			{
+				CreatureModel creature = CreatureManager.instance.GetCreature(num3);
+				try
+				{
+					float num6 = (float)param[1];
+					int num7 = (int)num6;
+					if (num7 <= 0)
+					{
+						creature.AddQliphothCounter();
+						Debug.Log(string.Format("{0} added Qliphoth Counter", creature.GetUnitName()));
+						break;
+					}
+				}
+				catch (Exception message)
+				{
+					Debug.LogError(message);
+				}
 				if (creature != null)
 				{
-					float num6 = 1f;
-					if (param.Length > 1)
-					{
-						num6 = (float)param[1];
-					}
-					int num7 = (int)num6;
-					if (num7 > 0)
-					{
-						for (int i = 0; i < num7; i++)
-						{
-							creature.SubQliphothCounter();
-						}
-					}
-					else
-					{
-						num7 *= -1;
-						for (int i = 0; i < num7; i++)
-						{
-							creature.AddQliphothCounter();
-						}
-					}
+					creature.SubQliphothCounter();
+					Debug.Log(string.Format("{0} reduced Qliphoth Counter", creature.GetUnitName()));
 				}
 				break;
 			}
-			case 7:
-            {
-                OverloadType type = OverloadType.DEFAULT;
-				float timer = 60f;
-				bool isNatural = false;
-                if (param.Length >= 2)
-				{
-                    switch (((string)param[1]).Substring(0, 1).ToLower())
-                    {
-                        case "p":
-                            type = OverloadType.PAIN;
-                            break;
-                        case "g":
-                            type = OverloadType.GRIEF;
-                            break;
-                        case "r":
-                            type = OverloadType.RUIN;
-                            break;
-                        case "o":
-                            type = OverloadType.OBLIVION;
-                            break;
-                    }
-                }
-                if (param.Length >= 3)
-				{
-                    timer = float.Parse((string)param[2]);
-                }
-                if (param.Length >= 4)
-				{
-                    isNatural = bool.Parse((string)param[3]);
-                }
-				CreateOverload(creature, type, timer, isNatural);
-				break;
-            }
-			case 8:
-				if (param.Length >= 3)
-				{
-					CreatureManager.instance.ReplaceCreature_Mod(new LcIdLong((string)param[1], long.Parse((string)param[2])), creature);
-					return;
-				}
-				else
-				{
-					CreatureManager.instance.ReplaceCreature(long.Parse((string)param[1]), creature);
-				}
-				if (!GameManager.currentGameManager.ManageStarted)
-				{
-					GlobalGameManager.instance.SaveData(false);
-				}
-				break;
-			case 9:
-				long num8 = long.Parse((string)param[1]);
-				CreatureModel creature2 = CreatureManager.instance.GetCreature(num8);
-				if (creature2 == null) return;
-				SwapAbnormalities(creature, creature2);
-				break;
-			case 10:
-				if ((string)param[1].ToLower() == "reset")
-				{
-					WorkQueuePreferanceManager.instance.SaveDefaultCondition(null, creature);
-				}
-				else
-				{
-					QueuedWorkOrder.QueueConditionInfo condition = new QueuedWorkOrder.QueueConditionInfo();
-					condition.minHp = float.Parse((string)param[1]);
-					condition.minMental = float.Parse((string)param[2]);
-					condition.delay = float.Parse((string)param[3]);
-					condition.yieldAgent = bool.Parse((string)param[4]);
-					condition.yieldCreature = bool.Parse((string)param[5]);
-					condition.asapAgent = bool.Parse((string)param[6]);
-					condition.asapCreature = bool.Parse((string)param[7]);
-					condition.impassableAgent = bool.Parse((string)param[8]);
-					condition.impassableCreature = bool.Parse((string)param[9]);
-					WorkQueuePreferanceManager.instance.SaveDefaultCondition(condition, creature);
-				}
-				break;
 			default:
 				return;
 			}
@@ -378,8 +229,8 @@ public class ConsoleCommand
 			break;
 		case 1:
 		{
-			float value0 = (float)param[0];
-			this.EnergyFillCommand(value0);
+			float value = (float)param[0];
+			this.EnergyFillCommand(value);
 			break;
 		}
 		case 2:
@@ -404,33 +255,9 @@ public class ConsoleCommand
 			this.DamageInvoke((string)param[0], (string)param[1], (string)param[2]);
 			break;
 		case 8:
-			if (param.Length >= 3)
-			{
-				this.GenerateEquipment((string)param[0], (int)float.Parse((string)param[1]), (int)float.Parse((string)param[2]));
-			}
-			else if (param.Length == 2)
-			{
-				float result;
-				if (float.TryParse((string)param[0], out result))
-				{
-					this.GenerateEquipment((int)result, (int)float.Parse((string)param[1]));
-				}
-				else
-				{
-					this.GenerateEquipment((string)param[0], (int)float.Parse((string)param[1]));
-				}
-			}
-			else
-			{
-				this.GenerateEquipment((int)float.Parse((string)param[0]));
-			}
+			this.GenerateEquipment((int)float.Parse((string)param[0]));
 			break;
 		case 9:
-			if (param.Length >= 2)
-			{
-				this.ActivateOrdealSystem((int)float.Parse((string)param[0]), (string)param[1]);
-				break;
-			}
 			this.ActivateOrdealSystem((int)float.Parse((string)param[0]));
 			break;
 		case 10:
@@ -440,14 +267,7 @@ public class ConsoleCommand
 			this.OverloadInvoke((int)float.Parse((string)param[0]));
 			break;
 		case 12:
-			if (param.Length >= 2)
-			{
-				SefiraBossInvoke(((string)param[0]).Trim(), (bool)param[1]);
-			}
-			else
-			{
-				SefiraBossInvoke(((string)param[0]).Trim());
-			}
+			this.SefiraBossInvoke(((string)param[0]).Trim());
 			break;
 		case 13:
 			if (param == null || param.Length == 0)
@@ -462,14 +282,7 @@ public class ConsoleCommand
 			this.MakeSefiraBossDesc(((string)param[0]).Trim());
 			break;
 		case 14:
-			if (param.Length >= 2)
-			{
-				this.AddWaitingGenCreature((string)param[0], (long)float.Parse((string)param[1]));
-			}
-			else
-			{
-				this.AddWaitingGenCreature((long)float.Parse((string)param[0]));
-			}
+			this.AddWaitingGenCreature((long)float.Parse((string)param[0]));
 			break;
 		case 15:
 			MissionManager.instance.DebugMissionClear((int)float.Parse((string)param[0]));
@@ -501,142 +314,6 @@ public class ConsoleCommand
 			this.AddMission(metaid);
 			break;
 		}
-		case 24:
-			PlayerModel.instance.ForcelyEnterOvertimeMode();
-			break;
-		case 25:
-			PrepareOvertime();
-			break;
-		case 26:
-			ResetWhiteNight();
-			break;
-		case 27:
-			ReturnToMemRepo(int.Parse((string)param[0]));
-			break;
-		case 28:
-			CompleteInventory();
-			break;
-		case 29:
-			MaxStatAllEmployees();
-			break;
-		case 30:
-			string txt;
-			string str = "";
-			foreach (AgentModel agent in AgentManager.instance.GetAgentList())
-			{
-				txt = agent.instanceId + " : " + agent.name;
-				Notice.instance.Send("AddSystemLog", new object[]
-				{
-					txt
-				});
-				str += txt + "\n";
-			}
-			foreach (AgentModel agent in AgentManager.instance.GetAgentSpareList())
-			{
-				txt = agent.instanceId + " : " + agent.name;
-				Notice.instance.Send("AddSystemLog", new object[]
-				{
-					txt
-				});
-				str += txt + "\n";
-			}
-			UnityEngine.GUIUtility.systemCopyBuffer = str;
-			break;
-		case 31:
-			string txt2;
-			string str2 = "";
-			foreach (CreatureModel creature in CreatureManager.instance.GetCreatureList())
-			{
-				txt2 = creature.instanceId + " : " + creature.GetUnitName();
-				Notice.instance.Send("AddSystemLog", new object[]
-				{
-					txt2
-				});
-				str2 += txt2 + "\n";
-			}
-			UnityEngine.GUIUtility.systemCopyBuffer = str2;
-			break;
-		case 32:
-			InventoryModel.Instance.Init();/*
-			InventoryModel inventory = InventoryModel.Instance;
-			List<EquipmentModel> list = new List<EquipmentModel>(inventory.GetAllEquipmentList());
-			foreach (EquipmentModel equipment in list)
-			{
-				inventory.RemoveEquipment(equipment);
-			}*/
-			break;
-		case 33:
-			if (param.Length >= 1)
-			{
-				long num = long.Parse((string)param[0]);
-				CreatureObserveInfoModel info = CreatureManager.instance.GetObserveInfo(num);
-				if (info != null)
-				{
-					info.OnResetObserve();
-					info.observeProgress = 0;
-					info.cubeNum = 0;
-					info.totalKitUseCount = 0;
-					info.totalKitUseTime = 0f;
-				}
-			}
-			else
-			{
-				foreach (CreatureObserveInfoModel creature in CreatureManager.instance.GetObserveInfoList())
-				{
-					creature.OnResetObserve();
-					creature.observeProgress = 0;
-					creature.cubeNum = 0;
-					creature.totalKitUseCount = 0;
-					creature.totalKitUseTime = 0f;
-				}
-			}
-			break;
-		case 34:
-			EquipmentLoadoutManager.instance.Load(int.Parse((string)param[0]));
-			break;
-		case 35:
-			EquipmentLoadoutManager.instance.Save(int.Parse((string)param[0]));
-			break;
-		case 36:
-			int value3 = 1;
-			if (param.Length >= 1)
-			{
-				value3 = int.Parse((string)param[0]);
-			}
-			CreatureOverloadManager.instance.AddSecondaryGague(value3);
-			break;
-		case 37:
-			while (PlayerModel.instance.GetWaitingCreature_Mod(out LcIdLong id))
-			{
-
-			}
-			break;
-		case 38:
-			LobotomyBaseMod.LcIdLong lcId = null;
-			QueuedWorkOrder.QueueConditionInfo condition = new QueuedWorkOrder.QueueConditionInfo();
-			int ind = 0;
-			if (param.Length >= 11)
-			{
-				string modId = (string)param[ind++];
-				long creatureId = long.Parse((string)param[ind++]);
-				lcId = new LobotomyBaseMod.LcIdLong(modId, creatureId);
-			}
-			else if (param.Length >= 10)
-			{
-				long creatureId = long.Parse((string)param[ind++]);
-				lcId = new LobotomyBaseMod.LcIdLong(creatureId);
-			}
-			condition.minHp = float.Parse((string)param[ind++]);
-			condition.minMental = float.Parse((string)param[ind++]);
-			condition.delay = float.Parse((string)param[ind++]);
-			condition.yieldAgent = bool.Parse((string)param[ind++]);
-			condition.yieldCreature = bool.Parse((string)param[ind++]);
-			condition.asapAgent = bool.Parse((string)param[ind++]);
-			condition.asapCreature = bool.Parse((string)param[ind++]);
-			condition.impassableAgent = bool.Parse((string)param[ind++]);
-			condition.impassableCreature = bool.Parse((string)param[ind++]);
-			WorkQueuePreferanceManager.instance.SaveDefaultCondition(condition, lcId);
-			break;
 		default:
 			return;
 		}
@@ -688,19 +365,9 @@ public class ConsoleCommand
 		}
 		case 4:
 		{
-			if (param.Length >= 3)
-			{
-				long id3 = (long)param[0];
-				int equipid = (int)((float)param[2]);
-				string equipmod = (string)param[1];
-				this.AddGift_Mod(id3, new LobotomyBaseMod.LcId(equipmod, equipid));
-			}
-			else
-			{
-				long id3 = (long)param[0];
-				int equipid = (int)((float)param[1]);
-				this.AddGift(id3, equipid);
-			}
+			long id3 = (long)param[0];
+			int equipid = (int)((float)param[1]);
+			this.AddGift(id3, equipid);
 			break;
 		}
 		case 5:
@@ -716,20 +383,6 @@ public class ConsoleCommand
 			long id5 = (long)param[1];
 			int value2 = (int)param[2];
 			this.Damage(type, id5, value2);
-			break;
-		}
-		case 7:
-		{
-			long id6 = long.Parse((string)param[0]);
-			RemoveAllGifts(id6);
-			break;
-		}
-		case 8:
-		{
-			long id6 = long.Parse((string)param[0]);
-			int prefix = int.Parse((string)param[1]);
-			int suffix = int.Parse((string)param[2]);
-			ChangeTitleBonus(id6, prefix, suffix);
 			break;
 		}
 		default:
@@ -772,10 +425,6 @@ public class ConsoleCommand
 		{
 			this.ChangeLanguageCommad(list[0]);
 		}
-		else if (index == 1)
-		{
-			this.ChangeResolutionCommad(int.Parse(list[0]), int.Parse(list[1]));
-		}
 	}
 
 	// Token: 0x06001B72 RID: 7026 RVA: 0x000E552C File Offset: 0x000E372C
@@ -814,186 +463,6 @@ public class ConsoleCommand
 				this.BetaStoryTester();
 				return;
 			}
-		}
-	}
-
-	// <Mod>
-	public void ConfigCommandOperation(int index, params object[] param)
-	{
-		if (index < 0 || index >= this.configCommand.Count)
-		{
-			Debug.LogError("Error in ConfigCommand : " + index);
-			return;
-		}
-		if (index < 16)
-		{
-			string mode = (string)param[0];
-			string value = (string)param[1];
-			SpecialModeConfig.ModeType modeType = SpecialModeConfig.ModeType.BASIC;
-			if (index % 4 == 1)
-			{
-				modeType = SpecialModeConfig.ModeType.SPECIAL;
-			}
-			else if (index % 4 == 2)
-			{
-				modeType = SpecialModeConfig.ModeType.OVERTIME;
-			}
-			else if (index % 4 == 3)
-			{
-				modeType = SpecialModeConfig.ModeType.REWORK;
-			}
-			SpecialModeConfig.SaveType saveType = SpecialModeConfig.SaveType.PERSISTANT;
-			if (index >= 12)
-			{
-				saveType = SpecialModeConfig.SaveType.QUIET;
-			}
-			else if (index >= 8)
-			{
-				saveType = SpecialModeConfig.SaveType.NONE;
-			}
-			else if (index >= 4)
-			{
-				saveType = SpecialModeConfig.SaveType.TRANSIENT;
-			}
-			if (value == "reset")
-			{
-				SpecialModeConfig.instance.ResetValue(mode, modeType, saveType);
-				return;
-			}
-			Type variableType = SpecialModeConfig.instance.GetModeType(mode, modeType);
-			if (variableType == typeof(bool))
-			{
-				bool boolvalue;
-				if (!bool.TryParse(value, out boolvalue)) return;
-				SpecialModeConfig.instance.ChangeValue(mode, boolvalue, modeType, saveType);
-			}
-			else if (variableType == typeof(int))
-			{
-				int intvalue;
-				if (!int.TryParse(value, out intvalue)) return;
-				SpecialModeConfig.instance.ChangeValue(mode, intvalue, modeType, saveType);
-			}
-			else if (variableType == typeof(float))
-			{
-				float floatvalue;
-				if (!float.TryParse(value, out floatvalue)) return;
-				SpecialModeConfig.instance.ChangeValue(mode, floatvalue, modeType, saveType);
-			}
-			else if (variableType == typeof(SuccessRateDisplayMode))
-			{
-				SuccessRateDisplayMode enumvalue = SuccessRateDisplayMode.PERCENTAGE;
-				switch (value.ToLower())
-				{
-					case "percentage":
-					case "percentageonly":
-					case "1":
-					case "p":
-					case "po":
-						enumvalue = SuccessRateDisplayMode.PERCENTAGE;
-						break;
-					case "percentageandtext":
-					case "percentagetext":
-					case "textandpercentage":
-					case "textpercentage":
-					case "both":
-					case "2":
-					case "pat":
-					case "pt":
-					case "tap":
-					case "tp":
-						enumvalue = SuccessRateDisplayMode.PERCENTAGE_AND_TEXT;
-						break;
-					case "text":
-					case "textonly":
-					case "3":
-					case "to":
-					case "t":
-						enumvalue = SuccessRateDisplayMode.TEXT_ONLY;
-						break;
-				}
-				SpecialModeConfig.instance.ChangeValue(mode, enumvalue, modeType, saveType);
-			}
-			else if (variableType == typeof(AbnoHpDisplayMode))
-			{
-				AbnoHpDisplayMode enumvalue = AbnoHpDisplayMode.NAME_ONLY;
-				switch (value.ToLower())
-				{
-					case "name":
-					case "nameonly":
-					case "1":
-					case "n":
-					case "no":
-						enumvalue = AbnoHpDisplayMode.NAME_ONLY;
-						break;
-					case "nameandhp":
-					case "namehp":
-					case "hpandname":
-					case "hpname":
-					case "nameandhealth":
-					case "namehealth":
-					case "healthandname":
-					case "healthname":
-					case "both":
-					case "2":
-					case "nah":
-					case "nh":
-					case "han":
-					case "hn":
-					case "nahp":
-					case "nhp":
-					case "hpan":
-					case "hpn":
-						enumvalue = AbnoHpDisplayMode.NAME_AND_HP;
-						break;
-					case "health":
-					case "healthonly":
-					case "hponly":
-					case "3":
-					case "ho":
-					case "h":
-					case "hpo":
-					case "hp":
-						enumvalue = AbnoHpDisplayMode.HP_ONLY;
-						break;
-				}
-				SpecialModeConfig.instance.ChangeValue(mode, enumvalue, modeType, saveType);
-			}
-			return;
-		}
-		switch (index)
-		{
-		case 16:
-			SpecialModeConfig.instance.ChangeOvertimeMode(bool.Parse((string)param[0]), SpecialModeConfig.SaveType.PERSISTANT);
-			break;
-		case 17:
-			SpecialModeConfig.instance.ChangeOvertimeMode(bool.Parse((string)param[0]), SpecialModeConfig.SaveType.TRANSIENT);
-			break;
-		case 18:
-			SpecialModeConfig.instance.ChangeOvertimeMode(bool.Parse((string)param[0]), SpecialModeConfig.SaveType.NONE);
-			break;
-		case 19:
-			SpecialModeConfig.instance.ChangeOvertimeMode(bool.Parse((string)param[0]), SpecialModeConfig.SaveType.QUIET);
-			break;
-		case 20:
-			SpecialModeConfig.instance.ChangeReworkTier(int.Parse((string)param[0]), SpecialModeConfig.SaveType.PERSISTANT);
-			break;
-		case 21:
-			SpecialModeConfig.instance.ChangeReworkTier(int.Parse((string)param[0]), SpecialModeConfig.SaveType.TRANSIENT);
-			break;
-		case 22:
-			SpecialModeConfig.instance.ChangeReworkTier(int.Parse((string)param[0]), SpecialModeConfig.SaveType.NONE);
-			break;
-		case 23:
-			SpecialModeConfig.instance.ChangeReworkTier(int.Parse((string)param[0]), SpecialModeConfig.SaveType.QUIET);
-			break;
-		case 24:
-			SpecialModeConfig.instance.ResetTransients();
-			break;
-		case 25:
-			SpecialModeConfig.instance.ResetAll();
-			break;
-		default:
-			return;
 		}
 	}
 
@@ -1171,14 +640,14 @@ public class ConsoleCommand
 
 	// Token: 0x06001B82 RID: 7042 RVA: 0x000E5A10 File Offset: 0x000E3C10
 	public void ChangeLanguageCommad(string ln)
-	{ // <Patch>
+	{
 		string currentLanguage = GlobalGameManager.instance.GetCurrentLanguage();
 		Debug.Log(ln);
 		if (currentLanguage == ln)
 		{
 			return;
 		}
-		GlobalGameManager.instance.ChangeLanguage_new(ln);
+		GlobalGameManager.instance.ChangeLanguage(GlobalGameManager.instance.GetLanguage(ln));
 		if (GlobalEtcDataModel.instance.trueEndingDone)
 		{
 			SceneManager.LoadSceneAsync("AlterTitleScene");
@@ -1187,18 +656,6 @@ public class ConsoleCommand
 		{
 			SceneManager.LoadSceneAsync("NewTitleScene");
 		}
-	}
-
-	// <Mod>
-	public void ChangeResolutionCommad(int w, int h)
-	{
-		Resolution resolution = new Resolution
-		{
-			width = w,
-			height = h
-		};
-		OptionUI.Instance.OnSetResolution(resolution);
-		OptionUI.Instance.OnClickSaveAndQuit();
 	}
 
 	// Token: 0x06001B83 RID: 7043 RVA: 0x0001DEA6 File Offset: 0x0001C0A6
@@ -1228,13 +685,6 @@ public class ConsoleCommand
 	public void AddGift(long id, int equipid)
 	{
 		EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipmentForcely(equipid);
-		AgentModel agent = AgentManager.instance.GetAgent(id);
-		agent.AttachEGOgift(equipmentModel as EGOgiftModel);
-	}
-
-	public void AddGift_Mod(long id, LcId equipid)
-	{
-		EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipmentForcely_Mod(equipid);
 		AgentModel agent = AgentManager.instance.GetAgent(id);
 		agent.AttachEGOgift(equipmentModel as EGOgiftModel);
 	}
@@ -1345,32 +795,11 @@ public class ConsoleCommand
 	// Token: 0x06001B8D RID: 7053 RVA: 0x000E5CB0 File Offset: 0x000E3EB0
 	public void RemoveGift(long id, int equipid)
 	{
-		RemoveGift_Mod(id, new LobotomyBaseMod.LcId(equipid));
-		/*
 		AgentModel agent = AgentManager.instance.GetAgent(id);
 		EGOgiftModel egogiftModel = null;
 		foreach (EGOgiftModel egogiftModel2 in agent.GetAllGifts())
 		{
 			if (egogiftModel2.metaInfo.id == equipid)
-			{
-				egogiftModel = egogiftModel2;
-				break;
-			}
-		}
-		if (egogiftModel != null)
-		{
-			agent.ReleaseEGOgift(egogiftModel);
-		}*/
-	}
-
-	// <Patch>
-	public static void RemoveGift_Mod(long id, LobotomyBaseMod.LcId equipid)
-	{
-		AgentModel agent = AgentManager.instance.GetAgent(id);
-		EGOgiftModel egogiftModel = null;
-		foreach (EGOgiftModel egogiftModel2 in agent.GetAllGifts())
-		{
-			if (EquipmentTypeInfo.GetLcId(egogiftModel2.metaInfo) == equipid)
 			{
 				egogiftModel = egogiftModel2;
 				break;
@@ -1446,50 +875,14 @@ public class ConsoleCommand
 
 	// Token: 0x06001B90 RID: 7056 RVA: 0x0001DEF0 File Offset: 0x0001C0F0
 	public void GenerateEquipment(int id)
-	{ // <Mod>
-		GenerateEquipment("", id, 1);
-	}
-
-	// <Mod>
-	public void GenerateEquipment(int id, int count)
-	{ // <Mod>
-		GenerateEquipment("", id, count);
-	}
-
-	// <Patch>
-	public void GenerateEquipment(string modid, int id)
-	{ // <Mod>
-		GenerateEquipment(modid, id, 1);
-	}
-
-	// <Mod>
-	public void GenerateEquipment(string modid, int id, int count)
 	{
-		LcId lcId = new LcId(modid, id);
-		if (count > 0)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				InventoryModel.Instance.CreateEquipment_Mod(lcId);
-			}
-		}
-		else
-		{
-			List<EquipmentModel> list = new List<EquipmentModel>(InventoryModel.Instance.GetEquipmentListByTypeInfo_Mod()[lcId]);
-			for (int i = 0; i < -count; i++)
-			{
-				if (i > list.Count - 1) return;
-				EquipmentModel equipment = list[i];
-				if (equipment == null) break;
-				InventoryModel.Instance.RemoveEquipment(equipment);
-			}
-		}
+		InventoryModel.Instance.CreateEquipment(id);
 	}
 
 	// Token: 0x06001B91 RID: 7057 RVA: 0x000E5E5C File Offset: 0x000E405C
 	public void ActivateOrdealSystem(int level)
 	{
-		if (level < 0 || level > 7)
+		if (level < 0 || level > 3)
 		{
 			Debug.Log("Ordeal Level is Overflowed");
 			return;
@@ -1503,148 +896,10 @@ public class ConsoleCommand
 		Debug.Log(string.Format("Tried Ordeal System {0} // result : {1}", (OrdealLevel)level, OrdealManager.instance.ActivateOrdeal(ordeal, true)));
 	}
 
-	// <Mod>
-	public void ActivateOrdealSystem(int level, string type)
-	{
-		OrdealBase ordeal = GetOrdealByLetter(level, type);
-		if (ordeal == null)
-		{
-			return;
-		}
-		if (level >= 4 && ordeal.level < OrdealLevel.OVERTIME_DAWN)
-		{
-			ordeal.level += 4;
-		}
-		OrdealManager.instance.ActivateOrdeal(ordeal, false);
-	}
-	
-	// <Mod>
-	private OrdealBase GetOrdealByLetter(int level, string type)
-	{
-		string firstLetter = type.Substring(0, 1).ToLower();
-		switch (level)
-		{
-			case 0:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineDawnOrdeal();
-					case "a":
-						return new BugDawnOrdeal();
-					case "v":
-						return new OutterGodDawnOrdeal();
-					case "c":
-						return new CircusDawnOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.DAWN);
-				}
-				return null;
-			case 1:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineNoonOrdeal();
-					case "v":
-						return new OutterGodNoonOrdeal();
-					case "c":
-						return new CircusNoonOrdeal();
-					case "i":
-						return new ScavengerNoonOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.NOON);
-				}
-				return null;
-			case 2:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineDuskOrdeal();
-					case "a":
-						return new BugDuskOrdeal();
-					case "c":
-						return new CircusDuskOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.DUSK);
-				}
-				return null;
-			case 3:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineMidnightOrdeal();
-					case "a":
-						return new BugMidnightOrdeal();
-					case "v":
-						return new OutterGodMidnightOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.MIDNIGHT);
-				}
-				return null;
-			case 4:
-				switch (firstLetter)
-				{
-					case "g":
-						return new OvertimeMachineDawnOrdeal();
-					case "a":
-						return new OvertimeBugDawnOrdeal();
-					case "v":
-						return new OvertimeOutterGodDawnOrdeal();
-					case "c":
-						return new OvertimeCircusDawnOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.DAWN);
-				}
-				return null;
-			case 5:
-				switch (firstLetter)
-				{
-					case "g":
-						return new OvertimeMachineNoonOrdeal();
-					case "v":
-						return new OutterGodNoonOrdeal();
-					case "c":
-						return new CircusNoonOrdeal();
-					case "i":
-						return new ScavengerNoonOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.NOON);
-				}
-				return null;
-			case 6:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineDuskOrdeal();
-					case "a":
-						return new BugDuskOrdeal();
-					case "c":
-						return new CircusDuskOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.DUSK);
-				}
-				return null;
-			case 7:
-				switch (firstLetter)
-				{
-					case "g":
-						return new MachineMidnightOrdeal();
-					case "a":
-						return new BugMidnightOrdeal();
-					case "v":
-						return new OutterGodMidnightOrdeal();
-					case "w":
-						return new FixerOrdeal(OrdealLevel.MIDNIGHT);
-				}
-				return null;
-		}
-		return null;
-	}
-	
 	// Token: 0x06001B92 RID: 7058 RVA: 0x0001DEFE File Offset: 0x0001C0FE
 	public void FullFillAmmo()
 	{
 		GlobalBulletManager.instance.currentBullet = GlobalBulletManager.instance.maxBullet;
-		GlobalBulletManager.instance.Reload();
 	}
 
 	// Token: 0x06001B93 RID: 7059 RVA: 0x000E5ED4 File Offset: 0x000E40D4
@@ -1657,7 +912,7 @@ public class ConsoleCommand
 	}
 
 	// Token: 0x06001B94 RID: 7060 RVA: 0x000E5F00 File Offset: 0x000E4100
-	public void SefiraBossInvoke(string sefira, bool isOvertime = false)
+	public void SefiraBossInvoke(string sefira)
 	{
 		try
 		{
@@ -1667,7 +922,7 @@ public class ConsoleCommand
 			}
 			else
 			{
-				SefiraBossManager.Instance.SetActivatedBoss(SefiraManager.instance.GetSefira(sefira).sefiraEnum, isOvertime);
+				SefiraBossManager.Instance.SetActivatedBoss(SefiraManager.instance.GetSefira(sefira).sefiraEnum);
 			}
 		}
 		catch (Exception ex)
@@ -1695,18 +950,6 @@ public class ConsoleCommand
 		try
 		{
 			PlayerModel.instance.AddWaitingCreature(id);
-		}
-		catch (Exception message)
-		{
-			Debug.LogError(message);
-		}
-	}
-
-	public void AddWaitingGenCreature(string modid, long id)
-	{
-		try
-		{
-			PlayerModel.instance.AddWaitingCreature_Mod(new LcIdLong(modid, id));
 		}
 		catch (Exception message)
 		{
@@ -1802,151 +1045,6 @@ public class ConsoleCommand
 		GlobalGameManager.instance.loadingScreen.LoadScene("StoryTester");
 	}
 
-	//> <Mod>
-	public void CreateOverload(CreatureModel creature, OverloadType type = OverloadType.DEFAULT, float timer = 60f, bool isNatural = false)
-	{
-		if (type == OverloadType.DEFAULT)
-		{
-			creature.ActivateOverload(CreatureOverloadManager.instance.GetQliphothOverloadLevel(), timer, OverloadType.DEFAULT, isNatural);
-			return;
-		}
-		Vestige.OvertimeOverloadManager.instance.MakeOverload(type, creature, timer, isNatural);
-	}
-
-	public void PrepareOvertime()
-	{
-		GlobalEtcDataModel.instance.unlockedMaxDay = 50;
-		for (int i = 0; i < 10; i++)
-		{
-			if (i == 5)
-			{
-				i++;
-			}
-			SefiraEnum sefira = (SefiraEnum)i;
-			Mission mission = MissionManager.instance.GetCurrentSefiraMission(sefira);
-			if (mission != null)
-			{
-				mission.isCleared = true;
-				MissionManager.instance.ClearMission(mission);
-				MissionManager.instance.CloseClearedMission(mission);
-			}
-			for (int j = 0; j < 5; j++)
-			{
-				mission = MissionManager.instance.GetNextMission(sefira);
-				if (mission == null || mission.metaInfo.sefira_Level > 5)
-				{
-					break;
-				}
-				MissionManager.instance.StartMission(mission.metaInfo.id);
-				mission.isCleared = true;
-				MissionManager.instance.ClearMission(mission);
-				MissionManager.instance.CloseClearedMission(mission);
-			}
-			List<ResearchItemModel> research = ResearchDataModel.instance.GetModelBySefira(SefiraManager.instance.GetSefira(sefira).indexString);
-			for (int j = 0; j < 3; j++)
-			{
-				ResearchDataModel.instance.UpgradeResearch(research[j].info.id, true);
-			}
-		}
-	}
-
-	public void ResetWhiteNight()
-	{
-		CreatureModel deathAngel = CreatureManager.instance.FindCreature(100015L);
-		if (deathAngel != null)
-		{
-			CreatureManager.instance.ReplaceCreature(100014L, deathAngel);
-		}
-		string text = Application.persistentDataPath + "/creatureData/100014.dat";
-		if (File.Exists(text))
-		{
-			File.Delete(text);
-		}
-	}
-
-	public void ReturnToMemRepo(int day)
-	{
-		if (GlobalGameManager.instance.ExistSaveData())
-		{
-			Time.timeScale = 1f;
-			Time.fixedDeltaTime = 0.02f;
-			GameManager.currentGameManager.EndGame();
-			GameManager.currentGameManager.ForceRelease();
-			long num = -1L;
-			while (PlayerModel.instance.GetWaitingCreature(out num))
-			{
-			}
-			GlobalGameManager.instance.sceneDataSaver.currentBgmVolume = BgmManager.instance.currentBgmVolume;
-			GlobalGameManager.instance.sceneDataSaver.currentVolume = BgmManager.instance.currentMasterVolume;
-			GlobalGameManager.instance.SaveGlobalData();
-			GlobalGameManager.instance.ForcelyLoadDay(day + 9999, SaveType.CHECK_POINT);
-			CreatureGenerate.CreatureGenerateInfoManager.Instance.Init();
-			GlobalGameManager.instance.lastLoaded = true;
-			GlobalGameManager.instance.loadingScene = "StoryEndScene";
-			GlobalGameManager.instance.loadingScreen.LoadScene("Main");
-		}
-	}
-
-	public void CompleteInventory()
-	{
-		foreach (EquipmentTypeInfo equipment in EquipmentTypeList.instance.GetAllData())
-		{
-			if (equipment.type == EquipmentTypeInfo.EquipmentType.SPECIAL) continue;
-			if (equipment.type == EquipmentTypeInfo.EquipmentType.WEAPON && equipment.sprite == string.Empty) continue;
-			if (equipment.type == EquipmentTypeInfo.EquipmentType.ARMOR && equipment.armorId == 0 && equipment.id != 22 || equipment.id == 200)  continue;
-			for (int i = 0; i < equipment.MaxNum; i++)
-			{
-				InventoryModel.Instance.CreateEquipment(equipment.id);
-			}
-		}
-	}
-
-	public void MaxStatAllEmployees()
-	{
-		foreach (AgentModel agent in AgentManager.instance.GetAgentList())
-		{
-			agent.primaryStatExp.hp += 999;
-			agent.primaryStatExp.mental += 999;
-			agent.primaryStatExp.work += 999;
-			agent.primaryStatExp.battle += 999;
-		}
-	}
-
-	public void RemoveAllGifts(long id)
-	{
-		AgentModel agent = AgentManager.instance.GetAgent(id);
-		foreach (EGOgiftModel egogiftModel in agent.GetAllGifts())
-		{
-			agent.ReleaseEGOgift(egogiftModel);
-		}
-	}
-
-	public void ChangeTitleBonus(long id, int prefix, int suffix)
-	{
-		AgentModel agent = AgentManager.instance.GetAgent(id);
-		agent.ForcelyChangePrefix(prefix);
-		agent.ForcelyChangeSuffix(suffix);
-	}
-
-	public void SwapAbnormalities(CreatureModel creatureModel, CreatureModel creatureModel2)
-	{
-		CreatureManager.instance.ChangeCreaturePos(creatureModel, creatureModel2);
-		if (!GameManager.currentGameManager.ManageStarted)
-		{
-			GlobalGameManager.instance.SaveData(false);
-		}
-		DeployUI.instance.sefiraList.Init();
-		if (creatureModel.metaInfo.LcId == 100020L || creatureModel2.metaInfo.LcId == 100020L)
-		{
-			// GlobalGameManager.instance.LoadData(SaveType.LASTDAY);
-		}
-		else if (creatureModel.GetWorkspaceNode().GetPosition() - new Vector3(creatureModel.basePosition.x, creatureModel.basePosition.y, 0f) != creatureModel2.GetWorkspaceNode().GetPosition() - new Vector3(creatureModel2.basePosition.x, creatureModel2.basePosition.y, 0f))
-		{
-			// GlobalGameManager.instance.LoadData(SaveType.LASTDAY);
-		}
-	}
-	//< <Mod>
-
 	// Token: 0x06001B9F RID: 7071 RVA: 0x000E6194 File Offset: 0x000E4394
 	static ConsoleCommand()
 	{
@@ -1973,9 +1071,6 @@ public class ConsoleCommand
 	// Token: 0x04001C66 RID: 7270
 	public static string RootCommand = "root";
 
-	// <Mod>
-	public static string ConfigCommand = "config";
-
 	// Token: 0x04001C67 RID: 7271
 	public static string AddCreatureFeeling = "addfeeling";
 
@@ -1986,7 +1081,7 @@ public class ConsoleCommand
 	public static string SetCreatureObservable = "setobservable";
 
 	// Token: 0x04001C6A RID: 7274
-	public static string OpenListWindow = "agentlistwindow";
+	public static string OpenListWindow = "agentlist";
 
 	// Token: 0x04001C6B RID: 7275
 	public static string AddMoney = "salmonsushi";
@@ -2107,9 +1202,6 @@ public class ConsoleCommand
 
 	// Token: 0x04001C92 RID: 7314
 	public List<string> rootCommand;
-
-	// <Mod>
-	public List<string> configCommand;
 
 	// Token: 0x04001C93 RID: 7315
 	public Dictionary<string, string> lib;

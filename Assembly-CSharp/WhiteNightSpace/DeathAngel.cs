@@ -1,12 +1,6 @@
-/*
-public override void OnGamemanagerInit() // 
-public void ChangeIsolateRoom() // 
-*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.IO; // 
-using System.Runtime.Serialization.Formatters.Binary; // 
 using CreatureCameraUtil;
 using UnityEngine;
 
@@ -446,24 +440,9 @@ namespace WhiteNightSpace
 
 		// Token: 0x0600215B RID: 8539 RVA: 0x000FD88C File Offset: 0x000FBA8C
 		public override void ActivateQliphothCounter()
-		{ // <Patch>
+		{
 			PlaySpeedSettingUI.instance.SetNormalSpeedForcely();
 			this.AnimScript.AdventClockUI.SetAdventEffectEndEvent(new AdventClockUI.EndEvent(this.Escape));
-			if (this.apostleData.Count == 0)
-			{
-				string path = string.Concat(new object[]
-				{
-					Application.persistentDataPath,
-					"/creatureData/",
-					"100014",
-					".dat"
-				});
-				BinaryFormatter binaryFormatter = new BinaryFormatter();
-				FileStream fileStream = File.Open(path, FileMode.Open);
-				Dictionary<string, object> dic = (Dictionary<string, object>)binaryFormatter.Deserialize(fileStream);
-				fileStream.Close();
-				this.LoadData(dic);
-			}
 			List<ApostleGenData> adeventTargets;
 			if (this.apostles.Count == 0)
 			{
@@ -811,23 +790,7 @@ namespace WhiteNightSpace
 
 		// Token: 0x0600216E RID: 8558 RVA: 0x00022584 File Offset: 0x00020784
 		public override void OnGamemanagerInit()
-		{ // <Mod>
-			IList<AgentModel> agentList = AgentManager.instance.GetAgentList();
-			foreach (ApostleData apostleData in apostleData)
-			{
-				foreach (AgentModel agentModel in agentList)
-				{
-					if (apostleData.instId == agentModel.instanceId && apostleData.NameId == agentModel._agentName.id)
-					{
-						if (!agentModel.HasEquipment(PlagueDoctor.giftId))
-						{
-							EGOgiftModel gift = InventoryModel.Instance.CreateEquipmentForcely(PlagueDoctor.giftId) as EGOgiftModel;
-							agentModel.AttachEGOgift(gift);
-						}
-						break;
-					}
-				}
-			}
+		{
 			if (PlayerModel.instance.GetOpenedAreaCount() > 1 && PlayerModel.instance.GetDay() > 5)
 			{
 				this.ChangeIsolateRoom();
@@ -836,11 +799,7 @@ namespace WhiteNightSpace
 
 		// Token: 0x0600216F RID: 8559 RVA: 0x000FE2D4 File Offset: 0x000FC4D4
 		public void ChangeIsolateRoom()
-		{ // <Mod>
-			if (SpecialModeConfig.instance.GetValue<bool>("WhiteNightImmobilize"))
-			{
-				return;
-			}
+		{
 			Sefira sefira = this.model.sefira;
 			CreatureModel creatureModel = CreatureManager.instance.PickOtherSefiraCreatureByRandom(this.model);
 			if (creatureModel != null)
@@ -924,41 +883,6 @@ namespace WhiteNightSpace
 			{
 			}
 			this.RoomStateSpriteOn();
-		}
-
-		// <Patch>
-		public void LoadData(Dictionary<string, object> dic)
-		{
-			int num = -1;
-			this.apostleData.Clear();
-			if (!GameUtil.TryGetValue<int>(dic, "apostleListCount", ref num))
-			{
-				PlagueDoctor.Log("Failed To ApostleData", true);
-				return;
-			}
-			if (num != -1)
-			{
-				Dictionary<int, Dictionary<string, object>> data = null;
-				if (GameUtil.TryGetValue<Dictionary<int, Dictionary<string, object>>>(dic, "apostleList", ref data))
-				{
-					this.LoadApostleSaveData(num, data);
-				}
-			}
-		}
-
-		// <Patch>
-		private void LoadApostleSaveData(int max, Dictionary<int, Dictionary<string, object>> data)
-		{
-			for (int i = 0; i < max; i++)
-			{
-				Dictionary<string, object> data2 = null;
-				if (data.TryGetValue(i, out data2))
-				{
-					ApostleData apostleData = new ApostleData(data2);
-					this.apostleData.Add(apostleData);
-					PlagueDoctor.Log("Load Apostle : " + apostleData.NameId.ToString(), false);
-				}
-			}
 		}
 
 		// Token: 0x06002174 RID: 8564 RVA: 0x000FE580 File Offset: 0x000FC780

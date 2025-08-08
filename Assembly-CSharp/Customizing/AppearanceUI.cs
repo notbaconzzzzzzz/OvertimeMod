@@ -302,19 +302,11 @@ namespace Customizing
 
 		// Token: 0x06004A04 RID: 18948 RVA: 0x001C0524 File Offset: 0x001BE724
 		public void OnSetNametext(string str)
-		{ // <Mod>
+		{
 			string text = this.NameInput.text;
 			if (text.Equals(this.original.agentName.GetName()) || text == string.Empty)
 			{
-                if (original.isCustomName)
-                {
-                    copied.isCustomName = true;
-                    copied.CustomName = original.CustomName;
-                }
-                else
-                {
-				    this.copied.isCustomName = false;
-                }
+				this.copied.isCustomName = false;
 			}
 			else
 			{

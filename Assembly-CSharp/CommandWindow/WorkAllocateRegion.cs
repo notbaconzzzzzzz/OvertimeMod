@@ -68,15 +68,8 @@ namespace CommandWindow
 
 		// Token: 0x0600485A RID: 18522 RVA: 0x001AFD08 File Offset: 0x001ADF08
 		private void NonObserved(CreatureModel creature)
-		{ // <Mod>
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-			{
-				Name.text = "????????";
-			}
-			else
-			{
-				this.Name.text = creature.metaInfo.codeId;
-			}
+		{
+			this.Name.text = creature.metaInfo.codeId;
 			this.MaximumCubeGenerate.text = WorkAllocateRegion.unknown_Text;
 			this.RiskLevel.text = WorkAllocateRegion.unknown;
 			this.RiskLevel.color = DeployUI.instance.DeployColorSet[0];
@@ -87,16 +80,6 @@ namespace CommandWindow
 			this.WorkDamageType.color = UIColorManager.Orange;
 			this.WorkDamageRange.text = WorkAllocateRegion.unknown_Text;
 			this.WorkDamageFill.enabled = false;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-			{
-				for (int i = 0; i < 3; i++)
-				{
-					CreatureInfoStatFeelingStateSlot creatureInfoStatFeelingStateSlot = this.slots[i];
-					creatureInfoStatFeelingStateSlot.gameObject.SetActive(true);
-					creatureInfoStatFeelingStateSlot.SetData(i, WorkAllocateRegion.unknown_Text);
-				}
-				return;
-			}
 			int num = creature.metaInfo.feelingStateCubeBounds.upperBounds.Length;
 			int num2 = 0;
 			for (int i = 0; i < 3; i++)
@@ -120,7 +103,7 @@ namespace CommandWindow
 
 		// Token: 0x0600485B RID: 18523 RVA: 0x001AFE88 File Offset: 0x001AE088
 		public override void SetData(UnitModel target)
-		{ // <Mod>
+		{
 			if (!(target is CreatureModel))
 			{
 				Debug.LogError("Should be creatureModel");
@@ -128,12 +111,6 @@ namespace CommandWindow
 			}
 			CreatureModel creatureModel = target as CreatureModel;
 			this._currentModel = creatureModel;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
-			{
-				CodeNo.text = "?-??-??";
-				NonObserved(creatureModel);
-				return;
-			}
 			this.CodeNo.text = creatureModel.metaInfo.codeId;
 			if (creatureModel.observeInfo.GetObserveState(CreatureModel.regionName[0]))
 			{

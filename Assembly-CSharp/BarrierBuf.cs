@@ -1,6 +1,3 @@
-/*
-public float UseBarrier(RwbpType dmgRwbpType, float damage) // 
-*/
 using System;
 using UnityEngine;
 
@@ -68,7 +65,7 @@ public class BarrierBuf : UnitBuf
 
 	// Token: 0x060056E6 RID: 22246 RVA: 0x001F0594 File Offset: 0x001EE794
 	public float UseBarrier(RwbpType dmgRwbpType, float damage)
-	{ // <Mod>
+	{
 		if (this._barrierValue <= 0f)
 		{
 			return damage;
@@ -84,27 +81,10 @@ public class BarrierBuf : UnitBuf
 			{
 				this.OnCrackBarrier();
 			}
-            Notice.instance.Send(NoticeName.BlockDamageByShield, new object[]
-            {
-                model,
-                damage,
-                (int)dmgRwbpType
-            });
 			return 0f;
 		}
-        float factor = 0f;
-        if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_shield_bullet"))
-        {
-            factor = _barrierValue / damage;
-        }
-		_barrierValue *= factor;
+		this._barrierValue = 0f;
 		this.Destroy();
-        Notice.instance.Send(NoticeName.BlockDamageByShield, new object[]
-        {
-            model,
-            _barrierValue,
-            (int)dmgRwbpType
-        });
 		return damage - this._barrierValue;
 	}
 
@@ -145,8 +125,8 @@ public class BarrierBuf : UnitBuf
 	private RwbpType _rwbpType;
 
 	// Token: 0x0400503A RID: 20538
-	public float _barrierValueMax; // changed from private to public
+	private float _barrierValueMax;
 
 	// Token: 0x0400503B RID: 20539
-	public float _barrierValue; // changed from private to public
+	private float _barrierValue;
 }

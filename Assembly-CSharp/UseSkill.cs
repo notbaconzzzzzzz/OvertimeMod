@@ -1,17 +1,4 @@
-/*
-public void OnFixedUpdate() // 
-private void OnEnterRoom() // Work Compression
-private void CloseWork(bool success) // Work Compression; Overtime Meltdowns
-private float CalculateLevelExp(RwbpType rwbpType) // Fixed level I vs ALEPH multiplier and fixed issue where Army in Black would be considered a Zayin for EXP calculation
-private void FinishWorkSuccessfully() // Modified EGO gift acquisition; Hod service bonus change
-private void ProgressWork() // 
-private void ProcessWorkTick(out bool isSuccess) // Fixed +% success rate EGO gifts; Alrinue and Silent Orchestra change
-public static UseSkill InitUseSkillAction(SkillTypeInfo skillInfo, AgentModel agent, CreatureModel creature) // Changed how work speed observation bonus work; Lantern EGO gift ability
-+public OverloadType _overloadType; // 
-*/
 using System;
-using System.Linq; //
-using System.Collections.Generic; //
 using UnityEngine;
 
 // Token: 0x02000B82 RID: 2946
@@ -54,7 +41,7 @@ public class UseSkill
 
 	// Token: 0x060058DC RID: 22748 RVA: 0x001F8900 File Offset: 0x001F6B00
 	public void OnFixedUpdate()
-	{ // <Mod>
+	{
 		if (this.closed)
 		{
 			return;
@@ -73,7 +60,7 @@ public class UseSkill
 		{
 			this.ProcessWorkNarration();
 		}
-		if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnFixedUpdateInSkill(this);
+		this.targetCreature.script.OnFixedUpdateInSkill(this);
 		this.CheckLive();
 		if (this.closed)
 		{
@@ -91,7 +78,7 @@ public class UseSkill
 			{
 				this.agent.name
 			});
-			if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnSkillGoalComplete(this);
+			this.targetCreature.script.OnSkillGoalComplete(this);
 			this._readyToFinish = true;
 			return;
 		}
@@ -102,20 +89,13 @@ public class UseSkill
 		if (this.workPlaying)
 		{
 			this._elapsedTime += Time.deltaTime;
-			if (griefBoxes > failCount)
-			{
-				this.workProgress += Time.deltaTime * 2f;
-			}
-			else
-			{
-				this.workProgress += Time.deltaTime * this.workSpeed;
-			}
+			this.workProgress += Time.deltaTime * this.workSpeed;
 		}
 	}
 
 	// Token: 0x060058DD RID: 22749 RVA: 0x001F8A60 File Offset: 0x001F6C60
 	private void OnEnterRoom()
-	{ // <Mod> Work Compression; remember OverloadType
+	{
 		this.targetCreature.ShowNarrationText("move", new string[]
 		{
 			this.agent.name
@@ -144,48 +124,29 @@ public class UseSkill
 		{
 			this.agent.RemoveUnitBuf(this.agent.GetUnitBufByType(UnitBufType.BARRIER_ALL));
 		}
-		if (this.agent.HasUnitBuf(UnitBufType.STIM_BULLET))
-		{
-			this.agent.RemoveUnitBuf(this.agent.GetUnitBufByType(UnitBufType.STIM_BULLET));
-		}
 		Notice.instance.Send(NoticeName.OnWorkStart, new object[]
 		{
 			this.targetCreature
 		});
 		this.targetCreatureView.PlaySound("enter");
-		if (this.skillTypeInfo.id != 5L)
-		{
-			if (CreatureOverloadManager.instance.IsWorkCompressed())
-			{
-				workCompression = 2;
-			}
-		}
 		if (this.targetCreature.isOverloaded)
 		{
-			this._isOverloadedCreature = true;
-			this._overloadType = this.targetCreature.overloadType;
 			Notice.instance.Send(NoticeName.WorkToOverloaded, new object[]
 			{
 				this.targetCreature
 			});
+			this._isOverloadedCreature = true;
 			this.targetCreature.CancelOverload();
-			for (int i = 1; i < workCompression; i++)
-			{
-				CreatureOverloadManager.instance.AddOverloadGague();
-			}
 		}
 		else if (this.targetCreature.metaInfo.creatureWorkType == CreatureWorkType.NORMAL)
 		{
-			for (int i = 0; i < workCompression; i++)
-			{
-				CreatureOverloadManager.instance.AddOverloadGague();
-			}
+			CreatureOverloadManager.instance.AddOverloadGague();
 		}
 		this.targetCreature.AddWorkCount();
 		if (this.skillTypeInfo.id == 5L)
 		{
 			this.targetCreature.Unit.room.OnEnterRoom(this.agent, this);
-			if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnEnterRoom(this);
+			this.targetCreature.script.OnEnterRoom(this);
 			if (this.agent.Equipment.kitCreature != null)
 			{
 				this.agent.Equipment.kitCreature.script.kitEvent.OnEnterRoom(this.agent, this);
@@ -219,7 +180,7 @@ public class UseSkill
 				this
 			});
 			this.targetCreature.Unit.room.OnEnterRoom(this.agent, this);
-			if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnEnterRoom(this);
+			this.targetCreature.script.OnEnterRoom(this);
 			this.agent.OnEnterRoom(this);
 			if (this.agent.Equipment.kitCreature != null)
 			{
@@ -253,7 +214,7 @@ public class UseSkill
 
 	// Token: 0x060058DF RID: 22751 RVA: 0x001F8E28 File Offset: 0x001F7028
 	private void ProgressWork()
-	{ // <Mod>
+	{
 		if (this.skillTypeInfo.id == 5L)
 		{
 			this.ProcessKitCreatureWork();
@@ -269,10 +230,7 @@ public class UseSkill
 				this.workCount++;
 				bool isSuccess = true;
 				this.ProcessWorkTick(out isSuccess);
-				if (isSuccess || griefBoxes < failCount)
-				{
-					this.room.ProgressBar.AddBar(isSuccess);
-				}
+				this.room.ProgressBar.AddBar(isSuccess);
 				Notice.instance.Send(NoticeName.OnProcessWorkTick, new object[]
 				{
 					this.targetCreature
@@ -349,14 +307,12 @@ public class UseSkill
 	// Token: 0x060058E5 RID: 22757 RVA: 0x00047228 File Offset: 0x00045428
 	public CreatureFeelingState GetCurrentFeelingState()
 	{
-		CreatureFeelingState state = this.GetFeelingState(this.successCount);
-		state = targetCreature.script.ModifyFeelingState(this, state);
-		return state;
+		return this.GetFeelingState(this.successCount);
 	}
 
 	// Token: 0x060058E6 RID: 22758 RVA: 0x001F9044 File Offset: 0x001F7244
 	private void CloseWork(bool success)
-	{ // <Mod> Work Compression; Overtime Meltdowns
+	{
 		if (this.closed)
 		{
 			return;
@@ -366,20 +322,12 @@ public class UseSkill
 		{
 			this.agentView.ChangeAnimatorDefault();
 		}
-		int num = this.successCount * workCompression;
+		int num = this.successCount;
 		if (this.skillTypeInfo.id != 5L)
 		{
-			if (_isOverloadedCreature && _overloadType == OverloadType.RUIN)
-			{
-				this.targetCreature.AddCreatureSuccessCube(-2 * this.failCount * workCompression);
-				num = -2 * this.failCount * workCompression;
-			}
-			else
-			{
-				this.targetCreature.AddCreatureSuccessCube(this.successCount * workCompression);
-			}
+			this.targetCreature.AddCreatureSuccessCube(this.successCount);
 		}
-		if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnWorkClosed(this, this.successCount);
+		this.targetCreature.script.OnWorkClosed(this, this.successCount);
 		this.targetCreature.ClearProbReduction();
 		CreatureFeelingState currentFeelingState = this.GetCurrentFeelingState();
 		if (this.skillTypeInfo.id != 5L)
@@ -396,22 +344,11 @@ public class UseSkill
 		}
 		if (!this._isOverloadedCreature)
 		{
-			for (int i = 0; i < workCompression; i++)
-			{
-				this.targetCreature.AddProbReductionCounter();
-			}
-		}
-		else
-		{
-			for (int i = 1; i < workCompression; i++)
-			{
-				this.targetCreature.AddProbReductionCounter();
-			}
+			this.targetCreature.AddProbReductionCounter();
 		}
 		Notice.instance.Send(NoticeName.OnReleaseWork, new object[]
 		{
-			this.targetCreature,
-			success
+			this.targetCreature
 		});
 		this.agent.FinishManage();
 		if (this.targetCreature.state == CreatureState.WORKING)
@@ -434,7 +371,7 @@ public class UseSkill
 		{
 			this
 		});
-		if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnReleaseWork(this);
+		this.targetCreature.script.OnReleaseWork(this);
 		this.room.OnExitRoom();
 		if (this.skillTypeInfo.id != 5L)
 		{
@@ -480,22 +417,10 @@ public class UseSkill
 	}
 
 	// Token: 0x060058E9 RID: 22761 RVA: 0x001F92E4 File Offset: 0x001F74E4
-	private float CalculateLevelExp(RwbpType rwbpType, WorkerPrimaryStat stat = null)
-	{ // <Mod> made level I vs ALEPH x1.6 instead of x1.0; fixed issue where Army in Black would be considered a Zayin for EXP calculation
-		if (SpecialModeConfig.instance.GetValue<bool>("NoEXP"))
-		{
-			return 0f;
-		}
+	private float CalculateLevelExp(RwbpType rwbpType)
+	{
 		int num = 0;
-		WorkerPrimaryStat addedStat;
-		if (stat == null)
-		{
-			addedStat = this.agent.primaryStat.GetAddedStat(this.agent.primaryStatExp);
-		}
-		else
-		{
-			addedStat = stat;
-		}
+		WorkerPrimaryStat addedStat = this.agent.primaryStat.GetAddedStat(this.agent.primaryStatExp);
 		float num2 = 1f;
 		switch (rwbpType)
 		{
@@ -513,35 +438,28 @@ public class UseSkill
 			break;
 		}
 		int num3 = num - this.targetCreature.GetRiskLevel();
-		if (this.targetCreature.metaInfo.LcId == 100064L)
-		{
-			num3 = num - 5;
-		}
-		switch (num3 + 4)
+		switch (num3 + 3)
 		{
 		case 0:
-			num2 = 1.6f;
-			break;
-		case 1:
 			num2 = 1.4f;
 			break;
-		case 2:
+		case 1:
 			num2 = 1.2f;
 			break;
+		case 2:
 		case 3:
-		case 4:
 			num2 = 1f;
 			break;
-		case 5:
+		case 4:
 			num2 = 0.8f;
 			break;
-		case 6:
+		case 5:
 			num2 = 0.6f;
 			break;
-		case 7:
+		case 6:
 			num2 = 0.4f;
 			break;
-		case 8:
+		case 7:
 			num2 = 0.2f;
 			break;
 		}
@@ -567,12 +485,12 @@ public class UseSkill
 
 	// Token: 0x060058EA RID: 22762 RVA: 0x001F9448 File Offset: 0x001F7648
 	private void FinishWorkSuccessfully()
-	{ // <Mod> several changes to EGO gift acquisition; Hod service bonus change; update the current AgentInfoWindow
+	{
 		this.agent.eventHandler.CallEvent(AgentEventEnum.OnFinishWork, new object[]
 		{
 			this
 		});
-		if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnFinishWork(this);
+		this.targetCreature.script.OnFinishWork(this);
 		if (this.skillTypeInfo.id == 5L)
 		{
 			if (this.targetCreature.metaInfo.creatureKitType == CreatureKitType.EQUIP)
@@ -594,182 +512,52 @@ public class UseSkill
 				}
 				this.room.SetKitObserveLevel();
 			}
-			this.CloseWork(true);
 		}
 		else
 		{
-			this.CloseWork(true);
+			CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = this.targetCreature.metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
+			if (creatureEquipmentMakeInfo != null && this.targetCreature.GetObservationLevel() >= creatureEquipmentMakeInfo.level && creatureEquipmentMakeInfo.GetProb() >= UnityEngine.Random.value)
+			{
+				EGOgiftModel egogiftModel = EGOgiftModel.MakeGift(creatureEquipmentMakeInfo.equipTypeInfo);
+				this.agent.AttachEGOgift(egogiftModel);
+				Notice.instance.Send(NoticeName.OnGetEGOgift, new object[]
+				{
+					this.agent,
+					egogiftModel
+				});
+			}
 			float num = 1f;
-			num *= workCompression;
 			float num2 = ResearchDataModel.instance.GetPromotionEasilyValue();
 			if (this.agent.currentSefiraEnum == SefiraEnum.HOD && this.agent.GetContinuousServiceLevel() <= 3)
 			{
 				num2 += (float)SefiraAbilityValueInfo.hodContinuousServiceValues[this.agent.GetContinuousServiceLevel() - 1] / 100f;
 			}
+			num2 += (float)SefiraAbilityValueInfo.hodOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.HOD)] / 100f;
 			long id = this.skillTypeInfo.id;
-			WorkerPrimaryStat addedStat;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.HOD, true))
-			{
-				addedStat = agent.primaryStat.GetAddedStat(agent.primaryStatExp);
-			}
-			else
-			{
-				addedStat = agent.primaryStat;
-			}
-			WorkerPrimaryStat defaultStat = AgentModel.GetDefaultStat();
-			foreach (AgentModel hodAgent in SefiraManager.instance.GetSefira(SefiraEnum.HOD).agentList)
-			{
-				if (hodAgent == agent || hodAgent.IsDead()) continue;
-				if (hodAgent.GetContinuousServiceLevel() >= 4)
-				{
-					int stat1 = 15;
-					int stat2 = 15;
-					int stat3 = 15;
-					if (id >= 1L && id <= 4L)
-					{
-						switch ((int)(id - 1L))
-						{
-						case 0:
-							stat1 = addedStat.hp;
-							stat2 = hodAgent.primaryStat.hp;
-							stat3 = defaultStat.hp;
-							break;
-						case 1:
-							stat1 = addedStat.mental;
-							stat2 = hodAgent.primaryStat.mental;
-							stat3 = defaultStat.mental;
-							break;
-						case 2:
-							stat1 = addedStat.work;
-							stat2 = hodAgent.primaryStat.work;
-							stat3 = defaultStat.work;
-							break;
-						case 3:
-							stat1 = addedStat.battle;
-							stat2 = hodAgent.primaryStat.battle;
-							stat3 = defaultStat.battle;
-							break;
-						}
-					}
-					if (stat2 <= stat3) break;
-					float ratio = 1f - (float)(stat1 - stat3) / (float)(stat2 - stat3);
-					if (ratio < 0f) break;
-					if (ratio > 1f)
-					{
-						ratio = 1f;
-					}
-					num2 += (float)SefiraAbilityValueInfo.hodContinuousServiceValues[hodAgent.GetContinuousServiceLevel() - 1] / 100f * ratio;
-				}
-			}
-			num2 += (float)SefiraAbilityValueInfo.hodOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.HOD)] / 100f * (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses") ? 2f : 1f);
 			if (id >= 1L && id <= 4L)
 			{
-				if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.HOD, true))
+				switch ((int)(id - 1L))
 				{
-					OvertimeHodBossBuf buf = agent.GetUnitBufByType(UnitBufType.OVERTIME_HODBOSS) as OvertimeHodBossBuf;
-					if (buf != null)
-					{
-						switch ((int)(id - 1L))
-						{
-						case 0:
-							num *= this.CalculateDmgExp(this.agent.hp / this.startAgentHp);
-							buf.GainExp((float)this.successCount * this.CalculateLevelExp(RwbpType.R, agent.primaryStat) * num * num2, RwbpType.R);
-							this.agent.primaryStatExp.hp += (float)this.successCount * this.CalculateLevelExp(RwbpType.R, buf.originalStat.GetAddedStat(agent.primaryStatExp)) * num * num2;
-							break;
-						case 1:
-							num *= this.CalculateDmgExp(this.agent.mental / this.startAgentMental);
-							buf.GainExp((float)this.successCount * this.CalculateLevelExp(RwbpType.W, agent.primaryStat) * num * num2, RwbpType.W);
-							this.agent.primaryStatExp.mental += (float)this.successCount * this.CalculateLevelExp(RwbpType.W, buf.originalStat.GetAddedStat(agent.primaryStatExp)) * num * num2;
-							break;
-						case 2:
-							num *= this.CalculateDmgExp((this.agent.hp / this.startAgentHp + this.agent.mental / this.startAgentMental) / 2f);
-							buf.GainExp((float)this.successCount * this.CalculateLevelExp(RwbpType.B, agent.primaryStat) * num * num2, RwbpType.B);
-							this.agent.primaryStatExp.work += (float)this.successCount * this.CalculateLevelExp(RwbpType.B, buf.originalStat.GetAddedStat(agent.primaryStatExp)) * num * num2;
-							break;
-						case 3:
-							num *= 1.5f;
-							buf.GainExp((float)this.successCount * this.CalculateLevelExp(RwbpType.P, agent.primaryStat) * num * num2, RwbpType.P);
-							this.agent.primaryStatExp.battle += (float)this.successCount * this.CalculateLevelExp(RwbpType.P, buf.originalStat.GetAddedStat(agent.primaryStatExp)) * num * num2;
-							break;
-						}
-					}
+				case 0:
+					num *= this.CalculateDmgExp(this.agent.hp / this.startAgentHp);
+					this.agent.primaryStatExp.hp += (float)this.successCount * this.CalculateLevelExp(RwbpType.R) * num * num2;
+					break;
+				case 1:
+					num *= this.CalculateDmgExp(this.agent.mental / this.startAgentMental);
+					this.agent.primaryStatExp.mental += (float)this.successCount * this.CalculateLevelExp(RwbpType.W) * num * num2;
+					break;
+				case 2:
+					num *= this.CalculateDmgExp((this.agent.hp / this.startAgentHp + this.agent.mental / this.startAgentMental) / 2f);
+					this.agent.primaryStatExp.work += (float)this.successCount * this.CalculateLevelExp(RwbpType.B) * num * num2;
+					break;
+				case 3:
+					num *= 1.5f;
+					this.agent.primaryStatExp.battle += (float)this.successCount * this.CalculateLevelExp(RwbpType.P) * num * num2;
+					break;
 				}
-				else
-				{
-					switch ((int)(id - 1L))
-					{
-					case 0:
-						num *= this.CalculateDmgExp(this.agent.hp / this.startAgentHp);
-						this.agent.primaryStatExp.hp += (float)this.successCount * this.CalculateLevelExp(RwbpType.R) * num * num2;
-						break;
-					case 1:
-						num *= this.CalculateDmgExp(this.agent.mental / this.startAgentMental);
-						this.agent.primaryStatExp.mental += (float)this.successCount * this.CalculateLevelExp(RwbpType.W) * num * num2;
-						break;
-					case 2:
-						num *= this.CalculateDmgExp((this.agent.hp / this.startAgentHp + this.agent.mental / this.startAgentMental) / 2f);
-						this.agent.primaryStatExp.work += (float)this.successCount * this.CalculateLevelExp(RwbpType.B) * num * num2;
-						break;
-					case 3:
-						num *= 1.5f;
-						this.agent.primaryStatExp.battle += (float)this.successCount * this.CalculateLevelExp(RwbpType.P) * num * num2;
-						break;
-					}
-				}
-			}
-			int stackingMax = UnitEGOgiftSpace.GetStackingMax();
-			CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = this.targetCreature.metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
-			if (creatureEquipmentMakeInfo != null && this.targetCreature.GetObservationLevel() >= creatureEquipmentMakeInfo.level)
-			{
-				List<EGOgiftModel> gifts = this.agent.GetAllGifts();
-                bool isLocked = false;
-				int stacked = 0;
-				foreach (EGOgiftModel thing in gifts)
-				{
-					if (thing.metaInfo.LcId == creatureEquipmentMakeInfo.equipTypeInfo.LcId)
-					{
-						isLocked = true;
-                        break;
-					}
-					if (stackingMax != -1 && thing.metaInfo.attachPos == creatureEquipmentMakeInfo.equipTypeInfo.attachPos && this.agent.Equipment.gifts.GetLockStateUI(thing.metaInfo))
-					{
-						stacked++;
-						if (stacked >= stackingMax)
-						{
-							isLocked = true;
-							break;
-						}
-					}
-				}
-				if (isLocked == false)
-				{
-					for (int i = 0; i < workCompression; i++)
-					{
-						if (creatureEquipmentMakeInfo.GetProb() >= UnityEngine.Random.value)
-						{
-							EGOgiftModel egogiftModel = EGOgiftModel.MakeGift(creatureEquipmentMakeInfo.equipTypeInfo);
-							this.agent.AttachEGOgift(egogiftModel);
-							Notice.instance.Send(NoticeName.OnGetEGOgift, new object[]
-							{
-								this.agent,
-								egogiftModel
-							});
-							if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") ? 
-								ResearchDataModel.instance.IsUpgradedAbility("spend_pe_for_gift") : 
-								SpecialModeConfig.instance.GetValue<bool>("SpendPEForEgoGiftChance"))
-							{
-								this.targetCreature.observeInfo.cubeNum -= creatureEquipmentMakeInfo.GiftMultiplierCost();
-							}
-							break;
-						}
-					}
-				}
-			}
-			if (AgentInfoWindow.currentWindow.IsEnabled && AgentInfoWindow.currentWindow.CurrentAgent == agent)
-			{
-				AgentInfoWindow.CreateWindow(agent, false);
 			}
 		}
+		this.CloseWork(true);
 	}
 
 	// Token: 0x060058EB RID: 22763 RVA: 0x001F97CC File Offset: 0x001F79CC
@@ -798,22 +586,14 @@ public class UseSkill
 
 	// Token: 0x060058EC RID: 22764 RVA: 0x001F9860 File Offset: 0x001F7A60
 	private void ProcessWorkTick(out bool isSuccess)
-	{ // <Mod> fixed +% success rate EGO gifts giving 1/5 of what they're suppossed to; Overtime Meltdowns; Alriune and Silent Orchestra
+	{
 		isSuccess = true;
 		bool flag = false;
-		bool wantNeutral = false;
-		if (targetCreature.metaInfo.LcId == 100029L || targetCreature.metaInfo.LcId == 100019L)
-		{
-			wantNeutral = true;
-		}
 		float num = this.targetCreature.GetWorkSuccessProb(this.agent, this.skillTypeInfo);
-		if (!wantNeutral)
-		{
-			num += (float)this.targetCreature.GetObserveBonusProb() / 100f;
-		}
+		num += (float)this.targetCreature.GetObserveBonusProb() / 100f;
 		num += (float)this.targetCreature.script.OnBonusWorkProb() / 100f;
 		num += (float)this.agent.workProb / 500f;
-		num += this.agent.Equipment.GetWorkProbSpecialBonus(this.agent, this.skillTypeInfo) / 100f;
+		num += this.agent.Equipment.GetWorkProbSpecialBonus(this.agent, this.skillTypeInfo) / 500f;
 		if (this.agent.GetUnitBufList().Count > 0)
 		{
 			foreach (UnitBuf unitBuf in this.agent.GetUnitBufList())
@@ -840,27 +620,6 @@ public class UseSkill
 		{
 			num -= 0.5f;
 		}
-		if (wantNeutral)
-		{
-			float ideal = 0.95f;
-			FeelingStateCubeBounds bounds = targetCreature.metaInfo.feelingStateCubeBounds;
-			if (bounds.upperBounds.Length == 3)
-			{
-				if (failCount > maxCubeCount - bounds.upperBounds[1])
-				{
-					ideal = 0.95f;
-				}
-				else if (successCount > bounds.upperBounds[0])
-				{
-					ideal = 0f;
-				}
-				else
-				{
-					ideal = ((float)(bounds.upperBounds[0] + bounds.upperBounds[1]) / 2f - (float)successCount + 1f) / (float)(maxCubeCount - workCount + 1);
-				}
-			}
-			num += Mathf.Clamp(ideal - num, -(float)this.targetCreature.GetObserveBonusProb() / 100f, (float)this.targetCreature.GetObserveBonusProb() / 100f);
-		}
 		bool flag2 = UnityEngine.Random.value < num;
 		if (this.targetCreature.script.ForcelyFail(this))
 		{
@@ -870,40 +629,26 @@ public class UseSkill
 		{
 			flag2 = true;
 		}
-		if (_overloadType == OverloadType.SIN) flag2 = true;
 		if (this.forceSuccess)
 		{
 			flag2 = true;
-		}
-		if (griefBoxes > failCount)
-		{
-			flag2 = false;
 		}
 		isSuccess = flag2;
 		if (flag2)
 		{
 			this.successCount++;
-			if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnSkillSuccessWorkTick(this);
+			this.targetCreature.script.OnSkillSuccessWorkTick(this);
 			this.agent.history.AddWorkCubeCount(this.skillTypeInfo.rwbpType, 1);
 		}
 		else
 		{
 			this.failCount++;
-			if (_overloadType != OverloadType.SIN) this.targetCreature.script.OnSkillFailWorkTick(this);
-			if (_overloadType != OverloadType.SIN && this.workPlaying && this.targetCreature.script.isAttackInWorkProcess())
+			this.targetCreature.script.OnSkillFailWorkTick(this);
+			if (this.workPlaying && this.targetCreature.script.isAttackInWorkProcess())
 			{
 				DamageInfo damageInfo = this.targetCreature.metaInfo.workDamage.Copy() * this.targetCreature.script.GetDamageMultiplierInWork(this);
-				if (_isOverloadedCreature && _overloadType == OverloadType.PAIN)
-				{
-					damageInfo *= 1.5f;
-					damageInfo.min += 2f;
-					damageInfo.max += 2f;
-				}
 				this.agent.TakeDamage(this.targetCreature, damageInfo);
-				if (!agent.ForceHideUI)
-				{
-					this.InvokeEffect(this.agent, damageInfo);
-				}
+				this.InvokeEffect(this.agent, damageInfo);
 				this.targetCreatureView.room.OnDamageInvoked(damageInfo);
 				this.targetCreature.script.OnAttackInWorkProcess(this);
 			}
@@ -980,7 +725,7 @@ public class UseSkill
 
 	// Token: 0x060058F3 RID: 22771 RVA: 0x001F9C48 File Offset: 0x001F7E48
 	public static UseSkill InitUseSkillAction(SkillTypeInfo skillInfo, AgentModel agent, CreatureModel creature)
-	{ // <Mod> made work speed observation bonuses seperate from Work Speed stat; Lantern EGO gift -10% work speed; Overtime Meltdowns
+	{
 		UseSkill useSkill = new UseSkill();
 		AgentUnit unit = agent.GetUnit();
 		CreatureUnit unit2 = creature.Unit;
@@ -993,18 +738,7 @@ public class UseSkill
 		{
 			useSkill.workCount = 0;
 			useSkill.maxCubeCount = creature.metaInfo.feelingStateCubeBounds.GetLastBound();
-			useSkill.workSpeed = creature.GetCubeSpeed() * (1f + agent.workSpeed / 100f) * (1f + (float)creature.GetObserveBonusSpeed() / 100f);
-			if (creature.metaInfo.LcId == 100054L && agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(400054)))
-			{
-				useSkill.workSpeed *= 0.9f;
-			}
-			if (creature.isOverloaded && creature.overloadType == OverloadType.OBLIVION)
-			{
-				if (creature.metaInfo.LcId != 100055L && creature.metaInfo.LcId != 100058L)
-				{
-					useSkill.workSpeed *= 0.6f;
-				}
-			}
+			useSkill.workSpeed = creature.GetCubeSpeed() * (1f + (float)(creature.GetObserveBonusSpeed() + agent.workSpeed) / 100f);
 			if (skillInfo.id == 6L)
 			{
 				unit.ChangeAnimatorForcely("MeatIdolUse", false, true);
@@ -1021,10 +755,7 @@ public class UseSkill
 		creature.currentSkill = useSkill;
 		useSkill.agent.animationMessageRecevied = useSkill.targetCreature.script;
 		useSkill.room.ProgressBar.SetVisible(true);
-		if (!creature.isOverloaded || creature.overloadType != OverloadType.GRIEF)
-		{
-			useSkill.room.ProgressBar.InitializeState();
-		}
+		useSkill.room.ProgressBar.InitializeState();
 		float num = useSkill.targetCreatureView.transform.localPosition.y;
 		num = 1f + num;
 		useSkill.agent.currentSkill = useSkill;
@@ -1119,10 +850,7 @@ public class UseSkill
 	private bool _faceCreature;
 
 	// Token: 0x040051EF RID: 20975
-	public bool _isOverloadedCreature; // <Mod> Changed from private to public
-
-	// <Mod>
-	public OverloadType _overloadType;
+	private bool _isOverloadedCreature;
 
 	// Token: 0x040051F0 RID: 20976
 	private float _elapsedTime;
@@ -1135,9 +863,4 @@ public class UseSkill
 
 	// Token: 0x040051F3 RID: 20979
 	public float startAgentMental;
-
-	// <Mod>
-	public int workCompression = 1;
-
-	public int griefBoxes;
 }

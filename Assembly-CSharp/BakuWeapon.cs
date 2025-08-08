@@ -13,18 +13,7 @@ internal class BakuWeapon : EquipmentScriptBase
 		{
 			float value = UnityEngine.Random.value;
 			DamageInfo item = base.model.metaInfo.damageInfos[0].Copy();
-            if (i == 1)
-            {
-                if (value < 0.5f)
-                {
-                    item = base.model.metaInfo.damageInfos[3].Copy();
-                }
-                else
-                {
-                    item = base.model.metaInfo.damageInfos[2].Copy();
-                }
-            }
-            else if (value < 0.5f)
+			if (value < 0.5f)
 			{
 				item = base.model.metaInfo.damageInfos[1].Copy();
 			}

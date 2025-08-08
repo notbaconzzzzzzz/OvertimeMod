@@ -13,7 +13,7 @@ public class RabbitUnitUI
 	// Token: 0x06005675 RID: 22133 RVA: 0x00045D7A File Offset: 0x00043F7A
 	public void activateUI(RabbitModel model)
 	{
-		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
+		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
 		{
 			this.DeactivateAllUI();
 			return;

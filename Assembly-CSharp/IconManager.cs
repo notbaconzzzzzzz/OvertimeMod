@@ -1,10 +1,6 @@
-/*
-public Sprite GetOrdealIcon(OrdealLevel level) // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO; // 
 
 // Token: 0x020009B9 RID: 2489
 public class IconManager : MonoBehaviour
@@ -92,37 +88,11 @@ public class IconManager : MonoBehaviour
 
 	// Token: 0x06004B7F RID: 19327 RVA: 0x001BD3F4 File Offset: 0x001BB5F4
 	public Sprite GetOrdealIcon(OrdealLevel level)
-	{ // <Mod>
-		if (OrdealIcon.Length <= 2)
-		{
-			try
-			{
-				Sprite dawn = OrdealIcon[0];
-				Sprite noon = OrdealIcon[1];
-				OrdealIcon = new Sprite[4];
-				OrdealIcon[0] = dawn;
-				OrdealIcon[1] = noon;
-				byte[] data = File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/DuskIcon.png");
-				Texture2D texture2D = new Texture2D(48, 48);
-				texture2D.LoadImage(data);
-				OrdealIcon[2] = Sprite.Create(texture2D, new Rect(0, 0, 48, 48), new Vector2(24, 24), 100, 0U, SpriteMeshType.FullRect, new Vector4());
-				data = File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/MidnightIcon.png");
-				texture2D = new Texture2D(48, 48);
-				texture2D.LoadImage(data);
-				OrdealIcon[3] = Sprite.Create(texture2D, new Rect(0, 0, 48, 48), new Vector2(24, 24), 100, 0U, SpriteMeshType.FullRect, new Vector4());
-			}
-			catch (Exception ex)
-			{
-				Notice.instance.Send("AddSystemLog", new object[]
-				{
-					ex.Message + " : " + ex.StackTrace
-				});
-			}
-		}
+	{
 		Sprite result;
 		try
 		{
-			result = this.OrdealIcon[(int)level % 4];
+			result = this.OrdealIcon[(int)level];
 		}
 		catch (IndexOutOfRangeException ex)
 		{

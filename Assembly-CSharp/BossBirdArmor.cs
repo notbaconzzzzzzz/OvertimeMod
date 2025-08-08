@@ -1,9 +1,3 @@
-/*
-private void Init() // 
-private void MakeDamage(List<UnitModel> target) // 
-public override float GetDamageFactor() // 
-+private bool _setOption // 
-*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -67,17 +61,12 @@ public class BossBirdArmor : EquipmentScriptBase
 
 	// Token: 0x0600354D RID: 13645 RVA: 0x0016021C File Offset: 0x0015E41C
 	private void Init()
-	{ // <Mod>
+	{
 		this._worker = (base.model.owner as WorkerModel);
 		this._setOption = false;
 		if (this._worker.HasEquipment(200038) && this._worker.HasEquipment(400038))
 		{
 			this._setOption = true;
-		}
-		_setOption2 = false;
-		if (_worker.HasEquipment(400038))
-		{
-			_setOption2 = true;
 		}
 	}
 
@@ -137,19 +126,19 @@ public class BossBirdArmor : EquipmentScriptBase
 
 	// Token: 0x06003550 RID: 13648 RVA: 0x001603C0 File Offset: 0x0015E5C0
 	private void MakeDamage(List<UnitModel> target)
-	{ // <Mod>
+	{
 		foreach (UnitModel unitModel in target)
 		{
 			if (this._setOption)
 			{
 				foreach (DamageInfo dmg in BossBirdArmor._setDamage)
 				{
-					unitModel.TakeDamage(dmg * GetDamageFactor());
+					unitModel.TakeDamage(dmg);
 				}
 			}
 			else
 			{
-				unitModel.TakeDamage(this._nearDamage  * GetDamageFactor());
+				unitModel.TakeDamage(this._nearDamage);
 			}
 			this.MakeDamageEffect(unitModel);
 		}
@@ -187,19 +176,11 @@ public class BossBirdArmor : EquipmentScriptBase
 
 	// Token: 0x06003552 RID: 13650 RVA: 0x00160538 File Offset: 0x0015E738
 	public override float GetDamageFactor()
-	{ // <Mod>
+	{
 		float result = 1f;
-		if (_setOption2)
+		if (this._worker.hp > 0f)
 		{
-            float factor = _worker.hp / _worker.maxHp * 3f;
-            if (factor <= 2f)
-            {
-                if (factor < 0f)
-                {
-                    factor = 0f;
-                }
-                result = 6f / (factor + 3f);
-            }
+			result = Mathf.Clamp(1f + ((float)this._worker.maxHp - this._worker.hp) / this._worker.hp, 1f, 2f);
 		}
 		return result;
 	}
@@ -245,7 +226,4 @@ public class BossBirdArmor : EquipmentScriptBase
 
 	// Token: 0x04003199 RID: 12697
 	private bool _setOption;
-
-    // <Mod>
-	private bool _setOption2;
 }

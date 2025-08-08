@@ -1,7 +1,3 @@
-/*
-HealthBraceletKit public override void OnFixedUpdateInKitEquip(AgentModel actor) // Fixed regeneration timer; Made not kill while returning
-HealthBraceletKit public override void OnReleaseKitEquip(AgentModel actor, bool stageEnd) // Made not kill if ending the day
-*/
 using System;
 using UnityEngine;
 using WorkerSpine;
@@ -66,11 +62,11 @@ public class HealthBracelet : CreatureBase
 
 		// Token: 0x06002352 RID: 9042 RVA: 0x0010514C File Offset: 0x0010334C
 		public override void OnFixedUpdateInKitEquip(AgentModel actor)
-		{ // <Mod> fixed regeneration timer not restarting properly; made not kill you if you're activaly trying to return it
+		{
 			if (this._recoveryTimer.RunTimer())
 			{
 				actor.RecoverHP(_AMOUNT_RECOVERY);
-				this._recoveryTimer.StartTimer(_FREQ_RECOVERY);
+				this._recoveryTimer.StartTimer();
 			}
 			if (this._safeTimer.RunTimer())
 			{
@@ -84,7 +80,7 @@ public class HealthBracelet : CreatureBase
 			{
 				this._equipElapsedTime = 0f;
 			}
-			if (this._equipElapsedTime >= _TIME_DEAD && !actor.invincible && !(SpecialModeConfig.instance.GetValue<bool>("LuminousAndYangForgiveness") && actor.GetCurrentCommand() != null && actor.GetCurrentCommand() is ReturnKitCreatureCommand))
+			if (this._equipElapsedTime >= _TIME_DEAD && !actor.invincible)
 			{
 				AgentUnit unit = actor.GetUnit();
 				unit.animChanger.ChangeAnimator(WorkerSpine.AnimatorName.HealthBraceletDead);
@@ -95,13 +91,13 @@ public class HealthBracelet : CreatureBase
 
 		// Token: 0x06002353 RID: 9043 RVA: 0x00105214 File Offset: 0x00103414
 		public override void OnReleaseKitEquip(AgentModel actor, bool stageEnd)
-		{ // <Mod>
+		{
 			base.OnReleaseKitEquip(actor, stageEnd);
 			this._anim.OnReturn();
 			float num = actor.hp / (float)actor.maxHp;
 			actor.RemoveUnitBuf(actor.GetUnitBufByType(UnitBufType.HEALTH_BRACELET));
 			actor.hp = (float)actor.maxHp * num;
-			if (actor.hp < (float)actor.maxHp && !stageEnd && !actor.invincible)
+			if (actor.hp < (float)actor.maxHp && !actor.invincible)
 			{
 				AgentUnit unit = actor.GetUnit();
 				unit.animChanger.ChangeAnimator(WorkerSpine.AnimatorName.HealthBraceletDead);

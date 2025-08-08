@@ -13,9 +13,14 @@ public class DeathAngelWeaponSlow : UnitBuf
 
 	// Token: 0x0600362C RID: 13868 RVA: 0x001624C4 File Offset: 0x001606C4
 	public override void Init(UnitModel model)
-	{ // <Mod>
+	{
 		base.Init(model);
 		this.remainTime = 0.5f;
+		if (model is CreatureModel)
+		{
+			this.creature = (model as CreatureModel);
+			this.creature.movementScale = this.creature.movementScale * this.MovementScale();
+		}
 	}
 
 	// Token: 0x0600362D RID: 13869 RVA: 0x00028B62 File Offset: 0x00026D62
@@ -29,6 +34,16 @@ public class DeathAngelWeaponSlow : UnitBuf
 	{
 		base.OnUnitDie();
 		this.Destroy();
+	}
+
+	// Token: 0x0600362F RID: 13871 RVA: 0x000313E6 File Offset: 0x0002F5E6
+	public override void OnDestroy()
+	{
+		base.OnDestroy();
+		if (this.creature != null)
+		{
+			this.creature.movementScale = this.creature.movementScale / this.MovementScale();
+		}
 	}
 
 	// Token: 0x0400322A RID: 12842

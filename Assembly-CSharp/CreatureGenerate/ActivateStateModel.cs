@@ -1,17 +1,10 @@
 using System;
-using LobotomyBaseMod;
 
 namespace CreatureGenerate
 {
 	// Token: 0x020007E6 RID: 2022
 	public class ActivateStateModel
 	{
-		// <Patch>
-		public static LobotomyBaseMod.LcIdLong GetLcId(ActivateStateModel model)
-		{
-			return new LobotomyBaseMod.LcIdLong(model.modid, model.id);
-		}
-
 		// Token: 0x04003930 RID: 14640
 		public RiskLevel riskLevel;
 
@@ -26,8 +19,5 @@ namespace CreatureGenerate
 
 		// Token: 0x04003934 RID: 14644
 		public bool isKit;
-
-		// <Patch>
-		public string modid;
 	}
 }

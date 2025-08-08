@@ -1,6 +1,3 @@
-/*
-private PassageObjectModel GetPassage() // 
-*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -502,7 +499,7 @@ public class BugDusk : BugOrdealCreature
 
 	// Token: 0x06001F1D RID: 7965 RVA: 0x000F732C File Offset: 0x000F552C
 	private PassageObjectModel GetPassage()
-	{ // <Mod> return the current passage if none are available
+	{
 		Sefira[] openedAreaList = PlayerModel.instance.GetOpenedAreaList();
 		List<PassageObjectModel> list = new List<PassageObjectModel>();
 		for (int i = 0; i < openedAreaList.Length; i++)
@@ -535,7 +532,7 @@ public class BugDusk : BugOrdealCreature
 		}
 		if (list.Count <= 0)
 		{
-			return currentPassage;
+			return null;
 		}
 		return list[UnityEngine.Random.Range(0, list.Count)];
 	}

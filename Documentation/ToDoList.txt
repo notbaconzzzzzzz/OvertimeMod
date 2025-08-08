@@ -12,6 +12,8 @@ Migrate any localize data changes to the BaseMods area instead of being direct f
 
 Maybe migrate some Overtime Ordeal/Core Suppression/etc scripts to be in the external dll instead of living in Assembly-CSharp
 
+Make a patch for LMM to make it not override the files
+
 Create proper UI for Special Mode Preferances
 
 Create a framework for extending the UnitBufType Enum, and migrate all Overtime Mod buf types to use it

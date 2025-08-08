@@ -118,10 +118,9 @@ public class OrdealBase
 		15,
 		20,
 		25,
-		15,
-		20,
-		25,
-		30
+		0,
+		0,
+		0
 	};
 
 	// Token: 0x04003730 RID: 14128
@@ -131,7 +130,7 @@ public class OrdealBase
 	public bool isStarted;
 
 	// Token: 0x04003732 RID: 14130
-	public string _ordeal_name = string.Empty; // <Mod> changed from private to public
+	private string _ordeal_name = string.Empty;
 
 	// Token: 0x04003733 RID: 14131
 	public Color OrdealColor = Color.white;

@@ -1,6 +1,3 @@
-/*
-+public void MakeSefiraBossReward(SefiraEnum sefiraEnum, bool isOvertime) // 
-*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -113,12 +110,6 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x06004A41 RID: 19009 RVA: 0x001B8A20 File Offset: 0x001B6C20
 	public void MakeSefiraBossReward(SefiraEnum sefiraEnum)
-	{ // <Mod>
-		MakeSefiraBossReward(sefiraEnum, false);
-	}
-
-	// <Mod>
-	public void MakeSefiraBossReward(SefiraEnum sefiraEnum, bool isOvertime)
 	{
 		this._bossState = true;
 		this.researchPanelArea.SetActive(false);
@@ -147,21 +138,13 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 				disposable.Dispose();
 			}
 		}
-		if (SefiraBossManager.Instance.TryGetBossDescCount(sefiraEnum, isOvertime, SefiraBossDescType.REWARD, out num))
+		if (SefiraBossManager.Instance.TryGetBossDescCount(sefiraEnum, SefiraBossDescType.REWARD, out num))
 		{
-			this.sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), LocalizeTextDataModel.instance.GetText(isOvertime ? "boss2_common_clear" : "boss_common_clear"));
+			this.sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), LocalizeTextDataModel.instance.GetText("boss_common_clear"));
 			for (int i = 0; i < num; i++)
 			{
 				string empty = string.Empty;
-                if (sefiraEnum == SefiraEnum.HOD && !isOvertime && SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
-                {
-                    empty = LocalizeTextDataModel.instance.GetText("boss_hod_reward_0_alt");
-					GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
-					gameObject.transform.SetParent(this.sefiraBoss_ListParent);
-					gameObject.transform.localScale = Vector3.one;
-					gameObject.transform.GetChild(1).GetComponent<Text>().text = empty;
-                }
-				else if (SefiraBossManager.Instance.TryGetBossDesc(sefiraEnum, isOvertime, SefiraBossDescType.REWARD, i, out empty))
+				if (SefiraBossManager.Instance.TryGetBossDesc(sefiraEnum, SefiraBossDescType.REWARD, i, out empty))
 				{
 					GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
 					gameObject.transform.SetParent(this.sefiraBoss_ListParent);
@@ -170,7 +153,7 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 				}
 			}
 		}
-		string text = LocalizeTextDataModel.instance.GetText(isOvertime ? "boss2_common_qliphoth" : "boss_common_qliphoth");
+		string text = LocalizeTextDataModel.instance.GetText("boss_common_qliphoth");
 		GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
 		gameObject2.transform.SetParent(this.sefiraBoss_ListParent);
 		gameObject2.transform.localScale = Vector3.one;

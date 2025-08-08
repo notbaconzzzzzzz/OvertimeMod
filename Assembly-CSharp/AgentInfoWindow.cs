@@ -1,13 +1,4 @@
-﻿/*
-private void OnChangeAgent() // Ego Gift Helper
-public static AgentInfoWindow EnforcementWindow() // Recustomizing
-public void OnClearOverlay() // Ego Gift Helper
-private void InitGiftArea() // Hod/Keter service bonuses
-UIComponent public void SetData(AgentModel agent) // (!) Display employee's base stats and fixed stat tooltips
-InGameComponent public void SetUI(AgentModel agent) // (!) Resistances will use 2 decimal points; fixed stat tooltips
-WorkerPrimaryStatUI public void SetStat(AgentModel agent) // Display employee's current exp and base stats
-*/
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.UI.Utils;
@@ -109,15 +100,13 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
     // Token: 0x06004CB1 RID: 19633 RVA: 0x001C3278 File Offset: 0x001C1478
     public static AgentInfoWindow EnforcementWindow()
-    { // <Mod>
-		AgentInfoWindow.currentWindow.gameObject.transform.localScale = Vector3.one;
+    {
         AgentInfoWindow.currentWindow.IsEnabled = true;
         AgentInfoWindow.currentWindow.customizingWindow.buttonControl.SetActive(true);
-        AgentInfoWindow.currentWindow.customizingBlock.SetActive(true);
-        AgentInfoWindow.currentWindow.AppearanceActiveControl.SetActive(true);
+        AgentInfoWindow.currentWindow.customizingBlock.SetActive(false);
+        AgentInfoWindow.currentWindow.AppearanceActiveControl.SetActive(false);
         AgentInfoWindow.currentWindow.UIComponents.portrait.SetAgentArmor();
         CustomizingWindow.ReviseWindow(AgentInfoWindow.currentWindow.PinnedAgent);
-		AgentInfoWindow.currentWindow.UIComponents.SetData(CustomizingWindow.CurrentWindow.CurrentData);
         AgentInfoWindow.currentWindow.EnforcenButton.gameObject.SetActive(false);
         AgentInfoWindow.currentWindow.DeployActiveControl.SetActive(true);
         AgentInfoWindow.currentWindow.IngameActiveControl.SetActive(false);
@@ -129,12 +118,11 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
     // Token: 0x06004CB2 RID: 19634 RVA: 0x001C3348 File Offset: 0x001C1548
     public static AgentInfoWindow CreateWindow(AgentModel target, bool forcely = false)
-    { // <Mod>
+    {
         if (AgentInfoWindow.currentWindow.IsEnabled && !forcely && AgentInfoWindow.currentWindow.WindowType != AgentInfoWindow.AgentInfoWindowType.NORMAL)
         {
             return null;
         }
-		AgentInfoWindow.currentWindow.gameObject.transform.localScale = Vector3.one * SpecialModeConfig.instance.GetValue<float>("WindowScaleAgent");
         AgentInfoWindow.currentWindow.customizingWindow.IsEnabled = false;
         AgentInfoWindow.currentWindow.customizingWindow.buttonControl.SetActive(false);
         AgentInfoWindow.currentWindow.customizingBlock.SetActive(false);
@@ -187,7 +175,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
     // Token: 0x06004CB4 RID: 19636 RVA: 0x001C34D4 File Offset: 0x001C16D4
     public void OnClearOverlay()
-    { // <Mod> Ego Gift Helper
+    {
         if (this.PinnedAgent != null)
         {
             this.UIComponents.SetData(this.PinnedAgent);
@@ -200,7 +188,6 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                 this.inGameModeComponent.SetUI(this.PinnedAgent);
             }
             this.SetGiftAreaAgent(this.PinnedAgent);
-            CurrentAgent = PinnedAgent;
             return;
         }
         this.CloseWindow();
@@ -271,7 +258,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
     // Token: 0x06004CBB RID: 19643 RVA: 0x001C3644 File Offset: 0x001C1844
     private void InitGiftArea()
-    { // <Mod> Hod alternative service bonus; Keter alternative service bonus
+    {
         if (this.PinnedAgent == null)
         {
             return;
@@ -295,13 +282,9 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                     SefiraName.GetSefiraByEnum(sefiraEnum),
                     "Name"
                 }), this.PinnedAgent.continuousServiceDay);
-                if (sefira.sefiraEnum == SefiraEnum.HOD && this.PinnedAgent.GetContinuousServiceLevel() >= 4)
+                if (sefira.sefiraEnum == SefiraEnum.HOD && this.PinnedAgent.GetContinuousServiceLevel() == 4)
                 {
-                    GiftSlot_EffectText.text = string.Format(LocalizeTextDataModel.instance.GetText("continous_service_ability_cur_hod_alt"), SefiraAbilityValueInfo.GetContinuousServiceValues(sefira.sefiraEnum)[PinnedAgent.GetContinuousServiceLevel() - 1]);
-                }
-                else if (sefira.sefiraEnum == SefiraEnum.KETHER)
-                {
-                    GiftSlot_EffectText.text = string.Format(LocalizeTextDataModel.instance.GetText("continous_service_ability_cur_kether"), SefiraAbilityValueInfo.ketherContinuousServiceValues[PinnedAgent.GetContinuousServiceLevel() - 1], SefiraAbilityValueInfo.ketherContinuousServiceValues2[PinnedAgent.GetContinuousServiceLevel() - 1]);
+                    this.GiftSlot_EffectText.text = string.Format(LocalizeTextDataModel.instance.GetText("continous_service_ability_cur_tiphereth1"), SefiraAbilityValueInfo.GetContinuousServiceValues(sefira.sefiraEnum)[3]);
                 }
                 else
                 {
@@ -426,7 +409,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
     // Token: 0x06004CC4 RID: 19652 RVA: 0x001C3A5C File Offset: 0x001C1C5C
     private void OnChangeAgent(AgentModel newAgent)
-    { // <Mod> Ego Gift Healper
+    {
         if (this._currentAgent != null)
         {
             Notice.instance.Remove(NoticeName.UpdateAgentState + this.CurrentAgent.instanceId, this);
@@ -436,13 +419,6 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
         {
             Notice.instance.Observe(NoticeName.UpdateAgentState + this.CurrentAgent.instanceId, this);
         }
-        if (SpecialModeConfig.instance.GetValue<bool>("EgoGiftHelper"))
-		{
-			foreach (CreatureModel creature in CreatureManager.instance.GetCreatureList())
-			{
-				creature.Unit.room.UpdateGiftHealper();
-			}
-		}
     }
 
     // Token: 0x06004CC5 RID: 19653 RVA: 0x0003EEC0 File Offset: 0x0003D0C0
@@ -789,8 +765,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
         // Token: 0x06004CD7 RID: 19671 RVA: 0x001C4048 File Offset: 0x001C2248
         public void SetData(AgentModel agent)
-        { // <Patch> <Mod> Base stats are now displayed; also fixed Ws, As, and Ms stat tooltips so that they show the correct number instead of all saying stat * 0.2%;
-        // also cut off names if they're too long; also made weapon damage update with damage multipliers
+        {
             if (agent == null)
             {
                 return;
@@ -886,33 +861,12 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
             {
                 this.Stat_P.slots[1].SetText(originJusticeStat2 + string.Empty);
             }
-			string name;
-			name = LocalizeTextDataModel.instance.GetText("Rstat");
-			if (name.Length > 5)
-			{
-				name = name.Substring(0, 4);
-			}
-            this.Stat_R.Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(agent.Rstat), agent.primaryStat.maxHP);
-			name = LocalizeTextDataModel.instance.GetText("Wstat");
-			if (name.Length > 5)
-			{
-				name = name.Substring(0, 4);
-			}
-            this.Stat_W.Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(agent.Wstat), agent.primaryStat.maxMental);
-			name = LocalizeTextDataModel.instance.GetText("Bstat");
-			if (name.Length > 5)
-			{
-				name = name.Substring(0, 4);
-			}
-            this.Stat_B.Fill_Inner.text = string.Format("{0}{3}{1} ({2})", name, AgentModel.GetLevelGradeText(agent.Bstat), agent.primaryStat.workProb, "\n");
-			name = LocalizeTextDataModel.instance.GetText("Pstat");
-			if (name.Length > 5)
-			{
-				name = name.Substring(0, 4);
-			}
-            this.Stat_P.Fill_Inner.text = string.Format("{0}{3}{1} ({2})", name, AgentModel.GetLevelGradeText(agent.Pstat), agent.primaryStat.attackSpeed, "\n");
+            this.Stat_R.Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Rstat"), AgentModel.GetLevelGradeText(agent.Rstat));
+            this.Stat_W.Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Wstat"), AgentModel.GetLevelGradeText(agent.Wstat));
+            this.Stat_B.Fill_Inner.text = string.Format("{0}{2}{1}", LocalizeTextDataModel.instance.GetText("Bstat"), AgentModel.GetLevelGradeText(agent.Bstat), "\n");
+            this.Stat_P.Fill_Inner.text = string.Format("{0}{2}{1}", LocalizeTextDataModel.instance.GetText("Pstat"), AgentModel.GetLevelGradeText(agent.Pstat), "\n");
             this.Weapon.StatName.text = agent.Equipment.weapon.metaInfo.Name;
-            if (EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) == 200038 || EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) == 200004)
+            if (agent.Equipment.weapon.metaInfo.id == 200038 || agent.Equipment.weapon.metaInfo.id == 200004)
             {
                 DamageInfo damage = agent.Equipment.weapon.GetDamage(agent);
                 RwbpType type = damage.type;
@@ -920,10 +874,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                 this.Weapon.Fill_Inner.color = Color.gray;
                 this.Weapon.Fill.color = Color.white;
                 this.Weapon.Fill.enabled = false;
-                float num7 = agent.GetDamageFactorByEquipment();
-                num7 *= agent.GetDamageFactorBySefiraAbility();
-                float reinforcementDmg = agent.Equipment.weapon.script.GetReinforcementDmg();
-                string text = string.Format("{0}-{1}", (int)(damage.min * num7 * reinforcementDmg), (int)(damage.max * num7 * reinforcementDmg));
+                string text = string.Format("{0}-{1}", (int)damage.min, (int)damage.max);
                 this.Weapon.slots[0].SetText(text);
             }
             else
@@ -938,10 +889,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                 this.Weapon.Fill_Inner.color = color;
                 this.Weapon.Fill.color = Color.white;
                 this.Weapon.Fill.sprite = IconManager.instance.DamageIcon[type2 - RwbpType.R];
-                float num7 = agent.GetDamageFactorByEquipment();
-                num7 *= agent.GetDamageFactorBySefiraAbility();
-                float reinforcementDmg = agent.Equipment.weapon.script.GetReinforcementDmg();
-                string text2 = string.Format("{0}-{1}", (int)(damage2.min * num7 * reinforcementDmg), (int)(damage2.max * num7 * reinforcementDmg));
+                string text2 = string.Format("{0}-{1}", (int)damage2.min, (int)damage2.max);
                 this.Weapon.slots[0].SetText(text2);
             }
             DefenseInfo defense = agent.defense;
@@ -976,16 +924,16 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                         arg = agent.justiceLevel.ToString();
                         break;
                     case 4:
-                        arg = ((float)agent.workProb / 5f).ToString();
+                        arg = (agent.workProb / 5).ToString();
                         break;
                     case 5:
-                        arg = ((float)agent.workSpeed).ToString();
+                        arg = (agent.workSpeed / 5).ToString();
                         break;
                     case 6:
-                        arg = (agent.attackSpeed / 1.43f - 20f).ToString();
+                        arg = (agent.attackSpeed / 5f).ToString();
                         break;
                     case 7:
-                        arg = (agent.movement).ToString();
+                        arg = (agent.movement / 5f).ToString();
                         break;
                 }
                 string dynamicTooltip = string.Format(text3, arg);
@@ -1107,7 +1055,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
         // Token: 0x06004CDA RID: 19674 RVA: 0x001C4A3C File Offset: 0x001C2C3C
         public void SetUI(AgentModel agent)
-        { // <Patch> <Mod> resistances will now use 2 decimal points; fixed Ws, As, and Ms stat tooltips so that they show the correct number instead of all saying stat * 0.2%
+        {
             this.AgentTitle.enabled = true;
             this.GradeImage.sprite = DeployUI.GetAgentGradeSprite(agent);
             this.AgentName.text = agent.GetUnitName();
@@ -1135,7 +1083,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
             }
             this.Weapon.StatName.text = agent.Equipment.weapon.metaInfo.Name;
             DamageInfo damage = agent.Equipment.weapon.GetDamage(agent);
-            if (EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) == 200038 || EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) == 200004)
+            if (agent.Equipment.weapon.metaInfo.id == 200038 || agent.Equipment.weapon.metaInfo.id == 200004)
             {
                 this.Weapon.Fill.enabled = false;
                 this.Weapon.Fill_Inner.text = "???";
@@ -1164,7 +1112,7 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                 this.Weapon.slots[0].SetText(text2);
             }
             DefenseInfo defense = agent.defense;
-            UIUtil.DefenseSetFactor(defense, this.DefenseType, false);
+            UIUtil.DefenseSetFactor(defense, this.DefenseType, true);
             UIUtil.SetDefenseTypeIcon(defense, this.DefenseIcon);
             if (agent.Equipment.armor != null)
             {
@@ -1195,16 +1143,16 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
                         arg = agent.justiceLevel.ToString();
                         break;
                     case 4:
-                        arg = ((float)agent.workProb / 5f).ToString();
+                        arg = (agent.workProb / 5).ToString();
                         break;
                     case 5:
-                        arg = ((float)agent.workSpeed).ToString();
+                        arg = (agent.workSpeed / 5).ToString();
                         break;
                     case 6:
-                        arg = (agent.attackSpeed / 1.43f - 20f).ToString();
+                        arg = (agent.attackSpeed / 5f).ToString();
                         break;
                     case 7:
-                        arg = (agent.movement).ToString();
+                        arg = (agent.movement / 5f).ToString();
                         break;
                 }
                 string dynamicTooltip = string.Format(text3, arg);
@@ -1344,133 +1292,48 @@ public class AgentInfoWindow : MonoBehaviour, IObserver, IDeployResetCalled
 
         // Token: 0x06004CDF RID: 19679 RVA: 0x001C5018 File Offset: 0x001C3218
         public void SetStat(AgentModel agent)
-        { // <Mod> exp shows up in the employee window; also shows base stats; also cuts off stat names if they're too long; Overtime Hod Suppression
+        {
             string text = string.Empty;
-            bool isOvertimeHod = SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.HOD, true);
-            OvertimeHodBossBuf hodBuf = null;
-            if (isOvertimeHod)
-            {
-                hodBuf = agent.GetUnitBufByType(UnitBufType.OVERTIME_HODBOSS) as OvertimeHodBossBuf;
-            }
-            string name = "";
-            string color = "FFFFFF";
-            int baseStat = 0;
-            int level = 1;
-            int exp = 0;
-            int num;
-            int additionalValue;
             switch (this.type)
             {
                 case RwbpType.R:
                     {
-                        name = LocalizeTextDataModel.instance.GetText("Rstat");
-                        color = "CE2842";
-                        level = agent.Rstat;
-                        baseStat = agent.primaryStat.maxHP;
-                        exp = Mathf.RoundToInt(agent.primaryStatExp.hp);
-                        if (exp + baseStat > WorkerPrimaryStat.MaxStatR())
-                        {
-                            exp = WorkerPrimaryStat.MaxStatR() - baseStat;
-                        }
-                        if (isOvertimeHod)
-                        {
-                            exp = hodBuf.originalStat.hp;
-                        }
-                        num = agent.primaryStat.maxHP + agent.titleBonus.maxHP;
-                        additionalValue = agent.maxHp - num;
-                        this.list[0].SetStat(num, additionalValue);
+                        text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Rstat"), AgentModel.GetLevelGradeText(agent.Rstat));
+                        int num = agent.primaryStat.maxHP + agent.titleBonus.maxHP;
+                        int addtionalValue = agent.maxHp - num;
+                        this.list[0].SetStat(num, addtionalValue);
                         break;
                     }
                 case RwbpType.W:
                     {
-                        name = LocalizeTextDataModel.instance.GetText("Wstat");
-                        color = "EFEBBD";
-                        level = agent.Wstat;
-                        baseStat = agent.primaryStat.maxMental;
-                        exp = Mathf.RoundToInt(agent.primaryStatExp.mental);
-                        if (exp + baseStat > WorkerPrimaryStat.MaxStatW())
-                        {
-                            exp = WorkerPrimaryStat.MaxStatW() - baseStat;
-                        }
-                        if (isOvertimeHod)
-                        {
-                            exp = hodBuf.originalStat.mental;
-                        }
-                        num = agent.primaryStat.maxMental + agent.titleBonus.maxMental;
-                        additionalValue = agent.maxMental - num;
-                        this.list[0].SetStat(num, additionalValue);
+                        text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Wstat"), AgentModel.GetLevelGradeText(agent.Wstat));
+                        int num2 = agent.primaryStat.maxMental + agent.titleBonus.maxMental;
+                        int addtionalValue2 = agent.maxMental - num2;
+                        this.list[0].SetStat(num2, addtionalValue2);
                         break;
                     }
                 case RwbpType.B:
                     {
-                        name = LocalizeTextDataModel.instance.GetText("Bstat");
-                        color = "844884";
-                        level = agent.Bstat;
-                        baseStat = agent.primaryStat.workProb;
-                        exp = Mathf.RoundToInt(agent.primaryStatExp.work);
-                        if (exp + baseStat > WorkerPrimaryStat.MaxStatB())
-                        {
-                            exp = WorkerPrimaryStat.MaxStatB() - baseStat;
-                        }
-                        if (isOvertimeHod)
-                        {
-                            exp = hodBuf.originalStat.work;
-                        }
-                        num = agent.primaryStat.workProb + agent.titleBonus.workProb;
-                        additionalValue = agent.workProb - num;
-                        this.list[0].SetStat(num, additionalValue);
-                        num = agent.primaryStat.cubeSpeed + agent.titleBonus.cubeSpeed;
-                        additionalValue = agent.workSpeed - num;
-                        this.list[1].SetStat(num, additionalValue);
+                        text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Bstat"), AgentModel.GetLevelGradeText(agent.Bstat));
+                        int num3 = agent.primaryStat.workProb + agent.titleBonus.workProb;
+                        int addtionalValue3 = agent.workProb - num3;
+                        this.list[0].SetStat(num3, addtionalValue3);
+                        num3 = agent.primaryStat.cubeSpeed + agent.titleBonus.cubeSpeed;
+                        addtionalValue3 = agent.workSpeed - num3;
+                        this.list[1].SetStat(num3, addtionalValue3);
                         break;
                     }
                 case RwbpType.P:
                     {
-                        name = LocalizeTextDataModel.instance.GetText("Pstat");
-                        color = "42CBBD";
-                        level = agent.Pstat;
-                        baseStat = agent.primaryStat.attackSpeed;
-                        exp = Mathf.RoundToInt(agent.primaryStatExp.battle);
-                        if (exp + baseStat > WorkerPrimaryStat.MaxStatP())
-                        {
-                            exp = WorkerPrimaryStat.MaxStatP() - baseStat;
-                        }
-                        if (isOvertimeHod)
-                        {
-                            exp = hodBuf.originalStat.battle;
-                        }
-                        num = agent.primaryStat.attackSpeed + agent.titleBonus.attackSpeed;
-                        additionalValue = (int)agent.attackSpeed - num;
-                        this.list[0].SetStat(num, additionalValue);
-                        num = agent.primaryStat.movementSpeed + agent.titleBonus.movementSpeed;
-                        additionalValue = (int)agent.movement - num;
-                        this.list[1].SetStat(num, additionalValue);
+                        text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Pstat"), AgentModel.GetLevelGradeText(agent.Pstat));
+                        int num4 = agent.primaryStat.attackSpeed + agent.titleBonus.attackSpeed;
+                        int addtionalValue4 = (int)(agent.attackSpeed - (float)num4);
+                        this.list[0].SetStat(num4, addtionalValue4);
+                        num4 = agent.primaryStat.movementSpeed + agent.titleBonus.movementSpeed;
+                        addtionalValue4 = (int)(agent.movement - (float)num4);
+                        this.list[1].SetStat(num4, addtionalValue4);
                         break;
                     }
-            }
-			if (name.Length > 5)
-			{
-				name = name.Substring(0, 4);
-			}
-            if (isOvertimeHod)
-            {
-                if (baseStat >= exp)
-                {
-                    color = AgentInfoWindow.currentWindow.Additional_Plus_ValueColor;
-                }
-                else
-                {
-                    color = AgentInfoWindow.currentWindow.Additional_Minus_ValueColor;
-                }
-                text = string.Format("{0} {1} ({3}) <b><color=#{4}>: {2}</color></b>", name, AgentModel.GetLevelGradeText(level), baseStat, exp, color);
-            }
-            else if (exp == 0 || !SpecialModeConfig.instance.GetValue<bool>("RevealEXP"))
-            {
-                text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(level), baseStat);
-            }
-            else
-            {
-                text = string.Format("{0} {1} ({2})<color=#{5}>{4}{3}</color>", name, AgentModel.GetLevelGradeText(level), baseStat, Mathf.Abs(exp), exp > 0 ? "+" : "-", color);
             }
             this.StatName.text = text;
         }

@@ -1,6 +1,3 @@
-/*
-JusticeReceiverKit public override void OnReleaseKitEquip(AgentModel actor, bool stageEnd) // Made not kill if ending the day
-*/
 using System;
 using UnityEngine;
 using WorkerSpine;
@@ -77,10 +74,10 @@ public class JusticeReceiver : CreatureBase
 
 		// Token: 0x060023B3 RID: 9139 RVA: 0x00108D28 File Offset: 0x00106F28
 		public override void OnReleaseKitEquip(AgentModel actor, bool stageEnd)
-		{ // <Mod>
+		{
 			base.OnReleaseKitEquip(actor, stageEnd);
 			this._anim.OnReturn();
-			if (this._equipElapsedTime < 30f && !stageEnd && !actor.invincible)
+			if (this._equipElapsedTime < 30f && !actor.invincible)
 			{
 				actor.Die();
 				AgentUnit unit = actor.GetUnit();
