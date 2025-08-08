@@ -2,7 +2,7 @@
 Reformat/clean up/consolidate internal documentation
 Create better user guides for the mod
 
-Set up a github
+Set up a github [O]
 Maybe set up a proper mod page
 
 Suggest/implement new bugs fixes (unless they're just funny)
@@ -45,6 +45,7 @@ Maybe Singing Machine rework??
 Mayhaps Queen of Hatred rework???
 
 Insert Special Mode Preferances to control April Fools mode
+Fix SleepyTime april fools event to not softlock the day
 Maybe add some more April Fools events by next April
 
 Corpse Object optimization
@@ -57,6 +58,7 @@ Add ways for Snow White Vines to be destroyed (ex. being burned away by Firebird
 Fix the wierd bug that sometimes happens with Funeral's butterflies
 
 Fix employees suppressing Rabbits getting stuck
+Fix Rabbits deployed in Welfare or Disiplinary passing through Central command to take the Tiphereth elevators (may also fix it for clerks, but I'm not as worried about them cross-contaminating)
 
 Large CreatureBase pass (a collection of various features whose implementations will require functionality within all or a large subsection of abnormalties' CreatureBase scripts; features part of this will be labeled individually below)
 
