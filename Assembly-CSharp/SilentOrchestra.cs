@@ -1,3 +1,7 @@
+/*
+public void OnMovementEnd() // 
+private void OnFinale() // Overtime Core Suppressions
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -328,7 +332,7 @@ public class SilentOrchestra : CreatureBase
 
 	// Token: 0x0600298F RID: 10639 RVA: 0x00121DC8 File Offset: 0x0011FFC8
 	public void OnMovementEnd()
-	{
+	{ // <Mod>
 		switch (this.CurrentMovement)
 		{
 		case SilentOrchestra.Movement.NONE:
@@ -355,12 +359,13 @@ public class SilentOrchestra : CreatureBase
 			this.AnimScript.StartEffect(3, this.CurrentMovementTime);
 			this.SetBackGroundLoop(SilentOrchestra.SoundKey.Fourth);
 			this.AnimScript.SetUIText(3);
-			this.OnFinale();
+			// this.OnFinale();
 			break;
 		case SilentOrchestra.Movement.MOVEMENT4:
 			this._currentMovement = SilentOrchestra.Movement.FINALE;
 			this.SetBackGroundLoop(SilentOrchestra.SoundKey.Fin);
 			this.AnimScript.SetUIText(4);
+			OnFinale();
 			break;
 		case SilentOrchestra.Movement.FINALE:
 			this._currentMovement = SilentOrchestra.Movement.NONE;
@@ -592,10 +597,13 @@ public class SilentOrchestra : CreatureBase
 
 	// Token: 0x0600299E RID: 10654 RVA: 0x0002914B File Offset: 0x0002734B
 	private void OnFinale()
-	{
+	{ // <Mod>
 		if (!SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E4))
 		{
-			EnergyModel.instance.SubEnergy(EnergyModel.instance.GetEnergy());
+            float num = EnergyModel.instance.GetEnergy();
+			num /= StageTypeInfo.instnace.GetPercentEnergyFactor();
+            num = Mathf.Floor(num);
+			EnergyModel.instance.SubEnergy(num);
 		}
 		this._finaleTimmingCheck.StartTimer();
 	}

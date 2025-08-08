@@ -46,20 +46,22 @@ public class ChildCreatureModel : CreatureModel, IObserver
 
 	// Token: 0x06003440 RID: 13376 RVA: 0x0016048C File Offset: 0x0015E68C
 	public void SetParent(CreatureModel creature)
-	{
+	{ // <Patch>
 		this._parent = creature;
 		this.metaInfo = creature.metaInfo.childTypeInfo;
 		this.metadataId = creature.metaInfo.childTypeInfo.id;
 		if (this.childMetaInfo.isHasBaseMeta)
 		{
-			this.metaInfo = CreatureTypeList.instance.GetData(this.childMetaInfo.id);
-			if ((this.observeInfo = CreatureManager.instance.GetObserveInfo(this.metaInfo.id)) == null)
+			LobotomyBaseMod.LcIdLong lcid = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creature.metaInfo), this.childMetaInfo.id);
+			this.metaInfo = CreatureTypeList.instance.GetData_Mod(lcid);
+			if ((this.observeInfo = CreatureManager.instance.GetObserveInfo_Mod(lcid)) == null)
 			{
 				this.observeInfo = new CreatureObserveInfoModel(this.childMetaInfo.id);
+                this.observeInfo.Init_Mod(lcid);
 			}
-			if (CreatureTypeList.instance.GetSkillTipData(this.childMetaInfo.id) != null)
+			if (CreatureTypeList.instance.GetSkillTipData_Mod(lcid) != null)
 			{
-				this.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(this.childMetaInfo.id).GetCopy();
+				this.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(lcid).GetCopy();
 			}
 			CreatureManager.instance.AddChildObserveInfo(this.observeInfo);
 		}
@@ -72,16 +74,17 @@ public class ChildCreatureModel : CreatureModel, IObserver
 
 	// Token: 0x06003441 RID: 13377 RVA: 0x001605CC File Offset: 0x0015E7CC
 	public void SetParent(CreatureModel creature, string childScriptSrc, string childPrefab)
-	{
+	{ // <Patch>
 		this._parent = creature;
 		this.metaInfo = creature.metaInfo.childTypeInfo;
 		if (this.childMetaInfo.isHasBaseMeta)
 		{
-			this.metaInfo = CreatureTypeList.instance.GetData(this.childMetaInfo.id);
+			LobotomyBaseMod.LcIdLong lcid = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creature.metaInfo), this.childMetaInfo.id);
+			this.metaInfo = CreatureTypeList.instance.GetData_Mod(lcid);
 			this.observeInfo = new CreatureObserveInfoModel(this.childMetaInfo.id);
-			if (CreatureTypeList.instance.GetSkillTipData(this.childMetaInfo.id) != null)
+			if (CreatureTypeList.instance.GetSkillTipData_Mod(lcid) != null)
 			{
-				this.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(this.childMetaInfo.id).GetCopy();
+				this.metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(lcid).GetCopy();
 			}
 		}
 		this._unit = this.GenCreatureUnit(childPrefab);

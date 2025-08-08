@@ -18,10 +18,10 @@ public class OneBadManyGoodWeapon : EquipmentScriptBase
 
 	// Token: 0x06003668 RID: 13928 RVA: 0x00161E10 File Offset: 0x00160010
 	public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
-	{
+	{ // <Mod> change the stat check from Fort to Just
 		AgentModel agentModel = actor as AgentModel;
 		float num = UnityEngine.Random.Range(0f, 1f);
-		if (agentModel.fortitudeLevel >= this._CONDITION_FORTITUDE_LEVEL && num < this._PROB_RECOVERY_MENTAL)
+		if (agentModel.justiceLevel >= this._CONDITION_JUSTICE_LEVEL && num < this._PROB_RECOVERY_MENTAL)
 		{
 			agentModel.RecoverMental(this._AMOUNT_RECOVER_MENTAL);
 			this.PrintLog("Recover mental");
@@ -46,7 +46,7 @@ public class OneBadManyGoodWeapon : EquipmentScriptBase
 	private readonly float _AMOUNT_RECOVER_MENTAL = 10f;
 
 	// Token: 0x04003256 RID: 12886
-	private readonly int _CONDITION_FORTITUDE_LEVEL = 2;
+	private readonly int _CONDITION_JUSTICE_LEVEL = 2;
 
 	// Token: 0x04003257 RID: 12887
 	private readonly float _PROB_RECOVERY_MENTAL = 0.05f;

@@ -132,8 +132,8 @@ public class NewTitleScript : MonoBehaviour, ILanguageLinkedData, IAnimatorEvent
 
 	// Token: 0x06003B6E RID: 15214 RVA: 0x00034A42 File Offset: 0x00032C42
 	public void OnSetLanguage(string language)
-	{
-		GlobalGameManager.instance.ChangeLanguage(GlobalGameManager.instance.GetLanguage(language));
+	{ // <Patch>
+		GlobalGameManager.instance.ChangeLanguage_new(language);
 		if (GlobalEtcDataModel.instance.trueEndingDone)
 		{
 			SceneManager.LoadSceneAsync("AlterTitleScene");
@@ -357,7 +357,7 @@ public class NewTitleScript : MonoBehaviour, ILanguageLinkedData, IAnimatorEvent
 		}
 		catch (Exception message)
 		{
-			Debug.LogError(message);
+			LobotomyBaseMod.ModDebug.Log("CallContiune : " + message.Message + " : " + message.StackTrace);
 			GlobalGameManager.instance.ReleaseGame();
 		}
 	}
@@ -375,13 +375,20 @@ public class NewTitleScript : MonoBehaviour, ILanguageLinkedData, IAnimatorEvent
 	// Token: 0x06003B7B RID: 15227 RVA: 0x0017BB98 File Offset: 0x00179D98
 	private void ClickAfterNewGame()
 	{
-		GlobalGameManager.instance.isPlayingTutorial = true;
-		GlobalGameManager.instance.LoadGlobalData();
-		CreatureGenerateInfoManager.Instance.Init();
-		GlobalGameManager.instance.InitStoryMode();
-		PlayerModel.instance.InitAddingCreatures();
-		this.Init();
-		this.LoadStoryMode();
+		try
+		{
+			GlobalGameManager.instance.isPlayingTutorial = true;
+			GlobalGameManager.instance.LoadGlobalData();
+			CreatureGenerateInfoManager.Instance.Init();
+			GlobalGameManager.instance.InitStoryMode();
+			PlayerModel.instance.InitAddingCreatures();
+			this.Init();
+			this.LoadStoryMode();
+		}
+		catch (Exception ex)
+		{
+			LobotomyBaseMod.ModDebug.Log("CallNewGame : " + ex.Message + " : " + ex.StackTrace);
+		}
 	}
 
 	// Token: 0x06003B7C RID: 15228 RVA: 0x00034B15 File Offset: 0x00032D15

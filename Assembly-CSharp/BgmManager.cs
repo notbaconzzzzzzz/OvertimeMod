@@ -1,3 +1,6 @@
+/*
+public void SetBossClip(string src) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +35,41 @@ public class BgmManager : MonoBehaviour, IObserver
 				this._src = base.gameObject.GetComponent<AudioSource>();
 			}
 			return this._src;
+		}
+	}
+
+	// <Mod>
+	public AudioSource audioSource2
+	{
+		get
+		{
+			if (_src2 == null)
+			{
+				_src2 = gameObject.AddComponent<AudioSource>();
+				_src2.bypassEffects = _src.bypassEffects;
+				_src2.bypassListenerEffects = _src.bypassListenerEffects;
+				_src2.bypassReverbZones = _src.bypassReverbZones;
+				_src2.dopplerLevel = _src.dopplerLevel;
+				_src2.ignoreListenerPause = _src.ignoreListenerPause;
+				_src2.ignoreListenerVolume = _src.ignoreListenerVolume;
+				_src2.loop = false;
+				_src2.maxDistance = _src.maxDistance;
+				_src2.minDistance = _src.minDistance;
+				_src2.outputAudioMixerGroup = _src.outputAudioMixerGroup;
+				_src2.panStereo = _src.panStereo;
+				_src2.pitch = _src.pitch;
+				_src2.priority = _src.priority;
+				_src2.reverbZoneMix = _src.reverbZoneMix;
+				_src2.rolloffMode = _src.rolloffMode;
+				_src2.spatialBlend = _src.spatialBlend;
+				_src2.spatialize = _src.spatialize;
+				_src2.spatializePostEffects = _src.spatializePostEffects;
+				_src2.spread = _src.spread;
+				_src2.tag = _src.tag;
+				_src2.velocityUpdateMode = _src.velocityUpdateMode;
+				_src2.volume = 0f;
+			}
+			return _src2;
 		}
 	}
 
@@ -186,6 +224,11 @@ public class BgmManager : MonoBehaviour, IObserver
 			}
 			else if (this.randTimer.RunTimer())
 			{
+				if (SpecialModeConfig.instance.GetValue<bool>("DynamicNeutralMusic"))
+				{
+					currentNetural = CalculateEnergyThreshold();
+					prevNetural = -1;
+				}
 				this.PlayBgm(this.GetCurrentClip(this.currentLevel));
 			}
 		}
@@ -282,13 +325,21 @@ public class BgmManager : MonoBehaviour, IObserver
 		if (this.currentLevel != EmergencyLevel.NORMAL)
 		{
 			this.currentLevel = EmergencyLevel.NORMAL;
-			this.PlayBgm(this.GetCurrentClip(this.currentLevel));
+			if (SpecialModeConfig.instance.GetValue<bool>("DynamicNeutralMusic"))
+			{
+				prevNetural = -1;
+				this.PlayBgmCrossFaded(this.GetCurrentClip(this.currentLevel), false);
+			}
+			else
+			{
+				this.PlayBgm(this.GetCurrentClip(this.currentLevel));
+			}
 		}
 	}
 
 	// Token: 0x06001A77 RID: 6775 RVA: 0x000E1430 File Offset: 0x000DF630
 	private AudioClip GetCurrentClip(EmergencyLevel level)
-	{
+	{ // <Mod>
 		AudioClip result;
 		if (this.IsBossActivated)
 		{
@@ -296,14 +347,21 @@ public class BgmManager : MonoBehaviour, IObserver
 		}
 		else
 		{
-			result = this.GetClipList(level).GetRandomClip();
+			if (level == EmergencyLevel.NORMAL && SpecialModeConfig.instance.GetValue<bool>("DynamicNeutralMusic"))
+			{
+				result = this.GetClipList(level).GetClip(currentNetural);
+			}
+			else
+			{
+				result = this.GetClipList(level).GetRandomClip();
+			}
 		}
 		return result;
 	}
 
 	// Token: 0x06001A78 RID: 6776 RVA: 0x000E1464 File Offset: 0x000DF664
 	private void PlayBgm(AudioClip clip)
-	{
+	{ // <Mod>
 		if (this.audioSource.isPlaying)
 		{
 			this.audioSource.Stop();
@@ -318,6 +376,53 @@ public class BgmManager : MonoBehaviour, IObserver
 		Debug.Log("<color=red>Bgm Play</color>" + clip.name);
 		this.audioSource.clip = clip;
 		this.audioSource.Play();
+		audioSource.timeSamples = 0;
+	}
+
+	// <Mod>
+	private void PlayBgmCrossFaded(AudioClip clip, bool startAtSame, float cft = 2f)
+	{
+		if (clip == null)
+		{
+			if (this.audioSource.isPlaying)
+			{
+				this.audioSource.Stop();
+			}
+			Debug.LogError("Clip Is Null");
+			this.audioSource.clip = this.GetClip(this.currentLevel);
+			this.audioSource.Play();
+			return;
+		}
+		if (this.audioSource.isPlaying)
+		{
+			int offset = 0;
+			if (currentNetural == 0)
+			{
+				offset += 2257;
+			}
+			if (prevNetural == 0)
+			{
+				offset -= 2257;
+			}
+			crossFade = true;
+			fadeElap = 0f;
+			crossFadeTime = cft;
+			audioSource2.volume = currentBgmVolume;
+			audioSource.volume = 0f;
+			audioSource2.clip = audioSource.clip;
+			int samp = audioSource.timeSamples;
+			audioSource.clip = clip;
+			audioSource2.Play();
+			audioSource.Play();
+			audioSource2.timeSamples = samp;
+			if (startAtSame) audioSource.timeSamples = samp + offset;
+
+		}
+		else
+		{
+			this.audioSource.clip = clip;
+			this.audioSource.Play();
+		}
 	}
 
 	// Token: 0x06001A79 RID: 6777 RVA: 0x0001D7C8 File Offset: 0x0001B9C8
@@ -400,7 +505,20 @@ public class BgmManager : MonoBehaviour, IObserver
 
 	// Token: 0x06001A81 RID: 6785 RVA: 0x000E1578 File Offset: 0x000DF778
 	public void Update()
-	{
+	{ // <Mod>
+		if (SpecialModeConfig.instance.GetValue<bool>("DynamicNeutralMusic"))
+		{
+			int level = CalculateEnergyThreshold();
+			if (level != currentNetural && !crossFade)
+			{
+				prevNetural = currentNetural;
+				currentNetural = level;
+				if (!IsBossActivated && !_isUnique && currentLevel == EmergencyLevel.NORMAL)
+				{
+					this.PlayBgmCrossFaded(this.GetCurrentClip(this.currentLevel), true);
+				}
+			}
+		}
 		if (this.fadeEnabled)
 		{
 			this.fadeElap += Time.unscaledDeltaTime;
@@ -427,6 +545,21 @@ public class BgmManager : MonoBehaviour, IObserver
 					this.fadeOutEvent();
 					this.fadeOutEvent = null;
 				}
+			}
+		}
+		if (crossFade)
+		{
+			fadeElap += Time.unscaledDeltaTime;
+			float num = Mathf.Lerp(0f, currentBgmVolume, fadeElap / crossFadeTime);
+			audioSource.volume = num;
+			num = Mathf.Lerp(currentBgmVolume, 0f, fadeElap / crossFadeTime);
+			audioSource2.volume = num;
+			if (fadeElap >= crossFadeTime)
+			{
+				fadeElap = 0f;
+				crossFade = false;
+				audioSource.volume = currentBgmVolume;
+				audioSource2.Stop();
 			}
 		}
 	}
@@ -480,8 +613,9 @@ public class BgmManager : MonoBehaviour, IObserver
 
 	// Token: 0x06001A88 RID: 6792 RVA: 0x000E16C8 File Offset: 0x000DF8C8
 	public void SetBossClip(string src)
-	{
-		AudioClip audioClip = Resources.Load<AudioClip>(src);
+	{ // <Mod>
+		//AudioClip audioClip = Resources.Load<AudioClip>(src);
+		AudioClip audioClip = Add_On.GetMusic(src);
 		if (audioClip != null)
 		{
 			this._bossClip = audioClip;
@@ -494,6 +628,18 @@ public class BgmManager : MonoBehaviour, IObserver
 	{
 		this._bossClip = this.GetClip(EmergencyLevel.LEVEL2);
 		this.PlayBgm(this.GetCurrentClip(this.currentLevel));
+	}
+
+	// <Mod>
+	public int CalculateEnergyThreshold()
+	{
+		int day = PlayerModel.instance.GetDay();
+		float energy = EnergyModel.instance.GetEnergy();
+		float energyNeed = StageTypeInfo.instnace.GetEnergyNeed(day);
+		if (energy >= Mathf.Max(1000f, 0.75f * energyNeed)) return 3;
+		if (energy >= Mathf.Max(400f, 250f + 0.45f * energyNeed / 2f, 0.45f * energyNeed)) return 2;
+		if (energy >= Mathf.Max(100f, 85f + 0.2f * energyNeed / 3f, 50f + 0.2f * energyNeed * 2f / 3f, 0.2f * energyNeed)) return 1;
+		return 0;
 	}
 
 	// Token: 0x06001A8A RID: 6794 RVA: 0x000043A5 File Offset: 0x000025A5
@@ -513,6 +659,21 @@ public class BgmManager : MonoBehaviour, IObserver
 
 	// Token: 0x04001B24 RID: 6948
 	private AudioSource _src;
+
+	// <Mod>
+	private int currentNetural;
+
+	// <Mod>
+	private int prevNetural;
+
+	// <Mod>
+	private AudioSource _src2;
+
+	// <Mod>
+	private bool crossFade;
+
+	// <Mod>
+	private float crossFadeTime;
 
 	// Token: 0x04001B25 RID: 6949
 	public BgmManager.AudioClipList normal;

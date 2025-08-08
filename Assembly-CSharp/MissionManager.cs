@@ -1,12 +1,24 @@
+/*
+private MissionManager() // 
+public void OnStageStart() // 
+public Mission GetNextMission(SefiraEnum sefira, out List<string> requireTextList, out bool isBossMission) // 
++public Mission GetNextMission(SefiraEnum sefira) // 
+public Mission GetAvailableMission(SefiraEnum sefira, out List<string> requireTextList, out bool isBossMission) // 
++public bool ExistsOvertimeBossMission(SefiraEnum sefira) // 
+public bool ExistsFinishedBossMission(SefiraEnum sefira) // 
++public bool ExistsFinishedOvertimeBossMission(SefiraEnum sefira) // 
+*/
 using System;
+using System.Linq; //
 using System.Collections.Generic;
+using UnityEngine; // 
 
 // Token: 0x020006BB RID: 1723
 public class MissionManager : IObserver
 {
 	// Token: 0x060037C1 RID: 14273 RVA: 0x00169F48 File Offset: 0x00168148
 	private MissionManager()
-	{
+	{ // <Mod>
 		Notice.instance.Observe(NoticeName.OnReleaseWork, this);
 		Notice.instance.Observe(NoticeName.OnStageEnd, this);
 		Notice.instance.Observe(NoticeName.OnAgentPromote, this);
@@ -24,6 +36,20 @@ public class MissionManager : IObserver
 		Notice.instance.Observe(NoticeName.OnAgentDead, this);
 		Notice.instance.Observe(NoticeName.RemoveEquipment, this);
 		Notice.instance.Observe(NoticeName.CreatureObserveLevelAdded, this);
+		/*>*/
+		Notice.instance.Observe(NoticeName.FixedUpdate, this);
+		Notice.instance.Observe(NoticeName.OnEscape, this);
+		Notice.instance.Observe(NoticeName.OnOpenNameplate, this);
+		Notice.instance.Observe(NoticeName.RecoverByRegenerator, this);
+		Notice.instance.Observe(NoticeName.RecoverByBullet, this);
+		Notice.instance.Observe(NoticeName.OnOfficerDie, this);
+		Notice.instance.Observe(NoticeName.AddExcessEnergy, this);
+		Notice.instance.Observe(NoticeName.BlockDamageByShield, this);
+		Notice.instance.Observe(NoticeName.CreatureDamagedByAgent, this);
+		Notice.instance.Observe(NoticeName.OnUseBullet, this);
+		Notice.instance.Observe(NoticeName.OnPause, this);
+		Notice.instance.Observe(NoticeName.CreatureHitWorker, this);
+		Notice.instance.Observe(NoticeName.Update, this);
 	}
 
 	// Token: 0x1700052B RID: 1323
@@ -174,7 +200,7 @@ public class MissionManager : IObserver
 
 	// Token: 0x060037C7 RID: 14279 RVA: 0x0016A764 File Offset: 0x00168964
 	public void OnStageStart()
-	{
+	{ // <Mod>
 		foreach (Mission mission in this.missionsInProgress)
 		{
 			if (SefiraManager.instance.IsOpened(mission.metaInfo.sefira) || mission.metaInfo.sefira == SefiraEnum.DUMMY)
@@ -185,19 +211,48 @@ public class MissionManager : IObserver
 			{
 				mission.isInProcess = false;
 			}
-		}
-		List<Mission> list = new List<Mission>();
-		list.AddRange(this.missionsInProgress.FindAll((Mission x) => x.successCondition.condition_Type == ConditionType.CLEAR_TIME));
-		foreach (Mission mission2 in list)
-		{
-			MissionConditionTypeInfo metaInfo = mission2.successCondition.metaInfo;
-			int num = PlayerModel.instance.GetDay() + 1;
-			metaInfo.goal = (int)((float)metaInfo.minimumSecond + ((float)num - metaInfo.var1) * metaInfo.var2);
-			if (metaInfo.goal < metaInfo.minimumSecond)
+			if (mission.successCondition.condition_Type == ConditionType.CLEAR_TIME)
 			{
-				metaInfo.goal = metaInfo.minimumSecond;
+				MissionConditionTypeInfo metaInfo = mission.successCondition.metaInfo;
+				int num = PlayerModel.instance.GetDay() + 1;
+				metaInfo.goal = (int)((float)metaInfo.minimumSecond + ((float)num - metaInfo.var1) * metaInfo.var2);
+				if (metaInfo.goal < metaInfo.minimumSecond)
+				{
+					metaInfo.goal = metaInfo.minimumSecond;
+				}
+			}/*
+			else if (mission.successCondition.condition_Type == ConditionType.SUPPRESS_CREATURE_BY_KIND)
+			{
+				MissionConditionTypeInfo metaInfo = mission.successCondition.metaInfo;
+				if (metaInfo.percent > 0f)
+				{
+					int num = 0;
+					foreach (CreatureModel creature in CreatureManager.instance.GetCreatureList())
+					{
+						if (creature.metaInfo.isEscapeAble)
+						{
+							num++;
+						}
+					}
+					metaInfo.goal = Mathf.CeilToInt(num * metaInfo.percent);
+				}
+			}*/
+			foreach (Condition condition in mission.failConditions)
+			{
+				if (condition.condition_Type == ConditionType.CLERK_DEAD)
+				{
+					MissionConditionTypeInfo metaInfo = condition.metaInfo;
+					if (metaInfo.percent > 0f)
+					{
+						int num = 0;
+						foreach (Sefira sefira in SefiraManager.instance.GetOpendSefiraList())
+						{
+							num += Mathf.Min(10, sefira.openLevel * 2);
+						}
+						metaInfo.goal = Mathf.CeilToInt(num * metaInfo.percent);
+					}
+				}
 			}
-			mission2.successCondition.metaInfo = metaInfo;
 		}
 	}
 
@@ -271,10 +326,10 @@ public class MissionManager : IObserver
 
 	// Token: 0x060037CC RID: 14284 RVA: 0x0016AB08 File Offset: 0x00168D08
 	public Mission GetNextMission(SefiraEnum sefira, out List<string> requireTextList, out bool isBossMission)
-	{
+	{ // <Mod>
 		requireTextList = new List<string>();
 		isBossMission = false;
-		if (sefira != SefiraEnum.MALKUT && !SefiraManager.instance.IsOpened(sefira))
+		if (sefira != SefiraEnum.MALKUT && !SefiraManager.instance.IsOpened(sefira) && PlayerModel.instance.GetDay() < 40)
 		{
 			return null;
 		}
@@ -285,6 +340,8 @@ public class MissionManager : IObserver
 		Mission mission = null;
 		List<Mission> list = this.remainMissions.FindAll((Mission x) => x.metaInfo.sefira == sefira);
 		int num = 999;
+		int nonCount = 0;
+		int overCount = 0;
 		foreach (Mission mission2 in list)
 		{
 			if (mission2.metaInfo.sefira_Level < num)
@@ -292,21 +349,65 @@ public class MissionManager : IObserver
 				mission = mission2;
 				num = mission2.metaInfo.sefira_Level;
 			}
+			if (mission2.metaInfo.sefira_Level > 5)
+			{
+				overCount++;
+			}
+			else
+			{
+				nonCount++;
+			}
 		}
 		if (mission == null)
 		{
 			return null;
 		}
-		if (sefira == SefiraEnum.MALKUT)
+		bool isOvertime = mission.metaInfo.sefira_Level > 5;
+		bool giveEarly = false;
+		if (isOvertime)
 		{
-			if (mission.metaInfo.sefira_Level - 1 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			if (!SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
 			{
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 1));
+				return null;
+			}
+			if (!PlayerModel.instance.IsOvertimeMode() && !SpecialModeConfig.instance.GetValue<bool>("JailbreakOvertimeMissions"))
+			{
+				requireTextList.Add("Return to Day 1 to enable Overtime Missions");
+				return mission;
+			}
+			giveEarly = 45 - overCount <= PlayerModel.instance.GetDay();
+		}
+		else
+		{
+			giveEarly = 45 - nonCount <= PlayerModel.instance.GetDay();
+		}
+		if (!isOvertime && !giveEarly)
+		{
+			if (sefira == SefiraEnum.MALKUT)
+			{
+				if (mission.metaInfo.sefira_Level - 1 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 1));
+				}
+			}
+			else if (mission.metaInfo.sefira_Level > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			{
+				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level));
 			}
 		}
-		else if (mission.metaInfo.sefira_Level > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+		else if (!giveEarly)
 		{
-			requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level));
+			if (sefira == SefiraEnum.MALKUT)
+			{
+				if (mission.metaInfo.sefira_Level - 6 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 6));
+				}
+			}
+			else if (mission.metaInfo.sefira_Level - 5 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			{
+				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 5));
+			}
 		}
 		if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
 		{
@@ -356,20 +457,71 @@ public class MissionManager : IObserver
 				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOtherOpenLevel"), SefiraName.GetLocalizingSefiraName(missionPrerequisite.sefira), missionPrerequisite.level));
 			}
 		}
-		if (sefira == SefiraEnum.GEBURAH)
+		if(!isOvertime)
 		{
-			if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
+			if (sefira == SefiraEnum.GEBURAH)
 			{
-				int num2 = 5;
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				{
+					int num2 = 5;
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				}
+			}
+			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+			{
+				int num3 = 5;
+				if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				}
 			}
 		}
-		else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+		else
 		{
-			int num3 = 5;
-			if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+			if (sefira == SefiraEnum.GEBURAH)
 			{
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsOvertimeBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+				{
+					int num2 = 5;
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				}
+			}
+			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+			{
+				int num3 = 5;
+				if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				}
+			}
+		}
+		return mission;
+	}
+
+	// <Mod>
+	public Mission GetNextMission(SefiraEnum sefira)
+	{
+		Mission mission = null;
+		List<Mission> list = this.remainMissions.FindAll((Mission x) => x.metaInfo.sefira == sefira);
+		int num = 999;
+		foreach (Mission mission2 in list)
+		{
+			if (mission2.metaInfo.sefira_Level < num)
+			{
+				mission = mission2;
+				num = mission2.metaInfo.sefira_Level;
+			}
+		}
+		if (mission == null)
+		{
+			return null;
+		}
+		bool isOvertime = mission.metaInfo.sefira_Level > 5;
+		if (isOvertime)
+		{
+			if (!SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
+			{
+				return null;
 			}
 		}
 		return mission;
@@ -377,10 +529,10 @@ public class MissionManager : IObserver
 
 	// Token: 0x060037CD RID: 14285 RVA: 0x0016AF10 File Offset: 0x00169110
 	public Mission GetAvailableMission(SefiraEnum sefira, out List<string> requireTextList, out bool isBossMission)
-	{
+	{ // <Mod>
 		requireTextList = new List<string>();
 		isBossMission = false;
-		if (sefira != SefiraEnum.MALKUT && !SefiraManager.instance.IsOpened(sefira))
+		if (sefira != SefiraEnum.MALKUT && !SefiraManager.instance.IsOpened(sefira) && PlayerModel.instance.GetDay() < 40)
 		{
 			return null;
 		}
@@ -391,6 +543,8 @@ public class MissionManager : IObserver
 		Mission mission = null;
 		List<Mission> list = this.remainMissions.FindAll((Mission x) => x.metaInfo.sefira == sefira);
 		int num = 999;
+		int nonCount = 0;
+		int overCount = 0;
 		foreach (Mission mission2 in list)
 		{
 			if (mission2.metaInfo.sefira_Level < num)
@@ -398,21 +552,65 @@ public class MissionManager : IObserver
 				mission = mission2;
 				num = mission2.metaInfo.sefira_Level;
 			}
+			if (mission2.metaInfo.sefira_Level > 5)
+			{
+				overCount++;
+			}
+			else
+			{
+				nonCount++;
+			}
 		}
 		if (mission == null)
 		{
 			return null;
 		}
-		if (sefira == SefiraEnum.MALKUT)
+		bool isOvertime = mission.metaInfo.sefira_Level > 5;
+		bool giveEarly = false;
+		if (isOvertime)
 		{
-			if (mission.metaInfo.sefira_Level - 1 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			if (!SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
 			{
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 1));
+				return null;
+			}
+			if (!PlayerModel.instance.IsOvertimeMode() && !SpecialModeConfig.instance.GetValue<bool>("JailbreakOvertimeMissions"))
+			{
+				requireTextList.Add("Return to Day 1 to enable Overtime Missions");
+				return null;
+			}
+			giveEarly = 45 - overCount >= PlayerModel.instance.GetDay();
+		}
+		else
+		{
+			giveEarly = 45 - nonCount >= PlayerModel.instance.GetDay();
+		}
+		if (!isOvertime && !giveEarly)
+		{
+			if (sefira == SefiraEnum.MALKUT)
+			{
+				if (mission.metaInfo.sefira_Level - 1 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 1));
+				}
+			}
+			else if (mission.metaInfo.sefira_Level > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			{
+				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level));
 			}
 		}
-		else if (mission.metaInfo.sefira_Level > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+		else if (!giveEarly)
 		{
-			requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level));
+			if (sefira == SefiraEnum.MALKUT)
+			{
+				if (mission.metaInfo.sefira_Level - 6 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 6));
+				}
+			}
+			else if (mission.metaInfo.sefira_Level - 5 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
+			{
+				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel"), mission.metaInfo.sefira_Level - 5));
+			}
 		}
 		if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
 		{
@@ -462,20 +660,42 @@ public class MissionManager : IObserver
 				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOtherOpenLevel"), SefiraName.GetLocalizingSefiraName(missionPrerequisite.sefira), missionPrerequisite.level));
 			}
 		}
-		if (sefira == SefiraEnum.GEBURAH)
+		if(!isOvertime)
 		{
-			if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
+			if (sefira == SefiraEnum.GEBURAH)
 			{
-				int num2 = 5;
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				{
+					int num2 = 5;
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				}
+			}
+			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+			{
+				int num3 = 5;
+				if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				}
 			}
 		}
-		else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+		else
 		{
-			int num3 = 5;
-			if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+			if (sefira == SefiraEnum.GEBURAH)
 			{
-				requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsOvertimeBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+				{
+					int num2 = 5;
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
+				}
+			}
+			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+			{
+				int num3 = 5;
+				if (SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.GEBURAH) < num3)
+				{
+					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.GEBURAH), num3));
+				}
 			}
 		}
 		if (requireTextList.Count != 0)
@@ -561,6 +781,13 @@ public class MissionManager : IObserver
 		return bossMission != null;
 	}
 
+	// <Mod>
+	public bool ExistsOvertimeBossMission(SefiraEnum sefira)
+	{
+		Mission bossMission = this.GetBossMission(sefira);
+		return bossMission != null && bossMission.metaInfo.sefira_Level > 5;
+	}
+
 	// Token: 0x060037D8 RID: 14296 RVA: 0x0016B4E8 File Offset: 0x001696E8
 	public bool ExistsClearedMission(SefiraEnum sefira)
 	{
@@ -585,13 +812,13 @@ public class MissionManager : IObserver
 
 	// Token: 0x060037DA RID: 14298 RVA: 0x0016B590 File Offset: 0x00169790
 	public bool ExistsFinishedBossMission(SefiraEnum sefira)
-	{
+	{ // <Mod>
 		if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
 		{
 			bool result;
-			if (this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE) == null)
+			if (this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) == null)
 			{
-				result = (this.closedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE) != null);
+				result = (this.closedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null);
 			}
 			else
 			{
@@ -599,7 +826,26 @@ public class MissionManager : IObserver
 			}
 			return result;
 		}
-		return this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE) != null;
+		return this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null;
+	}
+
+	// <Mod>
+	public bool ExistsFinishedOvertimeBossMission(SefiraEnum sefira)
+	{
+		if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
+		{
+			bool result;
+			if (this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) == null)
+			{
+				result = (this.closedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null);
+			}
+			else
+			{
+				result = true;
+			}
+			return result;
+		}
+		return this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null;
 	}
 
 	// Token: 0x060037DB RID: 14299 RVA: 0x000321DA File Offset: 0x000303DA

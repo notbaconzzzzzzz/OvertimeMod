@@ -1,3 +1,9 @@
+/*
+public override DefenseInfo defense // 
+-public override void RecoverMental(float amount) // 
++public override float RecoverMentalv2(float amount) // 
+public override void InitialEncounteredCreature(UnitModel encountered) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,11 +56,14 @@ public class OfficerModel : WorkerModel
 	// Token: 0x1700058C RID: 1420
 	// (get) Token: 0x06003B83 RID: 15235 RVA: 0x00176338 File Offset: 0x00174538
 	public override DefenseInfo defense
-	{
+	{ // <Mod>
 		get
 		{
 			DefenseInfo zero = DefenseInfo.zero;
-			zero.B = 1.5f;
+			if (!ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_defense"))
+			{
+				zero.B = 1.5f;
+			}
 			zero.P = 2f;
 			return zero;
 		}
@@ -511,18 +520,19 @@ public class OfficerModel : WorkerModel
 		this._unit.showSpeech.ShowCreatureActionLyric(creatureReaction.action, key);
 	}
 
-	// Token: 0x06003B9A RID: 15258 RVA: 0x00034B31 File Offset: 0x00032D31
-	public override void RecoverMental(float amount)
+	// <Mod>
+	public override float RecoverMentalv2(float amount)
 	{
 		if (this.IsDead())
 		{
-			return;
+			return 0f;
 		}
-		base.RecoverMental(amount);
+		float num = base.RecoverMentalv2(amount);
 		if (this.mental >= (float)this.mentalReturn && this.IsPanic())
 		{
 			this.StopPanic();
 		}
+		return num;
 	}
 
 	// Token: 0x06003B9B RID: 15259 RVA: 0x00176DFC File Offset: 0x00174FFC
@@ -806,13 +816,20 @@ public class OfficerModel : WorkerModel
 
 	// Token: 0x06003BB3 RID: 15283 RVA: 0x00177124 File Offset: 0x00175324
 	public override void InitialEncounteredCreature(UnitModel encountered)
-	{
+	{ // <Mod>
 		if (this.IsDead())
 		{
 			return;
 		}
 		base.InitialEncounteredCreature(encountered);
-		if (ResearchDataModel.instance.IsUpgradedAbility("resist_horror"))
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_defense"))
+		{
+			if (encountered.GetRiskLevel() >= 5)
+			{
+				TakeDamageWithoutEffect(encountered, new DamageInfo(RwbpType.W, (float)(maxMental * 2)));
+			}
+		}
+		else if (ResearchDataModel.instance.IsUpgradedAbility("resist_horror"))
 		{
 			if (encountered.GetRiskLevel() >= 4)
 			{
@@ -902,6 +919,26 @@ public class OfficerModel : WorkerModel
 	public override WorkerUnit GetWorkerUnit()
 	{
 		return this._unit;
+	}
+
+	// <Mod>
+	public void FeignDeathScene(string specialDeadSceneName)
+	{
+		try
+		{
+			if (this.hasUniqueFace)
+			{
+				this.GetUnit().animChanger.ChangeAnimatorWithUniqueFace(specialDeadSceneName, this.seperator);
+			}
+			else
+			{
+				this.GetUnit().SetWorkerFaceType(WorkerFaceType.PANIC);
+				this.GetUnit().animChanger.ChangeAnimator(specialDeadSceneName, this.seperator);
+			}
+		}
+		catch (Exception)
+		{
+		}
 	}
 
 	// Token: 0x040036C4 RID: 14020

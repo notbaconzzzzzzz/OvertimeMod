@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq; // 
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,8 +41,9 @@ namespace CreatureInfo
 
 		// Token: 0x0600534E RID: 21326 RVA: 0x001E58AC File Offset: 0x001E3AAC
 		private void ListInit(CreatureModel creature)
-		{
+		{ // <Mod>
 			int count = creature.metaInfo.specialSkillTable.descList.Count;
+			TryExtendSlots(count);
 			this.revealedCount = count;
 			string unitName = creature.GetUnitName();
 			int i = 0;
@@ -82,7 +84,7 @@ namespace CreatureInfo
 				continue;
 				goto IL_EA;
 			}
-			for (int j = count; j < 7; j++)
+			for (int j = count; j < this.slots.Count; j++)
 			{
 				this.slots[j].gameObject.SetActive(false);
 			}
@@ -90,12 +92,13 @@ namespace CreatureInfo
 
 		// Token: 0x0600534F RID: 21327 RVA: 0x001E5A38 File Offset: 0x001E3C38
 		private void ListInit()
-		{
-			if (base.MetaInfo.specialSkillTable == null)
+		{ // <Patch> <Mod>
+			if (this.MetaInfo.specialSkillTable == null)
 			{
-				base.MetaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(base.MetaInfo.id).GetCopy();
+				this.MetaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(CreatureTypeInfo.GetLcId(this.MetaInfo)).GetCopy();
 			}
 			int count = base.MetaInfo.specialSkillTable.descList.Count;
+			TryExtendSlots(count);
 			this.revealedCount = count;
 			string unitName = CreatureModel.GetUnitName(base.MetaInfo, base.ObserveInfo);
 			int i = 0;
@@ -137,7 +140,7 @@ namespace CreatureInfo
 				continue;
 				goto IL_140;
 			}
-			for (int j = count; j < 7; j++)
+			for (int j = count; j < this.slots.Count; j++)
 			{
 				this.slots[j].gameObject.SetActive(false);
 			}
@@ -185,6 +188,92 @@ namespace CreatureInfo
 		public int GetIndex(CreatureInfoCaretakingSlot slot)
 		{
 			return this.slots.IndexOf(slot);
+		}
+
+		// <Mod>
+		public void TryExtendSlots(int count)
+		{
+			if (this.slots.Count >= count) return;
+			GameObject template = slots[0].gameObject;
+			for (int i = this.slots.Count; i < count; i++)
+			{
+				GameObject obj = GameObject.Instantiate(template);
+				obj.transform.SetParent(listParent);
+				obj.layer = template.layer;
+				obj.transform.localPosition = template.transform.localPosition;
+				obj.transform.localRotation = template.transform.localRotation;
+				obj.transform.localScale = template.transform.localScale;
+				obj.SetActive(true);
+				CreatureInfoCaretakingSlot component = obj.GetComponent<CreatureInfoCaretakingSlot>();
+				if (i < CreatureModel.careTakingRegion.Length)
+				{
+					component.SetArea(CreatureModel.careTakingRegion[i]);
+				}
+				component.Open = obj.GetComponentInChildren<CreatureInfoOpenArea>();
+				slots.Add(component);
+				CreatureInfoWindow.CurrentWindow.AddController(component);
+				string name = slots[0].Open.CubeImage.name;
+				component.Open.CubeImage = obj.GetComponentsInChildren<Image>().ToList<Image>().Find((Image x) => x.name == name);
+				name = slots[0].Open.CostText.name;
+				component.Open.CostText = obj.GetComponentsInChildren<Text>().ToList<Text>().Find((Text x) => x.name == name);
+				name = slots[0].Open.AreaText.name;
+				component.Open.AreaText = obj.GetComponentsInChildren<Text>().ToList<Text>().Find((Text x) => x.name == name);
+				name = slots[0].Open.AnimCTRL.name;
+				component.Open.AnimCTRL = obj.GetComponentsInChildren<Animator>().ToList<Animator>().Find((Animator x) => x.name == name);
+				component.Open.Init(component);
+				name = slots[0].Title.name;
+				component.Title = obj.GetComponentsInChildren<Text>().ToList<Text>().Find((Text x) => x.name == name);
+				name = slots[0].CaretakingSection.name;
+				component.CaretakingSection = obj.GetComponentsInChildren<Text>().ToList<Text>().Find((Text x) => x.name == name);
+				component.listParent = listParent;
+				name = slots[0].scrollExchanger.name;
+				component.scrollExchanger = obj.GetComponentsInChildren<ScrollExchanger>().ToList<ScrollExchanger>().Find((ScrollExchanger x) => x.name == name);
+				component.scrollExchanger.messageReceiver = component;
+				component.scrollExchanger.MessageRecieveInit();/*
+				if (component.ArrowRoot == null)
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						"Panic1"
+					});
+				}
+				if (component.Arrow_Up == null)
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						"Panic2"
+					});
+				}
+				if (component.Arrow_Down == null)
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						"Panic3"
+					});
+				}
+				Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+				{
+					i + " : components"
+				});
+				foreach (Component comp in obj.GetComponents<Component>())
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						comp.name + " : " + comp.GetType().FullName
+					});
+				}
+				Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+				{
+					i + " : components in children"
+				});
+				foreach (Component comp in obj.GetComponentsInChildren<Component>())
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						comp.name + " : " + comp.GetType().FullName
+					});
+				}*/
+			}
 		}
 
 		// Token: 0x04004CB5 RID: 19637

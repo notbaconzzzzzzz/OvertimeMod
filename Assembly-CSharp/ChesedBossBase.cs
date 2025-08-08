@@ -1,3 +1,6 @@
+/*
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -249,6 +252,19 @@ public class ChesedBossBase : SefiraBossBase
 	{
 		return this.currentDamageMultiplied.Contains(type);
 	}
+
+    // <Mod>
+    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+    {
+        if (_ordealSpawnTime[1] >= 5)
+		{
+			_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 5);
+		}
+        if (_ordealSpawnTime[2] >= 7)
+		{
+			_ordealSpawnTime[2] = 6;
+		}
+    }
 
 	// Token: 0x04003A60 RID: 14944
 	private const string animSrc = "ChesedCoreAnim";

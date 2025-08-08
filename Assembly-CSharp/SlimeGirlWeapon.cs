@@ -1,3 +1,6 @@
+/*
+changed min and max damage
+*/
 using System;
 using UnityEngine;
 
@@ -10,7 +13,7 @@ public class SlimeGirlWeapon : EquipmentScriptBase
 	{
 		get
 		{
-			return new DamageInfo(RwbpType.B, _dmgMin, _dmgMax );
+			return new DamageInfo(_dmgType, _dmgMin, _dmgMax );
 		}
 	}
 
@@ -151,10 +154,10 @@ public class SlimeGirlWeapon : EquipmentScriptBase
 	public const float slowRatio = 0.3f;
 
 	// Token: 0x04003280 RID: 12928
-	private const int _dmgMin = 22;
+	private const int _dmgMin = 32;
 
 	// Token: 0x04003281 RID: 12929
-	private const int _dmgMax = 44;
+	private const int _dmgMax = 64;
 
 	// Token: 0x04003282 RID: 12930
 	private const RwbpType _dmgType = RwbpType.B;

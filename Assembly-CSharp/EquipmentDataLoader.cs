@@ -11,15 +11,91 @@ public class EquipmentDataLoader
 	// Token: 0x06002EB2 RID: 11954 RVA: 0x0013E194 File Offset: 0x0013C394
 	public void Load()
 	{
-		XmlDocument xmlDocument = new XmlDocument();
-		if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt"))
-		{
-			TextAsset textAsset = Resources.Load<TextAsset>("xml/Equipment/Equipment");
-			File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt", textAsset.text);
-		}
-		string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt");
-		xmlDocument.LoadXml(xml);
-		Dictionary<int, EquipmentTypeInfo> dictionary = this.LoadEquips(xmlDocument);
+        try
+        {
+            LobotomyBaseMod.ModDebug.Log("EDL Load 1");
+            XmlDocument xmlDocument = new XmlDocument();
+            if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt"))
+            {
+                TextAsset textAsset = Resources.Load<TextAsset>("xml/Equipment/Equipment");
+                File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt", textAsset.text);
+            }
+            string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt");
+            xmlDocument.LoadXml(xml);
+            Dictionary<int, EquipmentTypeInfo> dictionary = this.LoadEquips(xmlDocument);
+            Dictionary<string, Dictionary<int, EquipmentTypeInfo>> dictionary2 = new Dictionary<string, Dictionary<int, EquipmentTypeInfo>>();
+            LobotomyBaseMod.ModDebug.Log("EDL Load 2");
+            foreach (ModInfo modInfo_patch in Add_On.instance.ModList)
+            {
+                DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(modInfo_patch.modpath, "Equipment");
+                if (directoryInfo != null && Directory.Exists(directoryInfo.FullName + "/txts"))
+                {
+                    DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/txts");
+                    if (directoryInfo2.GetFiles().Length != 0)
+                    {
+                        if (modInfo_patch.modid == string.Empty)
+                        {
+                            foreach (FileInfo fileInfo in directoryInfo2.GetFiles())
+                            {
+                                if (fileInfo.Name.Contains(".txt") || fileInfo.Name.Contains(".xml"))
+                                {
+                                    XmlDocument xmlDocument2 = new XmlDocument();
+                                    xmlDocument2.LoadXml(File.ReadAllText(fileInfo.FullName));
+                                    foreach (KeyValuePair<int, EquipmentTypeInfo> keyValuePair in LoadEquips(xmlDocument2))
+                                    {
+                                        if (dictionary.ContainsKey(keyValuePair.Key))
+                                        {
+                                            dictionary.Remove(keyValuePair.Key);
+                                        }
+                                        dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Dictionary<int, EquipmentTypeInfo> dictionary3 = new Dictionary<int, EquipmentTypeInfo>();
+                            foreach (FileInfo fileInfo2 in directoryInfo2.GetFiles())
+                            {
+                                if (fileInfo2.Name.Contains(".txt") || fileInfo2.Name.Contains(".xml"))
+                                {
+                                    XmlDocument xmlDocument3 = new XmlDocument();
+                                    xmlDocument3.LoadXml(File.ReadAllText(fileInfo2.FullName));
+                                    foreach (KeyValuePair<int, EquipmentTypeInfo> keyValuePair2 in LoadEquips(xmlDocument3))
+                                    {
+                                        keyValuePair2.Value.modid = modInfo_patch.modid;
+                                        if (dictionary3.ContainsKey(keyValuePair2.Key))
+                                        {
+                                            dictionary3.Remove(keyValuePair2.Key);
+                                        }
+                                        dictionary3.Add(keyValuePair2.Key, keyValuePair2.Value);
+                                    }
+                                }
+                            }
+                            dictionary2[modInfo_patch.modid] = dictionary3;
+                        }
+                    }
+                }
+            }
+            LobotomyBaseMod.ModDebug.Log("EDL Load 3");
+            EquipmentTypeList.instance.Init(dictionary);
+            EquipmentTypeList.instance.Init_Mod(dictionary2);
+            LobotomyBaseMod.ModDebug.Log("EDL Load 4");
+        }
+        catch (Exception ex)
+        {
+            LobotomyBaseMod.ModDebug.Log("EDL Load Error - " + ex.Message + Environment.NewLine + ex.StackTrace);
+        }
+        /*
+        XmlDocument xmlDocument = new XmlDocument();
+        if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt"))
+        {
+            TextAsset textAsset = Resources.Load<TextAsset>("xml/Equipment/Equipment");
+            File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt", textAsset.text);
+        }
+        string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseEquipment.txt");
+        xmlDocument.LoadXml(xml);
+        Dictionary<int, EquipmentTypeInfo> dictionary = this.LoadEquips(xmlDocument);
 		foreach (DirectoryInfo dir in Add_On.instance.DirList)
 		{
 			DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(dir, "Equipment");
@@ -48,7 +124,7 @@ public class EquipmentDataLoader
 				}
 			}
 		}
-		EquipmentTypeList.instance.Init(dictionary);
+		EquipmentTypeList.instance.Init(dictionary);*/
 	}
 
 	// Token: 0x06002EB3 RID: 11955 RVA: 0x0013E394 File Offset: 0x0013C594

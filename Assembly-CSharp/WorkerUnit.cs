@@ -98,14 +98,15 @@ public class WorkerUnit : MonoBehaviour
 
 	// Token: 0x0600578B RID: 22411 RVA: 0x001FA380 File Offset: 0x001F8580
 	protected void UpdateAnimatorChange()
-	{
+	{ // <Patch>
 		this._animChangeTimer.StopTimer();
 		if (this._animChangeReady && !this._animChanged)
 		{
 			this._animChanged = true;
 			if (this.workerModel.Equipment.weapon != null && this.workerModel.Equipment.weapon.metaInfo.weaponClassType == WeaponClassType.SPECIAL)
 			{
-				this.animChanger.ChangeAnimator(this.workerModel.Equipment.weapon.metaInfo.specialWeaponAnim, true);
+				LobotomyBaseMod.KeyValuePairSS name = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(this.workerModel.Equipment.weapon.metaInfo).packageId, this.workerModel.Equipment.weapon.metaInfo.specialWeaponAnim);
+				this.animChanger.ChangeAnimator_Mod(name, true);
 			}
 			if (!this.workerModel.IsPanic())
 			{
@@ -128,7 +129,9 @@ public class WorkerUnit : MonoBehaviour
 
 	// Token: 0x0600578C RID: 22412 RVA: 0x0004658E File Offset: 0x0004478E
 	public void ChangeAnimatorForcely(string name, bool uniqueFace, bool useSep = false)
-	{
+	{ // <Patch>
+        ChangeAnimatorForcely_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name), uniqueFace, useSep);
+        /*
 		this._animChangeTimer.StopTimer();
 		this._animChangeReady = false;
 		this._animChanged = false;
@@ -139,7 +142,7 @@ public class WorkerUnit : MonoBehaviour
 		else
 		{
 			this.animChanger.ChangeAnimator(name);
-		}
+		}*/
 	}
 
 	// Token: 0x0600578D RID: 22413 RVA: 0x000465CD File Offset: 0x000447CD
@@ -324,6 +327,22 @@ public class WorkerUnit : MonoBehaviour
 		}
 		this.bufUI.RemoveBuf(buf.type);
 	}
+
+    // <Patch>
+    public void ChangeAnimatorForcely_Mod(LobotomyBaseMod.KeyValuePairSS name, bool uniqueFace, bool useSep = false)
+    {
+        this._animChangeTimer.StopTimer();
+        this._animChangeReady = false;
+        this._animChanged = false;
+        if (uniqueFace)
+        {
+            this.animChanger.ChangeAnimatorWithUniqueFace_Mod(name, useSep);
+        }
+        else
+        {
+            this.animChanger.ChangeAnimator_Mod(name);
+        }
+    }
 
 	// Token: 0x04005098 RID: 20632
 	public WorkerModel workerModel;

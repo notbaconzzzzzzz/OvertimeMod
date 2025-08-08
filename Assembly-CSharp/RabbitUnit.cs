@@ -1,3 +1,10 @@
+/*
+private void Update() // Hp Bar Stacking
++private void UpdateBarStacking() // Hp Bar Stacking
++public void LiftHpBar(RabbitUnit unit, List<RabbitUnit> obst) // Hp Bar Stacking
++public float CurrentBarAdjust // Hp Bar Stacking
++private float _currentBarAdjust // Hp Bar Stacking
+*/
 using System;
 using System.Collections.Generic;
 using InGameUI;
@@ -108,9 +115,10 @@ public class RabbitUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommandTa
 
 	// Token: 0x0600560F RID: 22031 RVA: 0x000455C5 File Offset: 0x000437C5
 	private void Update()
-	{
+	{ // <Mod>
 		this.UpdateViewPosition();
 		this.UpdateDirection();
+		UpdateBarStacking();
 	}
 
 	// Token: 0x06005610 RID: 22032 RVA: 0x000455D3 File Offset: 0x000437D3
@@ -221,6 +229,126 @@ public class RabbitUnit : MonoBehaviour, IMouseOnSelectListener, IMouseCommandTa
 	{
 		this.animController.StopFire();
 	}
+
+	//> <Mod> Hp Bar Stacking
+	private void UpdateBarStacking()
+	{
+		if (!SpecialModeConfig.instance.GetValue<bool>("HpBarStackingRabbit")) return;
+		if (GameManager.currentGameManager.state == GameState.STOP) return;
+		if (model.GetMovableNode().currentPassage == null) return;
+		float newBarAdjust = CurrentBarAdjust - 0.5f;
+		if (newBarAdjust < 0f)
+		{
+			newBarAdjust = 0f;
+		}
+		Vector3 position = transform.position;
+		List<RabbitUnit> obst = new List<RabbitUnit>();
+		foreach (MovableObjectNode node in model.GetMovableNode().currentPassage.GetEnteredTargets())
+		{
+			if (!(node.GetUnit() is RabbitModel)) continue;
+			RabbitModel rabbit = node.GetUnit() as RabbitModel;
+			if (model.instanceId == rabbit.instanceId) continue;
+			RabbitUnit unit = rabbit.Unit;
+			int ind = 0;
+			foreach (RabbitUnit unit2 in obst)
+			{
+				if (CurrentBarAdjust <= unit2.CurrentBarAdjust) break;
+				ind++;
+			}
+			obst.Insert(ind, unit);
+		}
+		foreach (RabbitUnit unit in obst)
+		{
+			Vector3 position2 = unit.transform.position;
+			float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+			if (offset > 3f) continue;
+			float dest;
+			if (offset <= 2f)
+			{
+				if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
+				dest = unit.CurrentBarAdjust + 1f;
+			}
+			else
+			{
+				if (newBarAdjust - unit.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
+				dest = unit.CurrentBarAdjust + 3f - offset;
+			}
+			if (unit.CurrentBarAdjust > CurrentBarAdjust)
+			{
+				unit.LiftHpBar(this, obst);
+				continue;
+			}
+			if (dest > CurrentBarAdjust + 1f) continue;
+			newBarAdjust = dest;
+		}
+		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
+		CurrentBarAdjust = newBarAdjust;
+	}
+
+	public void LiftHpBar(RabbitUnit unit, List<RabbitUnit> obst)
+	{
+		float newBarAdjust = CurrentBarAdjust;
+		Vector3 position = transform.position;
+		Vector3 position2 = unit.transform.position;
+		float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+		float dest;
+		if (offset <= 2f)
+		{
+			if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
+			dest = unit.CurrentBarAdjust + 1f;
+		}
+		else
+		{
+			if (newBarAdjust - unit.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
+			dest = unit.CurrentBarAdjust + 3f - offset;
+		}
+		if (dest > CurrentBarAdjust + 1f) return;
+		newBarAdjust = dest;
+		foreach (RabbitUnit unit2 in obst)
+		{
+			if (unit2 == this) continue;
+			position2 = unit2.transform.position;
+			offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+			if (offset > 3f) continue;
+			if (offset <= 2f)
+			{
+				if (newBarAdjust - unit2.CurrentBarAdjust > 0.99f || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
+				dest = unit2.CurrentBarAdjust + 1f;
+			}
+			else
+			{
+				if (newBarAdjust - unit2.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
+				dest = unit2.CurrentBarAdjust + 3f - offset;
+			}
+			if (unit2.CurrentBarAdjust > CurrentBarAdjust)
+			{
+				unit2.LiftHpBar(this, obst);
+				continue;
+			}
+			if (dest > CurrentBarAdjust + 1f) continue;
+			newBarAdjust = dest;
+		}
+		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
+		CurrentBarAdjust = newBarAdjust;
+	}
+
+	public float CurrentBarAdjust
+	{
+		get
+		{
+			return _currentBarAdjust;
+		}
+		set
+		{
+			if (_currentBarAdjust == value) return;
+			agentUI.ActiveControl.gameObject.transform.Translate(0f, -0.5f * (float)(value - _currentBarAdjust) * transform.localScale.x, 0f);
+			_currentBarAdjust = value;
+		}
+	}
+
+	private float _currentBarAdjust = 0f;
+
+	//< <Mod>
 
 	// Token: 0x04004F88 RID: 20360
 	private const string appearEffect = "Effect/Rabbit/RabbitAppear";

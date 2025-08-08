@@ -1,3 +1,6 @@
+/*
+public List<ResearchItemModel> GetRemainResearchListBySefira(string sefira) // Filter Overtime Research
+*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -255,13 +258,19 @@ public class ResearchDataModel
 
 	// Token: 0x060038DF RID: 14559 RVA: 0x0016E5B0 File Offset: 0x0016C7B0
 	public List<ResearchItemModel> GetRemainResearchListBySefira(string sefira)
-	{
+	{ // <Mod> Filter Overtime Research
 		List<ResearchItemModel> list = new List<ResearchItemModel>();
+		int overtimeCheck = 0;
+		bool includeOvertime = SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && MissionManager.instance.ExistsFinishedBossMission(SefiraManager.instance.GetSefira(sefira).sefiraEnum) && MissionManager.instance.GetClearedOrClosedMissionNum(SefiraManager.instance.GetSefira(sefira).sefiraEnum) > 5;
 		foreach (ResearchItemModel researchItemModel in this.researchDatas.Values)
 		{
-			if (researchItemModel.info.sephira == sefira && researchItemModel.curLevel < 1)
+			if (researchItemModel.info.sephira == sefira)
 			{
-				list.Add(researchItemModel);
+				overtimeCheck++;
+				if ((includeOvertime || overtimeCheck <= 3) && researchItemModel.curLevel < 1)
+				{
+					list.Add(researchItemModel);
+				}
 			}
 		}
 		List<ResearchItemModel> list2 = list;

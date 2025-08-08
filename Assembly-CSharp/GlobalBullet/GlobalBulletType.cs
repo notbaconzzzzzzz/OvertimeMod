@@ -22,6 +22,16 @@ namespace GlobalBullet
 		// Token: 0x04003315 RID: 13077
 		SLOW,
 		// Token: 0x04003316 RID: 13078
-		EXCUTE
+		EXCUTE,
+        //> <Mod>
+        STIM,
+        TRANQ,
+        
+        LOCK_HP,
+        LOCK_MENTAL,
+        DAMAGE_R,
+        DAMAGE_W,
+        DAMAGE_B,
+        DAMAGE_P
 	}
 }

@@ -1,3 +1,7 @@
+/*
+public override void OrdealEnd() // Overtime Core Suppressions
+private static int[] ids // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -67,7 +71,7 @@ public class OutterGodOrdeal : OrdealBase
 
 	// Token: 0x06003CE6 RID: 15590 RVA: 0x0017B964 File Offset: 0x00179B64
 	public override void OrdealEnd()
-	{
+	{ // <Mod>
 		base.OrdealEnd();
 		this.SetColor();
 		int num = this.ordealRewards[(int)this.level];
@@ -75,7 +79,8 @@ public class OutterGodOrdeal : OrdealBase
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/OutterGod/OutterGod_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
@@ -96,11 +101,15 @@ public class OutterGodOrdeal : OrdealBase
 
 	// Token: 0x04003780 RID: 14208
 	private static int[] ids = new int[]
-	{
+	{ // <Mod>
 		200009,
 		200010,
 		200011,
-		200012
+		200012,
+		200109,
+		200110,
+		200111,
+		200112
 	};
 
 	// Token: 0x04003781 RID: 14209

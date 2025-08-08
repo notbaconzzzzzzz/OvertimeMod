@@ -1,3 +1,10 @@
+/*
+public override void OnStageStart() // 
+public override void OnFinishWork(UseSkill skill) // 
+private void UpdateHandState(BloodBath.BloodHandState handState) // 
+public void FinishKilling(AgentUnit targetUnit) // 
++private EnergyModel.CreatureEnergyIncome energyIncome // 
+*/
 using System;
 
 // Token: 0x020003B2 RID: 946
@@ -24,10 +31,15 @@ public class BloodBath : CreatureBase
 
 	// Token: 0x06001E17 RID: 7703 RVA: 0x000204B8 File Offset: 0x0001E6B8
 	public override void OnStageStart()
-	{
+	{ // <Mod>
 		base.OnStageStart();
 		this.currentHandState = BloodBath.BloodHandState.ZERO;
 		this.bathAnim.UpdateHandState(this.currentHandState);
+        energyIncome = new EnergyModel.CreatureEnergyIncome();
+        energyIncome.model = model;
+        energyIncome.baseCap = 0;
+        energyIncome.flatRate = 0;
+        EnergyModel.instance.AddIncome(energyIncome);
 	}
 
 	// Token: 0x06001E18 RID: 7704 RVA: 0x000204D8 File Offset: 0x0001E6D8
@@ -42,7 +54,7 @@ public class BloodBath : CreatureBase
 
 	// Token: 0x06001E19 RID: 7705 RVA: 0x000F2CC0 File Offset: 0x000F0EC0
 	public override void OnFinishWork(UseSkill skill)
-	{
+	{ // <Mod>
 		int num;
 		switch (this.currentHandState)
 		{
@@ -59,7 +71,10 @@ public class BloodBath : CreatureBase
 			num = 0;
 			break;
 		}
-		skill.successCount += num;
+		if (!SpecialModeConfig.instance.GetValue<bool>("SpiderBudAndBloodbathEnergy"))
+		{
+			skill.successCount += num;
+		}
 		if (this.currentHandState != BloodBath.BloodHandState.THREE)
 		{
 			int fortitudeLevel = skill.agent.fortitudeLevel;
@@ -79,9 +94,32 @@ public class BloodBath : CreatureBase
 
 	// Token: 0x06001E1B RID: 7707 RVA: 0x000204F9 File Offset: 0x0001E6F9
 	private void UpdateHandState(BloodBath.BloodHandState handState)
-	{
+	{ // <Mod>
 		this.currentHandState = handState;
 		this.bathAnim.UpdateHandState(this.currentHandState);
+		if (SpecialModeConfig.instance.GetValue<bool>("SpiderBudAndBloodbathEnergy"))
+		{
+			switch (this.currentHandState)
+			{
+			case BloodBath.BloodHandState.ONE:
+				energyIncome.baseCap = 10;
+				energyIncome.flatRate = 5;
+				break;
+			case BloodBath.BloodHandState.TWO:
+				energyIncome.baseCap = 20;
+				energyIncome.flatRate = 10;
+				break;
+			case BloodBath.BloodHandState.THREE:
+				energyIncome.baseCap = 40;
+				energyIncome.flatRate = 15;
+				break;
+			default:
+				energyIncome.baseCap = 0;
+				energyIncome.flatRate = 0;
+				energyIncome.current = 0;
+				break;
+			}
+		}
 	}
 
 	// Token: 0x06001E1C RID: 7708 RVA: 0x00020513 File Offset: 0x0001E713
@@ -96,7 +134,7 @@ public class BloodBath : CreatureBase
 
 	// Token: 0x06001E1D RID: 7709 RVA: 0x000F2D74 File Offset: 0x000F0F74
 	public void FinishKilling(AgentUnit targetUnit)
-	{
+	{ // <Mod>
 		targetUnit.model.Die();
 		targetUnit.gameObject.SetActive(false);
 		if (this.model.state == CreatureState.WORKING_SCENE)
@@ -131,6 +169,9 @@ public class BloodBath : CreatureBase
 
 	// Token: 0x04001E72 RID: 7794
 	private BloodBath.BloodHandState currentHandState = BloodBath.BloodHandState.ONE;
+
+    // <Mod>
+    private EnergyModel.CreatureEnergyIncome energyIncome;
 
 	// Token: 0x020003B3 RID: 947
 	public enum BloodHandState

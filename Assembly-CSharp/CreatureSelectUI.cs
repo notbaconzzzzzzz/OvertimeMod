@@ -1,7 +1,16 @@
+/*
++private bool DoubleAbno // 
+private void Start() // 
+private void CheckKitGeneration() // 
+public void OnCalled() // 
+-private bool _tiperethRunned; // (!?) 
++private int _tiperethRunned; // (!?) 
+*/
 using System;
 using System.Collections.Generic;
 using CreatureGenerate;
 using CreatureSelect;
+using LobotomyBaseMod; // 
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +52,15 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 		}
 	}
 
+    // <Mod>
+	private bool DoubleAbno
+	{
+		get
+		{
+			return SpecialModeConfig.instance.GetValue<bool>("DoubleAbno");
+		}
+	}
+
 	// Token: 0x170006AA RID: 1706
 	// (get) Token: 0x060048B4 RID: 18612 RVA: 0x0003D083 File Offset: 0x0003B283
 	// (set) Token: 0x060048B5 RID: 18613 RVA: 0x0003D095 File Offset: 0x0003B295
@@ -72,8 +90,8 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048B7 RID: 18615 RVA: 0x0003D0A8 File Offset: 0x0003B2A8
 	private void Start()
-	{
-		this._tiperethRunned = false;
+	{ // <Mod>
+		this._tiperethRunned = 0; 
 		this._reExtracted = false;
 		this.threshold = 0;
 		if (GlobalGameManager.instance.ExistEtcData())
@@ -105,7 +123,24 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048BA RID: 18618 RVA: 0x001B3CE8 File Offset: 0x001B1EE8
 	public void OnClickUnit(CreatureSelectUnit unit)
-	{
+	{ // <Patch>
+		if (!this.effectRunned)
+		{
+			this.effectRunned = true;
+			if (unit._creatureIdMod == 100015L)
+			{
+				PlayerModel.instance.AddWaitingCreature(100014L);
+			}
+			else
+			{
+				PlayerModel.instance.AddWaitingCreature_Mod(unit._creatureIdMod);
+			}
+			CreatureGenerateInfoManager.Instance.OnUsed_Mod(unit._creatureIdMod);
+			this.GlobalControlAnim.SetTrigger("Close");
+			this.FadeoutEffect(3f);
+		}
+		this.TextBoxController.Hide();
+		/*
 		if (!this.effectRunned)
 		{
 			this.effectRunned = true;
@@ -121,7 +156,7 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 			this.GlobalControlAnim.SetTrigger("Close");
 			this.FadeoutEffect(3f);
 		}
-		this.TextBoxController.Hide();
+		this.TextBoxController.Hide();*/
 	}
 
 	// Token: 0x060048BB RID: 18619 RVA: 0x0003D0EA File Offset: 0x0003B2EA
@@ -133,7 +168,130 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048BC RID: 18620 RVA: 0x001B3D6C File Offset: 0x001B1F6C
 	public void Init()
-	{
+	{ // <Patch>
+		try
+		{
+			if (!ReExtractResearchCompleted)
+			{
+				this.reExtractController.gameObject.SetActive(false);
+			}
+			else
+			{
+				if (!this.reExtractController.gameObject.activeInHierarchy && !this._reExtracted)
+				{
+					this.reExtractController.gameObject.SetActive(true);
+				}
+			}
+			if (!this.CheckUIActivateCondition())
+			{
+				this.OnUIActionEnd();
+			}
+			else
+			{
+				this.effectRunned = false;
+				this.filter.enabled = true;
+				foreach (CreatureSelectUnit creatureSelectUnit in this.Units)
+				{
+					creatureSelectUnit.gameObject.SetActive(true);
+					creatureSelectUnit.TransAnim.SetTrigger("Exit");
+				}
+				this.GlobalControlAnim.SetTrigger("Open");
+				this.GetCreatureList(true);
+				LobotomyBaseMod.ModDebug.Log("CurrentCreatures_Mod Count : " + this.CurrentCreatures_Mod.Count.ToString());
+				if (this.CurrentCreatures_Mod.Count == 1)
+				{
+					this.Units[0].SetDisabled();
+					this.Units[2].SetDisabled();
+					this.Units[1].Init_Mod(this.CurrentCreatures_Mod[0]);
+					this.Units[1].transform.SetParent(this.Index_Normal);
+				}
+				else
+				{
+					if (this.CurrentCreatures_Mod.Count == 0)
+					{
+						List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>();
+						foreach (long id in new List<long>(CreatureGenerateInfo.GetAll(true)))
+						{
+							list.Add(new LobotomyBaseMod.LcIdLong(id));
+						}
+						foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
+						{
+							LobotomyBaseMod.LcIdLong item = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creatureModel.metaInfo), creatureModel.metadataId);
+							list.Remove(item);
+						}
+						for (int k = 0; k < 3; k++)
+						{
+							LobotomyBaseMod.LcIdLong lcIdLong = list[UnityEngine.Random.Range(0, list.Count)];
+							this.Units[k].Init_Mod(lcIdLong);
+							list.Remove(lcIdLong);
+						}
+					}
+					else
+					{
+						List<int> list2 = new List<int>(new int[]
+						{
+							0,
+							1,
+							2
+						});
+						for (int l = 0; l < this.Units.Length; l++)
+						{
+							int num = list2[UnityEngine.Random.Range(0, list2.Count)];
+							list2.Remove(num);
+							CreatureSelectUnit creatureSelectUnit2 = this.Units[num];
+							LobotomyBaseMod.LcIdLong lcIdLong2 = new LobotomyBaseMod.LcIdLong(-1L);
+							if (l < this.CurrentCreatures_Mod.Count)
+							{
+								lcIdLong2 = this.CurrentCreatures_Mod[l];
+							}
+							creatureSelectUnit2.transform.SetParent(this.Index_Normal);
+							if (lcIdLong2 == null)
+							{
+								LobotomyBaseMod.ModDebug.Log(" creatureid NULL!");
+							}
+							else
+							{
+								if (lcIdLong2.packageId == null)
+								{
+									LobotomyBaseMod.ModDebug.Log(" creatureid - pid NULL!");
+								}
+								else
+								{
+									LobotomyBaseMod.ModDebug.Log("Init creatureid : " + lcIdLong2.ToString());
+								}
+							}
+							creatureSelectUnit2.Init_Mod(lcIdLong2);
+						}
+					}
+				}
+				StoryBgm.instance.PlayClip(this.clip, 55f);
+				for (int m = this.Units.Length - 1; m >= 0; m--)
+				{
+					CreatureSelectUnit creatureSelectUnit = this.Units[m];
+					for (int n = 0; n < m; n++)
+					{
+						CreatureSelectUnit creatureSelectUnit2 = this.Units[n];
+						if (m != n && creatureSelectUnit2._creatureIdMod == creatureSelectUnit._creatureIdMod)
+						{
+							break;
+						}
+					}
+				}
+				if (ReExtractResearchCompleted && !this._reExtracted)
+				{
+					this.reExtractController.Show();
+				}
+				else
+				{
+					this.reExtractController.Hide();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			LobotomyBaseMod.ModDebug.Log("CSUI.Initerror - " + ex.Message + Environment.NewLine + ex.StackTrace);
+		}
+		/*
 		if (!this.ReExtractResearchCompleted)
 		{
 			this.reExtractController.gameObject.SetActive(false);
@@ -218,12 +376,118 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 			this.reExtractController.Show();
 			return;
 		}
-		this.reExtractController.Hide();
+		this.reExtractController.Hide();*/
 	}
 
 	// Token: 0x060048BD RID: 18621 RVA: 0x001B4040 File Offset: 0x001B2240
 	public void OnClickReExtract()
-	{
+	{ // <Patch>
+		try
+		{
+			if (ReExtractResearchCompleted)
+			{
+				this._reExtracted = true;
+				this.GetCreatureList(true);
+				CreatureSelectUnit[] units = this.Units;
+				for (int i = 0; i < units.Length; i++)
+				{
+					units[i].gameObject.SetActive(true);
+					units[i].OnChange();
+				}
+				LobotomyBaseMod.ModDebug.Log("CurrentCreatures_Mod Count : " + this.CurrentCreatures_Mod.Count.ToString());
+				if (this.CurrentCreatures_Mod.Count == 1)
+				{
+					this.Units[0].SetDisabled();
+					this.Units[2].SetDisabled();
+					this.Units[1].Init_Mod(this.CurrentCreatures_Mod[0]);
+					this.Units[1].transform.SetParent(this.Index_Normal);
+				}
+				else
+				{
+					if (this.CurrentCreatures_Mod.Count == 0)
+					{
+						List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>();
+						foreach (long id in new List<long>(CreatureGenerateInfo.GetAll(true)))
+						{
+							list.Add(new LobotomyBaseMod.LcIdLong(id));
+						}
+						foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
+						{
+							LobotomyBaseMod.LcIdLong item = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creatureModel.metaInfo), creatureModel.metadataId);
+							list.Remove(item);
+						}
+						for (int k = 0; k < 3; k++)
+						{
+							LobotomyBaseMod.LcIdLong lcIdLong = list[UnityEngine.Random.Range(0, list.Count)];
+							this.Units[k].Init_Mod(lcIdLong);
+							list.Remove(lcIdLong);
+						}
+					}
+					else
+					{
+						List<int> list2 = new List<int>(new int[]
+						{
+							0,
+							1,
+							2
+						});
+						for (int l = 0; l < this.Units.Length; l++)
+						{
+							int num = list2[UnityEngine.Random.Range(0, list2.Count)];
+							list2.Remove(num);
+							CreatureSelectUnit creatureSelectUnit = this.Units[num];
+							LobotomyBaseMod.LcIdLong lcIdLong2 = new LobotomyBaseMod.LcIdLong(-1L);
+							if (l < this.CurrentCreatures_Mod.Count)
+							{
+								lcIdLong2 = this.CurrentCreatures_Mod[l];
+							}
+							creatureSelectUnit.transform.SetParent(this.Index_Normal);
+							if (lcIdLong2 == null)
+							{
+								LobotomyBaseMod.ModDebug.Log(" creatureid NULL!");
+							}
+							else
+							{
+								if (lcIdLong2.packageId == null)
+								{
+									LobotomyBaseMod.ModDebug.Log(" creatureid - pid NULL!");
+								}
+								else
+								{
+									LobotomyBaseMod.ModDebug.Log("Init creatureid : " + lcIdLong2.ToString());
+								}
+							}
+							creatureSelectUnit.Init_Mod(lcIdLong2);
+						}
+					}
+				}
+				for (int m = this.Units.Length - 1; m >= 0; m--)
+				{
+					CreatureSelectUnit creatureSelectUnit = this.Units[m];
+					for (int n = 0; n < m; n++)
+					{
+						CreatureSelectUnit creatureSelectUnit2 = this.Units[n];
+						if (m != n && creatureSelectUnit2._creatureIdMod == creatureSelectUnit._creatureIdMod)
+						{
+							break;
+						}
+					}
+				}
+				if (!this._reExtracted)
+				{
+					this.reExtractController.Show();
+				}
+				else
+				{
+					this.reExtractController.Hide();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			LobotomyBaseMod.ModDebug.Log("CSUI.OnClickReExtracterror - " + ex.Message + Environment.NewLine + ex.StackTrace);
+		}
+		/*
 		if (!this.ReExtractResearchCompleted)
 		{
 			return;
@@ -296,7 +560,7 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 			this.reExtractController.Show();
 			return;
 		}
-		this.reExtractController.Hide();
+		this.reExtractController.Hide();*/
 	}
 
 	// Token: 0x060048BE RID: 18622 RVA: 0x0003D108 File Offset: 0x0003B308
@@ -393,6 +657,10 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 		}
 		else if (day >= 45 && day < 50)
 		{
+			if (SpecialModeConfig.instance.GetValue<bool>("DoubleAbno") && CreatureGenerateInfo.GetAll(false).Length < 100)
+			{
+				result = false;
+			}
 			if (day == 49)
 			{
 				result = false;
@@ -415,45 +683,89 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048C0 RID: 18624 RVA: 0x001B44D0 File Offset: 0x001B26D0
 	private void CheckKitGeneration()
-	{
+	{ // <Mod>
 		int genDay = CreatureGenerateInfoManager.Instance.GenDay;
-		if (genDay < 20)
-		{
-			if (genDay % 5 == 3)
-			{
-				CreatureGenerateInfoManager.Instance.GenKit = true;
-			}
-			else
-			{
-				CreatureGenerateInfoManager.Instance.GenKit = false;
-			}
-		}
-		else if (genDay >= 20 && genDay < 25)
-		{
-			CreatureGenerateInfoManager.Instance.GenKit = false;
-			if (genDay == 21)
-			{
-				if (this._tiperethRunned)
-				{
-					CreatureGenerateInfoManager.Instance.GenKit = true;
-				}
-			}
-			else if (genDay == 23 && this._tiperethRunned)
-			{
-				CreatureGenerateInfoManager.Instance.GenKit = true;
-			}
-		}
-		else if (genDay >= 25 && genDay < 50)
-		{
-			if (genDay % 5 == 3)
-			{
-				CreatureGenerateInfoManager.Instance.GenKit = true;
-			}
-			else
-			{
-				CreatureGenerateInfoManager.Instance.GenKit = false;
-			}
-		}
+        if (DoubleAbno)
+        {
+            if (genDay < 20)
+            {
+                if ((genDay % 5 == 1 || genDay % 5 == 3) && _tiperethRunned == 1)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+                else
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = false;
+                }
+            }
+            else if (genDay >= 20 && genDay < 25)
+            {
+                CreatureGenerateInfoManager.Instance.GenKit = false;
+                if (this._tiperethRunned == 3)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+            }
+            else if (genDay >= 25 && genDay < 45)
+            {
+                if ((genDay % 5 == 1 || genDay % 5 == 3) && _tiperethRunned == 1)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+                else
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = false;
+                }
+            }
+            else
+            {
+                CreatureGenerateInfoManager.Instance.GenKit = false;
+                if (this._tiperethRunned == 3)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+            }
+        }
+        else
+        {
+            if (genDay < 20)
+            {
+                if (genDay % 5 == 3)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+                else
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = false;
+                }
+            }
+            else if (genDay >= 20 && genDay < 25)
+            {
+                CreatureGenerateInfoManager.Instance.GenKit = false;
+                if (genDay == 21)
+                {
+                    if (this._tiperethRunned == 1)
+                    {
+                        CreatureGenerateInfoManager.Instance.GenKit = true;
+                    }
+                }
+                else if (genDay == 23 && this._tiperethRunned == 1)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+            }
+            else if (genDay >= 25 && genDay < 50)
+            {
+                if (genDay % 5 == 3)
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = true;
+                }
+                else
+                {
+                    CreatureGenerateInfoManager.Instance.GenKit = false;
+                }
+            }
+        }
 		if (CreatureGenerateInfoManager.Instance.GenKit && !CreatureGenerateInfoManager.Instance.CheckKitCreatureRemains())
 		{
 			CreatureGenerateInfoManager.Instance.GenKit = false;
@@ -462,7 +774,16 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048C1 RID: 18625 RVA: 0x001B45D8 File Offset: 0x001B27D8
 	private void SetSlotInit(bool setEmpty = true)
-	{
+	{ // <Patch>
+		this.CurrentCreatures_Mod.Clear();
+		if (setEmpty)
+		{
+			foreach (CreatureSelectUnit creatureSelectUnit in this.Units)
+			{
+				creatureSelectUnit.Init_Mod(new LobotomyBaseMod.LcIdLong(-1L));
+			}
+		}
+		/*
 		this.CurrentCreatures.Clear();
 		if (setEmpty)
 		{
@@ -470,22 +791,56 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 			{
 				creatureSelectUnit.Init(-1L);
 			}
-		}
+		}*/
 	}
 
 	// Token: 0x060048C2 RID: 18626 RVA: 0x001B4620 File Offset: 0x001B2820
 	public static bool CheckCreatureExisting(long targetId)
-	{
+	{ // <Patch>
+		return CreatureSelectUI.CheckCreatureExisting_Mod(new LobotomyBaseMod.LcIdLong(targetId));
+		/*
 		if (targetId == 100014L)
 		{
 			return CreatureManager.instance.FindCreature(100015L) != null || CreatureManager.instance.FindCreature(100014L) != null;
 		}
-		return CreatureManager.instance.FindCreature(targetId) != null;
+		return CreatureManager.instance.FindCreature(targetId) != null;*/
 	}
 
 	// Token: 0x060048C3 RID: 18627 RVA: 0x001B467C File Offset: 0x001B287C
 	private void CheckYinAndYang()
-	{
+	{ // <Patch>
+		this.threshold++;
+		if (this.threshold >= 3)
+		{
+			return;
+		}
+		bool flag = CreatureSelectUI.CheckCreatureExisting(100104L);
+		bool flag2 = CreatureSelectUI.CheckCreatureExisting(300109L);
+		List<CreatureModel> list = new List<CreatureModel>(CreatureManager.instance.GetCreatureList());
+		int count = list.Count;
+		if (flag2 && flag)
+		{
+			return;
+		}
+		if (flag)
+		{
+			if (this.Day >= 48)
+			{
+				if (CurrentCreatures_Mod.Count <= 1)
+				{
+					this.GetCreatureList(false);
+					return;
+				}
+				this.CurrentCreatures_Mod.Remove(new LobotomyBaseMod.LcIdLong(100104L));
+				return;
+			}
+			else if (CreatureGenerateInfoManager.Instance.GenKit && !PlayerModel.instance.IsWaitingCreature(300109L))
+			{
+				this.CurrentCreatures_Mod.Clear();
+				this.CurrentCreatures_Mod.Add(new LobotomyBaseMod.LcIdLong(300109L));
+			}
+		}
+		/*
 		this.threshold++;
 		if (this.threshold >= 3)
 		{
@@ -516,12 +871,87 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 				this.CurrentCreatures.Clear();
 				this.CurrentCreatures.Add(300109L);
 			}
-		}
+		}*/
 	}
 
 	// Token: 0x060048C4 RID: 18628 RVA: 0x001B4760 File Offset: 0x001B2960
 	private void GetCreatureList(bool setEmpty = true)
-	{
+	{ // <Patch>
+		this.CurrentCreatures_Mod.Clear();
+		CreatureGenerateInfoManager.Instance.CalculateDay();
+		this.CheckKitGeneration();
+		CreatureGenerateInfoManager.Instance.OnDayChanged();
+		this.SetSlotInit(setEmpty);
+		List<LobotomyBaseMod.LcIdLong> list = CreatureGenerateInfoManager.Instance.GetCreature_Mod();
+		if (list == null)
+		{
+			list = new List<LobotomyBaseMod.LcIdLong>();
+			Debug.LogError("null removed + " + (Day % 5 == 3).ToString());
+			List<long> list2 = new List<long>(CreatureGenerateInfo.GetAll(true));
+			foreach (long id in list2)
+			{
+				list.Add(new LobotomyBaseMod.LcIdLong(id));
+			}
+			List<LobotomyBaseMod.LcIdLong> collection = new List<LobotomyBaseMod.LcIdLong>(CreatureGenerateInfo.GetAll_Mod(true));
+			list.AddRange(collection);
+		}
+		LobotomyBaseMod.ModDebug.Log("GetCreatureList list count : " + list.Count.ToString());
+		List<LobotomyBaseMod.LcIdLong> list3 = new List<LobotomyBaseMod.LcIdLong>();
+		foreach (long id2 in new List<long>(CreatureGenerateInfo.GetAll(true)))
+		{
+			list3.Add(new LobotomyBaseMod.LcIdLong(id2));
+		}
+		bool flag2 = list.Count == 0;
+		if (list.Count == 0)
+		{
+			Debug.LogError("Could not make Creature");
+			return;
+		}
+		foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
+		{
+			LobotomyBaseMod.LcIdLong lcIdLong = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creatureModel.metaInfo), creatureModel.metadataId);
+			list3.Remove(lcIdLong);
+			if (lcIdLong == 100014L)
+			{
+				list3.Remove(new LobotomyBaseMod.LcIdLong(100015L));
+			}
+			if (!list.Remove(lcIdLong))
+			{
+				if (lcIdLong == 100015L)
+				{
+					list.Remove(new LobotomyBaseMod.LcIdLong(100014L));
+				}
+			}
+		}
+		List<LobotomyBaseMod.LcIdLong> list4 = new List<LobotomyBaseMod.LcIdLong>();
+		for (int j = 0; j < 3; j++)
+		{
+			if (list.Count == 0)
+			{
+				if (list4.Count != 0)
+				{
+					break;
+				}
+				foreach (CreatureModel creatureModel2 in CreatureManager.instance.GetCreatureList())
+				{
+					LobotomyBaseMod.LcIdLong lcIdLong2 = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(creatureModel2.metaInfo), creatureModel2.metadataId);
+					if (!list3.Remove(lcIdLong2))
+					{
+						if (lcIdLong2 == 100015L)
+						{
+							list.Remove(new LobotomyBaseMod.LcIdLong(100014L));
+						}
+					}
+				}
+				list = list3;
+			}
+			LobotomyBaseMod.LcIdLong item = list[UnityEngine.Random.Range(0, list.Count)];
+			list4.Add(item);
+			list.Remove(item);
+		}
+		this.CurrentCreatures_Mod.AddRange(list4);
+		this.CheckYinAndYang();
+		/*
 		this.CurrentCreatures.Clear();
 		CreatureGenerateInfoManager.Instance.CalculateDay();
 		this.CheckKitGeneration();
@@ -580,7 +1010,7 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 			list.Remove(item);
 		}
 		this.CurrentCreatures.AddRange(list3);
-		this.CheckYinAndYang();
+		this.CheckYinAndYang();*/
 	}
 
 	// Token: 0x060048C5 RID: 18629 RVA: 0x001B4968 File Offset: 0x001B2B68
@@ -625,10 +1055,27 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x060048C7 RID: 18631 RVA: 0x001B4A84 File Offset: 0x001B2C84
 	public void OnCalled()
-	{
-		if (((this.Day >= 20 && this.Day < 24) || (this.Day >= 45 && this.Day <= 49)) && !this._tiperethRunned)
+	{ // <Mod>
+        if (DoubleAbno)
+        {
+            if (((this.Day >= 20 && this.Day < 24) || (this.Day >= 45 && this.Day <= 49)) && this._tiperethRunned < 3)
+            {
+                this._tiperethRunned++;
+                this._reExtracted = false;
+                this.Init();
+                return;
+            }
+            else if (_tiperethRunned < 1)
+            {
+                this._tiperethRunned++;
+                this._reExtracted = false;
+                this.Init();
+                return;
+            }
+        }
+		else if (((this.Day >= 20 && this.Day < 24) || (this.Day >= 45 && this.Day <= 49)) && this._tiperethRunned < 1)
 		{
-			this._tiperethRunned = true;
+			this._tiperethRunned++;
 			this._reExtracted = false;
 			this.Init();
 			return;
@@ -684,6 +1131,19 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 	public void SoundMake(string src)
 	{
 		throw new NotImplementedException();
+	}
+
+	// <Patch>
+	public static bool CheckCreatureExisting_Mod(LobotomyBaseMod.LcIdLong targetId)
+	{
+		if (targetId.packageId == string.Empty)
+		{
+			if (targetId == 100014L)
+			{
+				return CreatureManager.instance.FindCreature(100015L) != null || CreatureManager.instance.FindCreature(100014L) != null;
+			}
+		}
+		return CreatureManager.instance.FindCreature_Mod(targetId) != null;
 	}
 
 	// Token: 0x060048D0 RID: 18640 RVA: 0x000043A5 File Offset: 0x000025A5
@@ -772,11 +1232,15 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 	private int threshold;
 
 	// Token: 0x04004335 RID: 17205
-	private bool _tiperethRunned;
+	private int _tiperethRunned; // <Mod> changed to int
 
 	// Token: 0x04004336 RID: 17206
 	private Timer FadeoutEffectTimer = new Timer();
 
 	// Token: 0x04004337 RID: 17207
 	private float startVolume = 1f;
+
+	// <Patch>
+	[NonSerialized]
+	public List<LobotomyBaseMod.LcIdLong> CurrentCreatures_Mod = new List<LobotomyBaseMod.LcIdLong>();
 }

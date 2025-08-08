@@ -14,9 +14,13 @@ public class MachineMidnightOrdeal : MachineOrdeal
 
 	// Token: 0x06003C6A RID: 15466 RVA: 0x00179FC0 File Offset: 0x001781C0
 	public override void OnOrdealStart()
-	{
+	{ // <Mod>
 		base.OnOrdealStart();
 		Sefira sefira = SefiraManager.instance.GetSefira("Yesod");
+        if (sefira.openLevel <= 0)
+        {
+            sefira = SefiraManager.instance.GetSefira("Malkut");
+        }
 		this.MakeOrdealCreature(this.level, sefira.sefiraPassage.centerNode);
 	}
 

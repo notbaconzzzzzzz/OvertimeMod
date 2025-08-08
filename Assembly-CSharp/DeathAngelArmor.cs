@@ -1,3 +1,7 @@
+/*
+public override void OnStageStart() // 
+changed some static values
+*/
 using System;
 
 // Token: 0x0200061A RID: 1562
@@ -10,9 +14,9 @@ public class DeathAngelArmor : EquipmentScriptBase
 
 	// Token: 0x0600353D RID: 13629 RVA: 0x0015E64C File Offset: 0x0015C84C
 	public override void OnStageStart()
-	{
+	{ // <Mod> Keep Ability Mode
 		base.OnStageStart();
-		if (CreatureManager.instance.FindCreature(100015L) == null)
+		if (CreatureManager.instance.FindCreature(100015L) == null && !SpecialModeConfig.instance.GetValue<bool>("PLKeepAbilityWhenWNAbsent"))
 		{
 			this._whiteNight = false;
 		}
@@ -90,10 +94,10 @@ public class DeathAngelArmor : EquipmentScriptBase
 	}
 
 	// Token: 0x04003183 RID: 12675
-	private const float _IGNORE_DMG_COND = 5f;
+	private const float _IGNORE_DMG_COND = 3f; // <Mod> changed from 5
 
 	// Token: 0x04003184 RID: 12676
-	private const float _ABSORB_WITH_GIFT = 10f;
+	private const float _ABSORB_WITH_GIFT = 6f; // <Mod> changed from 10
 
 	// Token: 0x04003185 RID: 12677
 	private const int _DEATH_ANGEL_GIFT = 400015;

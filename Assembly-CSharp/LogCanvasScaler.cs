@@ -57,6 +57,13 @@ public class LogCanvasScaler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		}
 	}
 
+    // <Mod>
+    public void ForcelySetScale(float size)
+    {
+        _rectTr.position = new Vector3(_rectTr.position.x, Mathf.Clamp(size, _min, _max));
+        logScript.UpdateScale();
+    }
+
 	// Token: 0x0400473D RID: 18237
 	private bool _entered;
 

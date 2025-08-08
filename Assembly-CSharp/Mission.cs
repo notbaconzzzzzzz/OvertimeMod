@@ -1,3 +1,11 @@
+/*
+public void Init(MissionTypeInfo metadata) // 
+public void OnEnabled() // 
+private bool CheckSuccess() // 
+private bool CheckAgent(AgentModel agent) // 
+private bool CheckEquipment(EquipmentModel equip) // 
++public MissionScript missionScript // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,7 +55,7 @@ public class Mission
 
 	// Token: 0x060037A6 RID: 14246 RVA: 0x001670D4 File Offset: 0x001652D4
 	public void Init(MissionTypeInfo metadata)
-	{
+	{ // <Mod>
 		this.conditions = new List<Condition>();
 		this.successCondition = new Condition();
 		this.failConditions = new List<Condition>();
@@ -80,6 +88,30 @@ public class Mission
 				break;
 			}
 		}
+        switch (successCondition.condition_Type)
+        {
+            case ConditionType.SUPPRESS_CREATURE_BY_TIME:
+                missionScript = new MissionScript_TimedSuppression(this);
+                break;
+            case ConditionType.BALANCE_WORK_RESULTS:
+                missionScript = new MissionScript_BalanceWorkResults(this);
+                break;
+            case ConditionType.BALANCE_WORK_TYPES:
+                missionScript = new MissionScript_BalanceWorkTypes(this);
+                break;
+            case ConditionType.SPECIAL_SUPPRESS_CREATURE:
+                missionScript = new MissionScript_AbnormalityDrill(this);
+                break;
+            case ConditionType.SPECIAL_SUPPRESS_PANIC:
+                missionScript = new MissionScript_PanicDrill(this);
+                break;
+            case ConditionType.WORK_TO_OVERTIME_OVERLOADED:
+                missionScript = new MissionScript_OvertimeOverloads(this);
+                break;
+            case ConditionType.SPECIAL_DEAL_DAMANGE_WEAKEST:
+                missionScript = new MissionScript_DealDamageWeakest(this);
+                break;
+        }
 	}
 
 	// Token: 0x060037A7 RID: 14247 RVA: 0x00167238 File Offset: 0x00165438
@@ -109,13 +141,29 @@ public class Mission
 
 	// Token: 0x060037A9 RID: 14249 RVA: 0x001672B8 File Offset: 0x001654B8
 	public void OnEnabled()
-	{
+	{ // <Mod>
 		this.checkedObjects.Clear();
 		this.isCleared = false;
 		this.isInProcess = true;
 		foreach (Condition condition in this.conditions)
 		{
 			condition.current = 0;
+		}
+        for (int i = 0; i < doneConditions.Count; i++)
+		{
+			doneConditions[i] = false;
+		}
+        for (int i = 0; i < failConditions.Count; i++)
+		{
+			doneConditions[failConditions[i].index] = true;
+		}
+        if (missionScript != null)
+        {
+            missionScript.Init();
+        }
+		if (successCondition.condition_Type == ConditionType.RECOVER_BY_REGENERATOR || successCondition.condition_Type == ConditionType.RECOVER_BY_BULLET || successCondition.condition_Type == ConditionType.BLOCK_DAMAGE_BY_BULLET)
+		{
+			successCondition.metaInfo.var1 = 0f;
 		}
 	}
 
@@ -143,14 +191,25 @@ public class Mission
 		{
 			return;
 		}
-		for (int i = 0; i < this.doneConditions.Count; i++)
+        if (missionScript != null && notice != NoticeName.OnNextDay)
+        {
+            missionScript.CheckConditions(notice, param);
+            return;
+        }
+		if (missionScript == null && (notice == NoticeName.FixedUpdate || notice == NoticeName.Update))
+		{
+			return;
+		}
+		/*for (int i = 0; i < this.doneConditions.Count; i++)
 		{
 			this.doneConditions[i] = false;
-		}
+		}*/
 		for (int j = 0; j < this.baseConditions.Count; j++)
 		{
 			this.baseConditions[j].current = 0;
+            this.doneConditions[this.baseConditions[j].index] = false;
 		}
+        para = param;
 		if (notice == NoticeName.OnReleaseWork)
 		{
 			if (this.successCondition.condition_Type == ConditionType.CLEAR_WITH_AGENT_BY_CONDITION)
@@ -208,300 +267,35 @@ public class Mission
 				if (this.failConditions[k].condition_Type == ConditionType.WORK_BAD && creatureModel.currentSkill.GetCurrentFeelingState() == CreatureFeelingState.BAD)
 				{
 					this.failConditions[k].current++;
+                    doneConditions[failConditions[k].index] = CheckDefault(failConditions[k]);
 				}
 			}
 			if (this.successCondition.condition_Type == ConditionType.WORK)
 			{
-				for (int l = 0; l < this.failConditions.Count; l++)
-				{
-					ConditionType condition_Type = this.failConditions[l].condition_Type;
-					if (condition_Type != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid failCondition");
-						}
-						else if (creatureModel.currentSkill.agent.IsPanic())
-						{
-							this.failConditions[l].current++;
-						}
-					}
-					else if (creatureModel.currentSkill.agent.IsDead())
-					{
-						this.failConditions[l].current++;
-					}
-					if (!this.doneConditions[this.failConditions[l].index])
-					{
-						this.doneConditions[this.failConditions[l].index] = this.CheckDefault(this.failConditions[l]);
-					}
-				}
-				for (int m = 0; m < this.failConditions.Count; m++)
-				{
-					if (!this.doneConditions[this.failConditions[m].index])
-					{
-						flag = false;
-						break;
-					}
-				}
-				if (flag)
-				{
-					this.successCondition.current++;
-					this.CheckSuccess();
-				}
+				this.successCondition.current++;
+				this.CheckSuccess();
 			}
 		}
 		else if (notice == NoticeName.OnStageEnd)
 		{
 			if (this.successCondition.condition_Type == ConditionType.CLEAR_DAY)
 			{
-				List<History> list2 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list3 = new List<History>();
-				bool flag2 = true;
-				for (int n = 0; n < this.failConditions.Count; n++)
-				{
-					ConditionType condition_Type2 = this.failConditions[n].condition_Type;
-					if (condition_Type2 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type2 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list3.AddRange(list2.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num2 = 0; num2 < list3.Count; num2++)
-							{
-								if (this.isGlobal || list3[num2].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list3[num2].GetWorker()))
-									{
-										this.failConditions[n].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list3.AddRange(list2.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num3 = 0; num3 < list3.Count; num3++)
-						{
-							if (this.isGlobal || list3[num3].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list3[num3].GetWorker()))
-								{
-									this.failConditions[n].current++;
-								}
-							}
-						}
-					}
-					list3.Clear();
-					if (!this.doneConditions[this.failConditions[n].index])
-					{
-						this.doneConditions[this.failConditions[n].index] = this.CheckDefault(this.failConditions[n]);
-					}
-				}
-				for (int num4 = 0; num4 < this.failConditions.Count; num4++)
-				{
-					if (!this.doneConditions[this.failConditions[num4].index])
-					{
-						flag2 = false;
-						break;
-					}
-				}
-				if (flag2 && this.successCondition.condition_Type == ConditionType.CLEAR_DAY)
-				{
-					this.successCondition.current++;
-					this.CheckSuccess();
-				}
+				this.successCondition.current++;
+				this.CheckSuccess();
 			}
 			else if (this.successCondition.condition_Type == ConditionType.CLEAR_TIME)
 			{
-				List<History> list4 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list5 = new List<History>();
-				bool flag3 = true;
-				for (int num5 = 0; num5 < this.failConditions.Count; num5++)
-				{
-					ConditionType condition_Type3 = this.failConditions[num5].condition_Type;
-					if (condition_Type3 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type3 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list5.AddRange(list4.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num6 = 0; num6 < list5.Count; num6++)
-							{
-								if (this.isGlobal || list5[num6].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list5[num6].GetWorker()))
-									{
-										this.failConditions[num5].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list5.AddRange(list4.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num7 = 0; num7 < list5.Count; num7++)
-						{
-							if (this.isGlobal || list5[num7].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list5[num7].GetWorker()))
-								{
-									this.failConditions[num5].current++;
-								}
-							}
-						}
-					}
-					list5.Clear();
-					if (!this.doneConditions[this.failConditions[num5].index])
-					{
-						this.doneConditions[this.failConditions[num5].index] = this.CheckDefault(this.failConditions[num5]);
-					}
-				}
-				for (int num8 = 0; num8 < this.failConditions.Count; num8++)
-				{
-					if (!this.doneConditions[this.failConditions[num8].index])
-					{
-						flag3 = false;
-						break;
-					}
-				}
-				if (flag3 && this.successCondition.condition_Type == ConditionType.CLEAR_TIME)
-				{
-					this.successCondition.current = (int)GlobalHistory.instance.GetCurrentTime();
-					this.CheckSuccess();
-				}
+                this.successCondition.current = (int)GlobalHistory.instance.GetCurrentTime();
+				this.CheckSuccess();
 			}
 			else if (this.successCondition.condition_Type == ConditionType.QLIPHOTH_OVERLOAD)
 			{
-				List<History> list6 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list7 = new List<History>();
-				bool flag4 = true;
-				for (int num9 = 0; num9 < this.failConditions.Count; num9++)
-				{
-					ConditionType condition_Type4 = this.failConditions[num9].condition_Type;
-					if (condition_Type4 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type4 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list7.AddRange(list6.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num10 = 0; num10 < list7.Count; num10++)
-							{
-								if (this.isGlobal || list7[num10].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list7[num10].GetWorker()))
-									{
-										this.failConditions[num9].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list7.AddRange(list6.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num11 = 0; num11 < list7.Count; num11++)
-						{
-							if (this.isGlobal || list7[num11].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list7[num11].GetWorker()))
-								{
-									this.failConditions[num9].current++;
-								}
-							}
-						}
-					}
-					list7.Clear();
-					if (!this.doneConditions[this.failConditions[num9].index])
-					{
-						this.doneConditions[this.failConditions[num9].index] = this.CheckDefault(this.failConditions[num9]);
-					}
-				}
-				for (int num12 = 0; num12 < this.failConditions.Count; num12++)
-				{
-					if (!this.doneConditions[this.failConditions[num12].index])
-					{
-						flag4 = false;
-						break;
-					}
-				}
-				if (flag4 && this.successCondition.condition_Type == ConditionType.QLIPHOTH_OVERLOAD)
-				{
-					this.successCondition.current = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
-					this.CheckSuccess();
-				}
+                this.successCondition.current = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
+				this.CheckSuccess();
 			}
 			else if (this.successCondition.condition_Type == ConditionType.ISOLATE_OVERLOAD)
 			{
-				List<History> list8 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list9 = new List<History>();
-				bool flag5 = true;
-				for (int num13 = 0; num13 < this.failConditions.Count; num13++)
-				{
-					ConditionType condition_Type5 = this.failConditions[num13].condition_Type;
-					if (condition_Type5 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type5 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list9.AddRange(list8.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num14 = 0; num14 < list9.Count; num14++)
-							{
-								if (this.isGlobal || list9[num14].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list9[num14].GetWorker()))
-									{
-										this.failConditions[num13].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list9.AddRange(list8.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num15 = 0; num15 < list9.Count; num15++)
-						{
-							if (this.isGlobal || list9[num15].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list9[num15].GetWorker()))
-								{
-									this.failConditions[num13].current++;
-								}
-							}
-						}
-					}
-					list9.Clear();
-					if (!this.doneConditions[this.failConditions[num13].index])
-					{
-						this.doneConditions[this.failConditions[num13].index] = this.CheckDefault(this.failConditions[num13]);
-					}
-				}
-				for (int num16 = 0; num16 < this.failConditions.Count; num16++)
-				{
-					if (!this.doneConditions[this.failConditions[num16].index])
-					{
-						flag5 = false;
-						break;
-					}
-				}
-				if (flag5 && this.successCondition.condition_Type == ConditionType.ISOLATE_OVERLOAD)
-				{
-					this.CheckSuccess();
-				}
+				this.CheckSuccess();
 			}
 			else if (this.successCondition.condition_Type == ConditionType.CREATURES_IN_CONDITION_ALL)
 			{
@@ -566,6 +360,10 @@ public class Mission
 				this.successCondition.current = num18;
 				this.CheckSuccess();
 			}
+            else if (successCondition.condition_Type == ConditionType.RECOVER_BY_REGENERATOR || successCondition.condition_Type == ConditionType.RECOVER_BY_BULLET || successCondition.condition_Type == ConditionType.BLOCK_DAMAGE_BY_BULLET || successCondition.condition_Type == ConditionType.PRODUCE_EXCESS_ENERGY || successCondition.condition_Type == ConditionType.USE_BULLET)
+            {
+                CheckSuccess();
+            }
 		}
 		else if (notice == NoticeName.OnCreatureSuppressed)
 		{
@@ -600,70 +398,12 @@ public class Mission
 				{
 					return;
 				}
-				List<History> list13 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list14 = new List<History>();
-				bool flag8 = true;
-				for (int num19 = list13.Count - 1; num19 >= 0; num19--)
-				{
-					if (list13[num19].GetHistoryType() == History.HistoryType.CREATURE_ESCAPE && list13[num19].GetCreature() == creatureModel3)
-					{
-						break;
-					}
-					list14.Add(list13[num19]);
-				}
-				for (int num20 = 0; num20 < this.failConditions.Count; num20++)
-				{
-					ConditionType condition_Type6 = this.failConditions[num20].condition_Type;
-					if (condition_Type6 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type6 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							for (int num21 = 0; num21 < list14.Count; num21++)
-							{
-								if (list14[num21].GetHistoryType() == History.HistoryType.WORKER_PANIC && creatureModel3.encounteredWorker.Contains(list14[num21].GetWorker()) && this.CheckAgent(list14[num21].GetWorker()))
-								{
-									this.failConditions[num20].current++;
-								}
-							}
-						}
-					}
-					else
-					{
-						for (int num22 = 0; num22 < list14.Count; num22++)
-						{
-							if (list14[num22].GetHistoryType() == History.HistoryType.WORKER_DIE && creatureModel3.encounteredWorker.Contains(list14[num22].GetWorker()) && this.CheckAgent(list14[num22].GetWorker()))
-							{
-								this.failConditions[num20].current++;
-							}
-						}
-					}
-					list14.Clear();
-					if (!this.doneConditions[this.failConditions[num20].index])
-					{
-						this.doneConditions[this.failConditions[num20].index] = this.CheckDefault(this.failConditions[num20]);
-					}
-				}
-				for (int num23 = 0; num23 < this.failConditions.Count; num23++)
-				{
-					if (!this.doneConditions[this.failConditions[num23].index])
-					{
-						flag8 = false;
-						break;
-					}
-				}
-				if (flag8 && (this.successCondition.condition_Type == ConditionType.SUPPRESS_CREATURE_BY_KIND || this.successCondition.condition_Type == ConditionType.SUPPRESS_CREATURE))
-				{
-					if (!this.checkedObjects.Contains(creatureModel3))
-					{
-						this.checkedObjects.Add(creatureModel3);
-					}
-					this.successCondition.current++;
-					this.CheckSuccess();
-				}
+                if (!this.checkedObjects.Contains(creatureModel3))
+                {
+                    this.checkedObjects.Add(creatureModel3);
+                }
+                this.successCondition.current++;
+                this.CheckSuccess();
 			}
 		}
 		else if (notice == NoticeName.OnAgentPromote)
@@ -671,145 +411,29 @@ public class Mission
 			if (this.successCondition.condition_Type == ConditionType.PROMOTE_AGENT)
 			{
 				AgentModel agentModel3 = param[0] as AgentModel;
-				List<History> list15 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list16 = new List<History>();
-				bool flag9 = true;
-				for (int num24 = 0; num24 < this.failConditions.Count; num24++)
-				{
-					ConditionType condition_Type7 = this.failConditions[num24].condition_Type;
-					if (condition_Type7 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type7 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list16.AddRange(list15.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num25 = 0; num25 < list16.Count; num25++)
-							{
-								if (this.isGlobal || list16[num25].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list16[num25].GetWorker()))
-									{
-										this.failConditions[num24].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list16.AddRange(list15.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num26 = 0; num26 < list16.Count; num26++)
-						{
-							if (this.isGlobal || list16[num26].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list16[num26].GetWorker()))
-								{
-									this.failConditions[num24].current++;
-								}
-							}
-						}
-					}
-					list16.Clear();
-					if (!this.doneConditions[this.failConditions[num24].index])
-					{
-						this.doneConditions[this.failConditions[num24].index] = this.CheckDefault(this.failConditions[num24]);
-					}
-				}
-				for (int num27 = 0; num27 < this.failConditions.Count; num27++)
-				{
-					if (!this.doneConditions[this.failConditions[num27].index])
-					{
-						flag9 = false;
-						break;
-					}
-				}
-				if (flag9 && this.successCondition.condition_Type == ConditionType.PROMOTE_AGENT)
-				{
-					if (agentModel3.IsDead())
-					{
-						return;
-					}
-					if (this.CheckAgent(agentModel3))
-					{
-						this.successCondition.current++;
-					}
-					this.CheckSuccess();
-				}
+				if (agentModel3.IsDead())
+                {
+                    return;
+                }
+                if (this.CheckAgent(agentModel3))
+                {
+                    this.successCondition.current++;
+                }
+                this.CheckSuccess();
 			}
 		}
 		else if (notice == NoticeName.OnQliphothOverloadLevelChanged)
 		{
 			if (this.successCondition.condition_Type == ConditionType.QLIPHOTH_OVERLOAD)
 			{
-				List<History> list17 = new List<History>(GlobalHistory.instance.GetHistory());
-				List<History> list18 = new List<History>();
-				bool flag10 = true;
-				for (int num28 = 0; num28 < this.failConditions.Count; num28++)
-				{
-					ConditionType condition_Type8 = this.failConditions[num28].condition_Type;
-					if (condition_Type8 != ConditionType.AGENT_DEAD)
-					{
-						if (condition_Type8 != ConditionType.AGENT_PANIC)
-						{
-							Debug.Log("Invalid fail condition");
-						}
-						else
-						{
-							list18.AddRange(list17.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_PANIC));
-							for (int num29 = 0; num29 < list18.Count; num29++)
-							{
-								if (this.isGlobal || list18[num29].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-								{
-									if (this.CheckAgent(list18[num29].GetWorker()))
-									{
-										this.failConditions[num28].current++;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						list18.AddRange(list17.FindAll((History x) => x.GetHistoryType() == History.HistoryType.WORKER_DIE));
-						for (int num30 = 0; num30 < list18.Count; num30++)
-						{
-							if (this.isGlobal || list18[num30].GetWorker().GetCurrentSefira().name.Contains(this.sefira_Name))
-							{
-								if (this.CheckAgent(list18[num30].GetWorker()))
-								{
-									this.failConditions[num28].current++;
-								}
-							}
-						}
-					}
-					list18.Clear();
-					if (!this.doneConditions[this.failConditions[num28].index])
-					{
-						this.doneConditions[this.failConditions[num28].index] = this.CheckDefault(this.failConditions[num28]);
-					}
-				}
-				for (int num31 = 0; num31 < this.failConditions.Count; num31++)
-				{
-					if (!this.doneConditions[this.failConditions[num31].index])
-					{
-						flag10 = false;
-						break;
-					}
-				}
-				if (flag10 && this.successCondition.condition_Type == ConditionType.QLIPHOTH_OVERLOAD)
-				{
-					if (param[0] != null && param[0] is int)
-					{
-						this.successCondition.current = (int)param[0];
-					}
-					else
-					{
-						this.successCondition.current = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
-					}
-				}
+				if (param[0] != null && param[0] is int)
+                {
+                    this.successCondition.current = (int)param[0];
+                }
+                else
+                {
+                    this.successCondition.current = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
+                }
 			}
 		}
 		else if (notice == NoticeName.OnIsolateOverloaded)
@@ -989,6 +613,22 @@ public class Mission
 					this.successCondition.current = 0;
 				}
 			}
+			else if (successCondition.condition_Type == ConditionType.SUPPRESS_CREATURE_BY_KIND)
+			{
+				MissionConditionTypeInfo metaInfo = successCondition.metaInfo;
+				if (metaInfo.percent > 0f)
+				{
+					int num = 0;
+					foreach (CreatureModel creature in CreatureManager.instance.GetCreatureList())
+					{
+						if (creature.metaInfo.isEscapeAble && CheckCreature(creature))
+						{
+							num++;
+						}
+					}
+					metaInfo.goal = Mathf.CeilToInt(num * metaInfo.percent);
+				}
+			}
 		}
 		else if (notice == NoticeName.MakeEquipment)
 		{
@@ -1030,16 +670,6 @@ public class Mission
 		}
 		else
 		{
-			if (notice == NoticeName.OnNextDay)
-			{
-				if (!this.CheckSuccess())
-				{
-					this.isInProcess = false;
-					this.isCleared = false;
-					this.OnDisabled();
-				}
-				return;
-			}
 			if (notice == NoticeName.OnDestroyBossCore)
 			{
 				if (this.successCondition.condition_Type == ConditionType.DESTROY_CORE)
@@ -1054,6 +684,20 @@ public class Mission
 			}
 			else if (notice == NoticeName.OnAgentDead || notice == NoticeName.OnAgentPanic || notice == NoticeName.OnAgentPanicReturn)
 			{
+                for (int i = 0; i < failConditions.Count; i++)
+				{
+					ConditionType condition_Type = failConditions[i].condition_Type;
+					if (condition_Type == ConditionType.AGENT_DEAD && notice == NoticeName.OnAgentDead)
+					{
+						failConditions[i].current++;
+                        doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+					}
+					else if (condition_Type == ConditionType.AGENT_PANIC && notice == NoticeName.OnAgentPanic)
+					{
+						failConditions[i].current++;
+                        doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+					}
+				}
 				if (this.successCondition.condition_Type == ConditionType.CLEAR_WITH_AGENT_BY_CONDITION)
 				{
 					List<AgentModel> list24 = new List<AgentModel>(AgentManager.instance.GetAgentList());
@@ -1118,6 +762,113 @@ public class Mission
 					this.successCondition.current = 0;
 				}
 			}
+            else if (notice == NoticeName.OnOpenNameplate)
+            {
+                for (int i = 0; i < failConditions.Count; i++)
+				{
+					ConditionType condition_Type = failConditions[i].condition_Type;
+					if (condition_Type == ConditionType.DONT_OPEN_INFO_WINDOW)
+					{
+						failConditions[i].current++;
+                        doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+					}
+				}
+            }
+            else if (notice == NoticeName.RecoverByRegenerator)
+            {
+                if (successCondition.condition_Type == ConditionType.RECOVER_BY_REGENERATOR)
+                {
+                    if (successCondition.stat == 0 || successCondition.stat == (int)param[1])
+                    {
+						successCondition.metaInfo.var1 += (float)param[0];
+                        successCondition.current = (int)successCondition.metaInfo.var1;
+                        if (successCondition.goal_Type == GoalType.MIN)
+                        {
+                            CheckSuccess();
+                        }
+                    }
+                }
+            }
+            else if (notice == NoticeName.RecoverByBullet)
+            {
+                if (successCondition.condition_Type == ConditionType.RECOVER_BY_BULLET)
+                {
+                    if (param[0] is AgentModel && (successCondition.stat == 0 || successCondition.stat == (int)param[2]))
+                    {
+						successCondition.metaInfo.var1 += (float)param[1];
+                        successCondition.current = (int)successCondition.metaInfo.var1;
+                        if (successCondition.goal_Type == GoalType.MIN)
+                        {
+                            CheckSuccess();
+                        }
+                    }
+                }
+            }
+            else if (notice == NoticeName.OnOfficerDie)
+            {
+                for (int i = 0; i < failConditions.Count; i++)
+				{
+					ConditionType condition_Type = failConditions[i].condition_Type;
+					if (condition_Type == ConditionType.CLERK_DEAD)
+					{
+						failConditions[i].current++;
+                        doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+					}
+				}
+            }
+            else if (notice == NoticeName.AddExcessEnergy)
+            {
+                if (successCondition.condition_Type == ConditionType.PRODUCE_EXCESS_ENERGY)
+                {
+                    successCondition.current += (int)((float)param[0]);
+                    if (successCondition.goal_Type == GoalType.MIN)
+                    {
+                        CheckSuccess();
+                    }
+                }
+            }
+            else if (notice == NoticeName.BlockDamageByShield)
+            {
+                if (successCondition.condition_Type == ConditionType.BLOCK_DAMAGE_BY_BULLET)
+                {
+                    if (param[0] is AgentModel && (successCondition.stat == 0 || successCondition.stat == (int)param[2]))
+                    {
+						successCondition.metaInfo.var1 += (float)param[1];
+                        successCondition.current = (int)successCondition.metaInfo.var1;
+                        if (successCondition.goal_Type == GoalType.MIN)
+                        {
+                            CheckSuccess();
+                        }
+                    }
+                }
+            }
+            else if (notice == NoticeName.OnUseBullet)
+            {
+                if (successCondition.condition_Type == ConditionType.USE_BULLET)
+                {
+                    successCondition.current++;
+                    if (successCondition.goal_Type == GoalType.MIN)
+                    {
+                        CheckSuccess();
+                    }
+                }
+            }
+            else if (notice == NoticeName.OnPause)
+            {
+                for (int i = 0; i < failConditions.Count; i++)
+                {
+                    ConditionType condition_Type = failConditions[i].condition_Type;
+                    if (condition_Type == ConditionType.DONT_PAUSE)
+                    {
+                        PAUSECALL caller = (PAUSECALL)param[0];
+                        if (caller == PAUSECALL.STOPGAME || caller == PAUSECALL.ESCAPE || caller == PAUSECALL.MANAUL)
+                        {
+                            failConditions[i].current++;
+                            doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+                        }
+                    }
+                }
+            }
 		}
 		Notice.instance.Send(NoticeName.OnMissionProgressed, new object[]
 		{
@@ -1127,8 +878,20 @@ public class Mission
 
 	// Token: 0x060037AC RID: 14252 RVA: 0x00169728 File Offset: 0x00167928
 	private bool CheckSuccess()
-	{
+	{ // <Mod>
 		bool flag = this.CheckDefault(this.successCondition);
+        for (int i = 0; i < failConditions.Count; i++)
+        {
+            if (failConditions[i].condition_Type == ConditionType.COMPLETION_TIME)
+            {
+                doneConditions[failConditions[i].index] = CheckDefault(failConditions[i]);
+            }
+            if (!doneConditions[failConditions[i].index])
+            {
+                flag = false;
+                break;
+            }
+        }
 		if (flag)
 		{
 			this.isCleared = true;
@@ -1245,7 +1008,7 @@ public class Mission
 
 	// Token: 0x060037B0 RID: 14256 RVA: 0x00169B48 File Offset: 0x00167D48
 	private bool CheckAgent(AgentModel agent)
-	{
+	{ // <Mod>
 		for (int i = 0; i < this.baseConditions.Count; i++)
 		{
 			if (this.baseConditions[i].condition_Category == ConditionCategory.AGENT_CONDITION)
@@ -1277,6 +1040,9 @@ public class Mission
 					case 4:
 						current = agent.justiceStat;
 						break;
+					case 0:
+						current = Mathf.Max(agent.fortitudeStat, agent.prudenceStat, agent.temperanceStat, agent.justiceStat);
+						break;
 					default:
 						Debug.Log("Invalid stat");
 						break;
@@ -1289,6 +1055,33 @@ public class Mission
 					break;
 				case ConditionType.EGO_GIFT_COUNT:
 					this.baseConditions[j].current = agent.Equipment.gifts.CountGifts();
+					break;
+				case ConditionType.AGENT_PREV_LEVEL:
+                    int oldlevel = 1;
+                    if (para.Length < 2)  break;
+					if (!(para[1] is int)) break;
+                    oldlevel = (int)para[1];
+					this.baseConditions[j].current = oldlevel;
+					break;
+				case ConditionType.STATS_AT_MAX:
+                    int num = 0;
+                    if (agent.originFortitudeStat >= WorkerPrimaryStat.MaxStatR())
+					{
+						num++;
+					}
+                    if (agent.originPrudenceStat >= WorkerPrimaryStat.MaxStatW())
+					{
+						num++;
+					}
+                    if (agent.originTemperanceStat >= WorkerPrimaryStat.MaxStatB())
+					{
+						num++;
+					}
+                    if (agent.originJusticeStat >= WorkerPrimaryStat.MaxStatP())
+					{
+						num++;
+					}
+					this.baseConditions[j].current = num;
 					break;
 				}
 				if (!this.doneConditions[this.baseConditions[j].index])
@@ -1345,7 +1138,7 @@ public class Mission
 
 	// Token: 0x060037B2 RID: 14258 RVA: 0x00169F1C File Offset: 0x0016811C
 	private bool CheckEquipment(EquipmentModel equip)
-	{
+	{ // <Mod>
 		for (int i = 0; i < this.baseConditions.Count; i++)
 		{
 			if (this.baseConditions[i].condition_Category == ConditionCategory.CREATURE_CONDITION)
@@ -1359,9 +1152,14 @@ public class Mission
 			if (this.baseConditions[j].condition_Category == ConditionCategory.CREATURE_CONDITION)
 			{
 				ConditionType condition_Type = this.baseConditions[j].condition_Type;
-				if (condition_Type == ConditionType.CREATURE_LEVEL)
+				switch (condition_Type)
 				{
-					this.baseConditions[j].current = (int)equip.metaInfo.Grade;
+				case ConditionType.CREATURE_LEVEL:
+					this.baseConditions[j].current = equip.GetUpgradeRisk - 1;
+					break;
+				case ConditionType.CURRENTLY_EQUIPPED:
+					this.baseConditions[j].current = equip.owner == null ? 0 : 1;
+					break;
 				}
 				if (!this.doneConditions[this.baseConditions[j].index])
 				{
@@ -1405,4 +1203,10 @@ public class Mission
 
 	// Token: 0x04003329 RID: 13097
 	public List<bool> doneConditions;
+
+    // <Mod>
+    private object[] para;
+
+    // <Mod>
+    public MissionScript missionScript;
 }

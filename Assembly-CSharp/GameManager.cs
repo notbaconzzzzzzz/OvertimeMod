@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*
+public void StartStage() // AutoQliphoth
+public void StartGame() // UnstableTT2; Today's Ordeal
+private void UpdateGameSpeed() // Added support for x3 speed
+public void Pause(PAUSECALL caller) // Send notice
+public void SetPlaySpeed(int level) // Added support for x3 speed
+private void Update() // UnstableTT2
+private void FixedUpdate() // AutoQliphoth
+public void FixedUpdateProccess() // UnstableTT2
+private void Release() // 
++public void ForceRelease() // 
+public int GetMoneyReward() // Fixed LOB grade multiplier
++public float autoQliphothTime // AutoQliphoth
+*/
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CreatureGenerate;
@@ -41,7 +55,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.CHOKHMAH || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E3);
+            return SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.CHOKHMAH, false) || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E3);
         }
     }
 
@@ -118,7 +132,7 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x06003087 RID: 12423 RVA: 0x00146F3C File Offset: 0x0014513C
     public void StartStage()
-    {
+    { // <Mod>
         int num = 0;
         try
         {
@@ -150,17 +164,28 @@ public class GameManager : MonoBehaviour
         {
             sefira.officerSpecialAction.ResetActionAll();
         }
+        autoQliphothTime = 5f;
+        SoundEffectPlayer.silenceNonCamera = false;
     }
 
     // Token: 0x06003088 RID: 12424 RVA: 0x0014704C File Offset: 0x0014524C
     public void StartGame()
-    {
+    { // <Mod>
+        LobotomyBaseMod.ModDebug.Debug_Log("OnStageStart");
+        try
+        {
         this.state = GameState.PLAYING;
         this.ManageStarted = true;
         this.currentUIState = CurrentUIState.DEFAULT;
         base.GetComponent<RootTimer>().AddTimer(NoticeName.EnergyTimer, 10f);
         base.GetComponent<RootTimer>().AddTimer(NoticeName.AutoSaveTimer, 30f);
         int day = PlayerModel.instance.GetDay();
+        UnstableTT2Manager.instance.CheckActive();
+		if (UnstableTT2Manager.instance.isActive)
+		{
+			UnstableTT2Manager.instance.Init(day);
+		}
+        autoQliphothTime = -10f;
         int sefiraOpenLevel = SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.KETHER);
         int sefiraOpenLevel2 = SefiraManager.instance.GetSefiraOpenLevel(SefiraEnum.DAAT);
         if (sefiraOpenLevel2 > 0)
@@ -199,20 +224,181 @@ public class GameManager : MonoBehaviour
         {
             officerModel.ReturnToSefira();
         }
-        foreach (OfficerModel officerModel2 in OfficerManager.instance.GetOfficerList())
-        {
-            base.StartCoroutine(officerModel2.StartAction());
+            foreach (OfficerModel officerModel2 in OfficerManager.instance.GetOfficerList())
+            {
+                base.StartCoroutine(officerModel2.StartAction());
+            }
+            foreach (AgentModel agentModel in AgentManager.instance.GetAgentList())
+            {
+            }
+            Notice.instance.Send(NoticeName.OnStageStart, new object[0]); // 
+            AgentLayer.currentLayer.OnStageStart();
+            OfficerLayer.currentLayer.OnStageStart();
+            BgmManager.instance.OnManagementStart();
+            string error = "";
+            try
+            {
+                SefiraBossManager.Instance.OnStageStart();
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message + " in " + ex.Source;
+            }
+			if (error != "")
+			{
+				Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+				{
+					error
+				});
+			}
+            CreatureOverloadManager.instance.OnStageStart();
         }
-        foreach (AgentModel agentModel in AgentManager.instance.GetAgentList())
+        catch (Exception ex)
         {
+            LobotomyBaseMod.ModDebug.Debug_Log("OnStageStartError - " + ex.Message + " : " + ex.StackTrace);
         }
-        AgentLayer.currentLayer.OnStageStart();
-        OfficerLayer.currentLayer.OnStageStart();
-        BgmManager.instance.OnManagementStart();
-        SefiraBossManager.Instance.OnStageStart();
-        CreatureOverloadManager.instance.OnStageStart();
         GlobalBulletManager.instance.OnStageStart();
-        Notice.instance.Send(NoticeName.OnStageStart, new object[0]);
+        //Notice.instance.Send(NoticeName.OnStageStart, new object[0]);
+		if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") ? 
+			ResearchDataModel.instance.IsUpgradedAbility("reveal_ordeals") : 
+			SpecialModeConfig.instance.GetValue<bool>("RevealOrdeals"))
+		{
+            int lines = 0;
+			string text = "Today's ordeals:\n";
+            lines += 2;
+            int ords = 0;
+            bool seenOvertime = false;
+			foreach (OrdealBase ordeal in OrdealManager.instance.GetOrdealList())
+			{
+				string id = "";
+                string name = "";
+				if (ordeal is BugOrdeal) {id = "bug"; name = "Amber"; } else
+				if (ordeal is CircusOrdeal) {id = "circus"; name = "Crimson"; } else
+				if (ordeal is MachineOrdeal) {id = "machine"; name = "Green"; } else
+				if (ordeal is OutterGodOrdeal) {id = "outtergod"; name = "Violet"; } else
+				if (ordeal is ScavengerOrdeal) {id = "scavenger"; name = "Indigo"; } else
+				if (ordeal is FixerOrdeal) {id = "fixer"; name = "White"; }
+				id += "_";
+                name += " ";
+				switch (ordeal.level)
+				{
+					case OrdealLevel.DAWN:
+					case OrdealLevel.OVERTIME_DAWN:
+						id += "dawn";
+                        name += "Dawn";
+						break;
+					case OrdealLevel.NOON:
+					case OrdealLevel.OVERTIME_NOON:
+						id += "noon";
+                        name += "Noon";
+						break;
+					case OrdealLevel.DUSK:
+					case OrdealLevel.OVERTIME_DUSK:
+						id += "dusk";
+                        name += "Dusk";
+						break;
+					case OrdealLevel.MIDNIGHT:
+					case OrdealLevel.OVERTIME_MIDNIGHT:
+						id += "midnight";
+                        name += "Midnight";
+						break;
+				}
+                if (ordeal.level >= OrdealLevel.OVERTIME_DAWN && !seenOvertime)
+                {
+                    text += "\n        Overtime Ordeals:\n";
+                    lines += 2;
+                    seenOvertime = true;
+                    ords = 0;
+                }
+                if (ords > 0)
+                {
+                    text += ", ";
+                }
+				text += "<color=#" + ColorUtility.ToHtmlStringRGB(ordeal.OrdealColor) + ">" + name + "</color>";
+				//text += "<color=#" + ColorUtility.ToHtmlStringRGB(ordeal.OrdealColor) + ">" +
+				//	LocalizeTextDataModel.instance.GetText(string.Format("ordeal_{0}_type", id)) + "</color>\n";
+                ords += 1;
+                //lines += 1;
+			}
+            if (SpecialModeConfig.instance.GetValue<bool>("SecondaryQliphothOverload"))
+            {
+                text += "\n        Secondary Ordeals:\n";
+                lines += 2;
+                ords = 0;
+                foreach (OrdealBase ordeal in OrdealManager.instance.GetSecondaryOrdealList())
+                {
+                    string id = "";
+                    string name = "";
+                    if (ordeal is BugOrdeal) {id = "bug"; name = "Amber"; } else
+                    if (ordeal is CircusOrdeal) {id = "circus"; name = "Crimson"; } else
+                    if (ordeal is MachineOrdeal) {id = "machine"; name = "Green"; } else
+                    if (ordeal is OutterGodOrdeal) {id = "outtergod"; name = "Violet"; } else
+                    if (ordeal is ScavengerOrdeal) {id = "scavenger"; name = "Indigo"; } else
+                    if (ordeal is FixerOrdeal) {id = "fixer"; name = "White"; }
+                    id += "_";
+                    name += " ";
+                    switch (ordeal.level)
+                    {
+                        case OrdealLevel.DAWN:
+                        case OrdealLevel.OVERTIME_DAWN:
+                            id += "dawn";
+                            name += "Dawn";
+                            break;
+                        case OrdealLevel.NOON:
+                        case OrdealLevel.OVERTIME_NOON:
+                            id += "noon";
+                            name += "Noon";
+                            break;
+                        case OrdealLevel.DUSK:
+                        case OrdealLevel.OVERTIME_DUSK:
+                            id += "dusk";
+                            name += "Dusk";
+                            break;
+                        case OrdealLevel.MIDNIGHT:
+                        case OrdealLevel.OVERTIME_MIDNIGHT:
+                            id += "midnight";
+                            name += "Midnight";
+                            break;
+                    }
+                    if (ords > 0)
+                    {
+                        text += ", ";
+                    }
+				    text += "<color=#" + ColorUtility.ToHtmlStringRGB(ordeal.OrdealColor) + ">" + name + "</color>";
+                    //text += "<color=#" + ColorUtility.ToHtmlStringRGB(ordeal.OrdealColor) + ">" +
+                    //    LocalizeTextDataModel.instance.GetText(string.Format("ordeal_{0}_type", id)) + "</color>";
+                    ords += 1;
+                    //lines += 1;
+                }
+            }
+			text += "\nGood Luck.";
+            lines += 1;
+			Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+			{
+				text
+			});
+            if (lines > 6)
+            {
+                Notice.instance.Send(NoticeName.SetSystemLogSize, new object[]
+                {
+                    604f + 16f * lines
+                });
+            }
+		}
+        if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.TIPERERTH1, true))
+        {
+            autoQliphoth = true;
+            autoQliphothRate = 1f;
+        }
+        else if (SpecialModeConfig.instance.GetValue<bool>("AutoQliphoth"))
+        {
+            autoQliphoth = true;
+            autoQliphothRate = 1f;
+        }
+        else
+        {
+            autoQliphoth = false;
+        }
     }
 
     // Token: 0x06003089 RID: 12425 RVA: 0x0002D0C5 File Offset: 0x0002B2C5
@@ -243,15 +429,15 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x0600308B RID: 12427 RVA: 0x001473C4 File Offset: 0x001455C4
     public void ReturnToCheckPoint()
-    {
+    { // <Patch>
         if (GlobalGameManager.instance.ExistSaveData())
         {
             Time.timeScale = 1f;
             Time.fixedDeltaTime = 0.02f;
             this.EndGame();
             this.Release();
-            long num = -1L;
-            while (PlayerModel.instance.GetWaitingCreature(out num))
+            LobotomyBaseMod.LcIdLong num;
+            while (PlayerModel.instance.GetWaitingCreature_Mod(out num))
             {
             }
             GlobalGameManager.instance.sceneDataSaver.currentBgmVolume = BgmManager.instance.currentBgmVolume;
@@ -366,7 +552,7 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x06003091 RID: 12433 RVA: 0x00147774 File Offset: 0x00145974
     private void UpdateGameSpeed()
-    {
+    { // <Mod> added support for x3 speed
         if (this.state == GameState.PLAYING)
         {
             if (this.BossEvent)
@@ -375,26 +561,24 @@ public class GameManager : MonoBehaviour
                 return;
             }
             int num = this.gameSpeedLevel;
-            if (num != 1)
+            switch (num)
             {
-                if (num != 2)
-                {
-                    if (num == 3)
-                    {
-                        Time.timeScale = 2f;
-                        Time.fixedDeltaTime = 0.03f;
-                    }
-                }
-                else
-                {
-                    Time.timeScale = 1.5f;
+                case 1:
+                    Time.timeScale = UnstableTT2Manager.instance.SpeedScaled(1f);
+                    Time.fixedDeltaTime = 0.02f;
+                    break;
+                case 2:
+                    Time.timeScale = UnstableTT2Manager.instance.SpeedScaled(1.5f);
                     Time.fixedDeltaTime = 0.025f;
-                }
-            }
-            else
-            {
-                Time.timeScale = 1f;
-                Time.fixedDeltaTime = 0.02f;
+                    break;
+                case 3:
+                    Time.timeScale = UnstableTT2Manager.instance.SpeedScaled(2f);
+                    Time.fixedDeltaTime = 0.03f;
+                    break;
+                case 4:
+                    Time.timeScale = UnstableTT2Manager.instance.SpeedScaled(3f);
+                    Time.fixedDeltaTime = 0.04f;
+                    break;
             }
         }
         else if (this.state == GameState.PAUSE)
@@ -411,7 +595,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         this.currentSpeedValue = value;
-        Time.timeScale = this.currentSpeedValue;
+        Time.timeScale = UnstableTT2Manager.instance.SpeedScaled(this.currentSpeedValue);
         if (this.currentSpeedValue <= 1f)
         {
             this.gameSpeedLevel = 1;
@@ -455,11 +639,15 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x06003095 RID: 12437 RVA: 0x001478F0 File Offset: 0x00145AF0
     public void Pause(PAUSECALL caller)
-    {
+    { // <Mod>
         int num = (int)this.currentPauseCaller;
         if (num <= (int)caller)
         {
             this.currentPauseCaller = caller;
+			Notice.instance.Send(NoticeName.OnPause, new object[]
+			{
+				caller
+			});
         }
         if (this.state == GameState.PAUSE)
         {
@@ -482,8 +670,8 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x06003097 RID: 12439 RVA: 0x0002D126 File Offset: 0x0002B326
     public void SetPlaySpeed(int level)
-    {
-        if (level <= 0 || level > 3)
+    { // <Mod> allow values of level up to 4 instead of 3
+        if (level <= 0 || level > 4)
         {
             return;
         }
@@ -528,7 +716,7 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x0600309B RID: 12443 RVA: 0x001479D4 File Offset: 0x00145BD4
     private void FixedUpdate()
-    {
+    { // <Mod>
         this.FixedUpdateProccess();
         if (this.state == GameState.PLAYING)
         {
@@ -541,23 +729,44 @@ public class GameManager : MonoBehaviour
             AgentManager.instance.OnFixedUpdate();
             RandomEventManager.instance.OnFixedUpdate();
             GlobalBulletManager.instance.OnFixedUpdate();
+            Vestige.OvertimeOverloadManager.instance.OnFixedUpdate();
             Notice.instance.Send(NoticeName.FixedUpdate, new object[0]);
+            if (autoQliphoth)
+            {
+                autoQliphothTime += Time.deltaTime * autoQliphothRate;
+                if (autoQliphothTime >= 5f)
+                {
+                    CreatureOverloadManager.instance.AddOverloadGague();
+                    autoQliphothTime -= 5f;
+                }
+		    }
+            grungeLimit = SpecialModeConfig.instance.GetValue<float>("GrungeLimit");
+            grunge -= grunge * Time.deltaTime / Time.timeScale / 5f;
         }
     }
 
     // Token: 0x0600309C RID: 12444 RVA: 0x0002D179 File Offset: 0x0002B379
     private void Update()
-    {
+    { // <Mod>
+		if (UnstableTT2Manager.instance.isActive)
+		{
+			UnstableTT2Manager.instance.Update();
+		}
         Notice.instance.Send(NoticeName.Update, new object[0]);
         RandomEventManager.instance.OnUpdate();
+        Vestige.OvertimeOverloadManager.instance.OnUpdate();
     }
 
     // Token: 0x0600309D RID: 12445 RVA: 0x00147A68 File Offset: 0x00145C68
     public void FixedUpdateProccess()
-    {
+    { // <Mod>
         int day = PlayerModel.instance.GetDay();
         float energyNeed = StageTypeInfo.instnace.GetEnergyNeed(day);
         float energy = EnergyModel.instance.GetEnergy();
+		if (UnstableTT2Manager.instance.isActive)
+		{
+			UnstableTT2Manager.instance.FixedUpdate();
+		}
         if (energy >= energyNeed)
         {
         }
@@ -673,7 +882,7 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x060030A5 RID: 12453 RVA: 0x00147D10 File Offset: 0x00145F10
     private void Release()
-    {
+    { // <Mod>
         CameraMover.instance.SetSettingToDefault();
         RabbitManager.instance.OnStageRelease();
         CreatureManager.instance.OnStageRelease();
@@ -686,6 +895,13 @@ public class GameManager : MonoBehaviour
         OverlayManager.Instance.SaveState();
         GlobalBulletManager.instance.OnStageRelease();
         Notice.instance.Send(NoticeName.OnReleaseGameManager, new object[0]);
+        SoundEffectPlayer.silenceNonCamera = false;
+    }
+
+    // <Mod>
+    public void ForceRelease()
+    {
+        Release();
     }
 
     // Token: 0x060030A6 RID: 12454 RVA: 0x0002D1DF File Offset: 0x0002B3DF
@@ -702,7 +918,7 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x060030A8 RID: 12456 RVA: 0x00147DA0 File Offset: 0x00145FA0
     public int GetMoneyReward()
-    {
+    { // <Mod> fixed lob rewards so that the multiplier does not round to the nearest int
         int day = PlayerModel.instance.GetDay();
         StageRewardTypeInfo data = StageRewardTypeList.instance.GetData(day + 1);
         List<AgentModel> list = new List<AgentModel>();
@@ -713,7 +929,7 @@ public class GameManager : MonoBehaviour
             agentModel.SetCurrentSefira(agentRewardInfo.sephira);
             agentModel.GetMovableNode().SetCurrentNode(MapGraph.instance.GetSepiraNodeByRandom(agentRewardInfo.sephira));
         }
-        int num = Mathf.Max(0, data.money + data.money * (int)((double)this.GetPenaltyValueByDead() + 0.5) - this.GetPenaltyValueByCreature());
+        int num = Mathf.Max(0, data.money + (int)((float)data.money * this.GetPenaltyValueByDead()) - this.GetPenaltyValueByCreature());
         if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.MALKUT))
         {
             int num2 = (int)Mathf.Max(1f, (float)num * 0.2f + 0.5f);
@@ -880,4 +1096,19 @@ public class GameManager : MonoBehaviour
 
     // Token: 0x04002E66 RID: 11878
     private float currentSpeedValue = 1f;
+
+    // <Mod>
+    public bool autoQliphoth;
+
+    // <Mod>
+    public float autoQliphothRate = 1f;
+
+    // <Mod>
+    public float autoQliphothTime = 5f;
+
+    // <Mod>
+    public float grunge;
+
+    // <Mod>
+    public float grungeLimit;
 }

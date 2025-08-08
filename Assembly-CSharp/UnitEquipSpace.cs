@@ -26,9 +26,16 @@ public class UnitEquipSpace
 
 	// Token: 0x060037C7 RID: 14279 RVA: 0x0016CAE0 File Offset: 0x0016ACE0
 	public bool HasEquipment(int id)
-	{
-		return (this.weapon != null && this.weapon.metaInfo.id == id) || (this.armor != null && this.armor.metaInfo.id == id) || this.gifts.HasEquipment(id);
+	{ // <Patch>
+		return HasEquipment_Mod(new LobotomyBaseMod.LcId(id));
+		// return (this.weapon != null && this.weapon.metaInfo.id == id) || (this.armor != null && this.armor.metaInfo.id == id) || this.gifts.HasEquipment(id);
 	}
+
+    // <Patch>
+    public bool HasEquipment_Mod(LobotomyBaseMod.LcId id)
+    {
+        return (this.weapon != null && EquipmentTypeInfo.GetLcId(this.weapon.metaInfo) == id) || (this.armor != null && EquipmentTypeInfo.GetLcId(this.armor.metaInfo) == id) || this.gifts.HasEquipment_Mod(id);
+    }
 
 	// Token: 0x0400330C RID: 13068
 	public WeaponModel weapon;

@@ -1,3 +1,7 @@
+/*
+public float GetEnergyNeed(int day) // Overtime Core Suppressions
++public float GetPercentEnergyFactor() // Overtime Core Suppressions
+*/
 using System;
 using UnityEngine;
 
@@ -20,16 +24,65 @@ public class StageTypeInfo
 
 	// Token: 0x06003A8E RID: 14990 RVA: 0x000342B2 File Offset: 0x000324B2
 	public float GetEnergyNeed(int day)
-	{
+	{ // <Mod>
 		if (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL)
 		{
 			return 20f;
 		}
+		float num = 20f;
 		if (day >= this.energyVal.Length)
 		{
-			return this.GetEnergyNeedInUnlimitMode(day);
+			num = this.GetEnergyNeedInUnlimitMode(day);
 		}
-		return (float)this.energyVal[day];
+		else
+		{
+			num = (float)this.energyVal[day];
+		}
+		if (SefiraBossManager.Instance.CurrentActivatedIsOvertime)
+		{
+			switch (SefiraBossManager.Instance.CurrentActivatedSefira)
+			{
+				case SefiraEnum.MALKUT:
+				case SefiraEnum.YESOD:
+				case SefiraEnum.HOD:
+				case SefiraEnum.NETZACH:
+					num *= 1.5f;
+					break;
+				case SefiraEnum.TIPERERTH1:
+					num *= 3f; // num *= 5f;
+					break;
+				case SefiraEnum.GEBURAH:
+				case SefiraEnum.CHESED:
+					num *= 2f;
+					break;
+				case SefiraEnum.BINAH:
+				case SefiraEnum.CHOKHMAH:
+					num *= 2.5f;
+					break;
+				case SefiraEnum.KETHER:
+					switch (SefiraBossManager.Instance.GetKetherBossType())
+					{
+						case KetherBossType.E0:
+							num *= 1.5f;
+							break;
+						case KetherBossType.E1:
+							num *= 2f;
+							break;
+						case KetherBossType.E2:
+							num *= 2.5f;
+							break;
+						case KetherBossType.E3:
+							num *= 3f;
+							break;
+						case KetherBossType.E4:
+							num *= 100f;
+							break;
+					}
+					break;
+			}
+			num = Mathf.Floor(num);
+		}
+		return num;
 	}
 
 	// Token: 0x06003A8F RID: 14991 RVA: 0x000342E9 File Offset: 0x000324E9
@@ -72,6 +125,46 @@ public class StageTypeInfo
 		}
 		return 0;
 	}
+
+    // <Mod>
+    public float GetPercentEnergyFactor()
+    {
+		if (SefiraBossManager.Instance.CurrentActivatedIsOvertime)
+		{
+			switch (SefiraBossManager.Instance.CurrentActivatedSefira)
+			{
+				case SefiraEnum.MALKUT:
+				case SefiraEnum.YESOD:
+				case SefiraEnum.HOD:
+				case SefiraEnum.NETZACH:
+					return 1.25f;
+				case SefiraEnum.TIPERERTH1:
+					return 2f; // return 3f;
+				case SefiraEnum.GEBURAH:
+				case SefiraEnum.CHESED:
+					return 1.5f;
+				case SefiraEnum.BINAH:
+				case SefiraEnum.CHOKHMAH:
+					return 1.75f;
+				case SefiraEnum.KETHER:
+					switch (SefiraBossManager.Instance.GetKetherBossType())
+					{
+						case KetherBossType.E0:
+							return 1.25f;
+						case KetherBossType.E1:
+							return 1.5f;
+						case KetherBossType.E2:
+							return 1.75f;
+						case KetherBossType.E3:
+							return 2f;
+						case KetherBossType.E4:
+							return 3f;
+					}
+					return 1f;
+			}
+		}
+        return 1f;
+    }
 
 	// Token: 0x040035C1 RID: 13761
 	private static StageTypeInfo _instance;

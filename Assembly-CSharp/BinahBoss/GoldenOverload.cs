@@ -1,3 +1,8 @@
+/*
+public override void OnSuccess() // Binah stun fix
++public override void OnExecute() // Binah stun fix
++private bool _bufferedStun
+*/
 using System;
 
 namespace BinahBoss
@@ -38,8 +43,13 @@ namespace BinahBoss
 
 		// Token: 0x060040FE RID: 16638 RVA: 0x00190170 File Offset: 0x0018E370
 		public override void OnSuccess()
-		{
+		{ // <Mod> Binah will wait until not inbetween rooms before being stunned
 			this.binah.MakeBattleDesc(BinahStaticData.ID_GoldenOverload_Success);
+			if (Movable.currentPassage == null)
+			{
+				_bufferedStun = true;
+				return;
+			}
 			base.OnSuccess();
 			this.binah.InterruptCurrentAction();
 			this.binah.ClearActionQueue();
@@ -53,5 +63,25 @@ namespace BinahBoss
 			this.binah.model.AddUnitBuf(new BinahRecoverBuf(this.binah));
 			base.OnFail();
 		}
+
+        // <Mod> Binah will wait until not inbetween rooms before being stunned
+        public override void OnExecute()
+        {
+            base.OnExecute();
+			if (_bufferedStun)
+			{
+				if (Movable.currentPassage != null)
+				{
+					_bufferedStun = false;
+					base.OnSuccess();
+					this.binah.InterruptCurrentAction();
+					this.binah.ClearActionQueue();
+					this.binah.EnqueueAction(new BinahIdle(this.binah, BinahStaticData.BinahGroggyTime.GetRandomFloat(), true));
+				}
+			}
+        }
+
+		// <Mod>
+		private bool _bufferedStun = false;
 	}
 }

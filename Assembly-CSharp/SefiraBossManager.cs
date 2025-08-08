@@ -1,5 +1,5 @@
 /*
-public void RandomizeWorkId() // Optimized
+Fuckin' lots, just cnrl+f for <Mod>
 */
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,15 @@ public class SefiraBossManager : IObserver
 		get
 		{
 			return this.currentActivated;
+		}
+	}
+
+    // <Mod>
+	public bool CurrentActivatedIsOvertime
+	{
+		get
+		{
+			return currentActivatedIsOvertime;
 		}
 	}
 
@@ -142,9 +151,10 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x06004079 RID: 16505 RVA: 0x0018E1A8 File Offset: 0x0018C3A8
 	public void Init()
-	{
+	{ // <Mod>
 		this._isCleared = false;
 		this.currentActivated = SefiraEnum.DUMMY;
+		currentActivatedIsOvertime = false;
 		this._bossBgmDic.Clear();
 		this.SetRecoverBlockState(false);
 		this.SetWorkCancelableState(true);
@@ -243,7 +253,7 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x0600407E RID: 16510 RVA: 0x0018E440 File Offset: 0x0018C640
 	private void SetKeyCounts()
-	{
+	{ // <Mod>
 		this.keyCountDic.Clear();
 		for (int i = 0; i < 11; i++)
 		{
@@ -270,6 +280,22 @@ public class SefiraBossManager : IObserver
 						}
 						this.keyCountDic.Add(text, value);
 					}
+					foreach (string arg2 in SefiraBossManager.keyValues)
+					{
+						string text = string.Format("boss2_{0}_{2}_{1}_", arg, ketherBossType.ToString(), arg2);
+						int value = 0;
+						for (int l = 0; l < 15; l++)
+						{
+							string id = text + l;
+							string text2 = LocalizeTextDataModel.instance.GetText(id);
+							if (text2 == "UNKNOWN")
+							{
+								break;
+							}
+							value = l + 1;
+						}
+						keyCountDic.Add(text, value);
+					}
 				}
 			}
 			else
@@ -291,6 +317,24 @@ public class SefiraBossManager : IObserver
 						num++;
 					}
 					this.keyCountDic.Add(text3, value2);
+				}
+				foreach (string arg3 in SefiraBossManager.keyValues)
+				{
+					string text3 = string.Format("boss2_{0}_{1}_", arg, arg3);
+					int value2 = 0;
+					int num = 0;
+					while (i < 15)
+					{
+						string id2 = text3 + num;
+						string text4 = LocalizeTextDataModel.instance.GetText(id2);
+						if (text4 == "UNKNOWN")
+						{
+							break;
+						}
+						value2 = num + 1;
+						num++;
+					}
+					keyCountDic.Add(text3, value2);
 				}
 			}
 		}
@@ -357,16 +401,103 @@ public class SefiraBossManager : IObserver
 		return text != "UNKNOWN";
 	}
 
+	//> <Mod>
+	public bool TryGetBossDesc(SefiraEnum sefira, bool isOvertime, SefiraBossDescType type, out string text)
+	{
+        if (!isOvertime)
+        {
+            return TryGetBossDesc(sefira, type, out text);
+        }
+		string text2 = string.Empty;
+		if (sefira != SefiraEnum.KETHER)
+		{
+			text2 = string.Format("boss2_{0}_{1}_", sefira.ToString().ToLower(), SefiraBossManager.keyValues[(int)type]);
+		}
+		else
+		{
+			text2 = string.Format("boss2_{0}_{2}_{1}_", sefira.ToString().ToLower(), this.GetKetherBossType(), SefiraBossManager.keyValues[(int)type]);
+		}
+		int max = -1;
+		if (!this.keyCountDic.TryGetValue(text2, out max))
+		{
+			text = "UNKNOWN";
+			return false;
+		}
+		text2 += UnityEngine.Random.Range(0, max);
+		text = LocalizeTextDataModel.instance.GetText(text2);
+		return true;
+	}
+
+	public bool TryGetBossDescCount(SefiraEnum sefira, bool isOvertime, SefiraBossDescType type, out int max)
+	{
+        if (!isOvertime)
+        {
+            return TryGetBossDescCount(sefira, type, out max);
+        }
+		string key = string.Empty;
+		if (sefira != SefiraEnum.KETHER)
+		{
+			key = string.Format("boss2_{0}_{1}_", sefira.ToString().ToLower(), SefiraBossManager.keyValues[(int)type]);
+		}
+		else
+		{
+			key = string.Format("boss2_{0}_{2}_{1}_", sefira.ToString().ToLower(), this.GetKetherBossType(), SefiraBossManager.keyValues[(int)type]);
+		}
+		return this.keyCountDic.TryGetValue(key, out max);
+	}
+
+	public bool TryGetBossDesc(SefiraEnum sefira, bool isOvertime, SefiraBossDescType type, int index, out string text)
+	{
+        if (!isOvertime)
+        {
+            return TryGetBossDesc(sefira, type, index, out text);
+        }
+		string text2 = string.Empty;
+		if (sefira != SefiraEnum.KETHER)
+		{
+			text2 = string.Format("boss2_{0}_{1}_", sefira.ToString().ToLower(), SefiraBossManager.keyValues[(int)type]);
+		}
+		else
+		{
+			text2 = string.Format("boss2_{0}_{2}_{1}_", sefira.ToString().ToLower(), this.GetKetherBossType(), SefiraBossManager.keyValues[(int)type]);
+		}
+		int num = -1;
+		if (!this.keyCountDic.TryGetValue(text2, out num))
+		{
+			text = "UNKNOWN";
+			return false;
+		}
+		text2 += index;
+		text = LocalizeTextDataModel.instance.GetText(text2);
+		return text != "UNKNOWN";
+	}
+    //<
+
 	// Token: 0x06004082 RID: 16514 RVA: 0x00037932 File Offset: 0x00035B32
+
 	public void SetActivatedBoss(SefiraEnum sefira)
+	{ // <Mod>
+		this.currentActivated = sefira;
+		currentActivatedIsOvertime = false;
+	}
+
+    // <Mod>
+	public void SetActivatedBoss(SefiraEnum sefira, bool isOvertime)
 	{
 		this.currentActivated = sefira;
+		currentActivatedIsOvertime = isOvertime;
 	}
 
 	// Token: 0x06004083 RID: 16515 RVA: 0x0003793B File Offset: 0x00035B3B
 	public bool CheckBossActivation(SefiraEnum sefira)
+	{ // <Mod>
+		return (currentActivated == SefiraEnum.TIPERERTH1 && sefira == SefiraEnum.TIPERERTH2) || currentActivated == sefira;
+	}
+
+    // <Mod>
+	public bool CheckBossActivation(SefiraEnum sefira, bool isOvertime)
 	{
-		return (this.currentActivated == SefiraEnum.TIPERERTH1 && sefira == SefiraEnum.TIPERERTH2) || this.currentActivated == sefira;
+		return ((currentActivated == SefiraEnum.TIPERERTH1 && sefira == SefiraEnum.TIPERERTH2) || currentActivated == sefira) && isOvertime == currentActivatedIsOvertime;
 	}
 
 	// Token: 0x06004084 RID: 16516 RVA: 0x0003795B File Offset: 0x00035B5B
@@ -378,7 +509,7 @@ public class SefiraBossManager : IObserver
 	// Token: 0x06004085 RID: 16517 RVA: 0x0003796A File Offset: 0x00035B6A
 	public void OnOverloadActivated(int currentValue)
 	{
-		if (this.CheckBossActivation(SefiraEnum.MALKUT))
+		if (this.CheckBossActivation(SefiraEnum.MALKUT, false))
 		{
 			this.RandomizeWorkId();
 		}
@@ -390,7 +521,7 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x06004086 RID: 16518 RVA: 0x0018E7D0 File Offset: 0x0018C9D0
 	public void OnStageStart()
-	{
+	{ // <Mod>
 		this.workId = new int[]
 		{
 			1,
@@ -401,6 +532,7 @@ public class SefiraBossManager : IObserver
 		SefiraBossBase sefiraBossBase = this.GenBossBase();
 		if (sefiraBossBase != null)
 		{
+            OrdealManager.instance.AdjustSpawnTimeForSefiraBoss(sefiraBossBase);
 			this.CurrentBossBase = sefiraBossBase;
 			sefiraBossBase.OnStageStart();
 			if (sefiraBossBase.IsStartEmergencyBgm())
@@ -408,11 +540,11 @@ public class SefiraBossManager : IObserver
 				this.PlayBossBgm(-1);
 			}
 		}
-		if (this.CheckBossActivation(SefiraEnum.HOD))
+		if (this.CheckBossActivation(SefiraEnum.HOD, false))
 		{
 			this.GenerateHodBuf();
 		}
-		if (this.CheckBossActivation(SefiraEnum.YESOD))
+		if (this.CheckBossActivation(SefiraEnum.YESOD, false))
 		{
 			this.GenYesodBossSetting();
 		}
@@ -420,62 +552,115 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x06004087 RID: 16519 RVA: 0x0018E844 File Offset: 0x0018CA44
 	private SefiraBossBase GenBossBase()
-	{
+	{ // <Mod>
 		if (this.currentActivated == SefiraEnum.DUMMY)
 		{
 			return null;
 		}
-		switch (this.currentActivated)
-		{
-		case SefiraEnum.MALKUT:
-			return new MalkutBossBase();
-		case SefiraEnum.YESOD:
-			return new YesodBossBase();
-		case SefiraEnum.HOD:
-			return new HodBossBase();
-		case SefiraEnum.NETZACH:
-			return new NetzachBossBase();
-		case SefiraEnum.TIPERERTH1:
-			return new TipherethBossBase();
-		case SefiraEnum.GEBURAH:
-			return new GeburahBossBase();
-		case SefiraEnum.CHESED:
-			return new ChesedBossBase();
-		case SefiraEnum.BINAH:
-			return new BinahBossBase();
-		case SefiraEnum.CHOKHMAH:
-			return new ChokhmahBossBase();
-		case SefiraEnum.KETHER:
-			switch (PlayerModel.instance.GetDay())
-			{
-			case 45:
-				return new KetherZeroBossBase();
-			case 46:
-				return new KetherUpperBossBase();
-			case 47:
-				return new KetherMiddleBossBase();
-			case 48:
-				return new KetherLowerBossBase();
-			case 49:
-				return new KetherLastBossBase();
-			default:
-				return new KetherZeroBossBase();
-			}
-			break;
-		}
+        if (currentActivatedIsOvertime)
+        {
+            switch (currentActivated)
+            {
+            case SefiraEnum.MALKUT:
+                return new OvertimeMalkutBossBase();
+            case SefiraEnum.YESOD:
+                return new OvertimeYesodBossBase();
+            case SefiraEnum.HOD:
+                return new OvertimeHodBossBase();
+            case SefiraEnum.NETZACH:
+                return new OvertimeNetzachBossBase();
+            case SefiraEnum.TIPERERTH1:
+                return new OvertimeTipherethBossBase();
+            case SefiraEnum.GEBURAH:
+                return new OvertimeGeburahBossBase();
+            case SefiraEnum.CHESED:
+                return new ChesedBossBase();
+            case SefiraEnum.BINAH:
+                return new BinahBossBase();
+            case SefiraEnum.CHOKHMAH:
+                return new ChokhmahBossBase();
+            case SefiraEnum.KETHER:
+                switch (PlayerModel.instance.GetDay())
+                {
+                case 45:
+                    return new KetherZeroBossBase();
+                case 46:
+                    return new KetherUpperBossBase();
+                case 47:
+                    return new KetherMiddleBossBase();
+                case 48:
+                    return new KetherLowerBossBase();
+                case 49:
+                    return new KetherLastBossBase();
+                default:
+                    return new KetherZeroBossBase();
+                }
+                break;
+            }
+        }
+        else
+        {
+            switch (this.currentActivated)
+            {
+            case SefiraEnum.MALKUT:
+                return new MalkutBossBase();
+            case SefiraEnum.YESOD:
+                return new YesodBossBase();
+            case SefiraEnum.HOD:
+                return new HodBossBase();
+            case SefiraEnum.NETZACH:
+                return new NetzachBossBase();
+            case SefiraEnum.TIPERERTH1:
+                return new TipherethBossBase();
+            case SefiraEnum.GEBURAH:
+                return new GeburahBossBase();
+            case SefiraEnum.CHESED:
+                return new ChesedBossBase();
+            case SefiraEnum.BINAH:
+                return new BinahBossBase();
+            case SefiraEnum.CHOKHMAH:
+                return new ChokhmahBossBase();
+            case SefiraEnum.KETHER:
+                switch (PlayerModel.instance.GetDay())
+                {
+                case 45:
+                    return new KetherZeroBossBase();
+                case 46:
+                    return new KetherUpperBossBase();
+                case 47:
+                    return new KetherMiddleBossBase();
+                case 48:
+                    return new KetherLowerBossBase();
+                case 49:
+                    return new KetherLastBossBase();
+                default:
+                    return new KetherZeroBossBase();
+                }
+                break;
+            }
+        }
 		return null;
 	}
 
 	// Token: 0x06004088 RID: 16520 RVA: 0x00037995 File Offset: 0x00035B95
 	public void OnStageEnd()
-	{
-		if (this.CheckBossActivation(SefiraEnum.YESOD))
+	{ // <Mod>
+		if (this.CheckBossActivation(SefiraEnum.YESOD, false))
 		{
 			this.ResetYesodBossSetting();
+		}
+        if (CurrentBossBase is OvertimeMalkutBossBase)
+        {
+            (CurrentBossBase as OvertimeMalkutBossBase).ResetMapGraph();
+        }
+		if (CurrentBossBase is OvertimeYesodBossBase)
+		{
+			(CurrentBossBase as OvertimeYesodBossBase).ResetContainmentUnits();
 		}
 		this.CurrentBossBase = null;
 		GlobalGameManager.instance.SaveEtcData();
 		this.currentActivated = SefiraEnum.DUMMY;
+		currentActivatedIsOvertime = false;
 	}
 
 	// Token: 0x06004089 RID: 16521 RVA: 0x0018E928 File Offset: 0x0018CB28
@@ -508,7 +693,7 @@ public class SefiraBossManager : IObserver
 				return id;
 			}
 		}
-		else if (!this.CheckBossActivation(SefiraEnum.MALKUT))
+		else if (!this.CheckBossActivation(SefiraEnum.MALKUT, false))
 		{
 			return id;
 		}
@@ -530,6 +715,10 @@ public class SefiraBossManager : IObserver
 			rand /= list.Count;
 			workId[i] = list[ind];
 			list.RemoveAt(ind);
+		}
+		foreach (AgentModel agent in AgentManager.instance.GetAgentList())
+		{
+			agent.ClearWorkOrderQueue();
 		}
 	}
 
@@ -649,6 +838,32 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x06004091 RID: 16529 RVA: 0x0018EDCC File Offset: 0x0018CFCC
 	public bool OnStartBossSession(SefiraEnum sefira)
+	{ // <Mod>
+		if (!this.IsBossReady(sefira))
+		{
+			return false;
+		}
+		if (!this.IsBossStartable(sefira))
+		{
+			return false;
+		}
+		bool result;
+		try
+		{
+			this.SetActivatedBoss(sefira, false);
+			Sefira sefira2 = SefiraManager.instance.GetSefira(sefira);
+			result = true;
+		}
+		catch (Exception message)
+		{
+			Debug.LogError(message);
+			result = false;
+		}
+		return result;
+	}
+
+    // <Mod>
+	public bool OnStartBossSession(SefiraEnum sefira, bool isOvertime = false)
 	{
 		if (!this.IsBossReady(sefira))
 		{
@@ -661,7 +876,7 @@ public class SefiraBossManager : IObserver
 		bool result;
 		try
 		{
-			this.SetActivatedBoss(sefira);
+			this.SetActivatedBoss(sefira, isOvertime);
 			Sefira sefira2 = SefiraManager.instance.GetSefira(sefira);
 			result = true;
 		}
@@ -756,6 +971,14 @@ public class SefiraBossManager : IObserver
 	// Token: 0x06004097 RID: 16535 RVA: 0x0018EFC0 File Offset: 0x0018D1C0
 	public void OnFixedUpdate()
 	{
+		if (_hesitateOverloadTimer.started)
+		{
+			if (!HesitateOverloadGuage())
+			{
+				CreatureOverloadManager.instance.AddOverloadGague();
+			}
+		}
+		_hesitatedOver = false;
 		if (this.CurrentBossBase != null)
 		{
 			this.CurrentBossBase.FixedUpdate();
@@ -863,6 +1086,69 @@ public class SefiraBossManager : IObserver
 		return KetherBossType.E0;
 	}
 
+	// <Mod>
+	public bool HesitateOverloadGuage()
+	{
+		if (_hesitatedOver)
+		{
+			return false;
+		}
+		if (CheckBossActivation(SefiraEnum.YESOD, true))
+		{
+			if (CreatureOverloadManager.instance.GetQliphothOverloadLevel() == 2 || CreatureOverloadManager.instance.GetQliphothOverloadLevel() == 5)
+			{
+				bool valid = true;
+				bool working = false;
+				foreach (AgentModel agent in AgentManager.instance.GetAgentList())
+				{
+					if (agent.IsDead()) continue;
+					if (agent.GetMovableNode().currentPassage == null || agent.GetMovableNode().currentPassage.type != PassageType.ISOLATEROOM) continue;
+					if (agent.currentSkill != null)
+					{
+						working = true;
+						valid = false;
+						break;
+					}
+					if (agent.unconAction != null) continue;
+					valid = false;
+				}
+				if (valid || (!working && _hesitateOverloadTimer.started && _hesitateOverloadTimer.RunTimer()))
+				{
+					_hesitatedOver = true;
+					_hesitateOverloadTimer.StopTimer();
+					return false;
+				}
+				if (!_hesitateOverloadTimer.started)
+				{
+					_hesitateOverloadTimer.StartTimer(10f);
+				}
+				foreach (CreatureModel creature in CreatureManager.instance.GetCreatureList())
+				{
+					if (creature.metaInfo.creatureWorkType == CreatureWorkType.KIT) continue;
+					IsolateRoom room = creature.Unit.room;
+					if (creature.currentSkill != null) continue;
+					if (room.IsWorkAllocated)
+					{
+						Notice.instance.Send(NoticeName.ManageCancel, new object[]
+						{
+							creature
+						});
+						room.OnCancelWork();
+					}
+					room.ClearWorkOrderQueue();
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// <Mod>
+	private Timer _hesitateOverloadTimer = new Timer();
+
+	// <Mod>
+	private bool _hesitatedOver = false;
+
 	// Token: 0x0600409E RID: 16542 RVA: 0x0018F1C0 File Offset: 0x0018D3C0
 	static SefiraBossManager()
 	{
@@ -919,6 +1205,9 @@ public class SefiraBossManager : IObserver
 
 	// Token: 0x04003BA3 RID: 15267
 	private SefiraEnum currentActivated = SefiraEnum.DUMMY;
+
+    // <Mod>
+	private bool currentActivatedIsOvertime = false;
 
 	// Token: 0x04003BA4 RID: 15268
 	private YesodBossCameraScript cameraScript;

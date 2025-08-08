@@ -1,3 +1,6 @@
+/*
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using UnityEngine;
 
@@ -181,6 +184,13 @@ namespace KetherBoss
 			SefiraBossManager.Instance.PlayBossBgm(0);
 			return false;
 		}
+
+        // <Mod>
+        public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+        {
+            _ordealSpawnTime[1] = 3;
+            _ordealSpawnTime[2] = 7;
+        }
 
 		// Token: 0x04003B4A RID: 15178
 		private const int ClearQliphothLevel = 10;

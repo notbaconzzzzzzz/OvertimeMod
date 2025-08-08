@@ -1,3 +1,6 @@
+/*
+changed some static values
+*/
 using System;
 
 // Token: 0x02000615 RID: 1557
@@ -67,10 +70,10 @@ public class BlueStarArmor : EquipmentScriptBase
 	private Timer mpHealTimer = new Timer();
 
 	// Token: 0x04003171 RID: 12657
-	private const float _mpHealFreq = 5f;
+	private const float _mpHealFreq = 2.5f; // <Mod> changed from 5 sp
 
 	// Token: 0x04003172 RID: 12658
-	private const float _mpHealValue = 5f;
+	private const float _mpHealValue = 2.5f; // <Mod> changed from 5 seconds
 
 	// Token: 0x04003173 RID: 12659
 	private WorkerModel worker;

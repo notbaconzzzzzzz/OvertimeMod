@@ -1,3 +1,7 @@
+/*
+public void LoadSefiraIsolateData() // Feed 'SefiraIsolateManagement' SefiraEnum
+public void LoadResearchItemData() // Load external file instead
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1528,7 +1532,7 @@ public class GameStaticDataLoader
 
 	// Token: 0x060030E1 RID: 12513 RVA: 0x0014A828 File Offset: 0x00148A28
 	public void LoadSefiraIsolateData()
-	{
+	{ // <Mod> Feed 'SefiraIsolateManagement' the sefira's SefiraEnum
 		if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseIsolate.txt"))
 		{
 			TextAsset textAsset = Resources.Load<TextAsset>("xml/SefiraIsolateNode");
@@ -1565,8 +1569,57 @@ public class GameStaticDataLoader
 						object obj3 = enumerator3.Current;
 						XmlNode xmlNode3 = (XmlNode)obj3;
 						string innerText2 = xmlNode3.Attributes.GetNamedItem("id").InnerText;
+						string oldId = "";
+						if (xmlNode3.Attributes.GetNamedItem("oldId") != null)
+						{
+							oldId = xmlNode3.Attributes.GetNamedItem("oldId").InnerText;
+							if (!SpecialModeConfig.instance.GetValue<bool>("MapGraphFix"))
+							{
+								string temp = oldId;
+								oldId = innerText2;
+								innerText2 = temp;
+							}
+						}
 						float x = float.Parse(xmlNode3.Attributes.GetNamedItem("x").InnerText);
 						float y = float.Parse(xmlNode3.Attributes.GetNamedItem("y").InnerText);
+						/*
+						float bumpedX = -1000f;
+						float bumpedY = -1000f;
+						string bumpedByNode = "";
+						string bumpedBySefira = "";
+						string bumpsNode = "";
+						string bumpsSefira = "";
+						XmlNode xmlNode5 = xmlNode3.SelectSingleNode("bumped");
+						if (xmlNode5 != null)
+						{
+							bumpedX = float.Parse(xmlNode5.Attributes.GetNamedItem("x").InnerText);
+							bumpedY = float.Parse(xmlNode5.Attributes.GetNamedItem("y").InnerText);
+							string temp = xmlNode5.InnerText;
+							string[] temp2 = temp.Split('.');
+							if (temp2.Length >= 2)
+							{
+								bumpedBySefira = temp2[0];
+								bumpedByNode = temp2[1];
+							}
+							else
+							{
+								bumpedByNode = temp;
+							}
+						}
+						if (xmlNode3.Attributes.GetNamedItem("bumps") != null)
+						{
+							string temp = xmlNode3.Attributes.GetNamedItem("bumps").InnerText;
+							string[] temp2 = temp.Split('.');
+							if (temp2.Length >= 2)
+							{
+								bumpsSefira = temp2[0];
+								bumpsNode = temp2[1];
+							}
+							else
+							{
+								bumpsNode = temp;
+							}
+						}*/
 						string innerText3 = xmlNode3.Attributes.GetNamedItem("pos").InnerText;
 						int index = (int)float.Parse(xmlNode3.Attributes.GetNamedItem("index").InnerText);
 						IsolatePos pos = IsolatePos.UP;
@@ -1586,8 +1639,15 @@ public class GameStaticDataLoader
 						}
 						SefiraIsolate sefiraIsolate = new SefiraIsolate();
 						sefiraIsolate.nodeId = innerText2;
+						sefiraIsolate.oldId = oldId;
 						sefiraIsolate.x = x;
-						sefiraIsolate.y = y;
+						sefiraIsolate.y = y;/*
+						sefiraIsolate.bumpedX = bumpedX;
+						sefiraIsolate.bumpedY = bumpedY;
+						sefiraIsolate.bumpedByNode = bumpedByNode;
+						sefiraIsolate.bumpedBySefira = bumpedBySefira;
+						sefiraIsolate.bumpsNode = bumpsNode;
+						sefiraIsolate.bumpsSefira = bumpsSefira;*/
 						sefiraIsolate.pos = pos;
 						sefiraIsolate.index = index;
 						XmlNode xmlNode4 = xmlNode3.SelectSingleNode("exclusive");
@@ -1605,6 +1665,62 @@ public class GameStaticDataLoader
 								sefiraIsolate.exclusiveID.Add(item);
 							}
 						}
+						if (xmlNode3.Attributes.GetNamedItem("bumps") != null)
+						{
+							string temp = xmlNode3.Attributes.GetNamedItem("bumps").InnerText;
+							string[] temp2 = temp.Split(',');
+							foreach (string temp3 in temp2)
+							{
+								string[] temp4 = temp.Split('.');
+								if (temp4.Length >= 2)
+								{
+									sefiraIsolate.bumps.Add(new SefiraIsolate.SefiraNodePointer(temp4[1], temp4[0]));
+								}
+								else
+								{
+									sefiraIsolate.bumps.Add(new SefiraIsolate.SefiraNodePointer(temp3));
+								}
+							}
+						}
+						XmlNodeList xmlNodeList3 = xmlNode3.SelectNodes("bumped");
+						if (xmlNodeList3 != null && xmlNodeList3.Count > 0)
+						{
+							IEnumerator enumerator4 = xmlNodeList3.GetEnumerator();
+							try
+							{
+								while (enumerator4.MoveNext())
+								{
+									object obj4 = enumerator4.Current;
+									XmlNode xmlNode5 = (XmlNode)obj4;
+									float x2 = float.Parse(xmlNode5.Attributes.GetNamedItem("x").InnerText);
+									float y2 = float.Parse(xmlNode5.Attributes.GetNamedItem("y").InnerText);
+									SefiraIsolate.BumpDetail bump = new SefiraIsolate.BumpDetail(x2, y2);
+									string temp = xmlNode5.InnerText;
+									string[] temp2 = temp.Split(',');
+									foreach (string temp3 in temp2)
+									{
+										string[] temp4 = temp.Split('.');
+										if (temp4.Length >= 2)
+										{
+											bump.bumpedBy.Add(new SefiraIsolate.SefiraNodePointer(temp4[1], temp4[0]));
+										}
+										else
+										{
+											bump.bumpedBy.Add(new SefiraIsolate.SefiraNodePointer(temp3));
+										}
+									}
+									sefiraIsolate.bumpData.Add(bump);
+								}
+							}
+							finally
+							{
+								IDisposable disposable4;
+								if ((disposable4 = (enumerator4 as IDisposable)) != null)
+								{
+									disposable4.Dispose();
+								}
+							}
+						}
 						dictionary2.Add(innerText2, sefira.sefiraEnum);
 						list.Add(sefiraIsolate);
 					}
@@ -1617,7 +1733,7 @@ public class GameStaticDataLoader
 						disposable2.Dispose();
 					}
 				}
-				sefira.isolateManagement = new SefiraIsolateManagement(list.ToArray());
+				sefira.isolateManagement = new SefiraIsolateManagement(list.ToArray(), sefira.sefiraEnum);
 			}
 		}
 		finally
@@ -1775,10 +1891,15 @@ public class GameStaticDataLoader
 
 	// Token: 0x060030E4 RID: 12516 RVA: 0x0014AFCC File Offset: 0x001491CC
 	public void LoadResearchItemData()
-	{
-		TextAsset textAsset = Resources.Load<TextAsset>("xml/Research");
+	{ // <Mod> Load external file instead of resources file so that Chesed's research can be fixed
 		XmlDocument xmlDocument = new XmlDocument();
-		xmlDocument.LoadXml(textAsset.text);
+		if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseResearch.txt"))
+		{
+			TextAsset textAsset = Resources.Load<TextAsset>("xml/Research");
+			File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseResearch.txt", textAsset.text);
+		}
+		string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseResearch.txt");
+		xmlDocument.LoadXml(xml);
 		List<ResearchItemTypeInfo> list = new List<ResearchItemTypeInfo>();
 		IEnumerator enumerator = xmlDocument.SelectNodes("researchs/research").GetEnumerator();
 		try
@@ -1991,71 +2112,38 @@ public class GameStaticDataLoader
 								{
 									ResearchBulletAbility researchBulletAbility = new ResearchBulletAbility();
 									string innerText3 = xmlNode5.InnerText;
-									uint num = ComputeStringHash(innerText3);
-									if (num <= 1728576414U)
+									switch (innerText3)
 									{
-										if (num <= 1553133012U)
-										{
-											if (num != 1469195773U)
-											{
-												if (num == 1553133012U)
-												{
-													if (innerText3 == "recover_hp")
-													{
-														researchBulletAbility.bulletType = GlobalBulletType.RECOVER_HP;
-													}
-												}
-											}
-											else if (innerText3 == "recover_mental")
-											{
-												researchBulletAbility.bulletType = GlobalBulletType.RECOVER_MENTAL;
-											}
-										}
-										else if (num != 1695021176U)
-										{
-											if (num == 1728576414U)
-											{
-												if (innerText3 == "resist_r")
-												{
-													researchBulletAbility.bulletType = GlobalBulletType.RESIST_R;
-												}
-											}
-										}
-										else if (innerText3 == "resist_p")
-										{
-											researchBulletAbility.bulletType = GlobalBulletType.RESIST_P;
-										}
-									}
-									else if (num <= 1814413431U)
-									{
-										if (num != 1812464509U)
-										{
-											if (num == 1814413431U)
-											{
-												if (innerText3 == "excute")
-												{
-													researchBulletAbility.bulletType = GlobalBulletType.EXCUTE;
-												}
-											}
-										}
-										else if (innerText3 == "resist_w")
-										{
+										case "recover_hp":
+											researchBulletAbility.bulletType = GlobalBulletType.RECOVER_HP;
+											break;
+										case "recover_mental":
+											researchBulletAbility.bulletType = GlobalBulletType.RECOVER_MENTAL;
+											break;
+										case "resist_r":
+											researchBulletAbility.bulletType = GlobalBulletType.RESIST_R;
+											break;
+										case "resist_w":
 											researchBulletAbility.bulletType = GlobalBulletType.RESIST_W;
-										}
-									}
-									else if (num != 1838498488U)
-									{
-										if (num == 1997018318U)
-										{
-											if (innerText3 == "resist_b")
-											{
-												researchBulletAbility.bulletType = GlobalBulletType.RESIST_B;
-											}
-										}
-									}
-									else if (innerText3 == "slow")
-									{
-										researchBulletAbility.bulletType = GlobalBulletType.SLOW;
+											break;
+										case "resist_b":
+											researchBulletAbility.bulletType = GlobalBulletType.RESIST_B;
+											break;
+										case "resist_p":
+											researchBulletAbility.bulletType = GlobalBulletType.RESIST_P;
+											break;
+										case "slow":
+											researchBulletAbility.bulletType = GlobalBulletType.SLOW;
+											break;
+										case "excute":
+											researchBulletAbility.bulletType = GlobalBulletType.EXCUTE;
+											break;
+										case "stim":
+											researchBulletAbility.bulletType = GlobalBulletType.STIM;
+											break;
+										case "tranq":
+											researchBulletAbility.bulletType = GlobalBulletType.TRANQ;
+											break;
 									}
 									researchUpgradeInfo.bulletAility = researchBulletAbility;
 								}

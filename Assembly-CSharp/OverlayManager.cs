@@ -112,7 +112,7 @@ public class OverlayManager : MonoBehaviour
 		{
 			return;
 		}
-		if (SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1) || SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.YESOD)
+		if (SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1) || SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
 		{
 			return;
 		}
@@ -145,7 +145,7 @@ public class OverlayManager : MonoBehaviour
 		{
 			vector = this._enableInitial;
 		}
-		Vector3 v = new Vector3(vector.x * this.canvasScale.x / (float)this.Width, vector.y * this.canvasScale.y / (float)this.Height);
+		Vector2 v = new Vector3(vector.x * this.canvasScale.x / (float)this.Width, vector.y * this.canvasScale.y / (float)this.Height);
 		Vector2 anchoredPosition = v + this.MouseRelative;
 		float num = anchoredPosition.x + this.OverlayBox.sizeDelta.x;
 		float num2 = anchoredPosition.y - this.OverlayBox.sizeDelta.y;

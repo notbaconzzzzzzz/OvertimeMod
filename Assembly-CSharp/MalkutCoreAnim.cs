@@ -12,16 +12,24 @@ public class MalkutCoreAnim : CreatureAnimEventCalled
 	// Token: 0x17000153 RID: 339
 	// (get) Token: 0x0600121A RID: 4634 RVA: 0x0001793F File Offset: 0x00015B3F
 	private UnscaledTimer closeTimer
-	{
+	{ // <Mod>
 		get
 		{
+            if (overtimeScript != null)
+            {
+                return overtimeScript.bossBase._closeTimer;
+            }
 			return this.script.bossBase._closeTimer;
 		}
 	}
 
 	// Token: 0x0600121B RID: 4635 RVA: 0x00017951 File Offset: 0x00015B51
 	public void SetScript(MalkutCoreScript script)
-	{
+	{ // <Mod>
+		if (script is OvertimeMalkutCoreScript)
+		{
+			overtimeScript = script as OvertimeMalkutCoreScript;
+		}
 		this.script = script;
 	}
 
@@ -49,6 +57,9 @@ public class MalkutCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x04001642 RID: 5698
 	private MalkutCoreScript script;
+
+	// <Mod>
+	private OvertimeMalkutCoreScript overtimeScript;
 
 	// Token: 0x04001643 RID: 5699
 	public Transform middlePivot;

@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+public void SelectTarget(UnitMouseEventTarget target) // 
+public void SelectTargets(List<UnitMouseEventTarget> targets) // 
++private void SelectTarget(UnitMouseEventTarget target, SelectType type) // 
++private void SelectTargets(List<UnitMouseEventTarget> targets, SelectType type) // 
+private void Update() // 
+private void OnPointerClick_default(BaseEventData eventData) // Fixed deselection; made employees change home even in works
++public static KeyCode[] CONTROL_GROUP_KEYS // 
++public enum SelectType // 
+*/
+using System;
 using System.Collections.Generic;
 using GlobalBullet;
 using UnityEngine;
@@ -67,12 +77,30 @@ public class UnitMouseEventManager : MonoBehaviour
         this._pointerEnteredRightTarget = null;
         this._dragging = false;
         this.dragImage.gameObject.SetActive(false);
+        ControlGroupManager conrtolGroups = ControlGroupManager.instance;
     }
 
     // Token: 0x06005A68 RID: 23144 RVA: 0x00047CC9 File Offset: 0x00045EC9
     public void OnStageStart()
-    {
+    { // <Mod>
         this._stageStarted = true;
+		Vector2 pointA = new Vector2(-999999f, -999999f);
+		Vector2 pointB = new Vector2(999999f, 999999f);
+		Collider2D[] array3 = Physics2D.OverlapAreaAll(pointA, pointB);
+		List<UnitMouseEventTarget> list = new List<UnitMouseEventTarget>();
+		Collider2D[] array2 = array3;
+		for (int i = 0; i < array2.Length; i++)
+		{
+			UnitMouseEventTarget component = array2[i].GetComponent<UnitMouseEventTarget>();
+			if (component != null)
+			{
+				IMouseCommandTargetModelExt target = component.GetCommandTargetModel() as IMouseCommandTargetModelExt;
+				if (target != null)
+				{
+					target.SetUnitMouseTarget(component);
+				}
+			}
+		}
     }
 
     // Token: 0x06005A69 RID: 23145 RVA: 0x002026D8 File Offset: 0x002008D8
@@ -119,31 +147,139 @@ public class UnitMouseEventManager : MonoBehaviour
     }
 
     // Token: 0x06005A6B RID: 23147 RVA: 0x0020281C File Offset: 0x00200A1C
-    private void SelectTarget(UnitMouseEventTarget target)
-    {
-        this.UnselectAll();
-        target.OnSelect();
-        this._selectedTargets.Add(target);
-        AgentModel agentModel = this._selectedTargets[0].GetCommandTargetModel() as AgentModel;
-        if (agentModel != null)
-        {
-            AgentInfoWindow.CreateWindow(agentModel, false);
-        }
+    public void SelectTarget(UnitMouseEventTarget target)
+    { // <Mod>
+		if (isAddSubtractSelectionEnabled)
+		{
+			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+			{
+				if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+				{
+					SelectTarget(target, SelectType.SUBTRACT);
+					return;
+				}
+				SelectTarget(target, SelectType.ADD);
+				return;
+			}
+		}
+		SelectTarget(target, selectMode);
     }
 
     // Token: 0x06005A6C RID: 23148 RVA: 0x00202864 File Offset: 0x00200A64
-    private void SelectTargets(List<UnitMouseEventTarget> targets)
+    public void SelectTargets(List<UnitMouseEventTarget> targets)
+    { // <Mod>
+		if (isAddSubtractSelectionEnabled)
+		{
+			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+			{
+				if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+				{
+					SelectTargets(targets, SelectType.SUBTRACT);
+					return;
+				}
+				SelectTargets(targets, SelectType.ADD);
+				return;
+			}
+		}
+		SelectTargets(targets, selectMode);
+    }
+
+	// <Mod>
+    private void SelectTarget(UnitMouseEventTarget target, SelectType type)
+    {
+		if (type == SelectType.DEFAULT)
+		{
+			UnselectAll();
+			target.OnSelect();
+			_selectedTargets.Add(target);
+			AgentModel agentModel = this._selectedTargets[0].GetCommandTargetModel() as AgentModel;
+			if (agentModel != null)
+			{
+				AgentInfoWindow.CreateWindow(agentModel, false);
+			}
+		}
+		else if (type == SelectType.ADD)
+		{
+			if (!_selectedTargets.Contains(target))
+			{
+				target.OnSelect();
+				_selectedTargets.Add(target);
+				if (_selectedTargets.Count == 1)
+				{
+					AgentModel agentModel = this._selectedTargets[0].GetCommandTargetModel() as AgentModel;
+					if (agentModel != null)
+					{
+						AgentInfoWindow.CreateWindow(agentModel, false);
+					}
+				}
+				else
+				{
+					if (AgentInfoWindow.currentWindow.IsEnabled)
+					{
+						AgentInfoWindow.currentWindow.UnPinCurrentAgent();
+					}
+				}
+			}
+		}
+		else
+		{
+			if (_selectedTargets.Remove(target))
+			{
+				target.OnUnselect();
+				if (_selectedTargets.Count == 0 && AgentInfoWindow.currentWindow.IsEnabled)
+				{
+					AgentInfoWindow.currentWindow.UnPinCurrentAgent();
+				}
+			}
+		}
+    }
+
+	// <Mod>
+    private void SelectTargets(List<UnitMouseEventTarget> targets, SelectType type)
     {
         if (targets.Count == 1)
         {
-            this.SelectTarget(targets[0]);
+            this.SelectTarget(targets[0], type);
+			return;
         }
-        this.UnselectAll();
-        foreach (UnitMouseEventTarget unitMouseEventTarget in targets)
-        {
-            unitMouseEventTarget.OnSelect();
-            this._selectedTargets.Add(unitMouseEventTarget);
-        }
+		if (type == SelectType.DEFAULT)
+		{
+			UnselectAll();
+			foreach (UnitMouseEventTarget unitMouseEventTarget in targets)
+			{
+				unitMouseEventTarget.OnSelect();
+				_selectedTargets.Add(unitMouseEventTarget);
+			}
+		}
+		else if (type == SelectType.ADD)
+		{
+			foreach (UnitMouseEventTarget unitMouseEventTarget in targets)
+			{
+				if (!_selectedTargets.Contains(unitMouseEventTarget))
+				{
+					unitMouseEventTarget.OnSelect();
+					_selectedTargets.Add(unitMouseEventTarget);
+				}
+			}
+			if (AgentInfoWindow.currentWindow.IsEnabled)
+			{
+				AgentInfoWindow.currentWindow.UnPinCurrentAgent();
+			}
+		}
+		else
+		{
+			foreach (UnitMouseEventTarget unitMouseEventTarget in targets)
+			{
+				if (_selectedTargets.Remove(unitMouseEventTarget))
+				{
+					unitMouseEventTarget.OnUnselect();
+				}
+			}
+			if (_selectedTargets.Count == 0 && AgentInfoWindow.currentWindow.IsEnabled)
+			{
+				AgentInfoWindow.currentWindow.UnPinCurrentAgent();
+			}
+		}
     }
 
     // Token: 0x06005A6D RID: 23149 RVA: 0x002028DC File Offset: 0x00200ADC
@@ -186,7 +322,14 @@ public class UnitMouseEventManager : MonoBehaviour
 
     // Token: 0x06005A6F RID: 23151 RVA: 0x002029BC File Offset: 0x00200BBC
     private void UpdateDrag()
-    {
+    { // <Mod> Controlable Clerks
+        bool isClerkSelect = false;
+        bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        if (alt && !shift && isClerkSelectionEnabled)
+        {
+            isClerkSelect = true;
+        }
         Vector2 pointA = Camera.main.ScreenToWorldPoint(this._dragBeginPosition);
         Vector2 pointB = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Collider2D[] array = Physics2D.OverlapAreaAll(pointA, pointB);
@@ -195,7 +338,7 @@ public class UnitMouseEventManager : MonoBehaviour
         for (int i = 0; i < array2.Length; i++)
         {
             UnitMouseEventTarget component = array2[i].GetComponent<UnitMouseEventTarget>();
-            if (component != null && component.IsDragSelectable())
+            if (component != null && component.IsDragSelectable() && !(isClerkSelect ? component.GetCommandTargetModel() is AgentModel : component.GetCommandTargetModel() is OfficerModel))
             {
                 if (this._dragEnteredTargets.ContainsKey(component))
                 {
@@ -355,7 +498,7 @@ public class UnitMouseEventManager : MonoBehaviour
 
     // Token: 0x06005A74 RID: 23156 RVA: 0x00047CDA File Offset: 0x00045EDA
     private void Update()
-    {
+    { // <Mod>
         if (!this._stageStarted)
         {
             return;
@@ -366,6 +509,61 @@ public class UnitMouseEventManager : MonoBehaviour
             return;
         }
         this.UpdatePointEntered();
+		if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+		{
+			if (isAddSubtractSelectionEnabled)
+			{
+				if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.KeypadPlus) || Input.GetKeyDown(KeyCode.Plus))
+				{
+					selectMode = SelectType.ADD;
+				}
+				if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
+				{
+					selectMode = SelectType.SUBTRACT;
+				}
+				if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+				{
+					selectMode = SelectType.DEFAULT;
+				}
+			}
+			if (isControlGroupsEnabled)
+			{
+				for (int i = 0; i < CONTROL_GROUP_KEYS.Length; i++)
+				{
+					if (Input.GetKeyDown(CONTROL_GROUP_KEYS[i]) || (i >= 7 && i <= 15 && Input.GetKeyDown(ALTERNATE_CONTROL_GROUP_KEYS[i - 7])))
+					{
+						bool shift = false;
+						if (isAddSubtractSelectionEnabled)
+						{
+							shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+						}
+						bool alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+						if (shift)
+						{
+							if (alt)
+							{
+								SelectTargets(GetControlGroupTargets(i), SelectType.SUBTRACT);
+							}
+							else
+							{
+								SelectTargets(GetControlGroupTargets(i), SelectType.ADD);
+							}
+						}
+						else
+						{
+							if (alt)
+							{
+								SaveControlGroup(i, GetSelectedAgents());
+							}
+							else
+							{
+								SelectTargets(GetControlGroupTargets(i), selectMode);
+							}
+						}
+					}
+				}
+			}
+		}
     }
 
     // Token: 0x06005A75 RID: 23157 RVA: 0x00202DA0 File Offset: 0x00200FA0
@@ -407,7 +605,7 @@ public class UnitMouseEventManager : MonoBehaviour
 
     // Token: 0x06005A77 RID: 23159 RVA: 0x00202E5C File Offset: 0x0020105C
     private void OnPointerClick_default(BaseEventData eventData)
-    {
+    { // <Mod> Made employees not get deselected when an order is given; made employees change their waiting passage even in works; Controlable Clerks
         PointerEventData pointerEventData = eventData as PointerEventData;
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
@@ -428,6 +626,11 @@ public class UnitMouseEventManager : MonoBehaviour
                         component.OnSelect();
                         return;
                     }
+                    if (component.GetCommandTargetModel() is OfficerModel && !(!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))))
+                    {
+                        component.OnSelect();
+                        continue;
+                    }
                     if (GlobalGameManager.instance.gameMode != GameMode.TUTORIAL || !(TutorialManager.instance.CurrentTutorial is ClickEscapedCreatureTutorial))
                     {
                         list.Add(component);
@@ -438,7 +641,10 @@ public class UnitMouseEventManager : MonoBehaviour
             {
                 if (list.Count <= 0)
                 {
-                    this.UnselectAll();
+                    if (!isAddSubtractSelectionEnabled || !(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
+                    {
+                        UnselectAll();
+                    }
                     return;
                 }
                 if (this._pointerEnteredTarget != null && list.Contains(this._pointerEnteredTarget))
@@ -513,11 +719,18 @@ public class UnitMouseEventManager : MonoBehaviour
                             if (commandTargetModel2 is AgentModel)
                             {
                                 AgentModel agentModel = (AgentModel)commandTargetModel2;
-                                if (!agentModel.IsDead() && !agentModel.IsCrazy() && agentModel.currentSkill == null && !passageObject.IsRabbitExecuting() && (SefiraBossManager.Instance.IsWorkCancelable || agentModel.GetState() != AgentAIState.MANAGE))
+                                if (!agentModel.IsDead() && !passageObject.IsRabbitExecuting())
                                 {
-                                    agentModel.SetWaitingPassage(passageObjectModel);
-                                    agentModel.StopAction();
-                                    agentModel.counterAttackEnabled = false;
+                                    if (!agentModel.IsCrazy() && agentModel.currentSkill == null && (SefiraBossManager.Instance.IsWorkCancelable || agentModel.GetState() != AgentAIState.MANAGE))
+                                    {
+                                        agentModel.SetWaitingPassage(passageObjectModel);
+                                        agentModel.StopAction();
+                                        agentModel.counterAttackEnabled = false;
+                                    }
+                                    else
+                                    {
+                                        agentModel.SetWaitingPassage(passageObjectModel);
+                                    }
                                 }
                             }
                         }
@@ -579,6 +792,17 @@ public class UnitMouseEventManager : MonoBehaviour
                                         agentModel3.Suppress(target2, false);
                                     }
                                 }
+                                if (commandTargetModel4 is OfficerModel)
+                                {
+                                    OfficerModel officerModel = (OfficerModel)commandTargetModel4;
+                                    if (!officerModel.IsDead())
+                                    {
+                                        if (!officerModel.IsCrazy())
+                                        {
+                                            officerModel.SetAgentCommand(new AttackOfficerCommand(target2));
+                                        }
+                                    }
+                                }
                             }
                             goto IL_67C;
                         }
@@ -604,6 +828,17 @@ public class UnitMouseEventManager : MonoBehaviour
                                         agentModel4.Suppress(target3, false);
                                     }
                                 }
+                                if (commandTargetModel5 is OfficerModel)
+                                {
+                                    OfficerModel officerModel = (OfficerModel)commandTargetModel5;
+                                    if (!officerModel.IsDead())
+                                    {
+                                        if (!officerModel.IsCrazy())
+                                        {
+                                            officerModel.SetAgentCommand(new AttackOfficerCommand(target3));
+                                        }
+                                    }
+                                }
                             }
                             goto IL_67C;
                         }
@@ -622,11 +857,33 @@ public class UnitMouseEventManager : MonoBehaviour
                             if (commandTargetModel6 is AgentModel)
                             {
                                 AgentModel agentModel5 = (AgentModel)commandTargetModel6;
-                                if (!agentModel5.IsDead() && !agentModel5.IsCrazy() && agentModel5.currentSkill == null && !passageObject2.IsRabbitExecuting() && (SefiraBossManager.Instance.IsWorkCancelable || agentModel5.GetState() != AgentAIState.MANAGE))
+                                if (!agentModel5.IsDead() && !passageObject2.IsRabbitExecuting())
                                 {
-                                    agentModel5.SetWaitingPassage(passageObjectModel2);
-                                    agentModel5.StopAction();
-                                    agentModel5.counterAttackEnabled = false;
+                                    if (!agentModel5.IsCrazy() && agentModel5.currentSkill == null && (SefiraBossManager.Instance.IsWorkCancelable || agentModel5.GetState() != AgentAIState.MANAGE))
+                                    {
+                                        agentModel5.SetWaitingPassage(passageObjectModel2);
+                                        agentModel5.StopAction();
+                                        agentModel5.counterAttackEnabled = false;
+                                    }
+                                    else
+                                    {
+                                        agentModel5.SetWaitingPassage(passageObjectModel2);
+                                    }
+                                }
+                            }
+                            if (commandTargetModel6 is OfficerModel)
+                            {
+                                OfficerModel officerModel = (OfficerModel)commandTargetModel6;
+                                if (!officerModel.IsDead() && !passageObject2.IsRabbitExecuting())
+                                {
+                                    if (!officerModel.IsCrazy())
+                                    {
+										MapNode[] nodeList = passageObject2.model.GetNodeList();
+										if (nodeList.Length <= 0) continue;
+                                        officerModel.MoveToNode(nodeList[UnityEngine.Random.Range(0, nodeList.Length)]);
+                                        officerModel.state = OfficerAIState.WANDER;
+                                        officerModel.waitTimer = 90f;
+                                    }
                                 }
                             }
                         }
@@ -634,7 +891,7 @@ public class UnitMouseEventManager : MonoBehaviour
                 }
             IL_67C:
                 LocalAudioManager.instance.PlayClip(19);
-                this.UnselectAll();
+                // this.UnselectAll();
             }
         }
     }
@@ -731,7 +988,7 @@ public class UnitMouseEventManager : MonoBehaviour
 
     // Token: 0x06005A7F RID: 23167 RVA: 0x002036E0 File Offset: 0x002018E0
     public void OnEndDrag(BaseEventData eventData)
-    {
+    { // <Mod> Controlable Clerks
         PointerEventData pointerEventData = eventData as PointerEventData;
         if (pointerEventData.button != PointerEventData.InputButton.Left)
         {
@@ -745,16 +1002,23 @@ public class UnitMouseEventManager : MonoBehaviour
         {
             return;
         }
+        bool isClerkSelect = false;
+        bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        if (alt && !shift && isClerkSelectionEnabled)
+        {
+            isClerkSelect = true;
+        }
         Vector2 pointA = Camera.main.ScreenToWorldPoint(this._dragBeginPosition);
         Vector2 pointB = Camera.main.ScreenToWorldPoint(pointerEventData.position);
-        this.UnselectAll();
+        //this.UnselectAll();
         Collider2D[] array = Physics2D.OverlapAreaAll(pointA, pointB);
         List<UnitMouseEventTarget> list = new List<UnitMouseEventTarget>();
         Collider2D[] array2 = array;
         for (int i = 0; i < array2.Length; i++)
         {
             UnitMouseEventTarget component = array2[i].GetComponent<UnitMouseEventTarget>();
-            if (component != null && component.IsDragSelectable())
+            if (component != null && component.IsDragSelectable() && !(isClerkSelect ? component.GetCommandTargetModel() is AgentModel : component.GetCommandTargetModel() is OfficerModel))
             {
                 list.Add(component);
             }
@@ -779,6 +1043,76 @@ public class UnitMouseEventManager : MonoBehaviour
             return this._selectedTargets;
         }
     }
+
+    //> <Mod>
+    public void SaveControlGroup(int index, List<AgentModel> agents)
+    {
+        ControlGroupManager.instance.SaveControlGroup(index, agents);
+    }
+
+    public List<UnitMouseEventTarget> GetControlGroupTargets(int index)
+    {
+        return ControlGroupManager.instance.GetControlGroupTargets(index);
+    }
+
+    public SelectType selectMode
+    {
+        get
+        {
+            return _selectMode;
+        }
+        set
+        {
+            _selectMode = value;
+        }
+    }
+
+	public bool isControlGroupsEnabled
+	{
+		get
+		{
+			if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
+			{
+				return ResearchDataModel.instance.IsUpgradedAbility("control_groups");
+			}
+			return SpecialModeConfig.instance.GetValue<bool>("ControlGroups");
+		}
+	}
+
+	public bool isWorkOrderQueueEnabled
+	{
+		get
+		{
+			if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
+			{
+				return ResearchDataModel.instance.IsUpgradedAbility("work_order_queue");
+			}
+			return SpecialModeConfig.instance.GetValue<bool>("WorkOrderQueue");
+		}
+	}
+
+	public bool isAddSubtractSelectionEnabled
+	{
+		get
+		{
+			if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
+			{
+				return ResearchDataModel.instance.IsUpgradedAbility("add_subtract_selection");
+			}
+			return SpecialModeConfig.instance.GetValue<bool>("AddSubtractSelection");
+		}
+	}
+
+	public bool isClerkSelectionEnabled
+	{
+		get
+		{
+			return SpecialModeConfig.instance.GetValue<bool>("ControlableClerks") || MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT);
+		}
+	}
+
+    private SelectType _selectMode;
+	//< <Mod>
 
     // Token: 0x040052D4 RID: 21204
     private static UnitMouseEventManager _instance;
@@ -828,4 +1162,48 @@ public class UnitMouseEventManager : MonoBehaviour
 
     // Token: 0x040052E3 RID: 21219
     private bool _defualtClickBlocked;
+
+	//> <Mod>
+    public static KeyCode[] CONTROL_GROUP_KEYS = new KeyCode[] {
+        KeyCode.Z,
+		KeyCode.X,
+		KeyCode.C,
+		KeyCode.V,
+		KeyCode.B,
+		KeyCode.N,
+		KeyCode.M,
+		KeyCode.Alpha1,
+		KeyCode.Alpha2,
+		KeyCode.Alpha3,
+		KeyCode.Alpha4,
+		KeyCode.Alpha5,
+		KeyCode.Alpha6,
+		KeyCode.Alpha7,
+		KeyCode.Alpha8,
+		KeyCode.Alpha9,
+		KeyCode.A,
+		KeyCode.W,
+		KeyCode.S,
+		KeyCode.D
+    };
+
+	//> <Mod>
+    public static KeyCode[] ALTERNATE_CONTROL_GROUP_KEYS = new KeyCode[] {
+		KeyCode.Keypad1,
+		KeyCode.Keypad2,
+		KeyCode.Keypad3,
+		KeyCode.Keypad4,
+		KeyCode.Keypad5,
+		KeyCode.Keypad6,
+		KeyCode.Keypad7,
+		KeyCode.Keypad8,
+		KeyCode.Keypad9,
+    };
+
+    public enum SelectType
+    {
+        DEFAULT,
+        ADD,
+        SUBTRACT
+    }
 }

@@ -1,3 +1,12 @@
+/*
+public void AttachEGOgift(EGOgiftModel gift) // (!) 
+public float GetDamageFactorByEquipment() // 
+public virtual void MakeDamageEffect(RwbpType type, float value, DefenseInfo.Type defense) // Overtime Yesod Suppression
+public UnitBuf AddUnitBuf(UnitBuf buf) // Changed the way it handles UnitBufType.UNKNOWN slightly
++public List<UnitStatBuf> GetStatBufList() // 
++public List<BarrierBuf> GetBarrierBufList() // 
++public bool IsEtcUnit() // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -241,10 +250,16 @@ public class UnitModel
 
 	// Token: 0x06003A73 RID: 14963 RVA: 0x00172734 File Offset: 0x00170934
 	public void AttachEGOgift(EGOgiftModel gift)
-	{
-		if (!UnitEGOgiftSpace.IsUniqueLock((long)gift.metaInfo.id))
+	{ // <Patch> <Mod>
+		int stackingMax = UnitEGOgiftSpace.GetStackingMax();
+		LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(gift.metaInfo);
+		if (this._equipment.gifts.HasEquipment_Mod(lcId))
 		{
-			if (this._equipment.gifts.GetLockState(gift.metaInfo))
+			return;
+		}
+		if (!UnitEGOgiftSpace.IsUniqueLock((long)gift.metaInfo.id) || lcId.packageId != string.Empty)
+		{
+			if (stackingMax != -1 && _equipment.gifts.GiftCount(gift.metaInfo.attachType, gift.metaInfo.attachPos) >= stackingMax && this._equipment.gifts.GetLockState(gift.metaInfo))
 			{
 				return;
 			}
@@ -271,7 +286,9 @@ public class UnitModel
 
 	// Token: 0x06003A74 RID: 14964 RVA: 0x001727E8 File Offset: 0x001709E8
 	public void ReleaseEGOgift(EGOgiftModel model)
-	{
+	{ // <Patch>
+		ReleaseEGOGift_Mod(EquipmentTypeInfo.GetLcId(model.metaInfo));
+		/*
 		List<EGOgiftModel> addedGifts = this._equipment.gifts.addedGifts;
 		EGOgiftModel egogiftModel = addedGifts.Find((EGOgiftModel x) => x.metaInfo.id == model.metaInfo.id);
 		if (egogiftModel != null)
@@ -291,12 +308,14 @@ public class UnitModel
 			this.OnChangeGift();
 			this._equipment.gifts.ReleaseGift(egogiftModel2);
 			return;
-		}
+		}*/
 	}
 
 	// Token: 0x06003A75 RID: 14965 RVA: 0x001728A4 File Offset: 0x00170AA4
 	public bool ReleaseEGOGift(int id)
-	{
+	{ // <Patch>
+		return ReleaseEGOGift_Mod(new LobotomyBaseMod.LcId(id));
+		/*
 		List<EGOgiftModel> addedGifts = this._equipment.gifts.addedGifts;
 		EGOgiftModel egogiftModel = addedGifts.Find((EGOgiftModel x) => x.metaInfo.id == id);
 		if (egogiftModel != null)
@@ -317,7 +336,7 @@ public class UnitModel
 			this._equipment.gifts.ReleaseGift(egogiftModel2);
 			return true;
 		}
-		return false;
+		return false;*/
 	}
 
 	// Token: 0x06003A76 RID: 14966 RVA: 0x00033956 File Offset: 0x00031B56
@@ -505,7 +524,7 @@ public class UnitModel
 
 	// Token: 0x06003A8B RID: 14987 RVA: 0x00172B6C File Offset: 0x00170D6C
 	public float GetDamageFactorByEquipment()
-	{
+	{ // <Mod> fixed unit bufs not fucking working
 		float num = 1f;
 		try
 		{
@@ -529,7 +548,7 @@ public class UnitModel
 			{
 				foreach (UnitBuf unitBuf in this._bufList)
 				{
-					unitBuf.GetDamageFactor();
+					num *= unitBuf.GetDamageFactor();
 				}
 			}
 		}
@@ -574,8 +593,9 @@ public class UnitModel
 
 	// Token: 0x06003A91 RID: 14993 RVA: 0x00033A99 File Offset: 0x00031C99
 	public bool HasEquipment(int id)
-	{
-		return this._equipment.HasEquipment(id);
+	{ // <Patch>
+		return HasEquipment_Mod(new LobotomyBaseMod.LcId(id));
+		// return this._equipment.HasEquipment(id);
 	}
 
 	// Token: 0x06003A92 RID: 14994 RVA: 0x00172C58 File Offset: 0x00170E58
@@ -625,10 +645,13 @@ public class UnitModel
 
 	// Token: 0x06003A97 RID: 14999 RVA: 0x00033AB1 File Offset: 0x00031CB1
 	public virtual void MakeDamageEffect(RwbpType type, float value, DefenseInfo.Type defense)
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		if (ResearchDataModel.instance.IsUpgradedAbility("damage_text") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1))
 		{
-			DamageEffect.Invoker(this.movableNode, type, (int)value, defense, this);
+			if (!(this is AgentModel) || !(this as AgentModel).ForceHideUI)
+			{
+				DamageEffect.Invoker(this.movableNode, type, (int)value, defense, this);
+			}
 		}
 	}
 
@@ -746,11 +769,11 @@ public class UnitModel
 
 	// Token: 0x06003AA6 RID: 15014 RVA: 0x00172E28 File Offset: 0x00171028
 	public UnitBuf AddUnitBuf(UnitBuf buf)
-	{
+	{ // <Mod>
 		if (buf.duplicateType == BufDuplicateType.ONLY_ONE)
 		{
 			UnitBuf unitBuf;
-			if (buf.type != UnitBufType.ADD_SUPERARMOR)
+			if (buf.type != UnitBufType.ADD_SUPERARMOR && buf.type != UnitBufType.UNKNOWN)
 			{
 				unitBuf = this.GetUnitBufByType(buf.type);
 			}
@@ -1032,6 +1055,62 @@ public class UnitModel
 	public List<UnitBuf> GetUnitBufList()
 	{
 		return this._bufList;
+	}
+
+	// <Patch>
+	public bool HasEquipment_Mod(LobotomyBaseMod.LcId id)
+	{
+		return this._equipment.HasEquipment_Mod(id);
+	}
+
+	// <Patch>
+	public bool ReleaseEGOGift_Mod(LobotomyBaseMod.LcId id)
+	{
+		List<EGOgiftModel> addedGifts = this._equipment.gifts.addedGifts;
+		EGOgiftModel egogiftModel = addedGifts.Find((EGOgiftModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id);
+		if (egogiftModel != null)
+		{
+			egogiftModel.OnRelease();
+			addedGifts.Remove(egogiftModel);
+			this.OnChangeGift();
+			this._equipment.gifts.ReleaseGift(egogiftModel);
+			return true;
+		}
+		List<EGOgiftModel> replacedGifts = this._equipment.gifts.replacedGifts;
+		EGOgiftModel egogiftModel2 = replacedGifts.Find((EGOgiftModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id);
+		if (egogiftModel2 != null)
+		{
+			egogiftModel2.OnRelease();
+			replacedGifts.Remove(egogiftModel2);
+			this.OnChangeGift();
+			this._equipment.gifts.ReleaseGift(egogiftModel2);
+			return true;
+		}
+		return false;
+	}
+
+	// <Mod>
+	public List<UnitStatBuf> GetStatBufList()
+	{
+		return _statBufList;
+	}
+
+	// <Mod>
+	public List<BarrierBuf> GetBarrierBufList()
+	{
+		return _barrierBufList;
+	}
+	
+	// <Mod>
+	public virtual bool IsEtcUnit()
+	{
+		return false;
+	}
+	
+	// <Mod>
+	public virtual bool IgnoreDoors()
+	{
+		return false;
 	}
 
 	// Token: 0x04003612 RID: 13842

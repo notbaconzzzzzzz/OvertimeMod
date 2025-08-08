@@ -1,3 +1,6 @@
+/*
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using UnityEngine;
 
@@ -160,6 +163,15 @@ public class YesodBossBase : SefiraBossBase
 		ShockwaveEffect.Invoker(this.model.GetCurrentViewPosition(), this.model, 3f, 600f, EffectLifetimeType.NORMAL);
 		this.MakeSoundAttachCamera("SefiraBoss/Boss_Yesod");
 	}
+
+    // <Mod>
+    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+    {
+        if (_ordealSpawnTime[1] >= 5)
+		{
+			_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 5);
+		}
+    }
 
 	// Token: 0x04003B51 RID: 15185
 	private const string animSrc = "YesodCoreAnim";

@@ -25,8 +25,8 @@ public class SnowQueenWeapon : EquipmentScriptBase
 
 	// Token: 0x060036C5 RID: 14021 RVA: 0x0003193B File Offset: 0x0002FB3B
 	public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
-	{
-		if (this.hpOld > target.hp && target is SefiraBossCreatureModel && !target.HasUnitBuf(UnitBufType.SNOWQUEEN_WEAPON_SLOW))
+	{ // <Mod>
+		if (this.hpOld > target.hp)
 		{
 			target.AddUnitBuf(new SnowQueenSlow());
 		}
@@ -34,7 +34,7 @@ public class SnowQueenWeapon : EquipmentScriptBase
 	}
 
 	// Token: 0x040032A2 RID: 12962
-	public const float slowRatio = 0.5f;
+	public const float slowRatio = 0.7f;
 
 	// Token: 0x040032A3 RID: 12963
 	public const float slowTime = 3f;

@@ -202,7 +202,7 @@ public class OutterGodDawn : OutterGodOrdealCreature
 	}
 
 	// Token: 0x06002658 RID: 9816 RVA: 0x001147FC File Offset: 0x001129FC
-	private List<WorkerModel> GetTargets(float range)
+	public List<WorkerModel> GetTargets(float range)
 	{
 		List<WorkerModel> list = new List<WorkerModel>();
 		if (this.currentPassage == null)
@@ -267,7 +267,7 @@ public class OutterGodDawn : OutterGodOrdealCreature
 	}
 
 	// Token: 0x0600265D RID: 9821 RVA: 0x001149A0 File Offset: 0x00112BA0
-	public void OnAttackDamageTimeCalled()
+	public virtual void OnAttackDamageTimeCalled()
 	{
 		List<WorkerModel> targets = this.GetTargets(2f);
 		foreach (WorkerModel workerModel in targets)
@@ -292,7 +292,7 @@ public class OutterGodDawn : OutterGodOrdealCreature
 	}
 
 	// Token: 0x06002660 RID: 9824 RVA: 0x00114A2C File Offset: 0x00112C2C
-	public void OnBoomEnd()
+	public virtual void OnBoomEnd()
 	{
 		Sefira sefira = this.model.sefira;
 		List<WorkerModel> list = new List<WorkerModel>();
@@ -371,7 +371,7 @@ public class OutterGodDawn : OutterGodOrdealCreature
 	private const float _aggroTimeMin = 10f;
 
 	// Token: 0x04002577 RID: 9591
-	private Timer boomTimer = new Timer();
+	public Timer boomTimer = new Timer();
 
 	// Token: 0x04002578 RID: 9592
 	private const float _boomTimeMax = 70f;

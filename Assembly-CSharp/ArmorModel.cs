@@ -1,4 +1,9 @@
+/*
+public static ArmorModel MakeArmor(EquipmentTypeInfo info) // 
+*/
 using System;
+using System.Collections.Generic; // 
+using System.Reflection; // 
 
 // Token: 0x0200069A RID: 1690
 public class ArmorModel : EquipmentModel
@@ -16,15 +21,28 @@ public class ArmorModel : EquipmentModel
 
 	// Token: 0x06003739 RID: 14137 RVA: 0x001685F4 File Offset: 0x001667F4
 	public static ArmorModel MakeArmor(EquipmentTypeInfo info)
-	{
+	{ // <Mod> Fixed it not loading Modded scripts proplerly
 		ArmorModel armorModel = new ArmorModel();
 		armorModel.metaInfo = info;
 		Type type = Type.GetType(info.script);
 		object obj = null;
-		if (type != null)
+		if (type == null)
 		{
-			obj = Activator.CreateInstance(type);
+			foreach (Assembly assembly in Add_On.instance.AssemList)
+			{
+				foreach (Type type2 in assembly.GetTypes())
+				{
+					if (type2.Name == info.script)
+					{
+						obj = Activator.CreateInstance(type2);
+					}
+				}
+			}
 		}
+        else
+        {
+            obj = Activator.CreateInstance(type);
+        }
 		if (obj is EquipmentScriptBase)
 		{
 			armorModel.script = (EquipmentScriptBase)obj;

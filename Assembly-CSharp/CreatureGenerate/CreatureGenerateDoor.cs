@@ -1,4 +1,8 @@
+/*
+public void SetCreature_Mod() // 
+*/
 using System;
+using LobotomyBaseMod; // 
 using UnityEngine;
 
 namespace CreatureGenerate
@@ -51,7 +55,7 @@ namespace CreatureGenerate
 					{
 						break;
 					}
-					float num = --0f;
+					float num = 0f;
 					if (float.TryParse(array[i], out num))
 					{
 						creatureGenerateDoor.prob[i] = num;
@@ -109,9 +113,18 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E7F RID: 15999 RVA: 0x001851D8 File Offset: 0x001833D8
 		public void SetCreature()
-		{
+		{ // <Patch>
+			SetCreature_Mod();
+			/*
 			this.Creature = -1L;
 			this.CheckProb();
+			if (this.TotalProb == 0f)
+			{
+                for (int k = 0; k < 5; k++)
+                {
+                    prob[k] = 0.2f;
+                }
+			}
 			if (this.TotalProb == 0f)
 			{
 				return;
@@ -134,7 +147,7 @@ namespace CreatureGenerate
 			ActivateStateList list = this.GetList(i);
 			ActivateStateModel randomCreature = list.GetRandomCreature();
 			this.Creature = randomCreature.id;
-			list.RemoveAction(randomCreature.id);
+			list.RemoveAction(randomCreature.id);*/
 		}
 
 		// Token: 0x06003E80 RID: 16000 RVA: 0x00185284 File Offset: 0x00183484
@@ -146,6 +159,45 @@ namespace CreatureGenerate
 				Debug.LogError("Failed to list");
 			}
 			return result;
+		}
+
+		// <Patch>
+		public void SetCreature_Mod()
+		{ // <Mod> Made way to handle 0% total prob
+			this.CreatureMod = new LobotomyBaseMod.LcIdLong(-1L);
+			this.CheckProb();
+			if (this.TotalProb == 0f)
+			{
+                for (int k = 0; k < 5; k++)
+                {
+                    prob[k] = 0.2f;
+                }
+			}
+			if (this.TotalProb == 0f)
+			{
+				return;
+			}
+			float num = UnityEngine.Random.Range(0f, this.TotalProb);
+			float num2 = 0f;
+			int i = 0;
+			for (int j = 0; j < 5; j++)
+			{
+				bool flag2 = this.probState[j];
+				if (flag2)
+				{
+					num2 += this.prob[j];
+					bool flag3 = num <= num2;
+					if (flag3)
+					{
+						i = j;
+						break;
+					}
+				}
+			}
+			ActivateStateList list = this.GetList(i);
+			ActivateStateModel randomCreature = list.GetRandomCreature();
+			this.CreatureMod = new LobotomyBaseMod.LcIdLong(randomCreature.modid, randomCreature.id);
+			list.RemoveAction_Mod(this.CreatureMod);
 		}
 
 		// Token: 0x06003E81 RID: 16001 RVA: 0x000367E7 File Offset: 0x000349E7
@@ -178,5 +230,8 @@ namespace CreatureGenerate
 
 		// Token: 0x04003927 RID: 14631
 		public long Creature = -1L;
+
+		// <Patch>
+		public LobotomyBaseMod.LcIdLong CreatureMod;
 	}
 }

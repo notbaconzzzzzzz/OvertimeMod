@@ -1,3 +1,6 @@
+/*
+private void Update() // Made qliphoth meltdowns not go fully transparent
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,10 +43,10 @@ public class IsolateOverload : MonoBehaviour
 
 	// Token: 0x06004C8D RID: 19597 RVA: 0x001C259C File Offset: 0x001C079C
 	private void Update()
-	{
+	{ // <Mod> qliphoth meltdowns only oscillate to half transparency instead of full transparency
 		if (this._isActivated)
 		{
-			float a = -Mathf.Cos(this.alarmValue) / 2f + 0.5f;
+			float a = -Mathf.Cos(this.alarmValue) * 0.25f + 0.75f;
 			foreach (Image image in this.alarms)
 			{
 				image.color = new Color(1f, 1f, 1f, a);

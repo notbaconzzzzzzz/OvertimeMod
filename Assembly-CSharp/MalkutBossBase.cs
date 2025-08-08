@@ -1,3 +1,6 @@
+/*
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using UnityEngine;
 
@@ -137,8 +140,17 @@ public class MalkutBossBase : SefiraBossBase
 		CameraMover.instance.StopMove();
 	}
 
-	// Token: 0x04003B1C RID: 15132
-	private const string animSrc = "MalkutCoreAnim";
+    // <Mod>
+    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+    {
+        if (_ordealSpawnTime[1] >= 5)
+		{
+			_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 5);
+		}
+    }
+
+    // Token: 0x04003B1C RID: 15132
+    private const string animSrc = "MalkutCoreAnim";
 
 	// Token: 0x04003B1D RID: 15133
 	private const string malkutBase = "MalkutCoreScript";

@@ -185,7 +185,7 @@ public class SefiraBossUI : MonoBehaviour
 		if (SefiraBossManager.Instance.IsAnyBossSessionActivated())
 		{
 			this.bossUI.gameObject.SetActive(true);
-			if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.CHESED || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E2))
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.CHESED, false) || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E2))
 			{
 				this.uiCanvas.gameObject.SetActive(true);
 			}

@@ -29,12 +29,26 @@ public class OptionUI : MonoBehaviour
 
 	// Token: 0x06004E95 RID: 20117 RVA: 0x001D29F4 File Offset: 0x001D0BF4
 	private void Awake()
-	{
+	{ // <Patch>
 		if (OptionUI.Instance != null)
 		{
 			UnityEngine.Object.Destroy(base.gameObject);
 			return;
 		}
+        OptionUI.credit = new string[]
+        {
+            "Poten / Ro / KevinGlass / ade007 / Amiba / Sea / Nicholas_Okra",
+            "acane / 甘輪 / いすひろし / とらきす / 翻訳協力者" + Environment.NewLine + "もちみかん / Youkan / ログノ / 6人目のサメの餌",
+            "surolanter",
+            "Tales&Stories Team / GregorLesnov / BlinkRaven / Knightey",
+            "Misui",
+            "Dimitar Topkov (di_TOP)",
+            "Main Translator : @UrathObsidian" + Environment.NewLine + "Programmer/Language Assistant : @casual_watson ",
+            "Cool Kids Club Translation : NEETPenguin and Casual Watson\r\nHelpers : Catling and Kuroteru\r\nLastly… Many thanks to all who tested our script and supported us!",
+            "Traduction Eden Office : Azuro, Nakys, Skriff, Skun et Pacman\r\nTous nos remerciements à l'ensemble de nos testeurs et aux personnes qui nous ont aidé !",
+            "Muito Obrigado Pela Tradução!\r\n\r\nTradução Team P.A.T.O: Shoes & Arucato\r\nAgradecimentos adicionais a nosso grande testador: Efeshis, todos aqueles que nos ajudaram até aqui, e a equipe de nosso companheiro Milk!",
+            "OBRIGADO PELA VOSSA TRADUÇÃO!\r\nTradutora : R.ANAKOVA"
+        };
 		OptionUI.Instance = this;
 		this.creditText.Add("cn", OptionUI.credit[0]);
 		this.creditText.Add("jp", OptionUI.credit[1]);
@@ -43,6 +57,10 @@ public class OptionUI : MonoBehaviour
 		this.creditText.Add("vn", OptionUI.credit[4]);
 		this.creditText.Add("bg", OptionUI.credit[5]);
 		this.creditText.Add("es", OptionUI.credit[6]);
+        this.creditText.Add("en", OptionUI.credit[7]);
+        this.creditText.Add("fr", OptionUI.credit[8]);
+        this.creditText.Add("pt_br", OptionUI.credit[9]);
+        this.creditText.Add("pt_pt", OptionUI.credit[10]);
 	}
 
 	// Token: 0x06004E96 RID: 20118 RVA: 0x00040C82 File Offset: 0x0003EE82

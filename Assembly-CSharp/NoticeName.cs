@@ -413,4 +413,25 @@ public class NoticeName
 
 	// Token: 0x04001C55 RID: 7253
 	public static string OnGetEGOgift = "OnGetEGOgift";
+
+	//> <Mod>
+	public static string OnOpenNameplate = "OnOpenNameplate";
+
+	public static string RecoverByRegenerator = "RecoverByRegenerator";
+
+	public static string RecoverByBullet = "RecoverByBullet";
+
+	public static string BlockDamageByShield = "BlockDamageByShield";
+
+	public static string AddExcessEnergy = "AddExcessEnergy";
+
+	public static string CreatureDamagedByAgent = "CreatureDamagedByAgent";
+
+	public static string OnUseBullet = "OnUseBullet";
+
+	public static string OnPause = "OnPause";
+
+	public static string CreatureHitWorker = "CreatureHitWorker";
+
+	public static string SetSystemLogSize = "SetSystemLogSize";
 }

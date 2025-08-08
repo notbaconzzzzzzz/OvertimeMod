@@ -1,3 +1,6 @@
+/*
+public void LoadData(Dictionary<string, object> dic) // 
+*/
 using System;
 using System.Collections.Generic;
 
@@ -267,13 +270,13 @@ public class AgentHistory
 
 	// Token: 0x06001939 RID: 6457 RVA: 0x000DD160 File Offset: 0x000DB360
 	public void LoadData(Dictionary<string, object> dic)
-	{
+	{ // <Mod> fixed loading the work day amount
 		int[] array = new int[15];
 		for (int i = 0; i < array.Length; i++)
 		{
 			array[i] = 0;
 		}
-		GameUtil.TryGetValue<int>(dic, "workDay", ref array[0]);
+		GameUtil.TryGetValue<int>(dic, "historyworkDay", ref array[0]);
 		GameUtil.TryGetValue<int>(dic, "workSuccess", ref array[1]);
 		GameUtil.TryGetValue<int>(dic, "workFail", ref array[2]);
 		GameUtil.TryGetValue<int>(dic, "physicalDamage", ref array[3]);
@@ -290,6 +293,7 @@ public class AgentHistory
 		GameUtil.TryGetValue<int>(dic, "promotionVal", ref array[14]);
 		GameUtil.TryGetValue<Dictionary<RwbpType, int>>(dic, "workCubeCounts", ref this.total.workCubeCounts);
 		this.workDay = array[0];
+		//this.workDay = 35;
 		this.total.workSuccess = array[1];
 		this.total.workFail = array[2];
 		this.total.takePhysicalDamage = array[3];

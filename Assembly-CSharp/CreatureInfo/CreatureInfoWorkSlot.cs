@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+private void SetWorkSuccess() // Success Rate displayed as percentage without decimal points
+*/
+using System;
 using UnityEngine.UI;
 
 namespace CreatureInfo
@@ -45,16 +48,12 @@ namespace CreatureInfo
 
         // Token: 0x06005349 RID: 21321 RVA: 0x001DFF80 File Offset: 0x001DE180
         private void SetWorkSuccess()
-        {
+        { // <Mod> changed the function to the Info version and allowed it to display negative values
             for (int i = 0; i < this.levelSuccessPercentage.Length; i++)
             {
                 Text text = this.levelSuccessPercentage[i];
                 float num = base.MetaInfo.workProbTable.GetWorkProb(this._type, i + 1);
-                if (num <= 0f)
-                {
-                    num = 0f;
-                }
-                string percentText = UICommonTextConverter.GetPercentText(num);
+                string percentText = UICommonTextConverter.GetInfoPercentText(num);
                 text.text = percentText;
             }
         }

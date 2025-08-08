@@ -1,3 +1,6 @@
+/*
+public Sprite GetSefiraSymbol(SefiraEnum sefira, int level = 1) // 
+*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -265,7 +268,7 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x06005C37 RID: 23607 RVA: 0x00209494 File Offset: 0x00207694
 	public SpriteResourceLoadData GetClothesSet(int id)
-	{
+	{ // <Patch??>
 		SpriteResourceLoadData result = null;
 		WorkerEquipmentSprite workerEquipmentSprite = null;
 		if (this.equipData.GetData(EquipmentSpriteRegion.CLOTHES, out workerEquipmentSprite))
@@ -716,7 +719,7 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x06005C3D RID: 23613 RVA: 0x0020A3B8 File Offset: 0x002085B8
 	public void GetArmorData(int id, ref WorkerSprite.WorkerSprite set)
-	{
+	{ // <Patch??>
 		WorkerEquipmentSprite workerEquipmentSprite = null;
 		this.equipData.GetData(EquipmentSpriteRegion.CLOTHES, out workerEquipmentSprite);
 		if (id < 100000000)
@@ -800,7 +803,7 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x06005C3F RID: 23615 RVA: 0x0020A64C File Offset: 0x0020884C
 	public Sprite GetSefiraSymbol(SefiraEnum sefira, int level = 1)
-	{
+	{ // <Mod>
 		switch (level)
 		{
 		case 2:
@@ -808,6 +811,8 @@ public class WorkerSpriteManager : MonoBehaviour
 		case 3:
 			return this.SefiraSymbol3[(int)sefira];
 		case 4:
+		case 5:
+		case 6:
 			return this.SefiraSymbol4[(int)sefira];
 		default:
 			return this.SefiraSymbol[(int)sefira];
@@ -882,16 +887,85 @@ public class WorkerSpriteManager : MonoBehaviour
 		return array;
 	}
 
+	// <Mod>
+	public Sprite[] GetFistSprite(LobotomyBaseMod.KeyValuePairSS SS)
+	{
+		if (this.FistWeaponSpriteMod == null)
+		{
+			this.FistWeaponSpriteMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite[]>();
+		}
+		if (this.FistWeaponSpriteMod.ContainsKey(SS))
+		{
+			return this.FistWeaponSpriteMod[SS];
+		}
+		WeaponClassType type = WeaponClassType.FIST;
+		WorkerEquipmentSprite workerEquipmentSprite2 = null;
+		if (this.equipData.GetData(EquipmentSpriteRegion.WEAPON, out workerEquipmentSprite2))
+		{
+			WorkerWeaponSprite workerWeaponSprite2 = workerEquipmentSprite2 as WorkerWeaponSprite;
+			FieldInfo field2 = typeof(WorkerWeaponSprite.WeaponDatabase).GetField("data", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			Dictionary<string, Sprite> dictionary2 = (Dictionary<string, Sprite>)field2.GetValue(workerWeaponSprite2.GetDb((int)type));
+			Sprite sprite4 = null;
+			Sprite sprite5 = null;
+			if (!dictionary2.ContainsKey(SS.value))
+			{
+				workerWeaponSprite2.GetDb((int)type).GetSprite("Fist_Set_01_0", out sprite4);
+				workerWeaponSprite2.GetDb((int)type).GetSprite("Fist_Set_01_1", out sprite5);
+				Texture2D texture2D = new Texture2D(sprite4.texture.width, sprite4.texture.height);
+				ModInfo modInfo_patch = Add_On.instance.ModList.Find((ModInfo x) => x.modid == SS.key);
+				if (modInfo_patch != null)
+				{
+					DirectoryInfo directoryInfo3 = EquipmentDataLoader.CheckNamedDir(modInfo_patch.modpath, "Equipment");
+					if (directoryInfo3 != null)
+					{
+						if (Directory.Exists(directoryInfo3.FullName + "/Sprite/Weapon"))
+						{
+							DirectoryInfo directoryInfo4 = new DirectoryInfo(directoryInfo3.FullName + "/Sprite/Weapon");
+							if (directoryInfo4.GetFiles().Length != 0)
+							{
+								FileInfo[] files2 = directoryInfo4.GetFiles();
+								for (int j = 0; j < files2.Length; j++)
+								{
+									if (files2[j].Name == SS.value + ".png")
+									{
+										texture2D.LoadImage(File.ReadAllBytes(files2[j].FullName));
+										break;
+									}
+								}
+							}
+						}
+					}
+					Vector2 vector = new Vector2(sprite4.pivot.x / sprite4.rect.width, sprite4.pivot.y / sprite4.rect.height);
+					Vector2 vector2 = new Vector2(sprite5.pivot.x / sprite5.rect.width, sprite5.pivot.y / sprite5.rect.height);
+					Sprite sprite6 = Sprite.Create(texture2D, sprite4.rect, vector, sprite4.pixelsPerUnit, 0U, SpriteMeshType.FullRect, sprite4.border);
+					sprite6.name = SS.value + "B";
+					Sprite sprite7 = Sprite.Create(texture2D, sprite5.rect, vector2, sprite5.pixelsPerUnit, 0U, SpriteMeshType.FullRect, sprite5.border);
+					sprite7.name = SS.value + "F";
+					Sprite[] array = new Sprite[2];
+					array[0] = sprite6;
+					array[1] = sprite7;
+					this.FistWeaponSpriteMod[SS] = array;
+					return this.FistWeaponSpriteMod[SS];
+				}
+			}
+		}
+		return null;
+	}
+
 	// Token: 0x06005C44 RID: 23620 RVA: 0x00049921 File Offset: 0x00047B21
 	public bool GetUniqueWeaponSpriteInfo(string name, out UniqueWeaponSpriteUnit unit)
-	{
+	{ // <Patch>
+		return GetUniqueWeaponSpriteInfo_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name), out unit);
+		/*
 		this.GetWeaponSprite(WeaponClassType.SPECIAL, name);
-		return this._uniqueWeaponDic.TryGetValue(name + "_AbcdcodeMade", out unit);
+		return this._uniqueWeaponDic.TryGetValue(name + "_AbcdcodeMade", out unit);*/
 	}
 
 	// Token: 0x06005C45 RID: 23621 RVA: 0x0020A824 File Offset: 0x00208A24
 	public Sprite GetWeaponSprite(WeaponClassType type, string name)
-	{
+	{ // <Patch>
+		return this.GetWeaponSprite_Mod(type, new LobotomyBaseMod.KeyValuePairSS(string.Empty, name));
+		/*
 		Sprite result = null;
 		try
 		{
@@ -1058,12 +1132,12 @@ public class WorkerSpriteManager : MonoBehaviour
 			File.WriteAllText(Application.dataPath + "/BaseMods/error.txt", ex.Message + Environment.NewLine + ex.StackTrace);
 			result = null;
 		}
-		return result;
+		return result;*/
 	}
 
 	// Token: 0x06005C46 RID: 23622 RVA: 0x0020AD78 File Offset: 0x00208F78
 	public Sprite GetAttachmentSprite(EGOgiftAttachRegion region, string name)
-	{
+	{ // <Mod> Fix Mouth 1 gifts
 		WorkerEquipmentSprite workerEquipmentSprite = null;
 		if (this.equipData.GetData(EquipmentSpriteRegion.ATTACHMENTS, out workerEquipmentSprite))
 		{
@@ -1111,7 +1185,14 @@ public class WorkerSpriteManager : MonoBehaviour
 				}
 				if (region == EGOgiftAttachRegion.MOUTH)
 				{
-					workerAttachmentSprite.GetDb((int)region).GetSprite("Mouth_0_0", out sprite);
+					if (name.StartsWith("AltMouth."))
+					{
+						workerAttachmentSprite.GetDb((int)region).GetSprite("RedHood_2", out sprite);
+					}
+					else
+					{
+						workerAttachmentSprite.GetDb((int)region).GetSprite("Mouth_0_0", out sprite);
+					}
 				}
 				if (region == EGOgiftAttachRegion.RIBBORN)
 				{
@@ -1127,6 +1208,11 @@ public class WorkerSpriteManager : MonoBehaviour
 				}
 				Texture2D texture2D = new Texture2D(2, 2);
 				bool flag = false;
+				string fileName = name + ".png";
+				if (name.StartsWith("AltMouth."))
+				{
+					fileName = name.Substring(9) + ".png";
+				}
 				foreach (DirectoryInfo dir in Add_On.instance.DirList)
 				{
 					DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(dir, "Equipment");
@@ -1142,7 +1228,7 @@ public class WorkerSpriteManager : MonoBehaviour
 							FileInfo[] files = directoryInfo2.GetFiles();
 							for (int i = 0; i < files.Length; i++)
 							{
-								if (files[i].Name == name + ".png")
+								if (files[i].Name == fileName)
 								{
 									texture2D.LoadImage(File.ReadAllBytes(files[i].FullName));
 									flag = true;
@@ -1186,7 +1272,7 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x06005C48 RID: 23624 RVA: 0x0020B0B8 File Offset: 0x002092B8
 	public void LoadCustomSprites()
-	{
+	{ // <Patch>
 		DirectoryInfo directoryInfo = new DirectoryInfo(this.CustomFolderSrc);
 		DirectoryInfo directoryInfo2 = new DirectoryInfo(this.CustomFaceSrc);
 		DirectoryInfo directoryInfo3 = new DirectoryInfo(this.CustomHairSrc);
@@ -1285,6 +1371,11 @@ public class WorkerSpriteManager : MonoBehaviour
 		this.LoadCustomSprite(directoryInfo11, BasicSpriteRegion.MOUTH_BATTLE, WorkerSpriteManager.SizeRef.Mouth());
 		this.LoadCustomSprite(directoryInfo12, BasicSpriteRegion.HAIR_FRONT, WorkerSpriteManager.SizeRef.FrontHair());
 		this.LoadCustomSprite(directoryInfo13, BasicSpriteRegion.HAIR_REAR, WorkerSpriteManager.SizeRef.RearHair());
+		/*>*/
+		foreach (DirectoryInfo dir in Add_On.instance.DirList)
+		{
+			this.LoadModSprites(dir);
+		}
 	}
 
 	// Token: 0x06005C49 RID: 23625 RVA: 0x0020B39C File Offset: 0x0020959C
@@ -1396,7 +1487,9 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x06005C4D RID: 23629 RVA: 0x0020B7A8 File Offset: 0x002099A8
 	public bool SpecialFindDir_Texture(string name, ref DirectoryInfo info, ref Texture2D tex)
-	{
+	{ // <Patch>
+		return this.SpecialFindDir_Texture_Mod(string.Empty, name, ref info, ref tex);
+		/*
 		bool flag = false;
 		foreach (DirectoryInfo dir in Add_On.instance.DirList)
 		{
@@ -1428,7 +1521,665 @@ public class WorkerSpriteManager : MonoBehaviour
 				break;
 			}
 		}
-		return flag;
+		return flag;*/
+	}
+
+	// <Patch>
+	public void LoadModSprites(DirectoryInfo dir)
+	{
+		this.CurModPath = dir.FullName;
+		DirectoryInfo directoryInfo = new DirectoryInfo(this.ModFolderSrc);
+		DirectoryInfo directoryInfo2 = new DirectoryInfo(this.ModEyeSrc);
+		DirectoryInfo directoryInfo3 = new DirectoryInfo(this.ModPanicEyeSrc);
+		DirectoryInfo directoryInfo4 = new DirectoryInfo(this.ModDeadEyeSrc);
+		DirectoryInfo directoryInfo5 = new DirectoryInfo(this.ModEyebrowSrc);
+		DirectoryInfo directoryInfo6 = new DirectoryInfo(this.ModBattleEyebrowSrc);
+		DirectoryInfo directoryInfo7 = new DirectoryInfo(this.ModPanicEyebrowSrc);
+		DirectoryInfo directoryInfo8 = new DirectoryInfo(this.ModMouthSrc);
+		DirectoryInfo directoryInfo9 = new DirectoryInfo(this.ModBattleMouthSrc);
+		DirectoryInfo directoryInfo10 = new DirectoryInfo(this.ModFrontHairSrc);
+		DirectoryInfo directoryInfo11 = new DirectoryInfo(this.ModRearHairSrc);
+		if (!directoryInfo.Exists)
+		{
+			return;
+		}
+		if (directoryInfo2.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo2, BasicSpriteRegion.EYE_DEFAULT, WorkerSpriteManager.SizeRef.Eye());
+		}
+		if (directoryInfo3.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo3, BasicSpriteRegion.EYE_PANIC, WorkerSpriteManager.SizeRef.Eye());
+		}
+		if (directoryInfo4.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo4, BasicSpriteRegion.EYE_DEAD, WorkerSpriteManager.SizeRef.Eye());
+		}
+		if (directoryInfo5.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo5, BasicSpriteRegion.EYEBROW, WorkerSpriteManager.SizeRef.Eyebrow());
+		}
+		if (directoryInfo6.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo6, BasicSpriteRegion.EYEBROW_BATTLE, WorkerSpriteManager.SizeRef.Eyebrow());
+		}
+		if (directoryInfo7.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo7, BasicSpriteRegion.EYEBROW_PANIC, WorkerSpriteManager.SizeRef.Eyebrow());
+		}
+		if (directoryInfo8.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo8, BasicSpriteRegion.MOUTH, WorkerSpriteManager.SizeRef.Mouth());
+		}
+		if (directoryInfo9.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo9, BasicSpriteRegion.MOUTH_BATTLE, WorkerSpriteManager.SizeRef.Mouth());
+		}
+		if (directoryInfo10.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo10, BasicSpriteRegion.HAIR_FRONT, WorkerSpriteManager.SizeRef.FrontHair());
+		}
+		if (directoryInfo11.Exists)
+		{
+			this.LoadCustomSprite(directoryInfo11, BasicSpriteRegion.HAIR_REAR, WorkerSpriteManager.SizeRef.RearHair());
+		}
+	}
+
+	// <Patch>
+	public string ModFolderSrc
+	{
+		get
+		{
+			return this.CurModPath + "/BaseModCustomData";
+		}
+	}
+
+	// <Patch>
+	public string ModHairSrc
+	{
+		get
+		{
+			return this.ModFolderSrc + "/Hair";
+		}
+	}
+
+	// <Patch>
+	public string ModFaceSrc
+	{
+		get
+		{
+			return this.ModFolderSrc + "/Face";
+		}
+	}
+
+	// <Patch>
+	public string ModFrontHairSrc
+	{
+		get
+		{
+			return this.ModHairSrc + "/Front";
+		}
+	}
+
+	// <Patch>
+	public string ModRearHairSrc
+	{
+		get
+		{
+			return this.ModHairSrc + "/Rear";
+		}
+	}
+
+	// <Patch>
+	public string ModEyeSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eye_Default";
+		}
+	}
+
+	// <Patch>
+	public string ModPanicEyeSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eye_Panic";
+		}
+	}
+
+	// <Patch>
+	public string ModDeadEyeSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eye_Dead";
+		}
+	}
+
+	// <Patch>
+	public string ModMouthSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Mouth_Default";
+		}
+	}
+
+	// <Patch>
+	public string ModBattleMouthSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Mouth_Battle";
+		}
+	}
+
+	// <Patch>
+	public string ModEyebrowSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eyebrow_Default";
+		}
+	}
+
+	// <Patch>
+	public string ModBattleEyebrowSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eyebrow_Battle";
+		}
+	}
+
+	// <Patch>
+	public string ModPanicEyebrowSrc
+	{
+		get
+		{
+			return this.ModFaceSrc + "/Eyebrow_Panic";
+		}
+	}
+
+	// <Patch>
+	public bool GetUniqueWeaponSpriteInfo_Mod(LobotomyBaseMod.KeyValuePairSS SS, out UniqueWeaponSpriteUnit unit)
+	{
+		if (SS.key == string.Empty)
+		{
+			this.GetWeaponSprite(WeaponClassType.SPECIAL, SS.value);
+			return this._uniqueWeaponDic.TryGetValue(SS.value + "_AbcdcodeMade", out unit);
+		}
+		this.GetWeaponSprite_Mod(WeaponClassType.SPECIAL, SS);
+		return this.uniqueWeaponDicMod.TryGetValue(SS, out unit);
+	}
+
+	// <Patch>
+	public bool SpecialFindDir_Texture_Mod(string modid, string name, ref DirectoryInfo info, ref Texture2D tex)
+	{
+		if (modid == string.Empty)
+		{
+			foreach (DirectoryInfo dir in Add_On.instance.DirList)
+			{
+				DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(dir, "Equipment");
+				if (directoryInfo != null)
+				{
+					if (!Directory.Exists(directoryInfo.FullName + "/Sprite/Weapon"))
+					{
+						continue;
+					}
+					DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/Sprite/Weapon");
+					if (directoryInfo2.GetFiles().Length != 0)
+					{
+						FileInfo[] files = directoryInfo2.GetFiles();
+						for (int i = 0; i < files.Length; i++)
+						{
+							if (files[i].Name == name + ".png")
+							{
+								info = directoryInfo2;
+								tex.LoadImage(File.ReadAllBytes(files[i].FullName));
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			ModInfo modInfo_patch = Add_On.instance.ModList.Find((ModInfo x) => x.modid == modid);
+			if (modInfo_patch != null)
+			{
+				DirectoryInfo directoryInfo3 = EquipmentDataLoader.CheckNamedDir(modInfo_patch.modpath, "Equipment");
+				if (Directory.Exists(directoryInfo3.FullName + "/Sprite/Weapon"))
+				{
+					DirectoryInfo directoryInfo4 = new DirectoryInfo(directoryInfo3.FullName + "/Sprite/Weapon");
+					if (directoryInfo4.GetFiles().Length != 0)
+					{
+						FileInfo[] files2 = directoryInfo4.GetFiles();
+						for (int j = 0; j < files2.Length; j++)
+						{
+							if (files2[j].Name == name + ".png")
+							{
+								info = directoryInfo4;
+								tex.LoadImage(File.ReadAllBytes(files2[j].FullName));
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// <Patch>
+	public Sprite GetWeaponSprite_Mod(WeaponClassType type, LobotomyBaseMod.KeyValuePairSS SS)
+	{ // <Mod> Modded Fists
+		Sprite sprite = null;
+		if (SS.key == string.Empty)
+		{
+			try
+			{
+				WorkerEquipmentSprite workerEquipmentSprite = null;
+				if (type == WeaponClassType.SPECIAL)
+				{
+					if (this._uniqueWeaponDic.ContainsKey(SS.value))
+					{
+						UniqueWeaponSpriteUnit uniqueWeaponSpriteUnit = null;
+						if (this._uniqueWeaponDic.TryGetValue(SS.value + "_AbcdcodeMade", out uniqueWeaponSpriteUnit))
+						{
+							sprite = uniqueWeaponSpriteUnit.CommonSprite;
+						}
+						else
+						{
+							Texture2D texture = new Texture2D(256, 256);
+							DirectoryInfo dir = null;
+							bool flag5 = this.SpecialFindDir_Texture(SS.value, ref dir, ref texture);
+							this._uniqueWeaponDic.Add(SS.value + "_AbcdcodeMade", this._uniqueWeaponDic[SS.value].GetCopy());
+							if (!flag5)
+							{
+								sprite = this._uniqueWeaponDic[SS.value + "_AbcdcodeMade"].CommonSprite;
+								return sprite;
+							}
+							this.MakeNewUniqueWeaponSpriteUnit(SS.value, this._uniqueWeaponDic[SS.value + "_AbcdcodeMade"], dir, texture, out sprite);
+						}
+					}
+					else
+					{
+						char[] separator = new char[]
+						{
+							'_'
+						};
+						string key = SS.value.Split(separator)[0];
+						if (this._uniqueWeaponDic.ContainsKey(key))
+						{
+							Texture2D texture2 = new Texture2D(256, 256);
+							DirectoryInfo dir2 = null;
+							bool flag8 = this.SpecialFindDir_Texture(SS.value, ref dir2, ref texture2);
+							this._uniqueWeaponDic.Add(SS.value, this._uniqueWeaponDic[key].GetCopy());
+							this._uniqueWeaponDic.Add(SS.value + "_AbcdcodeMade", this._uniqueWeaponDic[key].GetCopy());
+							if (!flag8)
+							{
+								sprite = this._uniqueWeaponDic[SS.value + "_AbcdcodeMade"].CommonSprite;
+								return sprite;
+							}
+							this.MakeNewUniqueWeaponSpriteUnit(SS.value, this._uniqueWeaponDic[SS.value + "_AbcdcodeMade"], dir2, texture2, out sprite);
+						}
+					}
+				}
+				else
+				{
+					if (type != WeaponClassType.FIST)
+					{
+						if (this.equipData.GetData(EquipmentSpriteRegion.WEAPON, out workerEquipmentSprite))
+						{
+							WorkerWeaponSprite workerWeaponSprite = workerEquipmentSprite as WorkerWeaponSprite;
+							FieldInfo field = typeof(WorkerWeaponSprite.WeaponDatabase).GetField("data", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+							Dictionary<string, Sprite> dictionary = (Dictionary<string, Sprite>)field.GetValue(workerWeaponSprite.GetDb((int)type));
+							Sprite sprite2 = null;
+							try
+							{
+								if (!dictionary.ContainsKey(SS.value))
+								{
+									if (type == WeaponClassType.SPEAR)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Spear_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.PISTOL)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Pistol_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.HAMMER)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Hammer_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.BOWGUN)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("BowGun_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.CANNON)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Cannon_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.AXE)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Axe_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.KNIFE)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Knife_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.MACE)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Mace_Set_01_0", out sprite2);
+									}
+									if (type == WeaponClassType.RIFLE)
+									{
+										workerWeaponSprite.GetDb((int)type).GetSprite("Rifle_Set_01_0", out sprite2);
+									}
+									Texture2D texture2D = new Texture2D(sprite2.texture.width, sprite2.texture.height);
+									foreach (DirectoryInfo dir3 in Add_On.instance.DirList)
+									{
+										bool flag21 = false;
+										DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(dir3, "Equipment");
+										if (directoryInfo != null)
+										{
+											if (!Directory.Exists(directoryInfo.FullName + "/Sprite/Weapon"))
+											{
+												continue;
+											}
+											DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/Sprite/Weapon");
+											if (directoryInfo2.GetFiles().Length != 0)
+											{
+												FileInfo[] files = directoryInfo2.GetFiles();
+												for (int i = 0; i < files.Length; i++)
+												{
+													if (files[i].Name == SS.value + ".png")
+													{
+														texture2D.LoadImage(File.ReadAllBytes(files[i].FullName));
+														flag21 = true;
+														break;
+													}
+												}
+											}
+										}
+										if (flag21)
+										{
+											break;
+										}
+									}
+									Vector2 vector = new Vector2(sprite2.pivot.x / sprite2.rect.width, sprite2.pivot.y / sprite2.rect.height);
+									Sprite sprite3 = Sprite.Create(texture2D, sprite2.rect, vector, sprite2.pixelsPerUnit, 0U, SpriteMeshType.FullRect, sprite2.border);
+									sprite3.name = SS.value;
+									dictionary.Add(SS.value, sprite3);
+									field.SetValue(workerWeaponSprite.GetDb((int)type), dictionary);
+								}
+								if (workerWeaponSprite.GetDb((int)type).GetSprite(SS.value, out sprite2))
+								{
+									return sprite2;
+								}
+							}
+							catch (Exception message)
+							{
+								Debug.LogError(message);
+								return null;
+							}
+						}
+						sprite = null;
+					}
+					else
+					{
+						Sprite[] fistSprite = this.GetFistSprite((int)float.Parse(SS.value));
+						if (fistSprite.Length <= 1)
+						{
+							sprite = null;
+						}
+						else
+						{
+							sprite = fistSprite[1];
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				LobotomyBaseMod.ModDebug.Log(" GetWeaponSprite error - " + ex.Message + Environment.NewLine + ex.StackTrace);
+				File.WriteAllText(Application.dataPath + "/BaseMods/error.txt", ex.Message + Environment.NewLine + ex.StackTrace);
+				sprite = null;
+			}
+			return sprite;
+		}
+		else
+		{
+			try
+			{
+				WorkerEquipmentSprite workerEquipmentSprite2 = null;
+				if (this.uniqueWeaponDicMod == null)
+				{
+					this.uniqueWeaponDicMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, UniqueWeaponSpriteUnit>();
+				}
+				if (this.CommonWeaponSpriteMod == null)
+				{
+					this.CommonWeaponSpriteMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite>();
+				}
+				if (type == WeaponClassType.SPECIAL)
+				{
+					if (this.uniqueWeaponDicMod.ContainsKey(SS))
+					{
+						return this.uniqueWeaponDicMod[SS].CommonSprite;
+					}
+					if (this._uniqueWeaponDic.ContainsKey(SS.value))
+					{
+						Texture2D texture3 = new Texture2D(256, 256);
+						DirectoryInfo dir4 = null;
+						bool flag33 = this.SpecialFindDir_Texture_Mod(SS.key, SS.value, ref dir4, ref texture3);
+						this.uniqueWeaponDicMod[SS] = this._uniqueWeaponDic[SS.value].GetCopy();
+						if (!flag33)
+						{
+							sprite = this.uniqueWeaponDicMod[SS].CommonSprite;
+							return sprite;
+						}
+						this.MakeNewUniqueWeaponSpriteUnit(SS.value, this.uniqueWeaponDicMod[SS], dir4, texture3, out sprite);
+					}
+					else
+					{
+						char[] separator2 = new char[]
+						{
+							'_'
+						};
+						string key2 = SS.value.Split(separator2)[0];
+						if (this._uniqueWeaponDic.ContainsKey(key2))
+						{
+							Texture2D texture4 = new Texture2D(256, 256);
+							DirectoryInfo dir5 = null;
+							bool flag36 = this.SpecialFindDir_Texture_Mod(SS.key, SS.value, ref dir5, ref texture4);
+							this.uniqueWeaponDicMod[SS] = this._uniqueWeaponDic[key2].GetCopy();
+							if (!flag36)
+							{
+								sprite = this.uniqueWeaponDicMod[SS].CommonSprite;
+								return sprite;
+							}
+							this.MakeNewUniqueWeaponSpriteUnit(SS.value, this.uniqueWeaponDicMod[SS], dir5, texture4, out sprite);
+						}
+					}
+				}
+				else
+				{
+					if (type != WeaponClassType.FIST)
+					{
+						if (this.CommonWeaponSpriteMod.ContainsKey(SS))
+						{
+							return this.CommonWeaponSpriteMod[SS];
+						}
+						if (this.equipData.GetData(EquipmentSpriteRegion.WEAPON, out workerEquipmentSprite2))
+						{
+							WorkerWeaponSprite workerWeaponSprite2 = workerEquipmentSprite2 as WorkerWeaponSprite;
+							FieldInfo field2 = typeof(WorkerWeaponSprite.WeaponDatabase).GetField("data", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+							Dictionary<string, Sprite> dictionary2 = (Dictionary<string, Sprite>)field2.GetValue(workerWeaponSprite2.GetDb((int)type));
+							Sprite sprite5 = null;
+							if (!dictionary2.ContainsKey(SS.value))
+							{
+								if (type == WeaponClassType.SPEAR)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Spear_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.PISTOL)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Pistol_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.HAMMER)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Hammer_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.BOWGUN)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("BowGun_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.CANNON)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Cannon_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.AXE)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Axe_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.KNIFE)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Knife_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.MACE)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Mace_Set_01_0", out sprite5);
+								}
+								if (type == WeaponClassType.RIFLE)
+								{
+									workerWeaponSprite2.GetDb((int)type).GetSprite("Rifle_Set_01_0", out sprite5);
+								}
+								Texture2D texture2D2 = new Texture2D(sprite5.texture.width, sprite5.texture.height);
+								ModInfo modInfo_patch = Add_On.instance.ModList.Find((ModInfo x) => x.modid == SS.key);
+								if (modInfo_patch != null)
+								{
+									DirectoryInfo directoryInfo3 = EquipmentDataLoader.CheckNamedDir(modInfo_patch.modpath, "Equipment");
+									if (directoryInfo3 != null)
+									{
+										if (Directory.Exists(directoryInfo3.FullName + "/Sprite/Weapon"))
+										{
+											DirectoryInfo directoryInfo4 = new DirectoryInfo(directoryInfo3.FullName + "/Sprite/Weapon");
+											if (directoryInfo4.GetFiles().Length != 0)
+											{
+												FileInfo[] files2 = directoryInfo4.GetFiles();
+												for (int j = 0; j < files2.Length; j++)
+												{
+													if (files2[j].Name == SS.value + ".png")
+													{
+														texture2D2.LoadImage(File.ReadAllBytes(files2[j].FullName));
+														break;
+													}
+												}
+											}
+										}
+									}
+									Vector2 vector2 = new Vector2(sprite5.pivot.x / sprite5.rect.width, sprite5.pivot.y / sprite5.rect.height);
+									Sprite sprite6 = Sprite.Create(texture2D2, sprite5.rect, vector2, sprite5.pixelsPerUnit, 0U, SpriteMeshType.FullRect, sprite5.border);
+									sprite6.name = SS.value;
+									this.CommonWeaponSpriteMod[SS] = sprite6;
+									return this.CommonWeaponSpriteMod[SS];
+								}
+							}
+						}
+						sprite = null;
+					}
+					else
+					{
+						Sprite[] fistSprite2 = this.GetFistSprite(SS);
+						if (fistSprite2.Length <= 1)
+						{
+							sprite = null;
+						}
+						else
+						{
+							sprite = fistSprite2[1];
+						}
+					}
+				}
+				return sprite;
+			}
+			catch (Exception ex2)
+			{
+				LobotomyBaseMod.ModDebug.Log("GetWeaponSpriteMod error - " + ex2.Message + Environment.NewLine + ex2.StackTrace);
+			}
+		}
+		return null;
+	}
+
+	// <Patch>
+	public void GetArmorData_Mod(LobotomyBaseMod.LcId id, ref WorkerSprite.WorkerSprite set)
+	{
+		if (id.packageId == string.Empty)
+		{
+			this.GetArmorData(id.id, ref set);
+		}
+		else
+		{
+			if (this.ClothesSetMod == null)
+			{
+				this.ClothesSetMod = new Dictionary<LobotomyBaseMod.LcId, SpriteResourceLoadData>();
+			}
+			if (this.ClothesSetMod.ContainsKey(id))
+			{
+				set.Armor.SetSprite(this.ClothesSetMod[id]);
+			}
+			foreach (ModInfo modInfo in Add_On.instance.ModList)
+			{
+				if (modInfo.modid == id.packageId)
+				{
+					Texture2D texture2D = new Texture2D(2, 2);
+					bool flag5 = false;
+					DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(modInfo.modpath, "Equipment");
+					if (directoryInfo != null)
+					{
+						if (!Directory.Exists(directoryInfo.FullName + "/Sprite/Armor"))
+						{
+							continue;
+						}
+						DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/Sprite/Armor");
+						if (directoryInfo2.GetFiles().Length != 0)
+						{
+							FileInfo[] files = directoryInfo2.GetFiles();
+							for (int i = 0; i < files.Length; i++)
+							{
+								if (files[i].Name == id.id.ToString() + ".png")
+								{
+									texture2D.LoadImage(File.ReadAllBytes(files[i].FullName));
+									flag5 = true;
+									break;
+								}
+							}
+						}
+					}
+					if (flag5)
+					{
+						SpriteResourceLoadData clothesSet = this.GetClothesSet(0);
+						AtlasLoadData atlasLoadData = new AtlasLoadData();
+						atlasLoadData.sprites.Clear();
+						for (int j = 0; j < (clothesSet as AtlasLoadData).sprites.Count; j++)
+						{
+							Sprite sprite = (clothesSet as AtlasLoadData).sprites[j];
+							Vector2 vector = new Vector2(sprite.pivot.x / sprite.rect.width, sprite.pivot.y / sprite.rect.height);
+							Sprite sprite2 = Sprite.Create(Add_On.duplicateTexture(texture2D), sprite.rect, vector, sprite.pixelsPerUnit, 0U, SpriteMeshType.FullRect, sprite.border, true);
+							sprite2.name = sprite.name;
+							atlasLoadData.sprites.Add(sprite2);
+							atlasLoadData.count++;
+						}
+						this.ClothesSetMod[id] = atlasLoadData;
+						set.Armor.SetSprite(this.ClothesSetMod[id]);
+						return;
+					}
+				}
+			}
+			LobotomyBaseMod.ModDebug.Log("GetArmorData_Mod No Match! Id : " + id.ToString());
+		}
 	}
 
 	// Token: 0x04005413 RID: 21523
@@ -1513,6 +2264,25 @@ public class WorkerSpriteManager : MonoBehaviour
 
 	// Token: 0x0400542D RID: 21549
 	public static Sprite Special_Basic;
+
+	// <Patch>
+	public string CurModPath;
+
+	// <Patch>
+	[NonSerialized]
+	public Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite> CommonWeaponSpriteMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite>();
+
+	// <Patch>
+	[NonSerialized]
+	public Dictionary<LobotomyBaseMod.KeyValuePairSS, UniqueWeaponSpriteUnit> uniqueWeaponDicMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, UniqueWeaponSpriteUnit>();
+
+	// <Patch>
+	[NonSerialized]
+	public Dictionary<LobotomyBaseMod.LcId, SpriteResourceLoadData> ClothesSetMod = new Dictionary<LobotomyBaseMod.LcId, SpriteResourceLoadData>();
+
+	// <Mod>
+	[NonSerialized]
+	public Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite[]> FistWeaponSpriteMod = new Dictionary<LobotomyBaseMod.KeyValuePairSS, Sprite[]>();
 
 	// Token: 0x02000BE7 RID: 3047
 	public class SizeRef

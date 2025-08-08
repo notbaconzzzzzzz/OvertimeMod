@@ -78,9 +78,15 @@ public class CircusOrdealCreature : CreatureBase
 
 	// Token: 0x04002066 RID: 8294
 	protected readonly int[] _spawnDown = new int[]
-	{
+	{ // <Mod>
 		3,
-		1
+		1,
+		0,
+		0,
+		4,
+		1,
+		0,
+		0
 	};
 
 	// Token: 0x04002067 RID: 8295

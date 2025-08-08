@@ -1,3 +1,14 @@
+/*
++public virtual void OnDestroy() // 
++public virtual void OnTakeDamage_After(UnitModel actor, DamageInfo dmg) // 
++public virtual bool IsTranqable() // 
++public virtual void OnTranquilized() // 
++public virtual void OnTranqEnd() // 
++public virtual int SuppressionEnergy // 
++public virtual void ForceSpawnWithoutRoom() // 
++public virtual void TryForceAggro(UnitModel unit) // 
++public virtual float ModifyWorkProbPrediction(AgentModel agent, SkillTypeInfo skill, float baseProb) // 
+*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,16 +57,24 @@ public class CreatureBase
 	// Token: 0x170002C2 RID: 706
 	// (get) Token: 0x06002043 RID: 8259 RVA: 0x000219DA File Offset: 0x0001FBDA
 	public string GetSaveSrc
-	{
+	{ // <Patch>
 		get
 		{
 			return string.Concat(new object[]
 			{
 				Application.persistentDataPath,
 				"/creatureData/",
-				this.model.metadataId,
+				CreatureTypeList.instance.GetModId(this.model.metaInfo) + this.model.metadataId.ToString(),
 				".dat"
 			});
+			/*
+			return string.Concat(new object[]
+			{
+				Application.persistentDataPath,
+				"/creatureData/",
+				this.model.metadataId,
+				".dat"
+			});*/
 		}
 	}
 
@@ -1135,6 +1154,100 @@ public class CreatureBase
 		return true;
 	}
 
+    //> <Mod>
+    public virtual void OnDestroy()
+    {
+    }
+
+	public virtual void OnTakeDamage_After(UnitModel actor, DamageInfo dmg)
+	{
+
+	}
+
+	public virtual bool IsTranqable()
+	{
+		if (model.IsEscaped() || model.IsWorkingState() || (model.metaInfo.creatureKitType == CreatureKitType.EQUIP && model.kitEquipOwner != null)) return false;
+		return true;
+	}
+
+	public virtual void OnTranquilized()
+	{
+		
+	}
+
+	public virtual void OnTranqEnd()
+	{
+		
+	}
+
+	public virtual bool SendWhileTranqed
+	{
+		get
+		{
+			return false;
+		}
+	}
+
+	public virtual bool UpdateWhileTranqed
+	{
+		get
+		{
+			return false;
+		}
+	}
+
+	public virtual int SuppressionEnergy
+	{
+		get
+		{
+			if (model is ChildCreatureModel || model is OrdealCreatureModel || model is SefiraBossCreatureModel) return 0;
+			switch (model.GetRiskLevel())
+			{
+				case 1:
+				case 2:
+					return 5;
+				case 3:
+					return 15;
+				case 4:
+					return 30;
+				case 5:
+					return 50;
+			}
+			return 0;
+		}
+	}
+
+	public virtual void ForceSpawnWithoutRoom()
+	{
+		OnStageStart();
+		Escape();
+		if (model.state != CreatureState.ESCAPE)
+		{
+			model.EscapeWithoutIsolateRoom();
+		}
+	}
+
+	public virtual void TryForceAggro(UnitModel unit)
+	{
+		
+	}
+
+	public virtual void TryAttractAttention(PassageObjectModel passage, bool tryCancelAggro, MapNode node = null)
+	{
+		
+	}
+
+	public virtual float ModifyWorkProbPrediction(AgentModel agent, SkillTypeInfo skill, float baseProb)
+	{
+		return 0f;
+	}
+
+	public virtual CreatureFeelingState ModifyFeelingState(UseSkill skill, CreatureFeelingState state)
+	{
+		return state;
+	}
+	//<
+
 	// Token: 0x04002086 RID: 8326
 	public const string isolateSpriteSrc = "Sprites/CreatureSprite/Isolate/";
 
@@ -1167,6 +1280,9 @@ public class CreatureBase
 
 	// Token: 0x04002090 RID: 8336
 	private SkillTriggerCheck _check;
+
+	// <Mod>
+	public bool isTranq;
 
 	// Token: 0x020003DE RID: 990
 	public class CreatureTimer

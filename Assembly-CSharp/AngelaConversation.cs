@@ -550,7 +550,7 @@ public class AngelaConversation
 		{
 			string text2 = list[i].calledName;
 			string str = string.Empty;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.MALKUT) || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.MALKUT, false) || SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E1))
 			{
 				text2 = "Unknown</color>";
 			}
@@ -591,19 +591,31 @@ public class AngelaConversation
 
 	// Token: 0x0600340F RID: 13327 RVA: 0x0015BED8 File Offset: 0x0015A0D8
 	public string RefineCreatureName(string origin, List<CreatureModel> list)
-	{
+	{ // <Mod>
+		bool isOvertimeYesod = SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true);
 		int count = list.Count;
 		string text = origin;
 		for (int i = 0; i < count; i++)
 		{
-			text = text.Replace("#2$" + i, "<color=#ef9696>" + list[i].GetUnitName() + "</color>");
+			if (isOvertimeYesod)
+			{
+				text = text.Replace("#2$" + i, "<color=#ef9696>????????</color>");
+			}
+			else
+			{
+				text = text.Replace("#2$" + i, "<color=#ef9696>" + list[i].GetUnitName() + "</color>");
+			}
 		}
 		return text;
 	}
 
 	// Token: 0x06003410 RID: 13328 RVA: 0x0015BF34 File Offset: 0x0015A134
 	public string RefineCreatureName(string origin, CreatureModel target)
-	{
+	{ // <Mod>
+		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
+		{
+			return origin.Replace("#2$0", "<color=#ef9696>????????</color>");
+		}
 		return origin.Replace("#2$0", "<color=#ef9696>" + target.GetUnitName() + "</color>");
 	}
 

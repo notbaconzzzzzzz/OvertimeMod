@@ -1,3 +1,6 @@
+/*
+private void Transform(Nothing.NothingForm form) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -853,7 +856,7 @@ public class Nothing : CreatureBase
 
 	// Token: 0x06002600 RID: 9728 RVA: 0x001122B0 File Offset: 0x001104B0
 	private void Transform(Nothing.NothingForm form)
-	{
+	{ // <Mod>
 		this.animScript.ChangeForm(form);
 		this.currentForm = form;
 		this.SetDefenseType();
@@ -881,6 +884,7 @@ public class Nothing : CreatureBase
 		case Nothing.NothingForm.LV2:
 			this.model.hp = (float)(this.model.baseMaxHp = 2000);
 			this.model.movementScale = 1.2f;
+            model.movementScale *= 1f / model.GetMovementScaleByBuf();
 			this.MakeEffectGlobalPos("Effect/Creature/Nullthing/NullthingEggBreak", base.Unit.transform.position);
 			this.defSound.StopTimer();
 			this.currentDefSoundFrq = 25f;

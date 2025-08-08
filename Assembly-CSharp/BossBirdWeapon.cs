@@ -1,3 +1,7 @@
+/*
++public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg) // Fixed the final hit of the special attack not working
+modifed static value
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -153,9 +157,66 @@ public class BossBirdWeapon : EquipmentScriptBase
 		}
 	}
 
-	// Token: 0x060035E0 RID: 13792 RVA: 0x00030BCA File Offset: 0x0002EDCA
-	// Note: this type is marked as 'beforefieldinit'.
-	static BossBirdWeapon()
+    // <Mod>
+    public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
+    {
+		WeaponModel weapon = model as WeaponModel;
+		Queue<DamageInfo> damageQueue = weapon.GetDamageQueue();
+		if (!_isSpecialAttack || damageQueue.Count > 1 || damageQueue.Count <= 0)
+		{
+			base.OnGiveDamageAfter(actor, target, dmg);
+			return;
+		}
+        DamageInfo damageInfo = damageQueue.ToArray()[0].Copy();
+        bool flag = OnGiveDamage(actor, target, ref damageInfo);
+        if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, target, ref damageInfo))
+        {
+            flag = false;
+        }
+        if (actor.Equipment.gifts != null && !actor.Equipment.gifts.OnGiveDamage(actor, target, ref damageInfo))
+        {
+            flag = false;
+        }
+        if (actor.GetUnitBufList().Count > 0)
+        {
+            using (List<UnitBuf>.Enumerator enumerator2 = actor.GetUnitBufList().GetEnumerator())
+            {
+                while (enumerator2.MoveNext())
+                {
+                    if (!enumerator2.Current.OnGiveDamage(actor, target, ref damageInfo))
+                    {
+                        flag = false;
+                    }
+                }
+            }
+        }
+        if (flag)
+        {
+            target.TakeDamage(actor, damageInfo);
+            // OnGiveDamageAfter(actor, target, damageInfo);
+            if (actor.Equipment.armor != null && actor.Equipment.armor.script != null)
+            {
+                actor.Equipment.armor.script.OnGiveDamageAfter(actor, target, damageInfo);
+            }
+            if (actor.GetUnitBufList().Count > 0)
+            {
+                foreach (UnitBuf unitBuf in actor.GetUnitBufList())
+                {
+                    unitBuf.OnGiveDamageAfter(actor, target, damageInfo);
+                }
+            }
+            if (target is WorkerModel && (target as WorkerModel).IsDead())
+            {
+                OnKillMainTarget(actor, target);
+            }
+            weapon.InvokeEffect(target, damageInfo, weapon.GetDir(actor, target));
+        }
+        base.OnGiveDamageAfter(actor, target, dmg);
+    }
+
+    // Token: 0x060035E0 RID: 13792 RVA: 0x00030BCA File Offset: 0x0002EDCA
+    // Note: this type is marked as 'beforefieldinit'.
+    static BossBirdWeapon()
 	{
 	}
 
@@ -163,7 +224,7 @@ public class BossBirdWeapon : EquipmentScriptBase
 	private const string effectSrc = "Effect/Creature/BigBird/BossBirdWeaponEffect";
 
 	// Token: 0x040031D8 RID: 12760
-	private const float _skillCoolTime = 60f;
+	private const float _skillCoolTime = 45f; // <Mod> changed from 60 seconds
 
 	// Token: 0x040031D9 RID: 12761
 	private static int[] normalDamageAry = new int[]

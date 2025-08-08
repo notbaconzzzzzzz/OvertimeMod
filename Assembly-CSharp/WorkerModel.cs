@@ -1,3 +1,14 @@
+/*
+public override void TakeDamageWithoutEffect(UnitModel actor, DamageInfo dmg) // Chesed research
+public override void TakeDamage(UnitModel actor, DamageInfo dmg) // Chesed research; Notice
+public virtual void RecoverHp(float amount) // Changed from void to float
++public virtual float RecoverHpv2(float amount) // Changed from void to float
+public virtual void RecoverMental(float amount) // Changed from void to float
++public virtual float RecoverMentalv2(float amount) // Changed from void to float
++public UnitMouseEventTarget GetUnitMouseTarget() // 
++public void SetUnitMouseTarget(UnitMouseEventTarget target) // 
++private UnitMouseEventTarget _unitMouseTarget // 
+*/
 using System;
 using System.Collections.Generic;
 using Spine;
@@ -5,7 +16,7 @@ using UnityEngine;
 using WorkerSprite;
 
 // Token: 0x02000BDD RID: 3037
-public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
+public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMouseCommandTargetModelExt // public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 {
 	// Token: 0x06005B9F RID: 23455 RVA: 0x00207AB8 File Offset: 0x00205CB8
 	public WorkerModel()
@@ -429,8 +440,20 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 
 	// Token: 0x06005BCF RID: 23503 RVA: 0x00207E1C File Offset: 0x0020601C
 	public override void TakeDamageWithoutEffect(UnitModel actor, DamageInfo dmg)
-	{
-		dmg = dmg.Copy();
+	{ // <Mod> Chesed research; Damage Result
+		if (dmg.result.activated)
+		{
+			dmg.result.activated = false;
+			dmg = dmg.Copy();
+			dmg.result.activated = true;
+		}
+		else
+		{
+			dmg.result.activated = true;
+			dmg = dmg.Copy();
+		}
+		DamageResult result = dmg.result;
+		result.ResetValues(dmg);
 		if (this.invincible && !base.HasUnitBuf(UnitBufType.OTHER_WORLD_PORTRAIT_VICTIM))
 		{
 			return;
@@ -450,8 +473,13 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		base.Equipment.gifts.OnTakeDamage(actor, ref dmg);
 		float num = dmg.GetDamage();
+		result.beforeShield = num;
+		result.byResist = num;
+		result.originDamage = num;
 		if (dmg.type == RwbpType.R)
 		{
+			result.resultDamage = num;
+			result.hpDamage = num;
 			float hp = this.hp;
 			this.hp -= num;
 			float num2 = hp - this.hp;
@@ -462,9 +490,11 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		else if (dmg.type == RwbpType.W)
 		{
+			result.resultDamage = num;
 			float num3 = this.mental;
 			if (this.CannotControll() && this.unconAction is Uncontrollable_RedShoes)
 			{
+				result.hpDamage = num;
 				num3 = this.hp;
 				this.hp -= num;
 				float num4 = this.hp - num3;
@@ -475,11 +505,13 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			}
 			else if (this.IsPanic() && !(this is OfficerModel) && actor is WorkerModel && !((WorkerModel)actor).CannotControll() && !((WorkerModel)actor).IsPanic())
 			{
+				result.spDamage = -num;
 				this.mental += num;
 				float num4 = this.mental - num3;
 			}
 			else
 			{
+				result.spDamage = num;
 				this.mental -= num;
 				float num4 = num3 - this.mental;
 				if (base.Equipment.kitCreature != null)
@@ -490,14 +522,18 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		else if (dmg.type == RwbpType.B)
 		{
+			result.resultDamage = num;
+			result.hpDamage = num;
 			float hp2 = this.hp;
 			this.hp -= num;
 			if (this.IsPanic() && !(this is OfficerModel) && actor is WorkerModel && !((WorkerModel)actor).CannotControll() && !((WorkerModel)actor).IsPanic())
 			{
+				result.spDamage = -num;
 				this.mental += num;
 			}
 			else
 			{
+				result.spDamage = num;
 				this.mental -= num;
 				if (base.Equipment.kitCreature != null)
 				{
@@ -513,6 +549,9 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		{
 			float num5 = num / 100f;
 			num = (float)this.maxHp * num5;
+			result.scaling = maxHp / 100f;
+			result.resultDamage = num;
+			result.hpDamage = num;
 			this.hp -= num;
 			if (base.Equipment.kitCreature != null)
 			{
@@ -521,6 +560,8 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		else if (dmg.type == RwbpType.N)
 		{
+			result.resultDamage = num;
+			result.hpDamage = num;
 			float hp3 = this.hp;
 			this.hp -= num;
 			float num6 = hp3 - this.hp;
@@ -545,7 +586,23 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		if (this.hp <= 0f)
 		{
-			if (UnityEngine.Random.value <= 0.25f && this.isRealWorker)
+			float revivalChance = 0f;
+			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+			{
+				revivalChance = 1f;
+			}
+			else
+			{
+				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				{
+					revivalChance += 0.25f;
+				}
+				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+				{
+					revivalChance += 0.15f;
+				}
+			}
+			if (UnityEngine.Random.value < revivalChance && this.isRealWorker)
 			{
 				this._revivalHp = true;
 			}
@@ -553,7 +610,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				this._revivalHp = false;
 			}
-			if (!this._revivaledHp && this._revivalHp && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED) && this.DeadType != DeadType.EXECUTION)
+			if (!this._revivaledHp && this._revivalHp && this.DeadType != DeadType.EXECUTION)
 			{
 				this.hp = 1f;
 				this._revivaledHp = true;
@@ -578,17 +635,33 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		else
 		{
-			if (UnityEngine.Random.value <= 0.25f && this.isRealWorker)
-			{
-				this._revivalMental = true;
-			}
-			else
-			{
-				this._revivalMental = false;
-			}
 			if (this.mental <= 0f)
 			{
-				if (!this._revivaledMental && this._revivalMental && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				float revivalChance = 0f;
+				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+				{
+					revivalChance = 1f;
+				}
+				else
+				{
+					if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+					{
+						revivalChance += 0.25f;
+					}
+					if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+					{
+						revivalChance += 0.15f;
+					}
+				}
+				if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
+				{
+					this._revivalMental = true;
+				}
+				else
+				{
+					this._revivalMental = false;
+				}
+				if (!this._revivaledMental && this._revivalMental)
 				{
 					this._revivaledMental = true;
 					this._revivalMental = false;
@@ -603,18 +676,44 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		if (base.Equipment.armor != null)
 		{
 			base.Equipment.armor.OnTakeDamage_After(num, dmg.type);
+			base.Equipment.armor.OnTakeDamage_After(actor, dmg);
 		}
 		if (base.Equipment.weapon != null)
 		{
 			base.Equipment.weapon.OnTakeDamage_After(num, dmg.type);
+			base.Equipment.weapon.OnTakeDamage_After(actor, dmg);
 		}
 		base.Equipment.gifts.OnTakeDamage_After(num, dmg.type);
+		base.Equipment.gifts.OnTakeDamage_After(actor, dmg);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			unitBuf.OnTakeDamage_After(actor, dmg);
+		}
 	}
 
 	// Token: 0x06005BD0 RID: 23504 RVA: 0x002084A0 File Offset: 0x002066A0
 	public override void TakeDamage(UnitModel actor, DamageInfo dmg)
-	{
-		dmg = dmg.Copy();
+	{ // <Mod> Chesed research; send notice; Damage Result
+		if (dmg.result.activated)
+		{
+			dmg.result.activated = false;
+			dmg = dmg.Copy();
+			dmg.result.activated = true;
+		}
+		else
+		{
+			dmg.result.activated = true;
+			dmg = dmg.Copy();
+		}
+		if (actor is CreatureModel)
+		{
+			float mult = 1f;
+			mult = actor.GetDamageFactorByEquipment();
+			dmg.min *= mult;
+			dmg.max *= mult;
+		}
+		DamageResult result = dmg.result;
+		result.ResetValues(dmg);
 		if (this.invincible && !base.HasUnitBuf(UnitBufType.OTHER_WORLD_PORTRAIT_VICTIM))
 		{
 			return;
@@ -623,6 +722,8 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		{
 			return;
 		}
+		float originalMin = dmg.min;
+		float originalMax = dmg.max;
 		base.TakeDamage(actor, dmg);
 		if (base.Equipment.armor != null)
 		{
@@ -640,6 +741,22 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		num *= this.GetBufDamageMultiplier(actor, dmg);
 		float num2 = dmg.GetDamageWithDefenseInfo(this.defense) * num;
+		result.beforeShield = num2;
+		float originalDamage = num2;
+		originalDamage /= num;
+		result.byResist = originalDamage;
+		originalDamage /= defense.GetMultiplier(dmg.type);
+		result.originDamage = originalDamage;
+		if (actor is CreatureModel)
+		{
+            Notice.instance.Send(NoticeName.CreatureHitWorker, new object[]
+            {
+				actor,
+				originalDamage,
+                dmg,
+				this
+            });
+		}
 		if (dmg.type == RwbpType.R)
 		{
 			BarrierBuf[] array = this._barrierBufList.ToArray();
@@ -647,6 +764,8 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				num2 = array[i].UseBarrier(RwbpType.R, num2);
 			}
+			result.resultDamage = num2;
+			result.hpDamage = num2;
 			float num3 = (float)((int)this.hp);
 			this.hp -= num2;
 			float value = num3 - (float)((int)this.hp);
@@ -654,6 +773,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				base.Equipment.kitCreature.script.kitEvent.OnTakeDamagePhysical(this, num2);
 			}
+			result.resultNumber = (int)value;
 			this.MakeDamageEffect(RwbpType.R, value, this.defense.GetDefenseType(RwbpType.R));
 			float num4 = (float)this.maxHp;
 			if (num4 > 0f && UnityEngine.Random.value < num2 * 2f / num4)
@@ -668,10 +788,12 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				num2 = array2[j].UseBarrier(RwbpType.W, num2);
 			}
+			result.resultDamage = num2;
 			float num5 = this.mental;
 			float value2;
 			if (this.CannotControll() && this.unconAction is Uncontrollable_RedShoes)
 			{
+				result.hpDamage = num2;
 				num5 = this.hp;
 				this.hp -= num2;
 				value2 = (float)((int)this.hp - (int)num5);
@@ -682,17 +804,21 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			}
 			else if (this.IsPanic() && !(this is OfficerModel) && actor is WorkerModel && !((WorkerModel)actor).CannotControll() && !((WorkerModel)actor).IsPanic())
 			{
+				result.spDamage = -num2;
 				this.mental += num2;
 				value2 = this.mental - num5;
 			}
 			else if (this is OfficerModel)
 			{
+				result.hpDamage = num2;
+				result.spDamage = num2;
 				this.mental -= num2;
 				this.hp -= num2;
 				value2 = num5 - this.hp;
 			}
 			else
 			{
+				result.spDamage = num2;
 				this.mental -= num2;
 				value2 = num5 - this.mental;
 				if (base.Equipment.kitCreature != null)
@@ -700,6 +826,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 					base.Equipment.kitCreature.script.kitEvent.OnTakeDamageMental(this, num2);
 				}
 			}
+			result.resultNumber = (int)value2;
 			this.MakeDamageEffect(RwbpType.W, value2, this.defense.GetDefenseType(RwbpType.W));
 		}
 		else if (dmg.type == RwbpType.B)
@@ -709,21 +836,26 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				num2 = array3[k].UseBarrier(RwbpType.B, num2);
 			}
+			result.resultDamage = num2;
+			result.hpDamage = num2;
 			float num6 = (float)((int)this.hp);
 			this.hp -= num2;
 			float value3 = num6 - (float)((int)this.hp);
 			if (this.IsPanic() && !(this is OfficerModel) && actor is WorkerModel && !((WorkerModel)actor).CannotControll() && !((WorkerModel)actor).IsPanic())
 			{
+				result.spDamage = -num2;
 				this.mental += num2;
 			}
 			else
 			{
+				result.spDamage = num2;
 				this.mental -= num2;
 				if (base.Equipment.kitCreature != null)
 				{
 					base.Equipment.kitCreature.script.kitEvent.OnTakeDamageMental(this, num2);
 				}
 			}
+			result.resultNumber = (int)value3;
 			this.MakeDamageEffect(RwbpType.B, value3, this.defense.GetDefenseType(RwbpType.B));
 			float num7 = (float)this.maxHp;
 			if (num7 > 0f && UnityEngine.Random.value < num2 * 2f / num7)
@@ -735,11 +867,14 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		{
 			float num8 = num2 / 100f;
 			num2 = (float)this.maxHp * num8;
+			result.scaling = maxHp / 100f;
 			BarrierBuf[] array4 = this._barrierBufList.ToArray();
 			for (int l = 0; l < array4.Length; l++)
 			{
 				num2 = array4[l].UseBarrier(RwbpType.P, num2);
 			}
+			result.resultDamage = num2;
+			result.hpDamage = num2;
 			float num9 = (float)((int)this.hp);
 			this.hp -= num2;
 			float value4 = num9 - (float)((int)this.hp);
@@ -747,10 +882,13 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				base.Equipment.kitCreature.script.kitEvent.OnTakeDamagePhysical(this, num2);
 			}
+			result.resultNumber = (int)value4;
 			this.MakeDamageEffect(RwbpType.P, value4, this.defense.GetDefenseType(RwbpType.P));
 		}
 		else if (dmg.type == RwbpType.N)
 		{
+			result.resultDamage = num2;
+			result.hpDamage = num2;
 			float hp = this.hp;
 			this.hp -= num2;
 			float value5 = hp - this.hp;
@@ -758,6 +896,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				base.Equipment.kitCreature.script.kitEvent.OnTakeDamagePhysical(this, num2);
 			}
+			result.resultNumber = (int)value5;
 			this.MakeDamageEffect(RwbpType.N, value5, DefenseInfo.Type.NONE);
 		}
 		if (num2 > 0f && this.defense.GetMultiplier(dmg.type) > 1f)
@@ -776,7 +915,23 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		if (this.hp <= 0f)
 		{
-			if (UnityEngine.Random.value <= 0.25f && this.isRealWorker)
+			float revivalChance = 0f;
+			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+			{
+				revivalChance = 1f;
+			}
+			else
+			{
+				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				{
+					revivalChance += 0.25f;
+				}
+				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+				{
+					revivalChance += 0.15f;
+				}
+			}
+			if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
 			{
 				this._revivalHp = true;
 			}
@@ -784,7 +939,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				this._revivalHp = false;
 			}
-			if (!this._revivaledHp && this._revivalHp && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED) && this.DeadType != DeadType.EXECUTION)
+			if (!this._revivaledHp && this._revivalHp && this.DeadType != DeadType.EXECUTION)
 			{
 				this.hp = 1f;
 				this._revivaledHp = true;
@@ -809,7 +964,23 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		}
 		else if (this.mental <= 0f)
 		{
-			if (UnityEngine.Random.value <= 0.25f && this.isRealWorker)
+			float revivalChance = 0f;
+			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+			{
+				revivalChance = 1f;
+			}
+			else
+			{
+				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+				{
+					revivalChance += 0.25f;
+				}
+				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+				{
+					revivalChance += 0.15f;
+				}
+			}
+			if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
 			{
 				this._revivalMental = true;
 			}
@@ -817,7 +988,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			{
 				this._revivalMental = false;
 			}
-			if (!this._revivaledMental && this._revivalMental && MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+			if (!this._revivaledMental && this._revivalMental)
 			{
 				this._revivaledMental = true;
 				this._revivalMental = false;
@@ -831,12 +1002,20 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		if (base.Equipment.armor != null)
 		{
 			base.Equipment.armor.OnTakeDamage_After(num2, dmg.type);
+			base.Equipment.armor.OnTakeDamage_After(actor, dmg);
 		}
 		if (base.Equipment.weapon != null)
 		{
 			base.Equipment.weapon.OnTakeDamage_After(num2, dmg.type);
+			base.Equipment.weapon.OnTakeDamage_After(actor, dmg);
 		}
 		base.Equipment.gifts.OnTakeDamage_After(num2, dmg.type);
+		base.Equipment.gifts.OnTakeDamage_After(actor, dmg);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			unitBuf.OnTakeDamage_After(actor, dmg);
+		}
+		result.activated = false;
 	}
 
 	// Token: 0x06005BD1 RID: 23505 RVA: 0x00208C2C File Offset: 0x00206E2C
@@ -960,15 +1139,53 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 
 	// Token: 0x06005BD9 RID: 23513 RVA: 0x00208E78 File Offset: 0x00207078
 	public virtual void RecoverHP(float amount)
+	{ // <Mod>
+        RecoverHPv2(amount);
+    }
+
+    // <Mod>
+	public virtual float RecoverHPv2(float amount)
 	{
 		if (this.IsDead())
 		{
-			return;
+			return 0f;
 		}
 		if (this.blockRecover)
 		{
-			return;
+			return 0f;
 		}
+		float num = 1f;
+		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
+		{
+			num *= base.Equipment.weapon.script.RecoveryMultiplier(false, amount);
+		}
+		if (base.Equipment.armor != null && base.Equipment.armor.script != null)
+		{
+			num *= base.Equipment.armor.script.RecoveryMultiplier(false, amount);
+		}
+		num *= base.Equipment.gifts.RecoveryMultiplier(false, amount);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			num *= unitBuf.RecoveryMultiplier(false, amount);
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("regenerator_healing_boost") && (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) || OvertimeNetzachBossBuf.IsBullet))
+		{
+			PassageObjectModel passage = movableNode.GetPassage();
+			if (passage != null && passage.isRegenerator && passage.GetSefira().isRecoverActivated)
+			{
+				float factor = 2f - hp / maxHp;
+				if (factor < 1f)
+				{
+					factor = 1f;
+				}
+				if (factor > 2f)
+				{
+					factor = 2f;
+				}
+				num *= factor;
+			}
+		}
+		amount *= num;
 		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
 		{
 			base.Equipment.weapon.script.OwnerHeal(false, ref amount);
@@ -978,25 +1195,69 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			base.Equipment.armor.script.OwnerHeal(false, ref amount);
 		}
 		base.Equipment.gifts.OwnerHeal(false, ref amount);
-		if (base.Equipment.gifts.HasEquipment(400005))
+		foreach (UnitBuf unitBuf in _bufList)
 		{
-			amount *= 1.05f;
+			unitBuf.OwnerHeal(false, ref amount);
 		}
 		this.hp += amount;
 		this.hp = ((this.hp <= (float)this.maxHp) ? this.hp : ((float)this.maxHp));
+		if (hp <= 0f)
+		{
+			hp = 0f;
+			Die();
+		}
+        return amount;
 	}
 
 	// Token: 0x06005BDA RID: 23514 RVA: 0x00208F6C File Offset: 0x0020716C
 	public virtual void RecoverMental(float amount)
+	{ // <Mod>
+        RecoverMentalv2(amount);
+    }
+
+    // <Mod>
+	public virtual float RecoverMentalv2(float amount)
 	{
 		if (this.IsDead())
 		{
-			return;
+			return 0f;
 		}
 		if (this.blockRecover)
 		{
-			return;
+			return 0f;
 		}
+		float num = 1f;
+		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
+		{
+			num *= base.Equipment.weapon.script.RecoveryMultiplier(true, amount);
+		}
+		if (base.Equipment.armor != null && base.Equipment.armor.script != null)
+		{
+			num *= base.Equipment.armor.script.RecoveryMultiplier(true, amount);
+		}
+		num *= base.Equipment.gifts.RecoveryMultiplier(true, amount);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			num *= unitBuf.RecoveryMultiplier(true, amount);
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("regenerator_healing_boost") && (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) || OvertimeNetzachBossBuf.IsBullet))
+		{
+			PassageObjectModel passage = movableNode.GetPassage();
+			if (passage != null && passage.isRegenerator && passage.GetSefira().isRecoverActivated)
+			{
+				float factor = 2f - mental / maxMental;
+				if (factor < 1f)
+				{
+					factor = 1f;
+				}
+				if (factor > 2f)
+				{
+					factor = 2f;
+				}
+				num *= factor;
+			}
+		}
+		amount *= num;
 		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
 		{
 			base.Equipment.weapon.script.OwnerHeal(true, ref amount);
@@ -1006,12 +1267,18 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 			base.Equipment.armor.script.OwnerHeal(true, ref amount);
 		}
 		base.Equipment.gifts.OwnerHeal(true, ref amount);
-		if (base.Equipment.gifts.HasEquipment(400005))
+		foreach (UnitBuf unitBuf in _bufList)
 		{
-			amount *= 1.05f;
+			unitBuf.OwnerHeal(true, ref amount);
 		}
 		this.mental += amount;
 		this.mental = ((this.mental <= (float)this.maxMental) ? this.mental : ((float)this.maxMental));
+		if (mental <= 0f)
+		{
+			mental = 0f;
+			Panic();
+		}
+        return amount;
 	}
 
 	// Token: 0x06005BDB RID: 23515 RVA: 0x00209060 File Offset: 0x00207260
@@ -1496,9 +1763,9 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 
 	// Token: 0x06005C13 RID: 23571 RVA: 0x00049598 File Offset: 0x00047798
 	protected override void OnSetArmor()
-	{
+	{ // <Patch>
 		base.OnSetArmor();
-		WorkerSpriteManager.instance.GetArmorData(base.Equipment.armor.metaInfo.armorId, ref this.spriteData);
+		WorkerSpriteManager.instance.GetArmorData_Mod(new LobotomyBaseMod.LcId(EquipmentTypeInfo.GetLcId(this.Equipment.armor.metaInfo).packageId, this.Equipment.armor.metaInfo.armorId), ref this.spriteData);
 	}
 
 	// Token: 0x06005C14 RID: 23572 RVA: 0x0000425D File Offset: 0x0000245D
@@ -1508,23 +1775,37 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 
 	// Token: 0x06005C15 RID: 23573 RVA: 0x00209468 File Offset: 0x00207668
 	public override Sprite GetWeaponSprite()
-	{
+	{ // <Patch> <Mod>
 		Sprite result = null;
 		WeaponClassType weaponClassType = base.Equipment.weapon.metaInfo.weaponClassType;
 		if (weaponClassType == WeaponClassType.FIST)
 		{
-			int id = (int)float.Parse(base.Equipment.weapon.metaInfo.sprite);
-			Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
-			if (fistSprite[0] == null || fistSprite[1] == null)
+			if (EquipmentTypeInfo.GetLcId(base.Equipment.weapon.metaInfo).packageId != "")
 			{
-				return result;
+				LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(base.Equipment.weapon.metaInfo).packageId, base.Equipment.weapon.metaInfo.sprite);
+				Sprite[] fistSprite = WorkerSpriteManager.instance.GetFistSprite(ss);
+				if (fistSprite[0] == null || fistSprite[1] == null)
+				{
+					return result;
+				}
+				result = fistSprite[1];
 			}
-			result = fistSprite[1];
+			else
+			{
+				int id = (int)float.Parse(base.Equipment.weapon.metaInfo.sprite);
+				Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
+				if (fistSprite[0] == null || fistSprite[1] == null)
+				{
+					return result;
+				}
+				result = fistSprite[1];
+			}
 		}
 		else
 		{
+			LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(this.Equipment.weapon.metaInfo).packageId, this.Equipment.weapon.metaInfo.sprite);
 			bool flag = WeaponSetter.IsTwohanded(base.Equipment.weapon);
-			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite(weaponClassType, base.Equipment.weapon.metaInfo.sprite);
+			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(weaponClassType, ss);
 			result = weaponSprite;
 		}
 		return result;
@@ -1546,6 +1827,21 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel
 		this.GetWorkerUnit().EndAttack();
 		this.GetWorkerUnit().animChanger.state.SetEmptyAnimation(0, 0.01f);
 	}
+
+	// <Mod>
+	public UnitMouseEventTarget GetUnitMouseTarget()
+	{
+		return _unitMouseTarget;
+	}
+
+	// <Mod>
+	public void SetUnitMouseTarget(UnitMouseEventTarget target)
+	{
+		_unitMouseTarget = target;
+	}
+
+	// <Mod>
+	private UnitMouseEventTarget _unitMouseTarget;
 
 	// Token: 0x040053C4 RID: 21444
 	protected WorkerCommandQueue commandQueue;

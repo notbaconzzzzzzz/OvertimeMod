@@ -1,3 +1,6 @@
+/*
+private void TryPlayNextSubStory() // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -355,12 +358,20 @@ public class StorySceneController : MonoBehaviour
 
 	// Token: 0x0600514A RID: 20810 RVA: 0x001E1294 File Offset: 0x001DF494
 	private void TryPlayNextSubStory()
-	{
+	{ // <Mod>
 		bool flag = false;
 		while (this._sefiraOrderQueue.Count != 0)
 		{
 			SefiraEnum sefiraEnum = this._sefiraOrderQueue.Dequeue();
-			if (sefiraEnum == SefiraEnum.MALKUT || SefiraManager.instance.IsOpened(sefiraEnum))
+			bool flag2 = false;
+			if (PlayerModel.instance.GetDay() >= 40)
+			{
+				if (sefiraEnum == SefiraEnum.BINAH || sefiraEnum == SefiraEnum.CHOKHMAH)
+				{
+					flag2 = true;
+				}
+			}
+			if (flag2 || sefiraEnum == SefiraEnum.MALKUT || SefiraManager.instance.IsOpened(sefiraEnum))
 			{
 				Debug.Log("Next : " + sefiraEnum);
 				this.PrintQueue(this._sefiraOrderQueue);

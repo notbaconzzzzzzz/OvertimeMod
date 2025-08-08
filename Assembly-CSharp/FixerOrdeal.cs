@@ -1,3 +1,14 @@
+/*
+public FixerOrdeal(OrdealLevel level) // 
+public FixerCreature MakeOrdealCreature(RwbpType type, MapNode node, bool isOvertime = false) // 
+public FixerCreature MakeOrdealCreature_Midnight(MapNode node, bool isOvertime = false) // 
+public override void OnOrdealStart() // 
+private void MakeClaw() // 
+private void MakeFixers() // 
+private List<MapNode> GetTargetNodes() // Daat null Hallway Fix
+public override void OrdealEnd() // Overtime Core Suppressions
+Various private static arrays // 
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,21 +19,25 @@ public class FixerOrdeal : OrdealBase
 {
 	// Token: 0x06003C43 RID: 15427 RVA: 0x001791FC File Offset: 0x001773FC
 	public FixerOrdeal(OrdealLevel level)
-	{
+	{ // <Mod>
 		this.level = level;
 		this.SetColor();
 		switch (level)
 		{
 		case OrdealLevel.DAWN:
+		case OrdealLevel.OVERTIME_DAWN:
 			this._ordealName = "fixer_dawn";
 			break;
 		case OrdealLevel.NOON:
+		case OrdealLevel.OVERTIME_NOON:
 			this._ordealName = "fixer_noon";
 			break;
 		case OrdealLevel.DUSK:
+		case OrdealLevel.OVERTIME_DUSK:
 			this._ordealName = "fixer_dusk";
 			break;
 		case OrdealLevel.MIDNIGHT:
+		case OrdealLevel.OVERTIME_MIDNIGHT:
 			this._ordealName = "fixer_midnight";
 			break;
 		}
@@ -36,9 +51,13 @@ public class FixerOrdeal : OrdealBase
 	}
 
 	// Token: 0x06003C45 RID: 15429 RVA: 0x00179290 File Offset: 0x00177490
-	public FixerCreature MakeOrdealCreature(RwbpType type, MapNode node)
-	{
+	public FixerCreature MakeOrdealCreature(RwbpType type, MapNode node, bool isOvertime = false)
+	{ // <Mod>
 		int num = type - RwbpType.R;
+        if (isOvertime)
+        {
+            num += 5;
+        }
 		OrdealCreatureModel ordealCreatureModel = OrdealManager.instance.AddCreature((long)FixerOrdeal.ids[num], node, this);
 		(ordealCreatureModel.script as FixerCreature).SetOrdeal(this, FixerOrdeal.risks[num], FixerOrdeal.names[num]);
 		this._curOrdealCreatureList.Add(ordealCreatureModel);
@@ -46,9 +65,13 @@ public class FixerOrdeal : OrdealBase
 	}
 
 	// Token: 0x06003C46 RID: 15430 RVA: 0x001792EC File Offset: 0x001774EC
-	public FixerCreature MakeOrdealCreature_Midnight(MapNode node)
-	{
-		int num = FixerOrdeal.ids.Length - 1;
+	public FixerCreature MakeOrdealCreature_Midnight(MapNode node, bool isOvertime = false)
+	{ // <Mod>
+		int num = 4;
+        if (isOvertime)
+        {
+            num += 5;
+        }
 		OrdealCreatureModel ordealCreatureModel = OrdealManager.instance.AddCreature((long)FixerOrdeal.ids[num], node, this);
 		(ordealCreatureModel.script as FixerCreature).SetOrdeal(this, FixerOrdeal.risks[num], FixerOrdeal.names[num]);
 		this._curOrdealCreatureList.Add(ordealCreatureModel);
@@ -83,7 +106,7 @@ public class FixerOrdeal : OrdealBase
 
 	// Token: 0x06003C4A RID: 15434 RVA: 0x00179350 File Offset: 0x00177550
 	public override void OnOrdealStart()
-	{
+	{ // <Mod>
 		base.OnOrdealStart();
 		PlayerModel.emergencyController.AddScore(this.GetRiskLevel(null));
 		this.SetColor();
@@ -91,7 +114,7 @@ public class FixerOrdeal : OrdealBase
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Fixer/WhiteOrdeal_Start", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
 		soundEffectPlayer.transform.localPosition = Vector3.zero;
-		if (this.level == OrdealLevel.MIDNIGHT)
+		if (this.level == OrdealLevel.MIDNIGHT || this.level == OrdealLevel.OVERTIME_MIDNIGHT)
 		{
 			this.MakeClaw();
 		}
@@ -103,7 +126,7 @@ public class FixerOrdeal : OrdealBase
 
 	// Token: 0x06003C4B RID: 15435 RVA: 0x001793E0 File Offset: 0x001775E0
 	private void MakeClaw()
-	{
+	{ // <Mod>
 		List<MapNode> list = new List<MapNode>(this.GetTargetNodes());
 		if (list.Count <= 0)
 		{
@@ -111,47 +134,42 @@ public class FixerOrdeal : OrdealBase
 		}
 		MapNode mapNode = list[UnityEngine.Random.Range(0, list.Count)];
 		list.Remove(mapNode);
-		this.MakeOrdealCreature_Midnight(mapNode);
+		this.MakeOrdealCreature_Midnight(mapNode, level == OrdealLevel.OVERTIME_MIDNIGHT);
 	}
 
 	// Token: 0x06003C4C RID: 15436 RVA: 0x0017942C File Offset: 0x0017762C
 	private void MakeFixers()
-	{
+	{ // <Mod>
 		int num = 0;
 		OrdealLevel level = this.level;
-		if (level != OrdealLevel.DAWN)
-		{
-			if (level != OrdealLevel.NOON)
-			{
-				if (level == OrdealLevel.DUSK)
-				{
-					num = 4;
-				}
-			}
-			else
-			{
-				num = 2;
-			}
-		}
-		else
-		{
-			num = 1;
-		}
+        switch (level)
+        {
+            case OrdealLevel.DAWN:
+            case OrdealLevel.OVERTIME_DAWN:
+			    num = 1;
+                OrdealManager.instance.InitAvailableFixers();
+                break;
+            case OrdealLevel.NOON:
+            case OrdealLevel.OVERTIME_NOON:
+			    num = 2;
+                break;
+            case OrdealLevel.DUSK:
+            case OrdealLevel.OVERTIME_DUSK:
+			    num = 4;
+                OrdealManager.instance.InitAvailableFixers();
+			    OrdealManager.instance.availableFixers.Add(RwbpType.P);
+                break;
+        }
 		if (num <= 0)
 		{
 			return;
 		}
 		List<MapNode> list = new List<MapNode>(this.GetTargetNodes());
-		if (this.level == OrdealLevel.DUSK)
-		{
-			OrdealManager.instance.InitAvailableFixers();
-			OrdealManager.instance.availableFixers.Add(RwbpType.P);
-		}
 		for (int i = 0; i < num; i++)
 		{
 			if (OrdealManager.instance.availableFixers.Count <= 0)
 			{
-				return;
+				OrdealManager.instance.InitAvailableFixers();
 			}
 			if (list.Count <= 0)
 			{
@@ -161,13 +179,13 @@ public class FixerOrdeal : OrdealBase
 			OrdealManager.instance.availableFixers.Remove(rwbpType);
 			MapNode mapNode = list[UnityEngine.Random.Range(0, list.Count)];
 			list.Remove(mapNode);
-			this.MakeOrdealCreature(rwbpType, mapNode);
+			this.MakeOrdealCreature(rwbpType, mapNode, level >= OrdealLevel.OVERTIME_DAWN);
 		}
 	}
 
 	// Token: 0x06003C4D RID: 15437 RVA: 0x00179540 File Offset: 0x00177740
 	private List<MapNode> GetTargetNodes()
-	{
+	{ // <Mod<
 		List<MapNode> list = new List<MapNode>();
 		Sefira[] openedAreaList = PlayerModel.instance.GetOpenedAreaList();
 		Sefira[] array = openedAreaList;
@@ -194,7 +212,7 @@ public class FixerOrdeal : OrdealBase
 				}
 			}
 			MapNode mapNode;
-			do
+			while (list2.Count > 0)
 			{
 				PassageObjectModel passageObjectModel2 = list2[UnityEngine.Random.Range(0, list2.Count)];
 				list2.Remove(passageObjectModel2);
@@ -209,7 +227,6 @@ public class FixerOrdeal : OrdealBase
 					}
 				}
 			}
-			while (list2.Count > 0);
 			IL_140:
 			i++;
 			continue;
@@ -222,7 +239,7 @@ public class FixerOrdeal : OrdealBase
 
 	// Token: 0x06003C4E RID: 15438 RVA: 0x001796B0 File Offset: 0x001778B0
 	public override void OrdealEnd()
-	{
+	{ // <Mod>
 		base.OrdealEnd();
 		this.SetColor();
 		int num = this.ordealRewards[(int)this.level];
@@ -230,7 +247,8 @@ public class FixerOrdeal : OrdealBase
 		{
 			num = 0;
 		}
-		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f);
+		EnergyModel.instance.AddEnergy(StageTypeInfo.instnace.GetEnergyNeed(PlayerModel.instance.GetDay()) * (float)num * 0.01f / StageTypeInfo.instnace.GetPercentEnergyFactor());
+		num = (int)((float)num / StageTypeInfo.instnace.GetPercentEnergyFactor());
 		this.OrdealTypo(this._ordealName, this._color, false, num);
 		SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Ordeal/Fixer/WhiteOrdeal_End", Vector2.zero);
 		soundEffectPlayer.transform.SetParent(Camera.main.transform);
@@ -291,17 +309,27 @@ public class FixerOrdeal : OrdealBase
 
 	// Token: 0x04003716 RID: 14102
 	private static int[] ids = new int[]
-	{
+	{ // <Mod>
 		200021,
 		200022,
 		200023,
 		200024,
-		200025
+		200025,
+		200121,
+		200122,
+		200123,
+		200124,
+		200125
 	};
 
 	// Token: 0x04003717 RID: 14103
 	private static RiskLevel[] risks = new RiskLevel[]
-	{
+	{ // <Mod>
+		RiskLevel.WAW,
+		RiskLevel.WAW,
+		RiskLevel.WAW,
+		RiskLevel.WAW,
+		RiskLevel.ALEPH,
 		RiskLevel.WAW,
 		RiskLevel.WAW,
 		RiskLevel.WAW,
@@ -311,7 +339,12 @@ public class FixerOrdeal : OrdealBase
 
 	// Token: 0x04003718 RID: 14104
 	private static string[] names = new string[]
-	{
+	{ // <Mod>
+		"fixer_red",
+		"fixer_white",
+		"fixer_black",
+		"fixer_pale",
+		"fixer_claw",
 		"fixer_red",
 		"fixer_white",
 		"fixer_black",

@@ -89,7 +89,9 @@ namespace WorkerSpine
 
 		// Token: 0x06004497 RID: 17559 RVA: 0x001A5E10 File Offset: 0x001A4010
 		public void ChangeAnimator(string name)
-		{
+		{ // <Patch>
+            ChangeAnimator_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name));
+            /*
 			WorkerSpineAnimatorData animator = null;
 			if (WorkerSpineAnimatorManager.instance.GetDataWithCheck(name, out animator))
 			{
@@ -99,12 +101,14 @@ namespace WorkerSpine
 			{
 				Debug.Log("Error in founding spine animator data : " + name);
 			}
-			this._setter.BaiscRendererInit();
+			this._setter.BaiscRendererInit();*/
 		}
 
 		// Token: 0x06004498 RID: 17560 RVA: 0x001A5E54 File Offset: 0x001A4054
 		public void ChangeAnimator(string name, bool separator)
-		{
+		{ // <Patch>
+            ChangeAnimator_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name), separator);
+            /*
 			WorkerSpineAnimatorData data = null;
 			if (WorkerSpineAnimatorManager.instance.GetDataWithCheck(name, out data))
 			{
@@ -114,19 +118,21 @@ namespace WorkerSpine
 			{
 				Debug.Log("Error in founding spine animator data : " + name);
 			}
-			this._setter.BaiscRendererInit();
+			this._setter.BaiscRendererInit();*/
 		}
 
 		// Token: 0x06004499 RID: 17561 RVA: 0x001A5E98 File Offset: 0x001A4098
 		public void ChangeAnimatorWithUniqueFace(string name, bool separator)
-		{
+		{ // <Patch>
+            ChangeAnimatorWithUniqueFace_Mod(new LobotomyBaseMod.KeyValuePairSS(string.Empty, name), separator);
+            /*
 			WorkerSpineAnimatorData data = null;
 			if (WorkerSpineAnimatorManager.instance.GetDataWithCheck(name, out data))
 			{
 				this.SetAnimatorWithUniqueFace(data, separator);
 				return;
 			}
-			Debug.Log("Error in founding spine animator data : " + name);
+			Debug.Log("Error in founding spine animator data : " + name);*/
 		}
 
 		// Token: 0x0600449A RID: 17562 RVA: 0x001A5ED0 File Offset: 0x001A40D0
@@ -248,6 +254,53 @@ namespace WorkerSpine
 		public SkeletonAnimator GetAnimator()
 		{
 			return this._skeletonAnimator;
+		}
+
+		// <Patch>
+		public void ChangeAnimator_Mod(LobotomyBaseMod.KeyValuePairSS name)
+		{
+			WorkerSpineAnimatorData animator = null;
+			bool dataWithCheck_Mod = WorkerSpineAnimatorManager.instance.GetDataWithCheck_Mod(name, out animator);
+			if (dataWithCheck_Mod)
+			{
+				this.SetAnimator(animator);
+			}
+			else
+			{
+				Debug.Log("Error in founding spine animator data : " + ((name != null) ? name.ToString() : null));
+			}
+			this._setter.BaiscRendererInit();
+		}
+
+		// <Patch>
+		public void ChangeAnimator_Mod(LobotomyBaseMod.KeyValuePairSS name, bool separator)
+		{
+			WorkerSpineAnimatorData data = null;
+			bool dataWithCheck_Mod = WorkerSpineAnimatorManager.instance.GetDataWithCheck_Mod(name, out data);
+			if (dataWithCheck_Mod)
+			{
+				this.SetAnimator(data, separator);
+			}
+			else
+			{
+				Debug.Log("Error in founding spine animator data : " + ((name != null) ? name.ToString() : null));
+			}
+			this._setter.BaiscRendererInit();
+		}
+
+		// <Patch>
+		public void ChangeAnimatorWithUniqueFace_Mod(LobotomyBaseMod.KeyValuePairSS name, bool separator)
+		{
+			WorkerSpineAnimatorData data = null;
+			bool dataWithCheck_Mod = WorkerSpineAnimatorManager.instance.GetDataWithCheck_Mod(name, out data);
+			if (dataWithCheck_Mod)
+			{
+				this.SetAnimatorWithUniqueFace(data, separator);
+			}
+			else
+			{
+				Debug.Log("Error in founding spine animator data : " + ((name != null) ? name.ToString() : null));
+			}
 		}
 
 		// Token: 0x04003F42 RID: 16194

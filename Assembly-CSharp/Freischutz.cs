@@ -1,3 +1,6 @@
+/*
+private float RequestCost // 
+*/
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.UI.Utils;
@@ -16,11 +19,17 @@ public class Freischutz : CreatureBase
 	// Token: 0x1700031A RID: 794
 	// (get) Token: 0x06002328 RID: 9000 RVA: 0x00105BC0 File Offset: 0x00103DC0
 	private float RequestCost
-	{
+	{ // <Mod>
 		get
 		{
 			float num = EnergyModel.instance.GetEnergy() * this._COST_REQUEST;
-			return (num >= this._COST_REQUEST_MIN) ? num : this._COST_REQUEST_MIN;
+			num /= StageTypeInfo.instnace.GetPercentEnergyFactor();
+            float num2 = (num >= this._COST_REQUEST_MIN) ? num : this._COST_REQUEST_MIN;
+            if (ResearchDataModel.instance.IsUpgradedAbility("energy_discount"))
+			{
+				num2 *= 0.9f;
+			}
+			return num2;
 		}
 	}
 

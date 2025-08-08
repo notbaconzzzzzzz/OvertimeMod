@@ -1,3 +1,6 @@
+/*
+public void Display(string desc, int fontSize, int textId) // 
+*/
 using System;
 using Assets.Scripts.UI.Effect.Utils;
 using UnityEngine;
@@ -61,14 +64,21 @@ namespace Assets.Scripts.UI.Isolate
 
 		// Token: 0x06004CD3 RID: 19667 RVA: 0x001C4A18 File Offset: 0x001C2C18
 		public void Display(string desc, int fontSize, int textId)
-		{
+		{ // <Mod> Overtime Yesod Suppression
 			this.textId = textId;
 			base.gameObject.SetActive(true);
 			this.Texture.sprite = this.controller.texture[UnityEngine.Random.Range(0, 4)];
 			this.Text.text = desc;
 			this.Text.fontSize = fontSize;
 			this.SizeFitter.SetSize();
-			this.timer.StartTimer(UnityEngine.Random.Range(3f, 5f) * this.controller.GetRoom().GetCurrentWorkSpeed());
+            if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, true))
+			{
+				timer.StartTimer(12f * controller.GetRoom().GetCurrentWorkSpeed());
+			}
+			else
+			{
+				this.timer.StartTimer(UnityEngine.Random.Range(3f, 5f) * this.controller.GetRoom().GetCurrentWorkSpeed());
+			}
 			base.GetComponent<RectTransform>().anchoredPosition = this.initial;
 		}
 

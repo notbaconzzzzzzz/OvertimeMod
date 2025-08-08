@@ -21,7 +21,11 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x0600501F RID: 20511 RVA: 0x001D912C File Offset: 0x001D732C
 	private void Start()
-	{
+	{ // <Patch>
+        if (this.attachmentsMod == null)
+        {
+            this.attachmentsMod = new Dictionary<LobotomyBaseMod.LcId, WorkerPortraitAttachment>();
+        }
 		this.Head.material = null;
 		this.Eye.material = null;
 		this.Mouth.material = null;
@@ -64,7 +68,8 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x06005021 RID: 20513 RVA: 0x001D92C0 File Offset: 0x001D74C0
 	public void SetArmor(EquipmentTypeInfo armor)
-	{
+	{ // <Patch>
+		LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(armor);
 		int armorId = armor.armorId;
 		if (this._armor != null && armor.id == this._armor.id)
 		{
@@ -72,7 +77,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 		}
 		this._armor = armor;
 		WorkerSprite.WorkerSprite workerSprite = new WorkerSprite.WorkerSprite();
-		WorkerSpriteManager.instance.GetArmorData(armorId, ref workerSprite);
+		WorkerSpriteManager.instance.GetArmorData_Mod(new LobotomyBaseMod.LcId(lcId.packageId, armorId), ref workerSprite);
 		this.Eye.gameObject.SetActive(false);
 		this.Eyebrow.gameObject.SetActive(false);
 		this.Mouth.gameObject.SetActive(false);
@@ -99,7 +104,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x06005022 RID: 20514 RVA: 0x001D94C8 File Offset: 0x001D76C8
 	private void CheckGifts()
-	{
+	{ // <Patch>
 		List<EGOgiftModel> addedGifts = this.model.Equipment.gifts.addedGifts;
 		List<EGOgiftModel> replacedGifts = this.model.Equipment.gifts.replacedGifts;
 		List<EGOgiftModel> list = new List<EGOgiftModel>();
@@ -107,8 +112,8 @@ public class WorkerPortraitSetter : MonoBehaviour
 		list.AddRange(replacedGifts);
 		List<EGOgiftModel> list2 = new List<EGOgiftModel>();
 		List<EGOgiftModel> list3 = new List<EGOgiftModel>();
-		foreach (KeyValuePair<long, WorkerPortraitAttachment> keyValuePair in this.attachments)
-		{
+        foreach (KeyValuePair<LobotomyBaseMod.LcId, WorkerPortraitAttachment> keyValuePair in this.attachmentsMod)
+        {
 			EGOgiftModel egogiftModel = keyValuePair.Value.gift as EGOgiftModel;
 			if (egogiftModel != null)
 			{
@@ -181,8 +186,10 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x06005023 RID: 20515 RVA: 0x00041E42 File Offset: 0x00040042
 	private bool ContainsGift(EGOgiftModel model)
-	{
-		return this.attachments.ContainsKey((long)model.metaInfo.id);
+	{ // <Patch>
+        LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(model.metaInfo);
+        return this.attachmentsMod.ContainsKey(lcId);
+		// return this.attachments.ContainsKey((long)model.metaInfo.id);
 	}
 
 	// Token: 0x06005024 RID: 20516 RVA: 0x001D97E0 File Offset: 0x001D79E0
@@ -236,21 +243,31 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x06005025 RID: 20517 RVA: 0x001D996C File Offset: 0x001D7B6C
 	private void DestroyGifts()
-	{
-		foreach (KeyValuePair<long, WorkerPortraitAttachment> keyValuePair in this.attachments)
-		{
-			UnityEngine.Object.Destroy(keyValuePair.Value.gameObject);
-		}
-		this.attachments.Clear();
+	{ // <Patch>
+        if (this.attachmentsMod == null)
+        {
+            this.attachmentsMod = new Dictionary<LobotomyBaseMod.LcId, WorkerPortraitAttachment>();
+            return;
+        }
+        foreach (KeyValuePair<LobotomyBaseMod.LcId, WorkerPortraitAttachment> keyValuePair in this.attachmentsMod)
+        {
+            UnityEngine.Object.Destroy(keyValuePair.Value.gameObject);
+        }
+        this.attachmentsMod.Clear();
 	}
 
 	// Token: 0x06005026 RID: 20518 RVA: 0x001D99E0 File Offset: 0x001D7BE0
 	private void OnSetAmror(EquipmentTypeInfo model)
-	{
+	{ // <Patch>
+        if (this.attachmentsMod == null)
+        {
+            this.attachmentsMod = new Dictionary<LobotomyBaseMod.LcId, WorkerPortraitAttachment>();
+        }
+		LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(model);
 		if (model.script == "MagicalGirlArmor")
 		{
-			foreach (KeyValuePair<long, WorkerPortraitAttachment> keyValuePair in this.attachments)
-			{
+            foreach (KeyValuePair<LobotomyBaseMod.LcId, WorkerPortraitAttachment> keyValuePair in this.attachmentsMod)
+            {
 				if (keyValuePair.Value.isUnique)
 				{
 					return;
@@ -259,7 +276,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 			GameObject gameObject = Prefab.LoadPrefab("UIComponent/WorkerPortraitAttachment");
 			WorkerPortraitAttachment component = gameObject.GetComponent<WorkerPortraitAttachment>();
 			component.SetMagicalGirlArmor();
-			this.attachments.Add((long)model.id, component);
+			this.attachmentsMod.Add(lcId, component);
 			component.RectTransform.SetParent(base.transform);
 			component.RectTransform.localScale = Vector3.one;
 			component.RectTransform.localPosition = Vector3.zero;
@@ -268,12 +285,12 @@ public class WorkerPortraitSetter : MonoBehaviour
 		}
 		else
 		{
-			foreach (KeyValuePair<long, WorkerPortraitAttachment> keyValuePair2 in this.attachments)
-			{
+            foreach (KeyValuePair<LobotomyBaseMod.LcId, WorkerPortraitAttachment> keyValuePair2 in this.attachmentsMod)
+            {
 				if (keyValuePair2.Value.isUnique)
 				{
 					UnityEngine.Object.Destroy(keyValuePair2.Value.gameObject);
-					this.attachments.Remove(keyValuePair2.Key);
+					this.attachmentsMod.Remove(keyValuePair2.Key);
 					break;
 				}
 			}
@@ -282,22 +299,31 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x06005027 RID: 20519 RVA: 0x001D9B68 File Offset: 0x001D7D68
 	private void RemoveDisabled(EGOgiftModel model)
-	{
+	{ // <Patch>
+        LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(model.metaInfo);
+        if (this.attachmentsMod.ContainsKey(lcId))
+        {
+            WorkerPortraitAttachment workerPortraitAttachment = this.attachmentsMod[lcId];
+            UnityEngine.Object.Destroy(workerPortraitAttachment.gameObject);
+            this.attachmentsMod.Remove(lcId);
+        }
+        /*
 		if (this.attachments.ContainsKey((long)model.metaInfo.id))
 		{
 			WorkerPortraitAttachment workerPortraitAttachment = this.attachments[(long)model.metaInfo.id];
 			UnityEngine.Object.Destroy(workerPortraitAttachment.gameObject);
 			this.attachments.Remove((long)model.metaInfo.id);
-		}
+		}*/
 	}
 
 	// Token: 0x06005028 RID: 20520 RVA: 0x001D9BCC File Offset: 0x001D7DCC
 	private void AddNewAttach(EGOgiftModel model)
-	{
+	{ // <Patch> <Mod> Fixed Modded Mouth 1 gifts
+		LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(model.metaInfo);
 		GameObject gameObject = Prefab.LoadPrefab("UIComponent/WorkerPortraitAttachment");
 		WorkerPortraitAttachment component = gameObject.GetComponent<WorkerPortraitAttachment>();
 		component.SetGift(model);
-		this.attachments.Add((long)model.metaInfo.id, component);
+		this.attachmentsMod.Add(lcId, component);
 		component.RectTransform.SetParent(base.transform);
 		component.RectTransform.localScale = Vector3.one;
 		component.RectTransform.localPosition = Vector3.zero;
@@ -315,7 +341,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 			if (component.Image.sprite.name.Contains("Mask"))
 			{
 				float x = -15.71f;
-				if (component.gift.metaInfo.id == 400052)
+				if (lcId == 400052)
 				{
 					x = -28.4f;
 				}
@@ -324,7 +350,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 			break;
 		case EGOgiftAttachRegion.MOUTH:
 			component.RectTransform.anchoredPosition = this.Mouth.rectTransform.anchoredPosition;
-			if (component.gift.metaInfo.id == 400032 || component.gift.metaInfo.id == 400018)
+			if (lcId == 400032 || lcId == 400018 || !flag)
 			{
 				component.RectTransform.anchoredPosition = new Vector2(-13f, 9f);
 				component.RectTransform.SetSiblingIndex(this.FrontHair.transform.GetSiblingIndex() + 2);
@@ -365,7 +391,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 			break;
 		case EGOgiftAttachRegion.BACK:
 			component.RectTransform.SetSiblingIndex(this.RearHair.rectTransform.GetSiblingIndex() + 1);
-			if (component.gift.metaInfo.id == 400043)
+			if (lcId == 400043)
 			{
 				component.RectTransform.anchoredPosition = new Vector2(17f, -94.8f);
 			}
@@ -554,7 +580,7 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x0600502E RID: 20526 RVA: 0x001DA690 File Offset: 0x001D8890
 	public void SetWeapon(WeaponModel weapon)
-	{
+	{ // <Patch> <Mod>
 		if (!this.WeaponSet)
 		{
 			return;
@@ -567,12 +593,13 @@ public class WorkerPortraitSetter : MonoBehaviour
 			this.ClearAddedWeapon();
 			return;
 		}
+		LobotomyBaseMod.KeyValuePairSS ss = new LobotomyBaseMod.KeyValuePairSS(EquipmentTypeInfo.GetLcId(weapon.metaInfo).packageId, weapon.metaInfo.sprite);
 		WeaponClassType weaponClassType = weapon.metaInfo.weaponClassType;
 		if (weaponClassType == WeaponClassType.SPECIAL)
 		{
 			UniqueWeaponSpriteUnit uniqueWeaponSpriteUnit = null;
 			string sprite = weapon.metaInfo.sprite;
-			if (WorkerSpriteManager.instance.GetUniqueWeaponSpriteInfo(sprite, out uniqueWeaponSpriteUnit) && uniqueWeaponSpriteUnit != this._currentUnit)
+			if (WorkerSpriteManager.instance.GetUniqueWeaponSpriteInfo_Mod(ss, out uniqueWeaponSpriteUnit) && uniqueWeaponSpriteUnit != this._currentUnit)
 			{
 				this._currentUnit = uniqueWeaponSpriteUnit;
 				this.FistRenderer.enabled = false;
@@ -589,21 +616,36 @@ public class WorkerPortraitSetter : MonoBehaviour
 		}
 		if (weaponClassType == WeaponClassType.FIST)
 		{
-			int id = (int)float.Parse(weapon.metaInfo.sprite);
-			Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
-			if (fistSprite[0] == null || fistSprite[1] == null)
+			if (ss.key != "")
 			{
-				return;
+				Sprite[] fistSprite = WorkerSpriteManager.instance.GetFistSprite(ss);
+				if (fistSprite[0] == null || fistSprite[1] == null)
+				{
+					return;
+				}
+				this.FistRenderer.sprite = fistSprite[1];
+				this.OneHandedRenderer.enabled = false;
+				this.TwoHandedRenderer.enabled = false;
+				this.FistRenderer.enabled = true;
 			}
-			this.FistRenderer.sprite = fistSprite[1];
-			this.OneHandedRenderer.enabled = false;
-			this.TwoHandedRenderer.enabled = false;
-			this.FistRenderer.enabled = true;
+			else
+			{
+				int id = (int)float.Parse(weapon.metaInfo.sprite);
+				Sprite[] fistSprite = WorkerSprite_WorkerSpriteManager.instance.GetFistSprite(id);
+				if (fistSprite[0] == null || fistSprite[1] == null)
+				{
+					return;
+				}
+				this.FistRenderer.sprite = fistSprite[1];
+				this.OneHandedRenderer.enabled = false;
+				this.TwoHandedRenderer.enabled = false;
+				this.FistRenderer.enabled = true;
+			}
 		}
 		else
 		{
 			bool flag = WeaponSetter.IsTwohanded(weapon);
-			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite(weaponClassType, weapon.metaInfo.sprite);
+			Sprite weaponSprite = WorkerSpriteManager.instance.GetWeaponSprite_Mod(weaponClassType, ss);
 			if (flag)
 			{
 				this.TwoHandedRenderer.sprite = weaponSprite;
@@ -825,4 +867,8 @@ public class WorkerPortraitSetter : MonoBehaviour
 
 	// Token: 0x04004A46 RID: 19014
 	private UniqueWeaponSpriteUnit _currentUnit;
+
+    // <Patch>
+    [NonSerialized]
+    public Dictionary<LobotomyBaseMod.LcId, WorkerPortraitAttachment> attachmentsMod = new Dictionary<LobotomyBaseMod.LcId, WorkerPortraitAttachment>();
 }

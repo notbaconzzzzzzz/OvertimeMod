@@ -10,5 +10,7 @@ public enum CreatureFeelingState
 	// Token: 0x04003463 RID: 13411
 	NORM,
 	// Token: 0x04003464 RID: 13412
-	BAD
+	BAD,
+
+    TRANQ
 }

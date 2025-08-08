@@ -1,3 +1,6 @@
+/*
+public void Init(Mission m, MissionPopupUI.MissionPopupCallbackFunc callback) // Fix text being cut off
+*/
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +42,7 @@ public class MissionPopupUI : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x06004FFF RID: 20479 RVA: 0x001D3B10 File Offset: 0x001D1D10
 	public void Init(Mission m, MissionPopupUI.MissionPopupCallbackFunc callback)
-	{
+	{ // <Mod>
 		try
 		{
 			this.missionTeamNameText.text = CharacterResourceDataModel.instance.GetName(SefiraName.GetSefiraByEnum(m.metaInfo.sefira));
@@ -59,6 +62,13 @@ public class MissionPopupUI : MonoBehaviour, IAnimatorEventCalled
 			"Context"
 		}) + LocalizeTextDataModel.instance.GetText(m.metaInfo.desc);
 		this.missionDiagText.text = LocalizeTextDataModel.instance.GetText(m.metaInfo.diag);
+		missionDescText.resizeTextForBestFit = true;
+		missionDescText.resizeTextMaxSize = missionDescText.fontSize;
+		missionDescText.resizeTextMinSize = missionDescText.fontSize / 2;
+		// TextGenerator textGenerator = missionDescText.cachedTextGeneratorForLayout;
+		// int missingCharactors = textGenerator.characterCount - textGenerator.characterCountVisible;
+		// int containerHeight = 3;
+        // missionDescText.verticalOverflow = 
 		this._callback = callback;
 		SefiraUIColor sefiraColor = UIColorManager.instance.GetSefiraColor(m.metaInfo.sefira);
 		foreach (ColorMultiplier colorMultiplier in this.frameColorMultipliers)

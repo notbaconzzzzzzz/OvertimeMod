@@ -21,10 +21,13 @@ public class MalkutCoreScript : CreatureBase
 
 	// Token: 0x060042BC RID: 17084 RVA: 0x000390E8 File Offset: 0x000372E8
 	public override void OnViewInit(CreatureUnit unit)
-	{
+	{ // <Mod>
 		this._animScript = (unit.animTarget as MalkutCoreAnim);
 		this.AnimScript.SetScript(this);
-		this.bossBase.StartEffect();
+        if (bossBase != null)
+        {
+            this.bossBase.StartEffect();
+        }
 		this.model.GetMovableNode().SetActive(false);
 	}
 

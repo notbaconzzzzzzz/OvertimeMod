@@ -1,3 +1,6 @@
+/*
+private void FixedUpdate() // Stop from registering keys while ctrl is pressed
+*/
 using System;
 using UnityEngine;
 
@@ -61,29 +64,30 @@ public class PlatformerCamera : MonoBehaviour
 		}
 		else
 		{
+            bool ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 			if (Input.GetKey(KeyCode.P))
 			{
 				Application.LoadLevel("Menu");
 			}
-			if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+			if (Input.GetKey(KeyCode.A) && !ctrl || Input.GetKey(KeyCode.LeftArrow))
 			{
 				Vector3 localPosition = Camera.main.transform.localPosition;
 				localPosition.x -= 0.1f;
 				Camera.main.transform.localPosition = localPosition;
 			}
-			if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+			if (Input.GetKey(KeyCode.D) && !ctrl || Input.GetKey(KeyCode.RightArrow))
 			{
 				Vector3 localPosition2 = Camera.main.transform.localPosition;
 				localPosition2.x += 0.1f;
 				Camera.main.transform.localPosition = localPosition2;
 			}
-			if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+			if (Input.GetKey(KeyCode.S) && !ctrl || Input.GetKey(KeyCode.DownArrow))
 			{
 				Vector3 localPosition3 = Camera.main.transform.localPosition;
 				localPosition3.y -= 0.1f;
 				Camera.main.transform.localPosition = localPosition3;
 			}
-			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+			if (Input.GetKey(KeyCode.W) && !ctrl || Input.GetKey(KeyCode.UpArrow))
 			{
 				Vector3 localPosition4 = Camera.main.transform.localPosition;
 				localPosition4.y += 0.1f;

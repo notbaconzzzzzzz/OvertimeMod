@@ -1,3 +1,6 @@
+/*
+private void Update() // Stop from registering keys while ctrl is pressed
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -169,7 +172,7 @@ public class CameraMover : MonoBehaviour
 
 	// Token: 0x06001AC1 RID: 6849 RVA: 0x000E18D0 File Offset: 0x000DFAD0
 	private void Update()
-	{
+	{ // <Mod>
 		if (this.attached && this.attachTarget != null)
 		{
 			this.CameraPos = this.attachTarget.GetCurrentViewPosition();
@@ -183,23 +186,24 @@ public class CameraMover : MonoBehaviour
 		}
 		if (this.movable)
 		{
+            bool ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 			Vector3 cameraPos = this.CameraPos;
 			Vector3 vector = new Vector3(cameraPos.x, cameraPos.y, cameraPos.z);
 			Vector3 vector2 = Vector3.zero;
 			Vector3 localPosition = this.targetCamera.transform.localPosition;
-			if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+			if (Input.GetKey(KeyCode.A) && !ctrl || Input.GetKey(KeyCode.LeftArrow))
 			{
 				vector2.x = -num * this.CameraOrthographicSize;
 			}
-			if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+			if (Input.GetKey(KeyCode.D) && !ctrl || Input.GetKey(KeyCode.RightArrow))
 			{
 				vector2.x = num * this.CameraOrthographicSize;
 			}
-			if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+			if (Input.GetKey(KeyCode.S) && !ctrl || Input.GetKey(KeyCode.DownArrow))
 			{
 				vector2.y = -num * this.CameraOrthographicSize;
 			}
-			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+			if (Input.GetKey(KeyCode.W) && !ctrl || Input.GetKey(KeyCode.UpArrow))
 			{
 				vector2.y = num * this.CameraOrthographicSize;
 			}

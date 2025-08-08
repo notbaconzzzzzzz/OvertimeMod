@@ -21,10 +21,13 @@ public class NetzachCoreScript : CreatureBase
 
 	// Token: 0x06004316 RID: 17174 RVA: 0x000394ED File Offset: 0x000376ED
 	public override void OnViewInit(CreatureUnit unit)
-	{
+	{ // <Mod>
 		this._animScript = (unit.animTarget as NetzachCoreAnim);
 		this.AnimScript.SetScript(this);
-		this.bossBase.StartEffect();
+        if (bossBase != null)
+        {
+		    this.bossBase.StartEffect();
+        }
 		this.model.GetMovableNode().SetActive(false);
 	}
 

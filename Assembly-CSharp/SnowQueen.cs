@@ -165,7 +165,7 @@ public class SnowQueen : CreatureBase
 		if (agent.IsDead())
 		{
 			return;
-		}
+		}/*
 		if (agent.HasEquipment(this._FIRE_BIRD_ARMOR) && !agent.invincible)
 		{
 			this._rescueAgent = null;
@@ -175,7 +175,7 @@ public class SnowQueen : CreatureBase
 			agent.GetWorkerUnit().animChanger.ChangeAnimatorWithUniqueFace(WorkerSpine.AnimatorName.FireBirdAgentDead, false);
 			agent.Die();
 			return;
-		}
+		}*/
 		if (this._isBlockWork)
 		{
 			this.model.ShowNarrationText("special_ability_1", true, new string[0]);
@@ -193,7 +193,7 @@ public class SnowQueen : CreatureBase
 
 	// Token: 0x06002A8A RID: 10890 RVA: 0x00123528 File Offset: 0x00121728
 	public override void OnReleaseWork(UseSkill skill)
-	{
+	{ // <Mod> reset _isBlockWork in many edge cases
 		if (this._isBlockWork)
 		{
 			SpriteRenderer component = skill.agent.GetUnit().animRoot.GetChild(0).GetChild(0).Find("RightHandFollower").GetChild(0).Find("RoseSword").GetComponent<SpriteRenderer>();
@@ -201,6 +201,13 @@ public class SnowQueen : CreatureBase
 		}
 		if (this._killedByArmor)
 		{
+            if (this._isBlockWork)
+			{
+				this._isBlockWork = false;
+				this._soundTimer = new AutoTimer();
+				this._soundTimer.Init();
+				this._soundTimer.StartTimer(0.2f, new AutoTimer.TargetMethod(this.FadeOutSound), false, AutoTimer.UpdateMode.FIXEDUPDATE);
+			}
 			return;
 		}
 		if (skill.skillTypeInfo.id == 3L && (skill.agent.HasEquipment(4000371) || skill.agent.HasEquipment(4000372) || skill.agent.HasEquipment(4000373) || skill.agent.HasEquipment(4000374)))
@@ -210,6 +217,13 @@ public class SnowQueen : CreatureBase
 				if (creatureModel.script is ArmorCreature)
 				{
 					this._rescueAgent = null;
+                    if (this._isBlockWork)
+					{
+						this._isBlockWork = false;
+						this._soundTimer = new AutoTimer();
+						this._soundTimer.Init();
+						this._soundTimer.StartTimer(0.2f, new AutoTimer.TargetMethod(this.FadeOutSound), false, AutoTimer.UpdateMode.FIXEDUPDATE);
+					}
 					return;
 				}
 			}
@@ -250,6 +264,16 @@ public class SnowQueen : CreatureBase
 			this._rescueAgent.specialDeadScene = false;
 			return;
 		}
+        else
+        {
+            if (this._isBlockWork)
+			{
+				this._isBlockWork = false;
+				this._soundTimer = new AutoTimer();
+				this._soundTimer.Init();
+				this._soundTimer.StartTimer(0.2f, new AutoTimer.TargetMethod(this.FadeOutSound), false, AutoTimer.UpdateMode.FIXEDUPDATE);
+			}
+        }
 		CreatureFeelingState feelingState = this.model.feelingState;
 		bool flag = false;
 		if (feelingState != CreatureFeelingState.BAD)
@@ -374,7 +398,7 @@ public class SnowQueen : CreatureBase
 
 	// Token: 0x06002A91 RID: 10897 RVA: 0x00123C38 File Offset: 0x00121E38
 	public void AgentAnim(int i)
-	{
+	{ // <Mod> EGO gift reward has been moved to a different function
 		AgentUnit unit = this._rescueAgent.GetUnit();
 		AgentUnit unit2 = this._frozenAgent.GetUnit();
 		if (i != 0)
@@ -390,7 +414,7 @@ public class SnowQueen : CreatureBase
 			this._rescueAgent.GetControl();
 			unit.animChanger.ChangeAnimator();
 			unit2.animChanger.ChangeAnimator();
-			Vector3 localPosition = new Vector3(0f, 0f, 0f);
+			/*Vector3 localPosition = new Vector3(0f, 0f, 0f);
 			this._rescueAgent.AttachEGOgift(this.dualWinGift);
 			EGOGiftRenderData egogiftRenderData;
 			this._rescueAgent.GetUnit().spriteSetter.TryGetGift(this.dualWinGift, out egogiftRenderData);
@@ -398,7 +422,7 @@ public class SnowQueen : CreatureBase
 			this._frozenAgent.AttachEGOgift(this.dualWinGift);
 			EGOGiftRenderData egogiftRenderData2;
 			this._frozenAgent.GetUnit().spriteSetter.TryGetGift(this.dualWinGift, out egogiftRenderData2);
-			egogiftRenderData2.renderer.transform.localPosition = localPosition;
+			egogiftRenderData2.renderer.transform.localPosition = localPosition;*/
 			this._frozenAgent = null;
 			this._rescueAgent = null;
 		}
@@ -475,9 +499,29 @@ public class SnowQueen : CreatureBase
 
 	// Token: 0x06002A95 RID: 10901 RVA: 0x00124124 File Offset: 0x00122324
 	private bool DecideDualResult(bool state)
-	{
+	{ // <Mod> EGO gift reward has been move to this function
 		this._isBlockWork = false;
 		this._isDualWin = state;
+        if (this._isDualWin)
+		{
+			Vector3 localPosition = new Vector3(0f, 0f, 0f);
+			EGOgiftModel giftmodel = InventoryModel.Instance.CreateEquipmentForcely(1023) as EGOgiftModel;
+			this._rescueAgent.AttachEGOgift(giftmodel);
+			EGOGiftRenderData egogiftRenderData;
+			this._rescueAgent.GetUnit().spriteSetter.TryGetGift(giftmodel, out egogiftRenderData);
+			if (egogiftRenderData != null)
+			{
+				egogiftRenderData.renderer.transform.localPosition = localPosition;
+			}
+			EGOgiftModel giftmodel2 = InventoryModel.Instance.CreateEquipmentForcely(1023) as EGOgiftModel;
+			this._frozenAgent.AttachEGOgift(giftmodel2);
+			EGOGiftRenderData egogiftRenderData2;
+			this._frozenAgent.GetUnit().spriteSetter.TryGetGift(this.dualWinGift, out egogiftRenderData2);
+			if (egogiftRenderData2 != null)
+			{
+				egogiftRenderData2.renderer.transform.localPosition = localPosition;
+			}
+		}
 		this._animScript.SetDualFilerAnim("DualEnd");
 		this._sounds["Filter_Off"].sound = base.MakeSound(this._sounds["Filter_Off"].src, Time.timeScale);
 		this._rescueAgent.LoseControl();

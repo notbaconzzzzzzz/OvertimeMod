@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO; //
 using System.Xml;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public class MissionTypeList
 
 	// Token: 0x060039E8 RID: 14824 RVA: 0x00171F98 File Offset: 0x00170198
 	public void LoadData()
-	{
+	{ // <Mod> Load external file
 		List<MissionTypeInfo> list = new List<MissionTypeInfo>();
 		List<string> list2 = new List<string>
 		{
@@ -78,23 +79,74 @@ public class MissionTypeList
 			"EQUIPMENTS_IN_CONDITION",
 			"DESTROY_CORE"
 		};
+		List<string> list9 = new List<string>
+		{
+			"SUPPRESS_CREATURE_BY_TIME",
+			"DONT_OPEN_INFO_WINDOW",
+			"BALANCE_WORK_RESULTS",
+			"BALANCE_WORK_TYPES",
+			"AGENT_PREV_LEVEL",
+			"SPECIAL_SUPPRESS_CREATURE",
+			"RECOVER_BY_REGENERATOR",
+			"CLERK_DEAD",
+			"SPECIAL_SUPPRESS_PANIC",
+			"PRODUCE_EXCESS_ENERGY",
+			"WORK_TO_OVERTIME_OVERLOADED",
+			"SPECIAL_DEAL_DAMANGE_WEAKEST",
+			"COMPLETION_TIME",
+			"RECOVER_BY_BULLET",
+			"BLOCK_DAMAGE_BY_BULLET",
+			"USE_BULLET",
+			"CURRENTLY_EQUIPPED",
+			"STATS_AT_MAX",
+			"DONT_PAUSE"
+		};
+		List<ConditionCategory> list10 = new List<ConditionCategory>
+		{
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.FAIL_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.AGENT_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.FAIL_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.FAIL_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.ACTION_CONDITION,
+			ConditionCategory.CREATURE_CONDITION,
+			ConditionCategory.AGENT_CONDITION,
+			ConditionCategory.FAIL_CONDITION
+		};
 		List<string> list8 = new List<string>();
 		list8.AddRange(list3);
 		list8.AddRange(list4);
 		list8.AddRange(list5);
 		list8.AddRange(list6);
 		list8.AddRange(list7);
+		list8.AddRange(list9);
 		int[] array = new int[]
 		{
 			list3.Count,
 			list4.Count,
 			list5.Count,
 			list6.Count,
-			list7.Count
+			list7.Count,
+			list9.Count
 		};
-		TextAsset textAsset = Resources.Load<TextAsset>("xml/MissionTable");
+        if (!File.Exists(Application.dataPath + "/Managed/BaseMod/BaseMissionTable.txt"))
+		{
+			TextAsset textAsset = Resources.Load<TextAsset>("xml/MissionTable");
+			File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseMissionTable.txt", textAsset.text);
+		}
+		string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseMissionTable.txt");
 		XmlDocument xmlDocument = new XmlDocument();
-		xmlDocument.LoadXml(textAsset.text);
+		xmlDocument.LoadXml(xml);
 		XmlNodeList xmlNodeList = xmlDocument.SelectNodes("missions/mission");
 		for (int i = 0; i < xmlNodeList.Count; i++)
 		{
@@ -205,8 +257,9 @@ public class MissionTypeList
 				XmlNode namedItem16 = xmlNode3.Attributes.GetNamedItem("type");
 				if (namedItem16 != null && list8.Contains(namedItem16.InnerText))
 				{
-					missionConditionTypeInfo.condition_Type = (ConditionType)list8.IndexOf(namedItem16.InnerText);
-					if (missionConditionTypeInfo.condition_Type == ConditionType.AGENT_STAT)
+					ConditionType conditionType = (ConditionType)list8.IndexOf(namedItem16.InnerText);
+					missionConditionTypeInfo.condition_Type = conditionType;
+					if (conditionType == ConditionType.AGENT_STAT || conditionType == ConditionType.RECOVER_BY_REGENERATOR || conditionType == ConditionType.RECOVER_BY_BULLET || conditionType == ConditionType.BLOCK_DAMAGE_BY_BULLET)
 					{
 						XmlNode namedItem17 = xmlNode3.Attributes.GetNamedItem("stat");
 						if (namedItem17 != null)
@@ -215,7 +268,7 @@ public class MissionTypeList
 							missionConditionTypeInfo.stat = stat;
 						}
 					}
-					else if (missionConditionTypeInfo.condition_Type == ConditionType.CLEAR_TIME)
+					else if (conditionType == ConditionType.CLEAR_TIME || conditionType == ConditionType.COMPLETION_TIME)
 					{
 						XmlNode namedItem18 = xmlNode3.Attributes.GetNamedItem("minimum");
 						if (namedItem18 != null)
@@ -236,6 +289,24 @@ public class MissionTypeList
 							missionConditionTypeInfo.var2 = var2;
 						}
 					}
+					else if (conditionType == ConditionType.SUPPRESS_CREATURE_BY_KIND || conditionType == ConditionType.CLERK_DEAD)
+					{
+						XmlNode namedItem21 = xmlNode3.Attributes.GetNamedItem("percent");
+						if (namedItem21 != null)
+						{
+							float percent = float.Parse(namedItem21.InnerText);
+							missionConditionTypeInfo.percent = percent;
+						}
+					}
+					else if (conditionType == ConditionType.SUPPRESS_CREATURE_BY_TIME)
+					{
+						XmlNode namedItem22 = xmlNode3.Attributes.GetNamedItem("minimum");
+						if (namedItem22 != null)
+						{
+							int minimum = (int)float.Parse(namedItem22.InnerText);
+							missionConditionTypeInfo.minimumSecond = minimum;
+						}
+					}
 				}
 				int num = 0;
 				bool flag = false;
@@ -245,7 +316,14 @@ public class MissionTypeList
 					{
 						if (missionConditionTypeInfo.condition_Type == (ConditionType)num)
 						{
-							missionConditionTypeInfo.condition_Category = (ConditionCategory)k;
+							if (k < 5)
+							{
+								missionConditionTypeInfo.condition_Category = (ConditionCategory)k;
+							}
+							else
+							{
+								missionConditionTypeInfo.condition_Category = list10[l];
+							}
 							flag = true;
 							break;
 						}

@@ -1,3 +1,7 @@
+/*
+public MovableObjectNode GetSefiraMovableNodeByRandom(string area) // 
+public void LoadMap(XmlNode nodeRoot, XmlNode edgeRoot) // 
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -118,74 +122,74 @@ public class MapGraph : IObserver
 
 	// Token: 0x06003265 RID: 12901 RVA: 0x00154CC4 File Offset: 0x00152EC4
 	public MovableObjectNode GetSefiraMovableNodeByRandom(string area)
-	{
+	{ // <Mod>
 		MapNode mapNode = null;
 		MapNode mapNode2 = null;
 		if (area == "1")
 		{
 			mapNode = this.GetNodeById("sefira-malkuth-2");
-			mapNode2 = this.GetNodeById("sefira-malkuth-8");
+			mapNode2 = this.GetNodeById("sefira-malkuth-10");
 		}
 		else if (area == "2")
 		{
 			mapNode = this.GetNodeById("sefira-netzach-2");
-			mapNode2 = this.GetNodeById("sefira-netzach-8");
+			mapNode2 = this.GetNodeById("sefira-netzach-10");
 		}
 		else if (area == "3")
 		{
 			mapNode = this.GetNodeById("sefira-hod-2");
-			mapNode2 = this.GetNodeById("sefira-hod-8");
+			mapNode2 = this.GetNodeById("sefira-hod-10");
 		}
 		else if (area == "4")
 		{
 			mapNode = this.GetNodeById("sefira-tessod-2");
-			mapNode2 = this.GetNodeById("sefira-tessod-8");
+			mapNode2 = this.GetNodeById("sefira-tessod-10");
 		}
 		else if (area == "5")
 		{
 			mapNode = this.GetNodeById("sefira-tiphereth1-2");
-			mapNode2 = this.GetNodeById("sefira-tiphereth1-8");
+			mapNode2 = this.GetNodeById("sefira-tiphereth1-10");
 		}
 		else if (area == "6")
 		{
 			mapNode = this.GetNodeById("sefira-tiphereth2-2");
-			mapNode2 = this.GetNodeById("sefira-tiphereth2-8");
+			mapNode2 = this.GetNodeById("sefira-tiphereth2-10");
 		}
 		else if (area == "7")
 		{
 			mapNode = this.GetNodeById("sefira-geburah-2");
-			mapNode2 = this.GetNodeById("sefira-geburah-5");
+			mapNode2 = this.GetNodeById("sefira-geburah-6");
 		}
 		else if (area == "8")
 		{
 			mapNode = this.GetNodeById("sefira-chesed-2");
-			mapNode2 = this.GetNodeById("sefira-chesed-5");
+			mapNode2 = this.GetNodeById("sefira-chesed-6");
 		}
 		else if (area == "9")
 		{
 			mapNode = this.GetNodeById("sefira-binah-2");
-			mapNode2 = this.GetNodeById("sefira-binah-5");
+			mapNode2 = this.GetNodeById("sefira-binah-10");
 		}
 		else if (area == "10")
 		{
 			mapNode = this.GetNodeById("sefira-chokhmah-2");
-			mapNode2 = this.GetNodeById("sefira-chokhmah-5");
+			mapNode2 = this.GetNodeById("sefira-chokhmah-10");
 		}
 		else if (area == "11")
 		{
 			mapNode = this.GetNodeById("sefira-keter2");
-			mapNode2 = this.GetNodeById("sefira-keter9");
+			mapNode2 = this.GetNodeById("sefira-keter10");
 		}
 		else if (area == "12")
 		{
 			mapNode = this.GetNodeById("sefira-extra-2");
-			mapNode2 = this.GetNodeById("sefira-extra-9");
+			mapNode2 = this.GetNodeById("sefira-extra-10");
 		}
 		if (mapNode == null || mapNode2 == null)
 		{
 			Debug.LogError("GetSefiraMovableNodeByRandom >> area is invalid");
 			mapNode = this.GetNodeById("sefira-malkuth-2");
-			mapNode2 = this.GetNodeById("sefira-malkuth-8");
+			mapNode2 = this.GetNodeById("sefira-malkuth-10");
 		}
 		if (mapNode == null || mapNode2 == null)
 		{
@@ -341,9 +345,10 @@ public class MapGraph : IObserver
 
 	// Token: 0x06003271 RID: 12913 RVA: 0x00155288 File Offset: 0x00153488
 	public void LoadMap(XmlNode nodeRoot, XmlNode edgeRoot)
-	{
+	{ // <Mod>
 		try
 		{
+			bool FixMapGraph = SpecialModeConfig.instance.GetValue<bool>("MapGraphFix");
 			int num = 1;
 			XmlNodeList xmlNodeList = nodeRoot.SelectNodes("area");
 			Dictionary<string, XmlNode> dictionary = new Dictionary<string, XmlNode>();
@@ -548,6 +553,39 @@ public class MapGraph : IObserver
 									}
 									passageObjectModel.wallInfo = passageWallInfo;
 								}
+								float leftMost = 0f;
+								int leftIndex = -1;
+								float rightMost = 0f;
+								int rightIndex = 0;
+								int curIndex = -1;
+								if (FixMapGraph)
+								{
+									float scalar = 0.5f * passageObjectModel.scaleFactor;
+									XmlNodeList nodes = xmlNode3.SelectNodes("node");
+									rightIndex = nodes.Count - 1;
+									if (rightIndex >= 3)
+									{
+										leftIndex = 0;
+										XmlNode node = nodes.Item(leftIndex);
+										leftMost = float.Parse(node.Attributes.GetNamedItem("x").InnerText);
+										XmlNode node2 = nodes.Item(rightIndex);
+										rightMost = float.Parse(node2.Attributes.GetNamedItem("x").InnerText);
+										if (rightMost < leftMost)
+										{
+											scalar *= -1f;
+										}
+										if (node.SelectSingleNode("door") != null)
+										{
+											leftIndex++;
+                                            leftMost += scalar;
+										}
+										if (node2.SelectSingleNode("door") != null)
+										{
+											rightIndex--;
+                                            rightMost -= scalar;
+										}
+									}
+								}
 								IEnumerator enumerator5 = xmlNode3.SelectNodes("node").GetEnumerator();
 								try
 								{
@@ -557,6 +595,15 @@ public class MapGraph : IObserver
 										XmlNode xmlNode9 = (XmlNode)obj5;
 										string innerText3 = xmlNode9.Attributes.GetNamedItem("id").InnerText;
 										float x2 = float.Parse(xmlNode9.Attributes.GetNamedItem("x").InnerText);
+										if (leftIndex != -1)
+										{
+											curIndex++;
+											if (curIndex >= leftIndex && curIndex <= rightIndex)
+											{
+												float perc = (float)(curIndex - leftIndex) / (float)(rightIndex - leftIndex);
+												x2 = leftMost * (1f - perc) + rightMost * perc;
+											}
+										}
 										float y2 = float.Parse(xmlNode9.Attributes.GetNamedItem("y").InnerText);
 										XmlNode namedItem10 = xmlNode9.Attributes.GetNamedItem("rabbitUnpassable");
 										xmlNode9.Attributes.GetNamedItem("type");

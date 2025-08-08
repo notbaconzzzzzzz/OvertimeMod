@@ -1,3 +1,6 @@
+/*
++public bool isRegenerator // 
+*/
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +12,7 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 {
 	// Token: 0x06003833 RID: 14387 RVA: 0x0016BDE4 File Offset: 0x00169FE4
 	public PassageObjectModel(string id, string sefiraName, string prefabSrc)
-	{
+	{ // <Mod>
 		this.id = id;
 		this.sefiraName = sefiraName;
 		this.sefiraEnum = SefiraName.GetSefiraEnum(sefiraName);
@@ -19,12 +22,13 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 		this.elevatorList = new List<ElevatorPassageModel>();
 		this.enteredUnitList = new List<MovableObjectNode>();
 		this.deletedUnitList = new List<MovableObjectNode>();
+		etcUnitList = new List<MovableObjectNode>();
 		this.connectedSefira = new List<string>();
 	}
 
 	// Token: 0x06003834 RID: 14388 RVA: 0x0016BE8C File Offset: 0x0016A08C
 	public PassageObjectModel(string id, string sefiraName)
-	{
+	{ // <Mod>
 		this.id = id;
 		this.sefiraName = sefiraName;
 		this.src = string.Empty;
@@ -33,6 +37,7 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 		this.elevatorList = new List<ElevatorPassageModel>();
 		this.enteredUnitList = new List<MovableObjectNode>();
 		this.deletedUnitList = new List<MovableObjectNode>();
+		etcUnitList = new List<MovableObjectNode>();
 		this.connectedSefira = new List<string>();
 	}
 
@@ -202,6 +207,14 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 	// Token: 0x06003841 RID: 14401 RVA: 0x0003294C File Offset: 0x00030B4C
 	public void EnterUnit(MovableObjectNode unit)
 	{
+		if (unit.GetUnit() != null && unit.GetUnit().IsEtcUnit())
+		{
+			if (!this.etcUnitList.Contains(unit))
+			{
+				this.etcUnitList.Add(unit);
+			}
+			return;
+		}
 		if (!this.enteredUnitList.Contains(unit))
 		{
 			this.enteredUnitList.Add(unit);
@@ -214,6 +227,10 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 		if (this.enteredUnitList.Contains(unit))
 		{
 			this.enteredUnitList.Remove(unit);
+		}
+		else if (this.etcUnitList.Contains(unit))
+		{
+			this.etcUnitList.Remove(unit);
 		}
 	}
 
@@ -364,6 +381,32 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 	{
 		List<MovableObjectNode> list = new List<MovableObjectNode>();
 		foreach (MovableObjectNode movableObjectNode in this.enteredUnitList)
+		{
+			if (movableObjectNode != exclude)
+			{
+				list.Add(movableObjectNode);
+			}
+		}
+		return list.ToArray();
+	}
+
+	// <Mod>
+	public ReadOnlyCollection<MovableObjectNode> GetEtcTargets()
+	{
+		return this.etcUnitList.AsReadOnly();
+	}
+
+	// <Mod>
+	public MovableObjectNode[] GetEtcTargetsAsArray()
+	{
+		return this.etcUnitList.ToArray();
+	}
+
+	// <Mod>
+	public MovableObjectNode[] GetEtcTargets(MovableObjectNode exclude)
+	{
+		List<MovableObjectNode> list = new List<MovableObjectNode>();
+		foreach (MovableObjectNode movableObjectNode in this.etcUnitList)
 		{
 			if (movableObjectNode != exclude)
 			{
@@ -598,6 +641,9 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 	// Token: 0x0400339A RID: 13210
 	private List<MovableObjectNode> deletedUnitList;
 
+	// <Mod>
+	private List<MovableObjectNode> etcUnitList;
+
 	// Token: 0x0400339B RID: 13211
 	public float scaleFactor = 1f;
 
@@ -616,4 +662,7 @@ public class PassageObjectModel : ObjectModelBase, IMouseCommandTargetModel
 	// Token: 0x040033A0 RID: 13216
 	[CompilerGenerated]
 	private static Comparison<MapNode> cache0;
+
+    // <Mod>
+    public bool isRegenerator;
 }

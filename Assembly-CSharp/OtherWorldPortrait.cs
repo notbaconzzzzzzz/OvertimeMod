@@ -1,3 +1,7 @@
+/*
+public override void OnEnterRoom(UseSkill skill) // Pick new victim when the same unit uses it
+public void OtherWorldPortraitBuf.SetAnotherVictim(AgentModel am) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,7 +66,7 @@ public class OtherWorldPortrait : CreatureBase, IObserver
 
 	// Token: 0x06002639 RID: 9785 RVA: 0x00113F2C File Offset: 0x0011212C
 	public override void OnEnterRoom(UseSkill skill)
-	{
+	{ // <Mod>
 		base.OnEnterRoom(skill);
 		if (this._targetAgent == null)
 		{
@@ -72,6 +76,11 @@ public class OtherWorldPortrait : CreatureBase, IObserver
 		{
 			if (this._targetAgent == skill.agent)
 			{
+                if (_victimAgent != null)
+                {
+			        SoundEffectPlayer.PlayOnce("creature/OtherWorldPortrait/Portrait_Use", Time.timeScale, this._anim.transform.position);
+                    ReleaseVictim(_victimAgent);
+                }
 				return;
 			}
 			this.KillPortraitAgent();
@@ -279,7 +288,11 @@ public class OtherWorldPortrait : CreatureBase, IObserver
 
 		// Token: 0x06002641 RID: 9793 RVA: 0x00114450 File Offset: 0x00112650
 		public void SetAnotherVictim(AgentModel am)
-		{
+		{ // <Mod>
+			if (_victim != null)
+			{
+				_victim.GetWorkerUnit().RemoveUnitBuf(this);
+			}
 			this._victim = am;
 			this._victim.AddUnitBuf(new OtherWorldPortrait.OtherWorldPortraitVictimBuf());
 			this._victimBufData = this._victim.GetWorkerUnit().AddUnitBuf(this, this._creature._anim.bufRenderer, true);

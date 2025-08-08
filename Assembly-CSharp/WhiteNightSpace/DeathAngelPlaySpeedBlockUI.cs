@@ -46,11 +46,11 @@ namespace WhiteNightSpace
 			{
 				return !GameStatusUI.GameStatusUI.Window.sceneController.IsAgentAlldead;
 			}
-			if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.BINAH)
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.BINAH, false))
 			{
 				return (SefiraBossManager.Instance.CurrentBossBase as BinahBossBase).Script.Phase != BinahPhase.P3;
 			}
-			return SefiraBossManager.Instance.CurrentActivatedSefira != SefiraEnum.CHOKHMAH;
+			return !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.CHOKHMAH, false);
 		}
 
 		// Token: 0x06005467 RID: 21607 RVA: 0x001E51AC File Offset: 0x001E33AC
@@ -86,14 +86,14 @@ namespace WhiteNightSpace
 			{
 				return;
 			}
-			if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.BINAH)
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.BINAH, false))
 			{
 				if ((SefiraBossManager.Instance.CurrentBossBase as BinahBossBase).Script.Phase == BinahPhase.P3)
 				{
 					return;
 				}
 			}
-			else if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.CHOKHMAH)
+			else if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.CHOKHMAH, false))
 			{
 				return;
 			}

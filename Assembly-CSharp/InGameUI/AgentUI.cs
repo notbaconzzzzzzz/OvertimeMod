@@ -78,7 +78,7 @@ namespace InGameUI
 			{
 				this.Grade.sprite = DeployUI.GetGradeSprite(4);
 			}
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
 			{
 				base.gameObject.layer = LayerMask.NameToLayer("Front1");
 				IEnumerator enumerator = base.gameObject.transform.GetEnumerator();
@@ -114,7 +114,7 @@ namespace InGameUI
 
 		// Token: 0x06004BC2 RID: 19394 RVA: 0x001BF130 File Offset: 0x001BD330
 		private bool ValidateUIActiate()
-		{
+		{ // <Mod> Overtime Yesod Suppression
 			if (this.Model == null)
 			{
 				return false;
@@ -130,6 +130,10 @@ namespace InGameUI
 				{
 					this.ActiveControl.gameObject.SetActive(false);
 				}
+				return false;
+			}
+			if (Model is AgentModel && (Model as AgentModel).ForceHideUI)
+			{
 				return false;
 			}
 			return ResearchDataModel.instance.IsUpgradedAbility("show_agent_ui") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1);

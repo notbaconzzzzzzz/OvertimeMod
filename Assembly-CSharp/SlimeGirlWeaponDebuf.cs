@@ -43,8 +43,8 @@ public class SlimeGirlWeaponDebuf : UnitBuf
 
 	// Token: 0x060036AA RID: 13994 RVA: 0x000313ED File Offset: 0x0002F5ED
 	public override float MovementScale()
-	{
-		return 0.7f;
+	{ // <Mod> changed from 0.7
+		return 0.5f;
 	}
 
 	// Token: 0x04003286 RID: 12934
@@ -57,8 +57,10 @@ public class SlimeGirlWeaponDebuf : UnitBuf
 	private const float _tickTime = 1f;
 
 	// Token: 0x04003289 RID: 12937
-	private const float _dmg = 2f;
+	private const float _dmg = 4f; // <Mod> changed from 2
 
 	// Token: 0x0400328A RID: 12938
 	private RwbpType _dmgType = RwbpType.B;
+
+	private CreatureModel creature;
 }

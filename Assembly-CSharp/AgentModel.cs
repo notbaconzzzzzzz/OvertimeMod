@@ -1,3 +1,40 @@
+/*
+public static int CalculateStatLevelForCustomizing(int stat) // 
+public int temperanceStat // Take the averge of SR and WS istead of just SR
+public int justiceStat // Take the averge of AS and MS istead of just AS
+public override DefenseInfo defense // Change the way Chesed/Binah/Kether service bonuses are handled
+public void Init() // 
+public static WorkerPrimaryStat GetDefaultStat() // Hod research fix
+public override void OnStageStart() // Overtime Research
+public override void OnStageEnd() // Clear Work Order Queue
+public override void OnFixedUpdate() // Overtime Yesod Suppression
+public float GetMovementValue() // Fixed Malkuth's suppression reward
+public void UpdateTitle(int oldLevel) // Squash an issue that the new title bonuses created; change to pseudo-random
+public int GetContinuousServiceLevel() // Overtime Research
+public int GetFortitudeStatBySefiraAbility() // Overtime Research
+public int GetPrudenceStatBySefiraAbility() // Overtime Research
+public int GetTemperanceStatBySefiraAbility() // Overtime Research
+public int GetJusticeStatBySefiraAbility() // Overtime Research
+public int GetAttackSpeedBufBySefiraAbility() // Overtime Research
+public int GetWorkProbBufBySefiraAbility() // Overtime Research
+public int GetMovementBufBySefiraAbility() // Overtime Research
+public override float GetDamageFactorBySefiraAbility() // Kether service bonuses
+-public override void RecoverHP(float amount) // 
++public override float RecoverHPv2(float amount) // 
+-public override void RecoverMental(float amount) // 
++public override float RecoverMentalv2(float amount) // 
++public void EnqueueWorkOrder(QueuedWorkOrder order) // 
++public void DequeueWorkOrder() // 
++public void DequeueWorkOrder(QueuedWorkOrder order) // 
++public bool CanQueueWorkOrder() // 
++public void ClearWorkOrderQueue() // 
++public List<QueuedWorkOrder> GetWorkOrderQueue() // 
++private List<QueuedWorkOrder> _workOrderQueue // 
++public void ForcelyChangePrefix(int title) // 
++public void ForcelyChangeSuffix(int title) // 
++public bool ForceHideUI // 
++private bool forceHideUI // 
+*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -6,11 +43,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using WorkerSprite;
 
-// Token: 0x020005E5 RID: 1509
 [Serializable]
 public class AgentModel : WorkerModel
 {
-	// Token: 0x060032F0 RID: 13040 RVA: 0x00155B44 File Offset: 0x00153D44
 	public AgentModel(long id)
 	{
 		this.workerClass = WorkerClass.AGENT;
@@ -28,14 +63,34 @@ public class AgentModel : WorkerModel
 		this.Init();
 	}
 
-	// Token: 0x170004BC RID: 1212
-	// (get) Token: 0x060032F1 RID: 13041 RVA: 0x00155C50 File Offset: 0x00153E50
+	// <Mod>
+	public AgentModel(long id, int[] customTitles)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			forceTitles[i] = Customizing.CustomizingWindow.GetTitleData(i, customTitles[i]);
+		}
+		this.workerClass = WorkerClass.AGENT;
+		this.movableNode = new MovableObjectNode(this);
+		this.commandQueue = new WorkerCommandQueue(this);
+		this.skillInfos = new List<AgentModel.SkillInfo>();
+		this.instanceId = id;
+		base.currentSefira = "0";
+		this.activated = false;
+		this.movableNode.SetCurrentNode(MapGraph.instance.GetSepiraNodeByRandom("Malkut"));
+		this.history = new AgentHistory();
+		this.SetFaction(FactionTypeList.StandardFaction.Worker);
+		this._eventHandler = new AgentModelEventHandler();
+		this.spriteData = new WorkerSprite.WorkerSprite();
+		this.Init();
+	}
+
 	public int level
 	{
 		get
 		{
 			int num;
-			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.HOD))
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.HOD, false))
 			{
 				num = this.fortitudeLevel + this.prudenceLevel + this.temperanceLevel + this.justiceLevel;
 			}
@@ -63,8 +118,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004BD RID: 1213
-	// (get) Token: 0x060032F2 RID: 13042 RVA: 0x0002E59A File Offset: 0x0002C79A
 	public int Rstat
 	{
 		get
@@ -73,8 +126,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004BE RID: 1214
-	// (get) Token: 0x060032F3 RID: 13043 RVA: 0x0002E5A2 File Offset: 0x0002C7A2
 	public int Wstat
 	{
 		get
@@ -83,8 +134,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004BF RID: 1215
-	// (get) Token: 0x060032F4 RID: 13044 RVA: 0x0002E5AA File Offset: 0x0002C7AA
 	public int Bstat
 	{
 		get
@@ -93,8 +142,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C0 RID: 1216
-	// (get) Token: 0x060032F5 RID: 13045 RVA: 0x0002E5B2 File Offset: 0x0002C7B2
 	public int Pstat
 	{
 		get
@@ -103,7 +150,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x060032F6 RID: 13046 RVA: 0x0002E5BA File Offset: 0x0002C7BA
 	public int StatLevel(RwbpType type)
 	{
 		switch (type)
@@ -121,7 +167,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x060032F7 RID: 13047 RVA: 0x0002E5F8 File Offset: 0x0002C7F8
 	public static int CalculateStatLevel(int stat)
 	{
 		if (stat < 30)
@@ -143,9 +188,8 @@ public class AgentModel : WorkerModel
 		return 5;
 	}
 
-	// Token: 0x060032F8 RID: 13048 RVA: 0x0002E617 File Offset: 0x0002C817
 	public static int CalculateStatLevelForCustomizing(int stat)
-	{
+	{ // <Mod>
 		if (stat < 30)
 		{
 			return 1;
@@ -162,15 +206,13 @@ public class AgentModel : WorkerModel
 		{
 			return 4;
 		}
-		if (stat < 100)
+		if (stat < 110)
 		{
 			return 5;
 		}
 		return 6;
 	}
 
-	// Token: 0x170004C1 RID: 1217
-	// (get) Token: 0x060032F9 RID: 13049 RVA: 0x0002E63D File Offset: 0x0002C83D
 	public override int fortitudeLevel
 	{
 		get
@@ -179,8 +221,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C2 RID: 1218
-	// (get) Token: 0x060032FA RID: 13050 RVA: 0x0002E64A File Offset: 0x0002C84A
 	public int originFortitudeLevel
 	{
 		get
@@ -189,8 +229,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C3 RID: 1219
-	// (get) Token: 0x060032FB RID: 13051 RVA: 0x0002E657 File Offset: 0x0002C857
 	public int fortitudeStat
 	{
 		get
@@ -199,8 +237,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C4 RID: 1220
-	// (get) Token: 0x060032FC RID: 13052 RVA: 0x0002E688 File Offset: 0x0002C888
 	public int originFortitudeStat
 	{
 		get
@@ -209,8 +245,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C5 RID: 1221
-	// (get) Token: 0x060032FD RID: 13053 RVA: 0x0002E6A1 File Offset: 0x0002C8A1
 	public override int prudenceLevel
 	{
 		get
@@ -219,8 +253,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C6 RID: 1222
-	// (get) Token: 0x060032FE RID: 13054 RVA: 0x0002E6AE File Offset: 0x0002C8AE
 	public int originPrudenceLevel
 	{
 		get
@@ -229,8 +261,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C7 RID: 1223
-	// (get) Token: 0x060032FF RID: 13055 RVA: 0x0002E6BB File Offset: 0x0002C8BB
 	public int prudenceStat
 	{
 		get
@@ -239,8 +269,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C8 RID: 1224
-	// (get) Token: 0x06003300 RID: 13056 RVA: 0x0002E6EC File Offset: 0x0002C8EC
 	public int originPrudenceStat
 	{
 		get
@@ -249,8 +277,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004C9 RID: 1225
-	// (get) Token: 0x06003301 RID: 13057 RVA: 0x0002E705 File Offset: 0x0002C905
 	public override int temperanceLevel
 	{
 		get
@@ -259,8 +285,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004CA RID: 1226
-	// (get) Token: 0x06003302 RID: 13058 RVA: 0x0002E712 File Offset: 0x0002C912
 	public int originTemperanceLevel
 	{
 		get
@@ -269,18 +293,14 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004CB RID: 1227
-	// (get) Token: 0x06003303 RID: 13059 RVA: 0x0002E71F File Offset: 0x0002C91F
 	public int temperanceStat
-	{
+	{ // <Mod> takes the average of SR and WS for EGO gifts instead of just SR
 		get
 		{
-			return this.primaryStat.work + this.titleBonus.work + base.GetPrimaryStatBuf().work + base.GetEGObonus().workProb;
+			return this.primaryStat.work + this.titleBonus.work + base.GetPrimaryStatBuf().work + (base.GetEGObonus().workProb + base.GetEGObonus().cubeSpeed) / 2;
 		}
 	}
 
-	// Token: 0x170004CC RID: 1228
-	// (get) Token: 0x06003304 RID: 13060 RVA: 0x0002E750 File Offset: 0x0002C950
 	public int originTemperanceStat
 	{
 		get
@@ -289,8 +309,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004CD RID: 1229
-	// (get) Token: 0x06003305 RID: 13061 RVA: 0x0002E769 File Offset: 0x0002C969
 	public override int justiceLevel
 	{
 		get
@@ -299,8 +317,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004CE RID: 1230
-	// (get) Token: 0x06003306 RID: 13062 RVA: 0x0002E776 File Offset: 0x0002C976
 	public int originJusticeLevel
 	{
 		get
@@ -309,18 +325,14 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004CF RID: 1231
-	// (get) Token: 0x06003307 RID: 13063 RVA: 0x0002E783 File Offset: 0x0002C983
 	public int justiceStat
-	{
+	{ // <Mod> takes the average of AS and MS for EGO gifts instead of AS + MS
 		get
 		{
-			return this.primaryStat.battle + this.titleBonus.battle + base.GetPrimaryStatBuf().battle + base.GetEGObonus().attackSpeed;
+			return this.primaryStat.battle + this.titleBonus.battle + base.GetPrimaryStatBuf().battle + (base.GetEGObonus().attackSpeed + base.GetEGObonus().movement) / 2;
 		}
 	}
 
-	// Token: 0x170004D0 RID: 1232
-	// (get) Token: 0x06003308 RID: 13064 RVA: 0x0002E7B4 File Offset: 0x0002C9B4
 	public int originJusticeStat
 	{
 		get
@@ -329,8 +341,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D1 RID: 1233
-	// (get) Token: 0x06003309 RID: 13065 RVA: 0x00155CC0 File Offset: 0x00153EC0
 	public override int maxHp
 	{
 		get
@@ -349,8 +359,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D2 RID: 1234
-	// (get) Token: 0x0600330A RID: 13066 RVA: 0x00155D1C File Offset: 0x00153F1C
 	public override int maxMental
 	{
 		get
@@ -369,8 +377,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D3 RID: 1235
-	// (get) Token: 0x0600330B RID: 13067 RVA: 0x00155D78 File Offset: 0x00153F78
 	public override float movement
 	{
 		get
@@ -390,8 +396,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D4 RID: 1236
-	// (get) Token: 0x0600330C RID: 13068 RVA: 0x0002E7CD File Offset: 0x0002C9CD
 	public override int regeneration
 	{
 		get
@@ -400,8 +404,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D5 RID: 1237
-	// (get) Token: 0x0600330D RID: 13069 RVA: 0x0002E7E1 File Offset: 0x0002C9E1
 	public override float regenerationDelay
 	{
 		get
@@ -410,8 +412,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D6 RID: 1238
-	// (get) Token: 0x0600330E RID: 13070 RVA: 0x0002E7F8 File Offset: 0x0002C9F8
 	public int regenerationMental
 	{
 		get
@@ -420,8 +420,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D7 RID: 1239
-	// (get) Token: 0x0600330F RID: 13071 RVA: 0x0002E80C File Offset: 0x0002CA0C
 	public float regenerationMentalDelay
 	{
 		get
@@ -430,8 +428,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D8 RID: 1240
-	// (get) Token: 0x06003310 RID: 13072 RVA: 0x0002E823 File Offset: 0x0002CA23
 	public override int physicalDefense
 	{
 		get
@@ -440,8 +436,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004D9 RID: 1241
-	// (get) Token: 0x06003311 RID: 13073 RVA: 0x0002E834 File Offset: 0x0002CA34
 	public override int mentalDefense
 	{
 		get
@@ -450,8 +444,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DA RID: 1242
-	// (get) Token: 0x06003312 RID: 13074 RVA: 0x0002E845 File Offset: 0x0002CA45
 	public int workSpeed
 	{
 		get
@@ -460,8 +452,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DB RID: 1243
-	// (get) Token: 0x06003313 RID: 13075 RVA: 0x00155DF4 File Offset: 0x00153FF4
 	public int workProb
 	{
 		get
@@ -470,8 +460,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DC RID: 1244
-	// (get) Token: 0x06003314 RID: 13076 RVA: 0x00155E48 File Offset: 0x00154048
 	public override float attackSpeed
 	{
 		get
@@ -491,31 +479,38 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DD RID: 1245
-	// (get) Token: 0x06003315 RID: 13077 RVA: 0x00155EC4 File Offset: 0x001540C4
 	public override DefenseInfo defense
-	{
+	{ // <Mod> Chesed/Binah service bonuses now act as / (1 + num) instead of * (1 - num); Kether service bonuses
 		get
 		{
 			DefenseInfo defenseInfo = new DefenseInfo();
 			if (this._equipment.armor != null)
 			{
 				DefenseInfo defense = this._equipment.armor.GetDefense(this);
-				defenseInfo.R = this.additionalDef.R * defense.R;
-				defenseInfo.W = this.additionalDef.W * defense.W;
-				defenseInfo.B = this.additionalDef.B * defense.B;
-				defenseInfo.P = this.additionalDef.P * defense.P;
+				defenseInfo.R = defense.R;
+				defenseInfo.W = defense.W;
+				defenseInfo.B = defense.B;
+				defenseInfo.P = defense.P;
+				float num3 = EGOrealizationManager.instance.ArmorUpgrade(this._equipment.armor.metaInfo);
+				defenseInfo.R -= num3;
+				defenseInfo.W -= num3;
+				defenseInfo.B -= num3;
+				defenseInfo.P -= num3;
 			}
 			else
 			{
-				defenseInfo.R = this.additionalDef.R * 1f;
-				defenseInfo.W = this.additionalDef.W * 1f;
-				defenseInfo.B = this.additionalDef.B * 1.5f;
-				defenseInfo.P = this.additionalDef.P * 2f;
+				defenseInfo.R = 1f;
+				defenseInfo.W = 1f;
+				defenseInfo.B = 1.5f;
+				defenseInfo.P = 2f;
 			}
+			defenseInfo.R *= this.additionalDef.R;
+			defenseInfo.W *= this.additionalDef.W;
+			defenseInfo.B *= this.additionalDef.B;
+			defenseInfo.P *= this.additionalDef.P;
 			if (this.currentSefiraEnum == SefiraEnum.CHESED)
 			{
-				float num = (float)SefiraAbilityValueInfo.chesedContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f;
+				float num = 1f - 1f / (1f + (float)SefiraAbilityValueInfo.chesedContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f);
 				num = Mathf.Clamp01(num);
 				defenseInfo.R -= Mathf.Max(0f, defenseInfo.R * num);
 				defenseInfo.W -= Mathf.Max(0f, defenseInfo.W * num);
@@ -524,7 +519,16 @@ public class AgentModel : WorkerModel
 			}
 			if (this.currentSefiraEnum == SefiraEnum.BINAH)
 			{
-				float num2 = (float)SefiraAbilityValueInfo.binahContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f;
+				float num2 = 1f - 1f / (1f + (float)SefiraAbilityValueInfo.binahContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f);
+				num2 = Mathf.Clamp01(num2);
+				defenseInfo.R -= Mathf.Max(0f, defenseInfo.R * num2);
+				defenseInfo.W -= Mathf.Max(0f, defenseInfo.W * num2);
+				defenseInfo.B -= Mathf.Max(0f, defenseInfo.B * num2);
+				defenseInfo.P -= Mathf.Max(0f, defenseInfo.P * num2);
+			}
+			if (currentSefiraEnum == SefiraEnum.KETHER)
+			{
+				float num2 = 1f - 1f / (1f + (float)SefiraAbilityValueInfo.ketherContinuousServiceValues2[GetContinuousServiceLevel() - 1] / 100f);
 				num2 = Mathf.Clamp01(num2);
 				defenseInfo.R -= Mathf.Max(0f, defenseInfo.R * num2);
 				defenseInfo.W -= Mathf.Max(0f, defenseInfo.W * num2);
@@ -543,8 +547,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DE RID: 1246
-	// (get) Token: 0x06003316 RID: 13078 RVA: 0x00156150 File Offset: 0x00154350
 	public WorkerPrimaryStatBonus titleBonus
 	{
 		get
@@ -568,9 +570,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004DF RID: 1247
-	// (get) Token: 0x06003317 RID: 13079 RVA: 0x0002E884 File Offset: 0x0002CA84
-	// (set) Token: 0x06003318 RID: 13080 RVA: 0x0002E88C File Offset: 0x0002CA8C
 	public UseSkill currentSkill
 	{
 		get
@@ -589,8 +588,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E0 RID: 1248
-	// (get) Token: 0x06003319 RID: 13081 RVA: 0x0002E8AF File Offset: 0x0002CAAF
 	public AgentModel.CheckCommandState CheckWorkCommand
 	{
 		get
@@ -607,8 +604,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E1 RID: 1249
-	// (get) Token: 0x0600331A RID: 13082 RVA: 0x0002E8DD File Offset: 0x0002CADD
 	public AgentModel.CheckCommandState CheckSuppressCommand
 	{
 		get
@@ -625,8 +620,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E2 RID: 1250
-	// (get) Token: 0x0600331B RID: 13083 RVA: 0x0002E90B File Offset: 0x0002CB0B
 	public AgentModelEventHandler eventHandler
 	{
 		get
@@ -635,9 +628,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E3 RID: 1251
-	// (get) Token: 0x0600331C RID: 13084 RVA: 0x0002E913 File Offset: 0x0002CB13
-	// (set) Token: 0x0600331D RID: 13085 RVA: 0x0002E91B File Offset: 0x0002CB1B
 	private AgentAIState state
 	{
 		get
@@ -650,8 +640,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E4 RID: 1252
-	// (get) Token: 0x0600331E RID: 13086 RVA: 0x0002E924 File Offset: 0x0002CB24
 	public RwbpType bestRwbp
 	{
 		get
@@ -664,8 +652,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E5 RID: 1253
-	// (get) Token: 0x0600331F RID: 13087 RVA: 0x0002E93B File Offset: 0x0002CB3B
 	public bool canCancelCurrentWork
 	{
 		get
@@ -674,8 +660,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x170004E6 RID: 1254
-	// (get) Token: 0x06003320 RID: 13088 RVA: 0x0002E950 File Offset: 0x0002CB50
 	public bool IsAutoSuppressing
 	{
 		get
@@ -684,27 +668,34 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003321 RID: 13089 RVA: 0x00156234 File Offset: 0x00154434
 	public void Init()
-	{
+	{ // <Mod>
 		base.SetWeapon(WeaponModel.GetDummyWeapon());
 		base.SetArmor(ArmorModel.GetDummyArmor());
 		this.InitTitle();
 		this.primaryStat = AgentModel.GetDefaultStat();
 		this.InitSkills();
 		this.panicReport = false;
-		this.UpdateTitle(1);
+		this.UpdateTitle(1, false);
 		this._isAutoSuppressing = false;
 	}
 
-	// Token: 0x06003322 RID: 13090 RVA: 0x0002E958 File Offset: 0x0002CB58
 	public void InitTitle()
-	{
+	{ // <Mod>
+		if (forceTitles[0] != 0)
+		{
+			AgentTitleTypeInfo title = AgentTitleTypeList.instance.GetData(forceTitles[0]);
+			if (title != null)
+			{
+				this.prefix = title;
+				this.suffix = AgentTitleTypeList.instance.GetDataSuffix(this, 1, true);
+				return;
+			}
+		}
 		this.prefix = AgentTitleTypeList.instance.GetDataPrefix(this, 1, true);
 		this.suffix = AgentTitleTypeList.instance.GetDataSuffix(this, 1, true);
 	}
 
-	// Token: 0x06003323 RID: 13091 RVA: 0x00156284 File Offset: 0x00154484
 	public static int GetDefaultLevel1Stat()
 	{
 		int num = 15;
@@ -716,14 +707,22 @@ public class AgentModel : WorkerModel
 		return num + num2;
 	}
 
-	// Token: 0x06003324 RID: 13092 RVA: 0x001562AC File Offset: 0x001544AC
 	public static WorkerPrimaryStat GetDefaultStat()
-	{
+	{ // <Mod> fix Hod's increase new hire stat research that used to not work
+	// also may nerf Hod's suppression reward from 30 to 15, but only once I have an overtime Hod suppression reward implemented to make up the difference
 		WorkerPrimaryStat workerPrimaryStat = new WorkerPrimaryStat();
 		int num = 0;
+		if (ResearchDataModel.instance.IsUpgradedAbility("agent_start_stat"))
+		{
+			num += 5;
+		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.HOD))
 		{
-			num += 30;
+			num += SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") ? 15 : 30;
+		}
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.HOD))
+		{
+			num += 15;
 		}
 		workerPrimaryStat.hp = 15 + num;
 		workerPrimaryStat.mental = 15 + num;
@@ -732,7 +731,6 @@ public class AgentModel : WorkerModel
 		return workerPrimaryStat;
 	}
 
-	// Token: 0x06003325 RID: 13093 RVA: 0x001562FC File Offset: 0x001544FC
 	public void InitSkills()
 	{
 		List<int> list = new List<int>(new int[]
@@ -751,7 +749,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003326 RID: 13094 RVA: 0x00156364 File Offset: 0x00154564
 	public void InitSkills(params SkillTypeInfo[] skills)
 	{
 		this.skillInfos.Clear();
@@ -761,7 +758,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003327 RID: 13095 RVA: 0x001563A4 File Offset: 0x001545A4
 	public override Dictionary<string, object> GetSaveData()
 	{
 		Dictionary<string, object> saveData = base.GetSaveData();
@@ -799,7 +795,6 @@ public class AgentModel : WorkerModel
 		return saveData;
 	}
 
-	// Token: 0x06003328 RID: 13096 RVA: 0x00156564 File Offset: 0x00154764
 	public override void LoadData(Dictionary<string, object> dic)
 	{
 		base.LoadData(dic);
@@ -907,9 +902,8 @@ public class AgentModel : WorkerModel
 		this.mental = (float)this.maxMental;
 	}
 
-	// Token: 0x06003329 RID: 13097 RVA: 0x00156878 File Offset: 0x00154A78
 	public override void OnStageStart()
-	{
+	{ // <Mod>
 		Notice.instance.Observe(NoticeName.UnconWorkerDead, this);
 		Notice.instance.Observe(NoticeName.ManageCancel, this);
 		Notice.instance.Observe(NoticeName.CreatureSuppressCancel, this);
@@ -923,6 +917,7 @@ public class AgentModel : WorkerModel
 		{
 			base.Equipment.weapon.script.OnStageStart();
 		}
+		Equipment.gifts.OnStageStart();
 		this.recentWork = null;
 		this.oldWork = null;
 		this.recentWorkedCreature = null;
@@ -950,10 +945,20 @@ public class AgentModel : WorkerModel
 		{
 			this.continuousServiceDay++;
 		}
+		else if (((this.lastServiceSefira == "5" || this.lastServiceSefira == "6") && (base.currentSefira == "5" || base.currentSefira == "6")) && SpecialModeConfig.instance.GetValue<bool>("TwoTipherethCaptains"))
+		{
+			this.isAce = false;
+			this.continuousServiceDay++;
+			this.lastServiceSefira = base.currentSefira;
+		}
 		else
 		{
 			this.isAce = false;
 			this.continuousServiceDay = 1;
+			if (ResearchDataModel.instance.IsUpgradedAbility("sooner_service_bonuses"))
+			{
+				continuousServiceDay += (int)((float)history.WorkDay * 0.15f);
+			}
 			this.lastServiceSefira = base.currentSefira;
 		}
 		this.hp = (float)this.maxHp;
@@ -963,14 +968,15 @@ public class AgentModel : WorkerModel
 		{
 			this._unit.spriteSetter.SetSefira(SefiraManager.instance.GetSefira(base.currentSefira).sefiraEnum, this.GetContinuousServiceLevel());
 		}
+		cannotAttackUnits.Clear();
 	}
 
-	// Token: 0x0600332A RID: 13098 RVA: 0x00156A18 File Offset: 0x00154C18
 	public override void OnStageEnd()
-	{
+	{ // <Mod>
 		Notice.instance.Remove(NoticeName.UnconWorkerDead, this);
 		Notice.instance.Remove(NoticeName.ManageCancel, this);
 		Notice.instance.Remove(NoticeName.CreatureSuppressCancel, this);
+		ClearWorkOrderQueue();
 		if (this.IsSuppressing())
 		{
 			this.FinishSuppress();
@@ -1004,7 +1010,6 @@ public class AgentModel : WorkerModel
 		this.returnPanic = false;
 	}
 
-	// Token: 0x0600332B RID: 13099 RVA: 0x00156AEC File Offset: 0x00154CEC
 	public override void OnStageRelease()
 	{
 		UnitBuf[] array = this._bufList.ToArray();
@@ -1037,14 +1042,12 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600332C RID: 13100 RVA: 0x0002E980 File Offset: 0x0002CB80
 	public void SetUnit(AgentUnit unit)
 	{
 		this._unit = unit;
 		unit.spriteSetter.Init(this);
 	}
 
-	// Token: 0x0600332D RID: 13101 RVA: 0x00156BB8 File Offset: 0x00154DB8
 	public void ResetWaitingPassage()
 	{
 		MapNode sepiraNodeByRandom = MapGraph.instance.GetSepiraNodeByRandom(base.currentSefira);
@@ -1066,13 +1069,11 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600332E RID: 13102 RVA: 0x0002E995 File Offset: 0x0002CB95
 	public void SetWaitingPassage(PassageObjectModel passage)
 	{
 		this._currentWaitingPassage = passage;
 	}
 
-	// Token: 0x0600332F RID: 13103 RVA: 0x0002E99E File Offset: 0x0002CB9E
 	public override void ChangeHairSprite(SpriteInfo spriteInfo)
 	{
 		this.tempHairSpriteInfo = spriteInfo;
@@ -1082,13 +1083,18 @@ public class AgentModel : WorkerModel
 			this._unit.UpdateHair();
 		}
 	}
-
-	// Token: 0x06003330 RID: 13104 RVA: 0x00156C18 File Offset: 0x00154E18
 	public override void OnFixedUpdate()
-	{
+	{ // <Mod>
 		if (this.IsDead())
 		{
 			return;
+		}
+		if (ForceHideUI)
+		{
+			if (currentSkill == null && hp >= maxHp && mental >= maxMental)
+			{
+				ForceHideUI = false;
+			}
 		}
 		this.UpdateBufState();
 		PassageObjectModel passage = this.movableNode.GetPassage();
@@ -1163,18 +1169,20 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003331 RID: 13105 RVA: 0x00156E6C File Offset: 0x0015506C
 	public float GetMovementValue()
-	{
-		float num = 0f;
-		if (ResearchDataModel.instance.IsUpgradedAbility("movement_up"))
+	{ // <Mod> Fixed Malkuth's Core Suppression reward; also changed it so that it's applied before the movement speed stat instead of after
+		float num = 4f;
+		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.MALKUT))
 		{
-			num = 0.5f;
+			num += 0.25f;
 		}
-		return 4f + num + this.movement / 25f;
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT))
+		{
+			num += 0.25f;
+		}
+		return num * (1f + this.movement / 100f);
 	}
 
-	// Token: 0x06003332 RID: 13106 RVA: 0x00156EAC File Offset: 0x001550AC
 	public override void ProcessAction()
 	{
 		this.commandQueue.Execute(this);
@@ -1223,7 +1231,6 @@ public class AgentModel : WorkerModel
 		this.waitTimer -= Time.deltaTime;
 	}
 
-	// Token: 0x06003333 RID: 13107 RVA: 0x00156FBC File Offset: 0x001551BC
 	private void CheckAutoSuppressing()
 	{
 		if (this.target != null)
@@ -1253,7 +1260,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003334 RID: 13108 RVA: 0x0015702C File Offset: 0x0015522C
 	public WorkerPrimaryStatBonus UpdatePrimaryStat()
 	{
 		int level = this.level;
@@ -1267,7 +1273,6 @@ public class AgentModel : WorkerModel
 		return workerPrimaryStatBonus;
 	}
 
-	// Token: 0x06003335 RID: 13109 RVA: 0x001570A4 File Offset: 0x001552A4
 	private void UpdateBestRwbp()
 	{
 		List<int> stats = new List<int>(new int[]
@@ -1306,25 +1311,104 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003336 RID: 13110 RVA: 0x0015718C File Offset: 0x0015538C
 	public void UpdateTitle(int oldLevel)
-	{
-		for (int i = oldLevel + 1; i <= this.level; i++)
+	{ // <Mod>
+		UpdateTitle(oldLevel, true);
+	}
+
+	// <Mod>
+	public void UpdateTitle(int oldLevel, bool pseudoRandom = true)
+	{ // <Mod> The new title bonuses make it possible for title bonueses to lower after leveling up,
+	// thereby openning up the possiblity of a stat levels being reduced and then the employee not longer qualifying for that overall level
+		int newLevel = this.level;
+		int[] oldStatLevel = new int[4];
+		int[] newStatLevel = new int[4];
+		oldStatLevel[0] = this.originFortitudeLevel;
+		oldStatLevel[1] = this.originPrudenceLevel;
+		oldStatLevel[2] = this.originTemperanceLevel;
+		oldStatLevel[3] = this.originJusticeLevel;
+		for (int i = oldLevel + 1; i <= newLevel; i++)
 		{
-			AgentTitleTypeInfo dataPrefix = AgentTitleTypeList.instance.GetDataPrefix(this, i, true);
+			switch (i)
+			{
+				case 1:
+					if (forceTitles[0] != 0)
+					{
+						AgentTitleTypeInfo title = AgentTitleTypeList.instance.GetData(forceTitles[0]);
+						if (title != null)
+						{
+							this.prefix = title;
+							AgentTitleTypeInfo dataSuffix2 = AgentTitleTypeList.instance.GetDataSuffix(this, i, !pseudoRandom);
+							if (dataSuffix2 != null)
+							{
+								this.suffix = dataSuffix2;
+							}
+							continue;
+						}
+					}
+					break;
+				case 3:
+					if (forceTitles[1] != 0)
+					{
+						AgentTitleTypeInfo title = AgentTitleTypeList.instance.GetData(forceTitles[1]);
+						if (title != null)
+						{
+							this.suffix = title;
+							continue;
+						}
+					}
+					break;
+				case 4:
+					if (forceTitles[2] != 0)
+					{
+						AgentTitleTypeInfo title = AgentTitleTypeList.instance.GetData(forceTitles[2]);
+						if (title != null)
+						{
+							this.prefix = title;
+							continue;
+						}
+					}
+					break;
+				case 5:
+					if (forceTitles[3] != 0)
+					{
+						AgentTitleTypeInfo title = AgentTitleTypeList.instance.GetData(forceTitles[3]);
+						if (title != null)
+						{
+							this.suffix = title;
+							continue;
+						}
+					}
+					break;
+			}
+			AgentTitleTypeInfo dataPrefix = AgentTitleTypeList.instance.GetDataPrefix(this, i, !pseudoRandom);
 			if (dataPrefix != null)
 			{
 				this.prefix = dataPrefix;
 			}
-			AgentTitleTypeInfo dataSuffix = AgentTitleTypeList.instance.GetDataSuffix(this, i, true);
+			AgentTitleTypeInfo dataSuffix = AgentTitleTypeList.instance.GetDataSuffix(this, i, !pseudoRandom);
 			if (dataSuffix != null)
 			{
 				this.suffix = dataSuffix;
 			}
 		}
+		newStatLevel[0] = this.originFortitudeLevel;
+		newStatLevel[1] = this.originPrudenceLevel;
+		newStatLevel[2] = this.originTemperanceLevel;
+		newStatLevel[3] = this.originJusticeLevel;
+        int[] levelThresholds = {0, 30, 45, 65, 85};
+		for (int i = 0; i < 4; i++)
+		{
+			if (newStatLevel[i] < oldStatLevel[i])
+			{
+                int stat = 0;
+                switch (i) { case 0: stat = this.originFortitudeStat; break; case 1: stat = this.originPrudenceStat; break; case 2: stat = this.originTemperanceStat; break; case 3: stat = this.originJusticeStat; break; }
+				int adjustment = levelThresholds[oldStatLevel[i] - 1] - stat;
+                switch (i) { case 0: this.primaryStat.hp += adjustment; break; case 1: this.primaryStat.mental += adjustment; break; case 2: this.primaryStat.work += adjustment; break; case 3: this.primaryStat.battle += adjustment; break; }
+			}
+		}
 	}
 
-	// Token: 0x06003337 RID: 13111 RVA: 0x001571DC File Offset: 0x001553DC
 	public void UpdatePrefixTitle_reset(int oldLevel)
 	{
 		for (int i = oldLevel + 1; i <= this.level; i++)
@@ -1337,7 +1421,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003338 RID: 13112 RVA: 0x00157214 File Offset: 0x00155414
 	public void UpdateSuffixTitle_reset(int oldLevel)
 	{
 		for (int i = oldLevel + 1; i <= this.level; i++)
@@ -1350,7 +1433,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003339 RID: 13113 RVA: 0x0002E9D1 File Offset: 0x0002CBD1
 	protected override void OnSetWeapon()
 	{
 		base.OnSetWeapon();
@@ -1360,7 +1442,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600333A RID: 13114 RVA: 0x0002E9F2 File Offset: 0x0002CBF2
 	protected override void OnChangeGift()
 	{
 		base.OnChangeGift();
@@ -1370,13 +1451,11 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600333B RID: 13115 RVA: 0x0002EA13 File Offset: 0x0002CC13
 	protected override void OnReleaseWeapon()
 	{
 		base.OnReleaseWeapon();
 	}
 
-	// Token: 0x0600333C RID: 13116 RVA: 0x0002EA1B File Offset: 0x0002CC1B
 	protected override void OnSetArmor()
 	{
 		base.OnSetArmor();
@@ -1386,7 +1465,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600333D RID: 13117 RVA: 0x0002EA3C File Offset: 0x0002CC3C
 	protected override void OnReleaseArmor()
 	{
 		base.OnReleaseArmor();
@@ -1396,7 +1474,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600333E RID: 13118 RVA: 0x0002EA5D File Offset: 0x0002CC5D
 	protected override void OnSetKitCreature()
 	{
 		base.OnSetKitCreature();
@@ -1406,7 +1483,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600333F RID: 13119 RVA: 0x0002EA7E File Offset: 0x0002CC7E
 	protected override void OnReleaseKitCreature()
 	{
 		base.OnReleaseKitCreature();
@@ -1416,7 +1492,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003340 RID: 13120 RVA: 0x0002EA9F File Offset: 0x0002CC9F
 	public override void PrepareWeapon()
 	{
 		base.PrepareWeapon();
@@ -1424,63 +1499,65 @@ public class AgentModel : WorkerModel
 		this._unit.PrepareWeapon();
 	}
 
-	// Token: 0x06003341 RID: 13121 RVA: 0x0002EAB8 File Offset: 0x0002CCB8
 	public override void CancelWeapon()
 	{
 		base.CancelWeapon();
 		this._unit.CancelWeapon();
 	}
 
-	// Token: 0x06003342 RID: 13122 RVA: 0x0002EACB File Offset: 0x0002CCCB
-	public override void RecoverHP(float amount)
+	public override float RecoverHPv2(float amount)
 	{
 		if (this.IsDead())
 		{
-			return;
+			return 0f;
 		}
 		if (SefiraBossManager.Instance.IsRecoverBlocked)
 		{
-			return;
+			return 0f;
 		}
 		if (this.blockRecover)
 		{
-			return;
+			return 0f;
 		}
-		base.RecoverHP(amount);
-		this.MakeRecoverEffect(true);
+		float num = base.RecoverHPv2(amount);
+		if (num > 0)
+		{
+			this.MakeRecoverEffect(true);
+		}
+		return num;
 	}
 
-	// Token: 0x06003343 RID: 13123 RVA: 0x0015724C File Offset: 0x0015544C
-	public override void RecoverMental(float amount)
+	public override float RecoverMentalv2(float amount)
 	{
 		if (this.IsDead())
 		{
-			return;
+			return 0f;
 		}
 		if (SefiraBossManager.Instance.IsRecoverBlocked)
 		{
-			return;
+			return 0f;
 		}
-		base.RecoverMental(amount);
+		float num = base.RecoverMentalv2(amount);
 		if (this.mental >= (float)this.maxMental && this.IsPanic())
 		{
 			this.StopPanic();
 		}
-		this.MakeRecoverEffect(false);
+		if (num > 0)
+		{
+			this.MakeRecoverEffect(false);
+		}
+		return num;
 	}
 
-	// Token: 0x06003344 RID: 13124 RVA: 0x00003E0D File Offset: 0x0000200D
 	public void UpdateWeaponLevel()
 	{
 	}
 
-	// Token: 0x06003345 RID: 13125 RVA: 0x0002EAFA File Offset: 0x0002CCFA
 	public AgentModel.SkillInfo[] GetSkillInfos()
 	{
 		return this.skillInfos.ToArray();
 	}
 
-	// Token: 0x06003346 RID: 13126 RVA: 0x0015729C File Offset: 0x0015549C
 	public bool HasSkill(SkillTypeInfo skill)
 	{
 		using (List<AgentModel.SkillInfo>.Enumerator enumerator = this.skillInfos.GetEnumerator())
@@ -1496,7 +1573,6 @@ public class AgentModel : WorkerModel
 		return false;
 	}
 
-	// Token: 0x06003347 RID: 13127 RVA: 0x001572F8 File Offset: 0x001554F8
 	public bool HasSkill(long id)
 	{
 		using (List<AgentModel.SkillInfo>.Enumerator enumerator = this.skillInfos.GetEnumerator())
@@ -1512,13 +1588,11 @@ public class AgentModel : WorkerModel
 		return false;
 	}
 
-	// Token: 0x06003348 RID: 13128 RVA: 0x0002EB07 File Offset: 0x0002CD07
 	public AgentAIState GetState()
 	{
 		return this.state;
 	}
 
-	// Token: 0x06003349 RID: 13129 RVA: 0x0002EB0F File Offset: 0x0002CD0F
 	public override void StopAction()
 	{
 		if (this.state != AgentAIState.CANNOT_CONTROLL)
@@ -1530,7 +1604,6 @@ public class AgentModel : WorkerModel
 		this.target = null;
 	}
 
-	// Token: 0x0600334A RID: 13130 RVA: 0x0002EB3E File Offset: 0x0002CD3E
 	public override void ClearUnconCommand()
 	{
 		if (this.state == AgentAIState.CANNOT_CONTROLL)
@@ -1539,26 +1612,22 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600334B RID: 13131 RVA: 0x0002EB54 File Offset: 0x0002CD54
 	public new void FollowMovable(MovableObjectNode node)
 	{
 		this.commandQueue.SetAgentCommand(WorkerCommand.MakeFollowAgent(node));
 	}
 
-	// Token: 0x0600334C RID: 13132 RVA: 0x0002EB67 File Offset: 0x0002CD67
 	public void PursueAgent(UnitModel target)
 	{
 		this.state = AgentAIState.PANIC_VIOLENCE;
 		this.commandQueue.SetAgentCommand(WorkerCommand.MakePanicPursueAgent(target));
 	}
 
-	// Token: 0x0600334D RID: 13133 RVA: 0x0002EB82 File Offset: 0x0002CD82
 	public override void PursueUnconAgent(UnitModel target)
 	{
 		this.commandQueue.SetAgentCommand(WorkerCommand.MakeUnconPursueAgent(target));
 	}
 
-	// Token: 0x0600334E RID: 13134 RVA: 0x00157358 File Offset: 0x00155558
 	public void ManageCreature(CreatureModel target, SkillTypeInfo skill, Sprite skillSprite)
 	{
 		this.recentWork = skill;
@@ -1576,7 +1645,6 @@ public class AgentModel : WorkerModel
 		this._unit.SetWorkNote((int)skill.id);
 	}
 
-	// Token: 0x0600334F RID: 13135 RVA: 0x001573CC File Offset: 0x001555CC
 	public void ManageKitCreature(CreatureModel target)
 	{
 		SkillTypeInfo data = SkillTypeList.instance.GetData(5L);
@@ -1588,7 +1656,6 @@ public class AgentModel : WorkerModel
 		this._unit.SetWorkNote((int)data.id);
 	}
 
-	// Token: 0x06003350 RID: 13136 RVA: 0x00157428 File Offset: 0x00155628
 	public void ReturnKitCreature()
 	{
 		if (this.IsDead() || this.IsCrazy())
@@ -1608,7 +1675,6 @@ public class AgentModel : WorkerModel
 		this.commandQueue.SetAgentCommand(new ReturnKitCreatureCommand());
 	}
 
-	// Token: 0x06003351 RID: 13137 RVA: 0x0002EB95 File Offset: 0x0002CD95
 	public void ReturnCancelKitCreature()
 	{
 		if (SefiraBossManager.Instance.IsWorkCancelable)
@@ -1620,12 +1686,10 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003352 RID: 13138 RVA: 0x00003E0D File Offset: 0x0000200D
 	public void ObserveCreature(CreatureModel target, Sprite skillSprite)
 	{
 	}
 
-	// Token: 0x06003353 RID: 13139 RVA: 0x0002EBC1 File Offset: 0x0002CDC1
 	public void ReturnCreature(CreatureModel target)
 	{
 		if (target.state != CreatureState.SUPPRESSED)
@@ -1638,7 +1702,6 @@ public class AgentModel : WorkerModel
 		this.commandQueue.SetAgentCommand(WorkerCommand.MakeReturnCreature(target));
 	}
 
-	// Token: 0x06003354 RID: 13140 RVA: 0x00157488 File Offset: 0x00155688
 	public void FinishManage()
 	{
 		try
@@ -1661,7 +1724,6 @@ public class AgentModel : WorkerModel
 		this.target = null;
 	}
 
-	// Token: 0x06003355 RID: 13141 RVA: 0x0002EBF6 File Offset: 0x0002CDF6
 	public void FinishObserve()
 	{
 		if (this.state != AgentAIState.OBSERVE)
@@ -1676,7 +1738,6 @@ public class AgentModel : WorkerModel
 		this.target = null;
 	}
 
-	// Token: 0x06003356 RID: 13142 RVA: 0x0002EC29 File Offset: 0x0002CE29
 	public void FinishReturnKitCreature()
 	{
 		if (this.state != AgentAIState.MANAGE)
@@ -1687,7 +1748,6 @@ public class AgentModel : WorkerModel
 		this.target = null;
 	}
 
-	// Token: 0x06003357 RID: 13143 RVA: 0x0002EC43 File Offset: 0x0002CE43
 	public void FinishSuppress()
 	{
 		if (this.IsSuppressing())
@@ -1699,7 +1759,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003358 RID: 13144 RVA: 0x001574F4 File Offset: 0x001556F4
 	public void Suppress(UnitModel target, bool isAuto = false)
 	{
 		if (this.IsCrazy() || this.unconAction != null)
@@ -1711,6 +1770,10 @@ public class AgentModel : WorkerModel
 			return;
 		}
 		if (this.state == AgentAIState.SUPPRESS_CREATURE && base.GetCurrentCommand() is SuppressWorkerCommand && this.target == target)
+		{
+			return;
+		}
+		if (cannotAttackUnits.Contains(target))
 		{
 			return;
 		}
@@ -1733,7 +1796,6 @@ public class AgentModel : WorkerModel
 		});
 	}
 
-	// Token: 0x06003359 RID: 13145 RVA: 0x0002EC6D File Offset: 0x0002CE6D
 	public void SuppressStandingObject(StandingItemModel standing)
 	{
 		this.state = AgentAIState.SUPPRESS_OBJECT;
@@ -1742,19 +1804,16 @@ public class AgentModel : WorkerModel
 		this._unit.SelectIconForcelyEnable();
 	}
 
-	// Token: 0x0600335A RID: 13146 RVA: 0x0002EC99 File Offset: 0x0002CE99
 	public bool IsSuppressing()
 	{
 		return this.state == AgentAIState.SUPPRESS_CREATURE || this.state == AgentAIState.SUPPRESS_WORKER || this.state == AgentAIState.SUPPRESS_OBJECT;
 	}
 
-	// Token: 0x0600335B RID: 13147 RVA: 0x0002ECB8 File Offset: 0x0002CEB8
 	public void PanicSuppressed()
 	{
 		this.movableNode.StopMoving();
 	}
 
-	// Token: 0x0600335C RID: 13148 RVA: 0x001575C0 File Offset: 0x001557C0
 	public override void UnderAttack(UnitModel attacker)
 	{
 		base.UnderAttack(attacker);
@@ -1781,7 +1840,6 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600335D RID: 13149 RVA: 0x0002ECC5 File Offset: 0x0002CEC5
 	public override void LoseControl()
 	{
 		if (this.IsPanic())
@@ -1792,7 +1850,6 @@ public class AgentModel : WorkerModel
 		this.commandQueue.Clear();
 	}
 
-	// Token: 0x0600335E RID: 13150 RVA: 0x00157630 File Offset: 0x00155830
 	public override void GetControl()
 	{
 		if (this.state == AgentAIState.CANNOT_CONTROLL)
@@ -1808,13 +1865,11 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x0600335F RID: 13151 RVA: 0x0002ECE7 File Offset: 0x0002CEE7
 	public override bool CannotControll()
 	{
 		return this.state == AgentAIState.CANNOT_CONTROLL;
 	}
 
-	// Token: 0x06003360 RID: 13152 RVA: 0x00157680 File Offset: 0x00155880
 	public override void SetUncontrollableAction(UncontrollableAction uncon)
 	{
 		if (base.CurrentPanicAction != null)
@@ -1834,7 +1889,6 @@ public class AgentModel : WorkerModel
 		SefiraManager.instance.GetSefira(base.currentSefira).OnAgentCannotControll(this);
 	}
 
-	// Token: 0x06003361 RID: 13153 RVA: 0x0002ECF2 File Offset: 0x0002CEF2
 	public void OnClick()
 	{
 		if (this.unconAction != null)
@@ -1847,13 +1901,11 @@ public class AgentModel : WorkerModel
 		}
 	}
 
-	// Token: 0x06003362 RID: 13154 RVA: 0x0002ED17 File Offset: 0x0002CF17
 	public void IconAllocated()
 	{
 		this._unit.ManagingCreature();
 	}
 
-	// Token: 0x06003363 RID: 13155 RVA: 0x001576E8 File Offset: 0x001558E8
 	public override void OnDie()
 	{
 		if (this.invincible)
@@ -2809,14 +2861,14 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x06003398 RID: 13208 RVA: 0x001585A4 File Offset: 0x001567A4
 	public void HorrorDamage(UnitModel target)
-	{
+	{ // <Patch>
 		if (this.IsCrazy())
 		{
 			return;
 		}
 		int num = target.GetRiskLevel() - this.level;
 		int level;
-		if (target is CreatureModel && (target as CreatureModel).metaInfo.id == 100015L)
+		if (target is CreatureModel && (target as CreatureModel).metaInfo.LcId == 100015L)
 		{
 			if (this.level <= 3)
 			{
@@ -3176,10 +3228,14 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033A8 RID: 13224 RVA: 0x0002F0F1 File Offset: 0x0002D2F1
 	public int GetContinuousServiceLevel()
-	{
+	{ // <Mod>
 		if (this.isAce)
 		{
-			return 4;
+			if (!ResearchDataModel.instance.IsUpgradedAbility("upgrade_service_bonuses") || continuousServiceDay <= 13)
+			{
+				return 4;
+			}
+			return 6;
 		}
 		if (this.continuousServiceDay <= 2)
 		{
@@ -3189,22 +3245,30 @@ public class AgentModel : WorkerModel
 		{
 			return 2;
 		}
-		return 3;
+		if (!ResearchDataModel.instance.IsUpgradedAbility("upgrade_service_bonuses") || continuousServiceDay <= 13)
+		{
+			return 3;
+		}
+		return 5;
 	}
 
 	// Token: 0x060033A9 RID: 13225 RVA: 0x001589FC File Offset: 0x00156BFC
 	public int GetFortitudeStatBySefiraAbility()
-	{
+	{ // <Mod>
 		int num = 0;
 		num += SefiraAbilityValueInfo.hokmaOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHOKHMAH)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
 		if (this.currentSefiraEnum == SefiraEnum.NETZACH)
 		{
 			num += SefiraAbilityValueInfo.netzachContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
-		}
+		}/*
 		if (this.currentSefiraEnum == SefiraEnum.HOD && this.GetContinuousServiceLevel() == 4)
 		{
 			num += SefiraAbilityValueInfo.hodContinuousServiceValues[3];
-		}
+		}*/
 		if (this.currentSefiraEnum == SefiraEnum.TIPERERTH1)
 		{
 			num += SefiraAbilityValueInfo.tipherethContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
@@ -3222,17 +3286,21 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033AA RID: 13226 RVA: 0x001589FC File Offset: 0x00156BFC
 	public int GetPrudenceStatBySefiraAbility()
-	{
+	{ // <Mod>
 		int num = 0;
 		num += SefiraAbilityValueInfo.hokmaOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHOKHMAH)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
 		if (this.currentSefiraEnum == SefiraEnum.NETZACH)
 		{
 			num += SefiraAbilityValueInfo.netzachContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
-		}
+		}/*
 		if (this.currentSefiraEnum == SefiraEnum.HOD && this.GetContinuousServiceLevel() == 4)
 		{
 			num += SefiraAbilityValueInfo.hodContinuousServiceValues[3];
-		}
+		}*/
 		if (this.currentSefiraEnum == SefiraEnum.TIPERERTH1)
 		{
 			num += SefiraAbilityValueInfo.tipherethContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
@@ -3250,17 +3318,21 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033AB RID: 13227 RVA: 0x00158AA8 File Offset: 0x00156CA8
 	public int GetTemperanceStatBySefiraAbility()
-	{
+	{ // <Mod>
 		int num = 0;
 		num += SefiraAbilityValueInfo.hokmaOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHOKHMAH)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
 		if (this.currentSefiraEnum == SefiraEnum.YESOD)
 		{
 			num += SefiraAbilityValueInfo.yesodContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
-		}
+		}/*
 		if (this.currentSefiraEnum == SefiraEnum.HOD && this.GetContinuousServiceLevel() == 4)
 		{
 			num += SefiraAbilityValueInfo.hodContinuousServiceValues[3];
-		}
+		}*/
 		if (this.currentSefiraEnum == SefiraEnum.TIPERERTH1)
 		{
 			num += SefiraAbilityValueInfo.tipherethContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
@@ -3278,7 +3350,7 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033AC RID: 13228 RVA: 0x00158B54 File Offset: 0x00156D54
 	public int GetJusticeStatBySefiraAbility()
-	{
+	{ // <Mod>
 		int num = 0;
 		int num2 = 0;
 		if (num2 != 1)
@@ -3300,10 +3372,15 @@ public class AgentModel : WorkerModel
 			num++;
 		}
 		num += SefiraAbilityValueInfo.hokmaOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHOKHMAH)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
+		/*
 		if (this.currentSefiraEnum == SefiraEnum.HOD && this.GetContinuousServiceLevel() == 4)
 		{
 			num += SefiraAbilityValueInfo.hodContinuousServiceValues[3];
-		}
+		}*/
 		if (this.currentSefiraEnum == SefiraEnum.TIPERERTH1)
 		{
 			num += SefiraAbilityValueInfo.tipherethContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
@@ -3321,21 +3398,35 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033AD RID: 13229 RVA: 0x0002F114 File Offset: 0x0002D314
 	public int GetAttackSpeedBufBySefiraAbility()
-	{
-		return 0 + SefiraAbilityValueInfo.geburahOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.GEBURAH)];
+	{ // <Mod>
+		int num = SefiraAbilityValueInfo.geburahOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.GEBURAH)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
+		return num;
 	}
 
 	// Token: 0x060033AE RID: 13230 RVA: 0x0002F129 File Offset: 0x0002D329
 	public int GetWorkProbBufBySefiraAbility()
-	{
-		return 0 + SefiraAbilityValueInfo.yesodOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.YESOD)];
+	{ // <Mod>
+		int num = SefiraAbilityValueInfo.yesodOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.YESOD)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
+		return num;
 	}
 
 	// Token: 0x060033AF RID: 13231 RVA: 0x00158C04 File Offset: 0x00156E04
 	public int GetMovementBufBySefiraAbility()
-	{
+	{ // <Mod>
 		int num = 0;
 		num += SefiraAbilityValueInfo.malkuthOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.MALKUT)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
 		if (this.currentSefiraEnum == SefiraEnum.MALKUT)
 		{
 			num += SefiraAbilityValueInfo.malkuthContinuousServiceValues[this.GetContinuousServiceLevel() - 1];
@@ -3345,7 +3436,7 @@ public class AgentModel : WorkerModel
 
 	// Token: 0x060033B0 RID: 13232 RVA: 0x00158C44 File Offset: 0x00156E44
 	public override float GetDamageFactorBySefiraAbility()
-	{
+	{ // <Mod>
 		if (this.currentSefiraEnum == SefiraEnum.GEBURAH)
 		{
 			return 1f + (float)SefiraAbilityValueInfo.geburahContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f;
@@ -3353,6 +3444,10 @@ public class AgentModel : WorkerModel
 		if (this.currentSefiraEnum == SefiraEnum.BINAH)
 		{
 			return 1f + (float)SefiraAbilityValueInfo.binahContinuousServiceValues[this.GetContinuousServiceLevel() - 1] / 100f;
+		}
+		if (currentSefiraEnum == SefiraEnum.KETHER)
+		{
+			return 1f + (float)SefiraAbilityValueInfo.ketherContinuousServiceValues2[GetContinuousServiceLevel() - 1] / 100f;
 		}
 		return 1f;
 	}
@@ -3509,6 +3604,122 @@ public class AgentModel : WorkerModel
 	{
 		this._suppressCommand = check;
 	}
+
+	//> <Mod>
+	public void EnqueueWorkOrder(QueuedWorkOrder order)
+	{
+		_workOrderQueue.Add(order);
+		if (_workOrderQueue.Count == 1)
+		{
+			order.isAgentFront = true;
+		}
+	}
+	
+	public void DequeueWorkOrder()
+	{
+		if (_workOrderQueue.Count > 0)
+		{
+			_workOrderQueue.RemoveAt(0);
+			if (_workOrderQueue.Count > 0)
+			{
+				_workOrderQueue[0].isAgentFront = true;
+			}
+		}
+	}
+	
+	public void DequeueWorkOrder(QueuedWorkOrder order)
+	{
+		_workOrderQueue.Remove(order);
+		if (_workOrderQueue.Count > 0)
+		{
+			_workOrderQueue[0].isAgentFront = true;
+		}
+	}
+	
+	public bool CanQueueWorkOrder()
+	{
+		int maxWorkCount = 3;
+		if (!SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") || MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT))
+		{
+			maxWorkCount = 5;
+		}
+		if (maxWorkCount == -1)
+		{
+			return true;
+		}
+		int num = _workOrderQueue.Count;
+		if (state == AgentAIState.MANAGE)
+		{
+			num++;
+		}
+		return num < maxWorkCount;
+	}
+	
+	public void ClearWorkOrderQueue()
+	{
+		foreach (QueuedWorkOrder order in _workOrderQueue)
+		{
+			order.room.DequeueWorkOrder(order);
+		}
+		_workOrderQueue.Clear();
+	}
+
+	public List<QueuedWorkOrder> GetWorkOrderQueue()
+	{
+		return _workOrderQueue;
+	}
+
+	private List<QueuedWorkOrder> _workOrderQueue = new List<QueuedWorkOrder>();
+
+	public void ForcelyChangePrefix(int title)
+	{
+		prefix = AgentTitleTypeList.instance.GetData(title);
+	}
+
+	public void ForcelyChangeSuffix(int title)
+	{
+		suffix = AgentTitleTypeList.instance.GetData(title);
+	}
+
+	public void FeignDeathScene(string specialDeadSceneName)
+	{
+		try
+		{
+			if (this.hasUniqueFace)
+			{
+				this.GetUnit().animChanger.ChangeAnimatorWithUniqueFace(specialDeadSceneName, this.seperator);
+			}
+			else
+			{
+				this.GetUnit().SetWorkerFaceType(WorkerFaceType.PANIC);
+				this.GetUnit().animChanger.ChangeAnimator(specialDeadSceneName, this.seperator);
+			}
+		}
+		catch (Exception)
+		{
+		}
+	}
+
+	[NonSerialized]
+	public List<UnitModel> cannotAttackUnits = new List<UnitModel>();
+
+	public bool ForceHideUI
+	{
+		get
+		{
+			return _forceHideUI;
+		}
+		set
+		{
+			_forceHideUI = value;
+		}
+	}
+
+	private bool _forceHideUI = false;
+
+	[NonSerialized]
+	public int[] forceTitles = new int[4];
+	//<
 
 	// Token: 0x04003061 RID: 12385
 	private const string reloadSound = "Agent/Weapon/Reload_Pistol";

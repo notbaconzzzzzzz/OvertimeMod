@@ -26,16 +26,22 @@ namespace CreatureInfo
 
 		// Token: 0x060052C5 RID: 21189 RVA: 0x001DD1BC File Offset: 0x001DB3BC
 		public override void SetModel(EquipmentModel Model)
-		{
+		{ // <Mod>
 			base.SetModel(Model);
 			this.GradeText.text = Model.metaInfo.grade;
+			DefenseInfo defense = Model.metaInfo.defenseInfo.Copy();
+			float num = EGOrealizationManager.instance.ArmorUpgrade(Model.metaInfo);
+			defense.R -= num;
+			defense.W -= num;
+			defense.B -= num;
+			defense.P -= num;
 			InventoryItemController.SetGradeText(Model.metaInfo.Grade, this.GradeText);
-			UIUtil.DefenseSetOnlyText(Model.metaInfo.defenseInfo, this.RWBP_Defense);
+			UIUtil.DefenseSetOnlyText(defense, this.RWBP_Defense);
 			for (int i = 1; i <= 4; i++)
 			{
 				RwbpType rwbpType = (RwbpType)i;
-				float multiplier = Model.metaInfo.defenseInfo.GetMultiplier(rwbpType);
-				string text = string.Format("{0} ({1:0.0})", EnumTextConverter.GetRwbpType(rwbpType).ToUpper(), multiplier);
+				float multiplier = defense.GetMultiplier(rwbpType);
+				string text = string.Format(num == 0f ? "{0} ({1:0.0})" : "{0} ({1:0.00})", EnumTextConverter.GetRwbpType(rwbpType).ToUpper(), multiplier);
 				this.TypeText[i - 1].text = text;
 			}
 			this.CheckMakeCount();
@@ -43,15 +49,21 @@ namespace CreatureInfo
 
 		// Token: 0x060052C6 RID: 21190 RVA: 0x001DD26C File Offset: 0x001DB46C
 		public override void SetModel(EquipmentTypeInfo info)
-		{
+		{ // <Mod>
 			base.SetModel(info);
 			InventoryItemController.SetGradeText(info.Grade, this.GradeText);
-			UIUtil.DefenseSetOnlyText(info.defenseInfo, this.RWBP_Defense);
+			DefenseInfo defense = info.defenseInfo.Copy();
+			float num = EGOrealizationManager.instance.ArmorUpgrade(info);
+			defense.R -= num;
+			defense.W -= num;
+			defense.B -= num;
+			defense.P -= num;
+			UIUtil.DefenseSetOnlyText(defense, this.RWBP_Defense);
 			for (int i = 1; i <= 4; i++)
 			{
 				RwbpType rwbpType = (RwbpType)i;
-				float multiplier = info.defenseInfo.GetMultiplier(rwbpType);
-				string text = string.Format("{0} ({1:0.0})", EnumTextConverter.GetRwbpType(rwbpType).ToUpper(), multiplier);
+				float multiplier = defense.GetMultiplier(rwbpType);
+				string text = string.Format(num == 0f ? "{0} ({1:0.0})" : "{0} ({1:0.00})", EnumTextConverter.GetRwbpType(rwbpType).ToUpper(), multiplier);
 				this.TypeText[i - 1].text = text;
 			}
 			this.portrait.SetArmor(info);
@@ -61,10 +73,10 @@ namespace CreatureInfo
 
 		// Token: 0x060052C7 RID: 21191 RVA: 0x001DD314 File Offset: 0x001DB514
 		public void CheckMakeCount()
-		{
+		{ // <Patch>
 			int num = 0;
 			int num2 = 0;
-			if (InventoryModel.Instance.GetEquipCount(base.Info.id, out num, out num2))
+			if (InventoryModel.Instance.GetEquipCount_Mod(EquipmentTypeInfo.GetLcId(base.Info), out num, out num2))
 			{
 				string text = num + "/" + num2;
 				this.MakeCount.text = text;

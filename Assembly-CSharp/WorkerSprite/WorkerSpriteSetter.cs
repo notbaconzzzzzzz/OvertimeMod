@@ -221,11 +221,13 @@ namespace WorkerSprite
 
 		// Token: 0x060044E8 RID: 17640 RVA: 0x0003A657 File Offset: 0x00038857
 		public void ArmorEquip(int armorId)
-		{
+		{ // <Patch>
+			this.ArmorEquip_Mod(new LobotomyBaseMod.LcId(armorId));
+            /*
 			this.armorId = armorId;
 			WorkerSpriteManager.instance.GetArmorData(armorId, ref this.Model.spriteData);
 			this.UpdateArmorSpriteSet();
-			this.ArmorApply();
+			this.ArmorApply();*/
 		}
 
 		// Token: 0x060044E9 RID: 17641 RVA: 0x001A70C4 File Offset: 0x001A52C4
@@ -358,7 +360,97 @@ namespace WorkerSprite
 
 		// Token: 0x060044ED RID: 17645 RVA: 0x001A73B0 File Offset: 0x001A55B0
 		public void AddGiftModel(EGOgiftModel gift)
-		{
+		{ // <Patch>
+			if (!this.currentGift.Contains(gift))
+			{
+				this.currentGift.Add(gift);
+			}
+			EGOGiftRenderData egogiftRenderData = null;
+			EGOgiftAttachRegion egogiftAttachRegion = EGOgiftAttachRegion.EYE;
+			string sprite = gift.metaInfo.sprite;
+			string empty = string.Empty;
+			string empty2 = string.Empty;
+			if (EGOGiftRegionKey.ParseRegion(gift.metaInfo.attachPos, out egogiftAttachRegion))
+			{
+				Sprite attachmentSprite = WorkerSpriteManager.instance.GetAttachmentSprite(egogiftAttachRegion, sprite);
+				if (attachmentSprite == null)
+				{
+					Debug.LogError("Couldn't find : " + gift.metaInfo.Name + " Searched as " + sprite);
+				}
+				else
+				{
+					if (gift.metaInfo.attachType == EGOgiftAttachType.ADD || gift.metaInfo.attachType == EGOgiftAttachType.SPECIAL_ADD)
+					{
+						if (this.attachGiftData.TryGetValue(UnitEGOgiftSpace.GetRegionId(gift.metaInfo), out egogiftRenderData))
+						{
+							egogiftRenderData.Sprite = attachmentSprite;
+							egogiftRenderData.DataName = gift.metaInfo.Name;
+							egogiftRenderData.metaId = (long)gift.metaInfo.id;
+							egogiftRenderData.modid = EquipmentTypeInfo.GetLcId(gift.metaInfo).packageId;
+							this.AddGift(egogiftRenderData);
+						}
+						else
+						{
+							if (!EGOGiftRegionKey.GetRegionKey(egogiftAttachRegion, out empty, out empty2))
+							{
+								Debug.LogError("Error " + egogiftAttachRegion.ToString());
+							}
+							else
+							{
+								egogiftRenderData = new EGOGiftRenderData
+								{
+									Sprite = attachmentSprite,
+									slot = empty,
+									attachmentName = empty2,
+									DataName = gift.metaInfo.Name,
+									region = egogiftAttachRegion,
+									attachType = gift.metaInfo.attachType,
+									metaId = (long)gift.metaInfo.id
+								};
+								egogiftRenderData.modid = EquipmentTypeInfo.GetLcId(gift.metaInfo).packageId;
+								this.attachGiftData.Add(UnitEGOgiftSpace.GetRegionId(gift.metaInfo), egogiftRenderData);
+								this.AddGift(egogiftRenderData);
+							}
+						}
+					}
+					else
+					{
+						if (egogiftAttachRegion != EGOgiftAttachRegion.BACK && egogiftAttachRegion != EGOgiftAttachRegion.BACK2 && egogiftAttachRegion != EGOgiftAttachRegion.HEADBACK)
+						{
+                            if (this.replaceGiftData.TryGetValue(egogiftAttachRegion, out egogiftRenderData))
+                            {
+                                egogiftRenderData.Sprite = attachmentSprite;
+                                egogiftRenderData.DataName = gift.metaInfo.Name;
+                                this.ReplaceGift(egogiftRenderData);
+                            }
+                            else
+                            {
+                                if (!EGOGiftRegionKey.GetRegionKey(egogiftAttachRegion, out empty, out empty2))
+                                {
+                                    Debug.LogError("Error " + egogiftAttachRegion.ToString());
+                                }
+                                else
+                                {
+                                    egogiftRenderData = new EGOGiftRenderData
+                                    {
+                                        Sprite = attachmentSprite,
+                                        slot = empty,
+                                        attachmentName = empty2,
+                                        DataName = gift.metaInfo.Name,
+                                        region = egogiftAttachRegion,
+                                        attachType = gift.metaInfo.attachType,
+                                        metaId = (long)gift.metaInfo.id
+                                    };
+                                    egogiftRenderData.modid = EquipmentTypeInfo.GetLcId(gift.metaInfo).packageId;
+                                    this.replaceGiftData.Add(egogiftAttachRegion, egogiftRenderData);
+                                    this.ReplaceGift(egogiftRenderData);
+                                }
+                            }
+						}
+					}
+				}
+			}
+            /*
 			if (!this.currentGift.Contains(gift))
 			{
 				this.currentGift.Add(gift);
@@ -444,7 +536,7 @@ namespace WorkerSprite
 					this.replaceGiftData.Add(egogiftAttachRegion, egogiftRenderData);
 					this.ReplaceGift(egogiftRenderData);
 				}
-			}
+			}*/
 		}
 
 		// Token: 0x060044EE RID: 17646 RVA: 0x001A761C File Offset: 0x001A581C
@@ -523,7 +615,60 @@ namespace WorkerSprite
 
 		// Token: 0x060044F4 RID: 17652 RVA: 0x001A790C File Offset: 0x001A5B0C
 		public void UpdateAttachment()
-		{
+		{ // <Patch>
+			List<SpineChangeData> list = new List<SpineChangeData>();
+			using (Dictionary<EGOgiftAttachRegion, EGOGiftRenderData>.ValueCollection.Enumerator enumerator = this.replaceGiftData.Values.GetEnumerator())
+			{
+				while (enumerator.MoveNext())
+				{
+					EGOGiftRenderData r = enumerator.Current;
+					SpineChangeData spineChangeData = new SpineChangeData
+					{
+						sprite = r.Sprite,
+						slot = r.slot,
+						attachmentName = r.attachmentName
+					};
+					try
+					{
+						if (r.region == EGOgiftAttachRegion.RIGHTHAND && r.attachType == EGOgiftAttachType.REPLACE)
+						{
+							EGOgiftModel egogiftModel = this.Model.Equipment.gifts.replacedGifts.Find((EGOgiftModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == EGOGiftRenderData.GetLcId(r));
+							if (egogiftModel != null && !this.Model.Equipment.gifts.GetDisplayState(egogiftModel))
+							{
+								spineChangeData.sprite = WorkerSpriteManager.instance.righthand;
+								list.Add(spineChangeData);
+								continue;
+							}
+						}
+					}
+					catch (Exception)
+					{
+					}
+					if (r.region == EGOgiftAttachRegion.MOUTH || r.region == EGOgiftAttachRegion.EYE)
+					{
+						if (r.region == EGOgiftAttachRegion.EYE)
+						{
+							this.workerSpriteData.replaced.Eye = r.Sprite;
+							this.currentSpriteSet.Eye = r.Sprite;
+							this.workerSpriteData.EyeColor = Color.white;
+							this.EyeApply();
+						}
+						else
+						{
+							if (r.region == EGOgiftAttachRegion.MOUTH)
+							{
+								this.MouthApply();
+							}
+						}
+					}
+					else
+					{
+						list.Add(spineChangeData);
+					}
+				}
+			}
+			this.Apply(list);
+            /*
 			List<SpineChangeData> list = new List<SpineChangeData>();
 			using (Dictionary<EGOgiftAttachRegion, EGOGiftRenderData>.ValueCollection.Enumerator enumerator = this.replaceGiftData.Values.GetEnumerator())
 			{
@@ -572,7 +717,7 @@ namespace WorkerSprite
 					}
 				}
 			}
-			this.Apply(list);
+			this.Apply(list);*/
 		}
 
 		// Token: 0x060044F5 RID: 17653 RVA: 0x001A7AEC File Offset: 0x001A5CEC
@@ -1266,6 +1411,15 @@ namespace WorkerSprite
 				component2.MeshRenderer.sortingLayerID = layerId;
 				component2.MeshRenderer.sortingOrder = order;
 			}
+		}
+
+		// <Patch>
+		public void ArmorEquip_Mod(LobotomyBaseMod.LcId armorId)
+		{
+			this.armorId = armorId.id;
+			WorkerSpriteManager.instance.GetArmorData_Mod(armorId, ref this.Model.spriteData);
+			this.UpdateArmorSpriteSet();
+			this.ArmorApply();
 		}
 
 		// Token: 0x04003FCF RID: 16335

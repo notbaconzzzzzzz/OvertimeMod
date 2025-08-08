@@ -32,7 +32,7 @@ namespace BinahBoss
 
 		// Token: 0x06004C69 RID: 19561 RVA: 0x001C1C30 File Offset: 0x001BFE30
 		private void Update()
-		{
+		{ // <Mod>
 			if (this._isActivated)
 			{
 				if (this.currentText != this.overloadType.ToString())
@@ -40,7 +40,7 @@ namespace BinahBoss
 					this.currentText = LocalizeTextDataModel.instance.GetText(string.Format("overload_{0}", this.overloadType.ToString().ToLower()));
 					this.overloadTypeText.text = this.currentText;
 				}
-				float a = (-Mathf.Cos(this.alarmValue) / 2f + 0.5f) * 0.6f + 0.4f;
+				float a = (-Mathf.Cos(this.alarmValue) / 2f + 0.5f) * 0.5f + 0.5f;
 				foreach (Image image in this.alarms)
 				{
 					Color color = image.color;
@@ -50,6 +50,14 @@ namespace BinahBoss
 				Color color2 = this.overloadTypeText.color;
 				color2.a = a;
 				this.overloadTypeText.color = color2;
+                if (overloadType == OverloadType.OBLIVION &&
+					GameManager.currentGameManager.state == GameState.PAUSE &&
+					GameManager.currentGameManager.GetCurrentPauseCaller() == PAUSECALL.STOPGAME)
+				{
+					float timerSpeed = 1f;
+					this.alarmValue += Time.unscaledDeltaTime * 8f;
+					this.yAdder -= Time.unscaledDeltaTime * 2f;
+				}
 				this.alarmValue += Time.deltaTime * 4f;
 				this.yAdder -= Time.deltaTime;
 				if (this.yAdder < 0f)

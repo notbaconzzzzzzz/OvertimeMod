@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
++public DamageInfo(RwbpType type, float min, float max) // Addded support for initializing with floats
+public DamageInfo Copy() // Fixed but where damage multipliers would round down
++public DamageResult result // 
+*/
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +26,14 @@ public class DamageInfo
         this.max = (float)max;
     }
 
+    // <Mod> addded support for initializing with floats
+    public DamageInfo(RwbpType type, float min, float max)
+    {
+        this.type = type;
+        this.min = min;
+        this.max = max;
+    }
+
     // Token: 0x1700047D RID: 1149
     // (get) Token: 0x0600306F RID: 12399 RVA: 0x0002CF66 File Offset: 0x0002B166
     public static DamageInfo zero
@@ -33,14 +46,19 @@ public class DamageInfo
 
     // Token: 0x06003070 RID: 12400 RVA: 0x00146BC4 File Offset: 0x00144DC4
     public DamageInfo Copy()
-    {
-        return new DamageInfo(this.type, (int)this.min, (int)this.max)
+    { // <Mod> uses new constructor so that damage numbers don't round down
+        DamageInfo damageInfo = new DamageInfo(this.type, this.min, this.max)
         {
             soundInfo = this.soundInfo,
             effectInfo = this.effectInfo,
             effectInfos = this.effectInfos,
             param = this.param
         };
+        if (result.activated)
+        {
+            damageInfo.result = result;
+        }
+        return damageInfo;
     }
 
     // Token: 0x06003071 RID: 12401 RVA: 0x00146C20 File Offset: 0x00144E20
@@ -96,4 +114,7 @@ public class DamageInfo
 
     // Token: 0x04002E41 RID: 11841
     public float max;
+
+    // <Mod>
+    public DamageResult result = new DamageResult();
 }

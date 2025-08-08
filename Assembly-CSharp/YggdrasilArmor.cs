@@ -1,3 +1,6 @@
+/*
+changed some static values
+*/
 using System;
 
 // Token: 0x0200062D RID: 1581
@@ -70,7 +73,7 @@ public class YggdrasilArmor : EquipmentScriptBase
 	private const float _mpHealFreq = 2.5f;
 
 	// Token: 0x040031AB RID: 12715
-	private const float _mpHealValue = 2.5f;
+	private const float _mpHealValue = 1f; // changed from 2.5 sp
 
 	// Token: 0x040031AC RID: 12716
 	private WorkerModel worker;

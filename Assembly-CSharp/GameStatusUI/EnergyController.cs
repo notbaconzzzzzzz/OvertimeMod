@@ -1,3 +1,14 @@
+/*
+public void Update() // Unstable TT2
+public void SetOverloadLevel(int level) // 
+private string GetOrdealName(OrdealLevel level) // 
+public void SetOverloadGauge(int num, int max) // 
++public void SetSecondaryOverloadGauge(int num, int max) // 
++public void SetSecondaryOverload(int gaugePos, int gaugeMax, OrdealBase ordeal, int overloadNum) // 
++public void ClearSecondaryOverload() // 
++private int _defaultfontsize // 
++things // Secondary Qliphoth Overload
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,9 +27,12 @@ namespace GameStatusUI
 
 		// Token: 0x060053AE RID: 21422 RVA: 0x001E146C File Offset: 0x001DF66C
 		public void Update()
-		{
+		{ // <Mod>
 			this.current = EnergyModel.instance.GetEnergy();
 			float fillAmount = this.current / this.max;
+            if (UnstableTT2Manager.instance.isActive) {
+				fillAmount = UnstableTT2Manager.instance.curPauseCharge / UnstableTT2Manager.instance.maxPauseCharge;
+			}
 			this.EnergyFill.fillAmount = fillAmount;
 			this.InnerText.text = (int)this.current + " / " + (int)this.max;
 			this.OrdealUpdate();
@@ -30,6 +44,48 @@ namespace GameStatusUI
 			if (this._overloadUITimer.started && this._overloadUITimer.RunTimer())
 			{
 				this.OverloadUIController.Hide();
+			}
+			OvertimeIsolateGradientTimer += Time.unscaledDeltaTime / 3f;
+			if (OvertimeIsolateGradientTimer >= 4f)
+			{
+				OvertimeIsolateGradientTimer -= 4f;
+			}
+			Color leftTween;
+			Color rightTween;
+			float tweenAmount;
+			if (OvertimeIsolateGradientTimer < 1f)
+			{
+				leftTween = UIColorManager.instance.GetOverloadColor(OverloadType.PAIN);
+				rightTween = UIColorManager.instance.GetOverloadColor(OverloadType.GRIEF);
+				tweenAmount = OvertimeIsolateGradientTimer;
+			}
+			else if (OvertimeIsolateGradientTimer < 2f)
+			{
+				leftTween = UIColorManager.instance.GetOverloadColor(OverloadType.GRIEF);
+				rightTween = UIColorManager.instance.GetOverloadColor(OverloadType.RUIN);
+				tweenAmount = OvertimeIsolateGradientTimer - 1f;
+			}
+			else if (OvertimeIsolateGradientTimer < 3f)
+			{
+				leftTween = UIColorManager.instance.GetOverloadColor(OverloadType.RUIN);
+				rightTween = UIColorManager.instance.GetOverloadColor(OverloadType.OBLIVION);
+				tweenAmount = OvertimeIsolateGradientTimer - 2f;
+			}
+			else
+			{
+				leftTween = UIColorManager.instance.GetOverloadColor(OverloadType.OBLIVION);
+				rightTween = UIColorManager.instance.GetOverloadColor(OverloadType.PAIN);
+				tweenAmount = OvertimeIsolateGradientTimer - 3f;
+			}
+			tweenAmount = 0.5f - Mathf.Cos(tweenAmount * 180f * Mathf.Deg2Rad) / 2f;
+			Color color = leftTween * (1f - tweenAmount) + rightTween * tweenAmount;
+			if (OvertimeIsolateNumText != null)
+			{
+				OvertimeIsolateNumText.color = color;
+			}
+			if (SecondaryIsolateNumText != null)
+			{
+				SecondaryIsolateNumText.color = color;
 			}
 		}
 
@@ -181,11 +237,16 @@ namespace GameStatusUI
 
 		// Token: 0x060053C1 RID: 21441 RVA: 0x001E180C File Offset: 0x001DFA0C
 		public void SetOverloadLevel(int level)
-		{
+		{ // <Mod>
+			if (_defaultfontsize == -1)
+			{
+				_defaultfontsize = OverloadLevelText.fontSize;
+			}
 			switch (level)
 			{
 			case 1:
 				this.OverloadLevelText.text = "I";
+				OverloadLevelText.fontSize = _defaultfontsize;
 				break;
 			case 2:
 				this.OverloadLevelText.text = "II";
@@ -213,6 +274,43 @@ namespace GameStatusUI
 				break;
 			case 10:
 				this.OverloadLevelText.text = "X";
+				break;
+			case 11:
+				this.OverloadLevelText.text = "XI";
+				break;
+			case 12:
+				this.OverloadLevelText.text = "XII";
+				break;
+			case 13:
+				this.OverloadLevelText.text = "XIII";
+				break;
+			case 14:
+				this.OverloadLevelText.text = "XIV";
+				OverloadLevelText.fontSize = _defaultfontsize * 6 / 7;
+				break;
+			case 15:
+				this.OverloadLevelText.text = "XV";
+				OverloadLevelText.fontSize = _defaultfontsize;
+				break;
+			case 16:
+				this.OverloadLevelText.text = "XVI";
+				OverloadLevelText.fontSize = _defaultfontsize * 6 / 7;
+				break;
+			case 17:
+				this.OverloadLevelText.text = "XVII";
+				OverloadLevelText.fontSize = _defaultfontsize * 6 / 8;
+				break;
+			case 18:
+				this.OverloadLevelText.text = "XVIII";
+				OverloadLevelText.fontSize = _defaultfontsize * 6 / 9;
+				break;
+			case 19:
+				this.OverloadLevelText.text = "IXX";
+				OverloadLevelText.fontSize = _defaultfontsize * 6 / 7;
+				break;
+			case 20:
+				this.OverloadLevelText.text = "XX";
+				OverloadLevelText.fontSize = _defaultfontsize * 9 / 10;
 				break;
 			}
 		}
@@ -252,7 +350,7 @@ namespace GameStatusUI
 
 		// Token: 0x060053C3 RID: 21443 RVA: 0x001E1A88 File Offset: 0x001DFC88
 		private string GetOrdealName(OrdealLevel level)
-		{
+		{ // <Mod>
 			string text = "Ordeal_";
 			switch (level)
 			{
@@ -268,6 +366,18 @@ namespace GameStatusUI
 			case OrdealLevel.MIDNIGHT:
 				text += "Midnight";
 				break;
+			case OrdealLevel.OVERTIME_DAWN:
+				text += "Dawn";
+				break;
+			case OrdealLevel.OVERTIME_NOON:
+				text += "Noon";
+				break;
+			case OrdealLevel.OVERTIME_DUSK:
+				text += "Dusk";
+				break;
+			case OrdealLevel.OVERTIME_MIDNIGHT:
+				text += "Midnight";
+				break;
 			}
 			return LocalizeTextDataModel.instance.GetText(text);
 		}
@@ -278,10 +388,101 @@ namespace GameStatusUI
 			this.OverLoadIsolateNumText.text = num.ToString();
 		}
 
+		// <Mod>
+		public void SetOvertimeOverloadIsolateNum(int num)
+		{
+			if (OvertimeIsolateNumText == null)
+			{
+				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.OverLoadIsolateNumText.gameObject);
+				gameObject.transform.SetParent(OverLoadIsolateNumText.gameObject.transform.parent);
+				Vector3 scale = gameObject.transform.localScale;
+				scale.y *= 1f / 3f;
+				scale.x *= 1f / 3f;
+				gameObject.transform.localScale = scale;
+				gameObject.transform.localPosition = OverLoadIsolateNumText.gameObject.transform.localPosition;
+				gameObject.layer = OverLoadIsolateNumText.gameObject.layer;
+				gameObject.transform.Translate(-30f, 0f, 0f);
+				OvertimeIsolateNumText = gameObject.GetComponent<Text>();
+			}
+			if (num == 0)
+			{
+				OvertimeIsolateNumText.gameObject.SetActive(false);
+			}
+			else
+			{
+				OvertimeIsolateNumText.text = num.ToString();
+				OvertimeIsolateNumText.gameObject.SetActive(true);
+			}
+		}
+
 		// Token: 0x060053C5 RID: 21445 RVA: 0x001E1B08 File Offset: 0x001DFD08
 		public void SetOverloadGauge(int num, int max)
-		{
+		{ // <Mod> Work Compression
 			IEnumerator enumerator = this.OverLoadGaugeLayout.transform.GetEnumerator();
+			try
+			{
+				while (enumerator.MoveNext())
+				{
+					object obj = enumerator.Current;
+					Transform transform = (Transform)obj;
+					UnityEngine.Object.Destroy(transform.gameObject);
+				}
+			}
+			finally
+			{
+				IDisposable disposable;
+				if ((disposable = (enumerator as IDisposable)) != null)
+				{
+					disposable.Dispose();
+				}
+			}
+			bool isCompressed = CreatureOverloadManager.instance.GetQliphothOverloadLevel() <= CreatureOverloadManager.instance.workCompressionLimit;
+			if (SefiraBossManager.Instance.IsAnyBossSessionActivated()) isCompressed = false;
+			bool isEvery5th = false;
+			if (!isCompressed)
+			{
+				isEvery5th = CreatureOverloadManager.instance.GetQliphothOverloadLevel() <= 10 && MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1);
+			}
+			int Nth = (CreatureOverloadManager.instance.GetQliphothOverloadLevel() - CreatureOverloadManager.instance.workCompressionLimit - 1) * max;
+			for (int i = 0; i < max; i++)
+			{
+				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.OverloadGaugeUnitPrefab);
+				gameObject.transform.SetParent(this.OverLoadGaugeLayout.transform);
+				gameObject.transform.localScale = Vector3.one;
+				if (i >= num)
+				{
+					Image component = gameObject.GetComponent<Image>();
+					if (isCompressed || (isEvery5th && Nth % 6 >= 4))
+					{
+						component.color = new Color(0.5f, 0f, 0.75f, 0.5f);
+					}
+					else
+					{
+						component.color = new Color(0f, 0f, 0f, 0f);
+					}
+				}
+				Nth++;
+			}
+		}
+
+		// <Mod>
+		public void SetSecondaryOverloadGauge(int num, int max)
+		{
+			if (SecondaryOverLoadGaugeLayout == null)
+			{
+				SecondaryOverLoadGaugeLayout = UnityEngine.Object.Instantiate<GameObject>(this.OverLoadGaugeLayout);
+				SecondaryOverLoadGaugeLayout.transform.SetParent(OverLoadGaugeLayout.transform.parent);
+				Vector3 scale = OverLoadGaugeLayout.transform.localScale;
+				scale.y *= 0.25f;
+				scale.x *= 0.98f;
+				SecondaryOverLoadGaugeLayout.transform.localScale = scale;
+				SecondaryOverLoadGaugeLayout.transform.localPosition = OverLoadGaugeLayout.transform.localPosition;
+				SecondaryOverLoadGaugeLayout.layer = OverLoadGaugeLayout.layer;
+				SecondaryOverLoadGaugeLayout.transform.Translate(0f, -5.5f, 0f);
+				SecondaryOverLoadGaugeLayout.SetActive(true);
+			}
+			if (SecondaryOverLoadGaugeLayout == null) return;
+			IEnumerator enumerator = SecondaryOverLoadGaugeLayout.transform.GetEnumerator();
 			try
 			{
 				while (enumerator.MoveNext())
@@ -302,14 +503,133 @@ namespace GameStatusUI
 			for (int i = 0; i < max; i++)
 			{
 				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.OverloadGaugeUnitPrefab);
-				gameObject.transform.SetParent(this.OverLoadGaugeLayout.transform);
+				gameObject.transform.SetParent(this.SecondaryOverLoadGaugeLayout.transform);
 				gameObject.transform.localScale = Vector3.one;
-				if (i >= num)
+				Image component = gameObject.GetComponent<Image>();
+				if (i < num)
 				{
-					Image component = gameObject.GetComponent<Image>();
+					component.color = new Color(0f, 0.5f, 0.75f, 0.75f);
+				}
+				else
+				{
 					component.color = new Color(0f, 0f, 0f, 0f);
 				}
 			}
+		}
+
+		// <Mod>
+		public void SetSecondaryOverload(int gaugePos, int gaugeMax, OrdealBase ordeal, int overloadNum)
+		{
+			if (SecondaryOrdealRoot == null)
+			{
+				float scaleFactor = 0.3f;
+				if (gaugeMax > 12)
+				{
+					scaleFactor = 0.3f * 12f / (float)gaugeMax;
+				}
+				SecondaryOrdealRoot = UnityEngine.Object.Instantiate<GameObject>(this.OverLoadOrdealRoot);
+				SecondaryOrdealRoot.transform.SetParent(OverLoadOrdealRoot.transform.parent);
+				Vector3 scale = SecondaryOrdealRoot.transform.localScale;
+				scale.y *= scaleFactor;
+				scale.x *= scaleFactor;
+				SecondaryOrdealRoot.transform.localScale = scale;
+				SecondaryOrdealRoot.transform.localPosition = OverLoadOrdealRoot.transform.localPosition;
+				SecondaryOrdealRoot.layer = OverLoadOrdealRoot.layer;
+				SecondaryOrdealRoot.SetActive(true);
+				SecondaryOrdealName = SecondaryOrdealRoot.GetComponentInChildren<Text>();
+				SecondaryOrdealImage = SecondaryOrdealRoot.GetComponentsInChildren<Image>()[1];
+				SecondaryOrdealName.text = "";
+
+				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.OverLoadIsolateNumText.gameObject);
+				gameObject.transform.SetParent(OverLoadIsolateNumText.gameObject.transform.parent);
+				scale = gameObject.transform.localScale;
+				scale.y *= scaleFactor;
+				scale.x *= scaleFactor;
+				gameObject.transform.localScale = scale;
+				gameObject.transform.localPosition = OverLoadIsolateNumText.gameObject.transform.localPosition;
+				gameObject.layer = OverLoadIsolateNumText.gameObject.layer;
+				gameObject.SetActive(true);
+				SecondaryIsolateNumText = gameObject.GetComponent<Text>();
+
+				SecondaryOverloadColored = new List<MaskableGraphic>();
+				foreach (MaskableGraphic graphic in SecondaryOrdealRoot.GetComponentsInChildren<MaskableGraphic>())
+				{
+					if (graphic.name == "IconBase(Clone)" || graphic.name == "OrdealIcon" || graphic.name == "OrdealName" || graphic.name == "IconBase")
+					{
+						SecondaryOverloadColored.Add(graphic);
+					}
+				}/*
+				foreach (Component component in OverLoadOrdealRoot.GetComponentsInChildren<Component>())
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						component.gameObject.name + " : " + component.name + " : " + component.GetType().FullName
+					});
+				}
+				Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+				{
+					" --- "
+				});
+				foreach (Component component in SecondaryOrdealRoot.GetComponentsInChildren<Component>())
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						component.gameObject.name + " : " + component.name + " : " + component.GetType().FullName
+					});
+				}*/
+				//SecondaryOverloadColored.AddRange(SecondaryOrdealRoot.GetComponentsInChildren<MaskableGraphic>());
+				//SecondaryOverloadColored.AddRange(gameObject.GetComponentsInChildren<MaskableGraphic>());
+				/*foreach (MaskableGraphic graphic in OverloadColored)
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						graphic.name + " : " + graphic.gameObject.name
+					});
+				}
+				Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+				{
+					" --- "
+				});
+				foreach (MaskableGraphic graphic in SecondaryOverloadColored)
+				{
+					Notice.instance.Send(NoticeName.AddSystemLog, new object[]
+					{
+						graphic.name + " : " + graphic.gameObject.name
+					});
+				}*/
+			}
+			Transform gauge = OverLoadGaugeLayout.transform.GetChild(gaugePos - 1);
+			SecondaryOrdealRoot.transform.Translate(gauge.position.x - SecondaryOrdealRoot.transform.position.x, 0f, 0f);
+			SecondaryIsolateNumText.gameObject.transform.Translate(gauge.position.x - SecondaryIsolateNumText.gameObject.transform.position.x, 0f, 0f);
+			if (ordeal == null)
+			{
+				SecondaryOrdealRoot.SetActive(false);
+				SecondaryIsolateNumText.gameObject.SetActive(true);
+				foreach (MaskableGraphic maskableGraphic in this.SecondaryOverloadColored)
+				{
+					maskableGraphic.color = this.Orange;
+				}
+				SecondaryIsolateNumText.text = overloadNum.ToString();
+			}
+			else
+			{
+				SecondaryOrdealRoot.SetActive(true);
+				SecondaryIsolateNumText.gameObject.SetActive(false);
+				foreach (MaskableGraphic maskableGraphic2 in this.SecondaryOverloadColored)
+				{
+					maskableGraphic2.color = ordeal.OrdealColor;
+				}
+				SecondaryOrdealImage.sprite = IconManager.instance.GetOrdealIcon(ordeal.level);
+				//SecondaryOrdealName.text = this.GetOrdealName(ordeal.level);
+				SecondaryOrdealName.text = "";
+			}
+		}
+
+		// <Mod>
+		public void ClearSecondaryOverload()
+		{
+			SecondaryOrdealRoot.SetActive(false);
+			SecondaryIsolateNumText.gameObject.SetActive(false);
 		}
 
 		// Token: 0x060053C6 RID: 21446 RVA: 0x001E1BF0 File Offset: 0x001DFDF0
@@ -323,7 +643,7 @@ namespace GameStatusUI
 			this.OverloadUIText.text = string.Format("{0} - {1}{2}", LocalizeTextDataModel.instance.GetText("Qliphoth_Overload"), text, LocalizeTextDataModel.instance.GetText("Qliphoth_Level"));
 			this.OverloadUIController.Show();
 			this._overloadUITimer.StartTimer(5f);
-			if (SefiraBossManager.Instance.CurrentActivatedSefira == SefiraEnum.CHOKHMAH && CreatureOverloadManager.instance.GetQliphothOverloadLevel() >= 6)
+			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.CHOKHMAH, false) && CreatureOverloadManager.instance.GetQliphothOverloadLevel() >= 6)
 			{
 				return;
 			}
@@ -416,6 +736,26 @@ namespace GameStatusUI
 
 		// Token: 0x04004D5D RID: 19805
 		private StageRewardTypeInfo stageRewardInfo;
+
+		//> <Mod>
+		private int _defaultfontsize = -1;
+
+		public Text OvertimeIsolateNumText;
+
+		public float OvertimeIsolateGradientTimer;
+
+		public GameObject SecondaryOverLoadGaugeLayout;
+
+		public Text SecondaryIsolateNumText;
+
+		public GameObject SecondaryOrdealRoot;
+
+		public Text SecondaryOrdealName;
+
+		public Image SecondaryOrdealImage;
+		
+		public List<MaskableGraphic> SecondaryOverloadColored;
+		//<
 
 		// Token: 0x02000AE2 RID: 2786
 		[Serializable]

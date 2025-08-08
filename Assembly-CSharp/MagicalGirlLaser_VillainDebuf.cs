@@ -13,14 +13,9 @@ public class MagicalGirlLaser_VillainDebuf : UnitBuf
 
 	// Token: 0x06002D5B RID: 11611 RVA: 0x00131A70 File Offset: 0x0012FC70
 	public override void Init(UnitModel model)
-	{
+	{ // <Mod>
 		base.Init(model);
 		this.remainTime = 1f;
-		if (model is CreatureModel)
-		{
-			this.creature = (model as CreatureModel);
-			this.creature.movementScale = this.creature.movementScale * this.MovementScale();
-		}
 	}
 
 	// Token: 0x06002D5C RID: 11612 RVA: 0x00026A30 File Offset: 0x00024C30
@@ -34,16 +29,6 @@ public class MagicalGirlLaser_VillainDebuf : UnitBuf
 	{
 		base.OnUnitDie();
 		this.Destroy();
-	}
-
-	// Token: 0x06002D5E RID: 11614 RVA: 0x0002BBB8 File Offset: 0x00029DB8
-	public override void OnDestroy()
-	{
-		base.OnDestroy();
-		if (this.creature != null)
-		{
-			this.creature.movementScale = this.creature.movementScale / this.MovementScale();
-		}
 	}
 
 	// Token: 0x04002AF4 RID: 10996

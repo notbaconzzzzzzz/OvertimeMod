@@ -1,3 +1,6 @@
+/*
+public void SetUI() // Resistances will use 2 decimal points
+*/
 using System;
 using System.Collections;
 using Assets.Scripts.UI.Utils;
@@ -43,7 +46,7 @@ namespace Inventory
 
 		// Token: 0x06004B9F RID: 19359 RVA: 0x001BDF74 File Offset: 0x001BC174
 		public void SetUI()
-		{
+		{ // <Patch> <Mod> resistances will now use 2 decimal points
 			if (this.CurrentAgent == null)
 			{
 				return;
@@ -52,7 +55,11 @@ namespace Inventory
 			try
 			{
 				DamageInfo damage = this.CurrentAgent.Equipment.weapon.GetDamage(this.CurrentAgent);
-				if (this.CurrentAgent.Equipment.weapon.metaInfo.id != 200038 && this.CurrentAgent.Equipment.weapon.metaInfo.id != 200004)
+				float dmgFactor = 1f;
+				dmgFactor *= this.CurrentAgent.GetDamageFactorByEquipment();
+				dmgFactor *= this.CurrentAgent.GetDamageFactorBySefiraAbility();
+				dmgFactor *= this.CurrentAgent.Equipment.weapon.script.GetReinforcementDmg();
+				if (EquipmentTypeInfo.GetLcId(this.CurrentAgent.Equipment.weapon.metaInfo) != 200038 && EquipmentTypeInfo.GetLcId(this.CurrentAgent.Equipment.weapon.metaInfo) != 200004)
 				{
 					RwbpType type = damage.type;
 					Color color;
@@ -63,7 +70,7 @@ namespace Inventory
 					this.TypeFill.sprite = IconManager.instance.DamageIcon[type - RwbpType.R];
 					this.TypeText.color = color;
 					this.TypeText.text = EnumTextConverter.GetRwbpType(type).ToUpper();
-					string text = string.Format("{0}-{1}", (int)damage.min, (int)damage.max);
+					string text = string.Format("{0}-{1}", (int)(damage.min * dmgFactor), (int)(damage.max * dmgFactor));
 					this.DamageText.text = text;
 				}
 				else
@@ -72,7 +79,7 @@ namespace Inventory
 					this.TypeFill.enabled = false;
 					this.TypeText.color = Color.gray;
 					this.TypeText.text = "???";
-					string text2 = string.Format("{0}-{1}", (int)damage.min, (int)damage.max);
+					string text2 = string.Format("{0}-{1}", (int)(damage.min * dmgFactor), (int)(damage.max * dmgFactor));
 					this.DamageText.text = text2;
 				}
 				WorkerPrimaryStatBonus titleBonus = this.CurrentAgent.titleBonus;
@@ -160,14 +167,35 @@ namespace Inventory
 				{
 					this.Stats[3].slots[1].SetText(num5 + string.Empty);
 				}
-				this.Stats[0].Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Rstat"), AgentModel.GetLevelGradeText(this.CurrentAgent.Rstat));
-				this.Stats[1].Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Wstat"), AgentModel.GetLevelGradeText(this.CurrentAgent.Wstat));
-				this.Stats[2].Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Bstat"), AgentModel.GetLevelGradeText(this.CurrentAgent.Bstat));
-				this.Stats[3].Fill_Inner.text = string.Format("{0} {1}", LocalizeTextDataModel.instance.GetText("Pstat"), AgentModel.GetLevelGradeText(this.CurrentAgent.Pstat));
+				string name;
+				name = LocalizeTextDataModel.instance.GetText("Rstat");
+				if (name.Length > 5)
+				{
+					name = name.Substring(0, 4);
+				}
+				this.Stats[0].Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(CurrentAgent.Rstat), CurrentAgent.primaryStat.maxHP);
+				name = LocalizeTextDataModel.instance.GetText("Wstat");
+				if (name.Length > 5)
+				{
+					name = name.Substring(0, 4);
+				}
+				this.Stats[1].Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(CurrentAgent.Wstat), CurrentAgent.primaryStat.maxMental);
+				name = LocalizeTextDataModel.instance.GetText("Bstat");
+				if (name.Length > 5)
+				{
+					name = name.Substring(0, 4);
+				}
+				this.Stats[2].Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(CurrentAgent.Bstat), CurrentAgent.primaryStat.workProb);
+				name = LocalizeTextDataModel.instance.GetText("Pstat");
+				if (name.Length > 5)
+				{
+					name = name.Substring(0, 4);
+				}
+				this.Stats[3].Fill_Inner.text = string.Format("{0} {1} ({2})", name, AgentModel.GetLevelGradeText(CurrentAgent.Pstat), CurrentAgent.primaryStat.attackSpeed);
 				DefenseInfo defense = this.CurrentAgent.defense;
 				UIUtil.DefenseSetOnlyText(defense, this.DefenseType);
-				UIUtil.DefenseSetFactor(defense, this.DefenseFactor, true);
-				string name = this.CurrentAgent.Equipment.weapon.metaInfo.Name;
+				UIUtil.DefenseSetFactor(defense, this.DefenseFactor, false);
+				name = this.CurrentAgent.Equipment.weapon.metaInfo.Name;
 				if (name == "UNKNOWN")
 				{
 					this.WeaponTitle.text = LocalizeTextDataModel.instance.GetText("Inventory_WeaponTitle");

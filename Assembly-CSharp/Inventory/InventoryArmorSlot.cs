@@ -25,10 +25,16 @@ namespace Inventory
 
 		// Token: 0x06004BD4 RID: 19412 RVA: 0x001BF434 File Offset: 0x001BD634
 		public override void UpdateUI()
-		{
+		{ // <Mod>
 			base.UpdateUI();
-			UIUtil.DefenseSetOnlyText(base.Info.defenseInfo, this.DefenseInfo);
-			UIUtil.DefenseSetFactor(base.Info.defenseInfo, this.DefenseFactor, true);
+			DefenseInfo defense = base.Info.defenseInfo.Copy();
+			float num = EGOrealizationManager.instance.ArmorUpgrade(base.Info);
+			defense.R -= num;
+			defense.W -= num;
+			defense.B -= num;
+			defense.P -= num;
+			UIUtil.DefenseSetOnlyText(defense, this.DefenseInfo);
+			UIUtil.DefenseSetFactor(defense, this.DefenseFactor, num == 0f);
 			this.TooltipButton.interactable = true;
 			this.TooltipButton.OnPointerExit(null);
 		}
@@ -41,7 +47,7 @@ namespace Inventory
 
 		// Token: 0x06004BD6 RID: 19414 RVA: 0x001BF48C File Offset: 0x001BD68C
 		public void SetArmor(ArmorModel armor)
-		{
+		{ // <Mod>
 			if (armor == null)
 			{
 				Debug.Log("Armor is null");
@@ -50,8 +56,14 @@ namespace Inventory
 			EquipmentTypeInfo metaInfo = armor.metaInfo;
 			this.Name.text = metaInfo.Name;
 			InventoryItemController.SetGradeText(metaInfo.Grade, this.Grade);
+			DefenseInfo defense = base.Info.defenseInfo.Copy();
+			float num = EGOrealizationManager.instance.ArmorUpgrade(base.Info);
+			defense.R -= num;
+			defense.W -= num;
+			defense.B -= num;
+			defense.P -= num;
 			UIUtil.DefenseSetOnlyText(base.Info.defenseInfo, this.DefenseInfo);
-			UIUtil.DefenseSetFactor(base.Info.defenseInfo, this.DefenseFactor, true);
+			UIUtil.DefenseSetFactor(base.Info.defenseInfo, this.DefenseFactor, num == 0f);
 			this.TooltipButton.interactable = true;
 			this.SetEquipmentText();
 			this.portrait.SetArmor(metaInfo);

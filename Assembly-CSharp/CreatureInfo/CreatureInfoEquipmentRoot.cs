@@ -171,7 +171,7 @@ namespace CreatureInfo
 
 		// Token: 0x060053B4 RID: 21428 RVA: 0x001E7924 File Offset: 0x001E5B24
 		public void OnClickArmor()
-		{
+		{ // <Patch>
 			CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = base.MetaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.ARMOR);
 			int costAfterUpgrade = creatureEquipmentMakeInfo.GetCostAfterUpgrade();
 			if (creatureEquipmentMakeInfo.level > this.GetObserveLevel())
@@ -186,14 +186,14 @@ namespace CreatureInfo
 				CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(0);
 				return;
 			}
-			if (!InventoryModel.Instance.CheckEquipmentCount(creatureEquipmentMakeInfo.equipTypeInfo.id))
+			if (!InventoryModel.Instance.CheckEquipmentCount_Mod(EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo)))
 			{
 				this.armorSlot.MakeCount.text = LocalizeTextDataModel.instance.GetText("CreatureInfo_NoRemain");
 				CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(0);
 				return;
 			}
 			CreatureInfoWindow.CurrentWindow.PurchaseAnim(costAfterUpgrade);
-			EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipment(creatureEquipmentMakeInfo.equipTypeInfo.id);
+			EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipment_Mod(EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo));
 			if (equipmentModel != null && base.CurrentModel != null)
 			{
 				base.ObserveInfo.Transaction(-costAfterUpgrade);
@@ -204,7 +204,7 @@ namespace CreatureInfo
 
 		// Token: 0x060053B5 RID: 21429 RVA: 0x001E7A74 File Offset: 0x001E5C74
 		public void OnClickWeapon()
-		{
+		{ // <Patch>
 			CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = base.MetaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.WEAPON);
 			int costAfterUpgrade = creatureEquipmentMakeInfo.GetCostAfterUpgrade();
 			if (creatureEquipmentMakeInfo.level > this.GetObserveLevel())
@@ -219,14 +219,14 @@ namespace CreatureInfo
 				CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(0);
 				return;
 			}
-			if (!InventoryModel.Instance.CheckEquipmentCount(creatureEquipmentMakeInfo.equipTypeInfo.id))
+			if (!InventoryModel.Instance.CheckEquipmentCount_Mod(EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo)))
 			{
 				this.weaponSlot.MakeCount.text = LocalizeTextDataModel.instance.GetText("CreatureInfo_NoRemain");
 				CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(0);
 				return;
 			}
 			CreatureInfoWindow.CurrentWindow.PurchaseAnim(costAfterUpgrade);
-			EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipment(creatureEquipmentMakeInfo.equipTypeInfo.id);
+			EquipmentModel equipmentModel = InventoryModel.Instance.CreateEquipment_Mod(EquipmentTypeInfo.GetLcId(creatureEquipmentMakeInfo.equipTypeInfo));
 			if (equipmentModel != null)
 			{
 				base.ObserveInfo.Transaction(-costAfterUpgrade);

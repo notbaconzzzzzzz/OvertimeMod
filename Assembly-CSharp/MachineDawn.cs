@@ -24,7 +24,7 @@ public class MachineDawn : MachineOrdealCreature
 		base.OnViewInit(unit);
 		this.anim = (MachineDawnAnim)unit.animTarget;
 		this.anim.SetScript(this);
-		if (this._ordealScript is MachineDuskOrdeal)
+		if (this._ordealScript is MachineDuskOrdeal || this._ordealScript is MachineMidnightOrdeal)
 		{
 			this.spawnByDuskTimer.StartTimer(MachineOrdealCreature.spawnByDuskTime);
 		}
@@ -53,7 +53,23 @@ public class MachineDawn : MachineOrdealCreature
 		this.killMotionAfterDelayTimer.RunTimer();
 		if (this.killMotionAfterDelayTimer.started)
 		{
-			this.model.ClearCommand();
+			if (_killMotionTarget == null)
+			{
+				movable.StopMoving();
+				model.ClearCommand();
+				return;
+			}
+			MovableObjectNode node = _killMotionTarget.GetMovableNode();
+			if (node == null || node.currentPassage == null || movable.currentPassage == null || node.currentPassage != movable.currentPassage)
+			{
+				movable.StopMoving();
+				model.ClearCommand();
+				return;
+			}
+			float num = (node.GetCurrentViewPosition().x - movable.GetCurrentViewPosition().x) / movable.currentScale;
+			if (num > 2f || num < -2f) return;
+			movable.StopMoving();
+			model.ClearCommand();
 			return;
 		}
 		if (this.model.GetCurrentCommand() == null)
@@ -78,7 +94,7 @@ public class MachineDawn : MachineOrdealCreature
 	}
 
 	// Token: 0x060024C0 RID: 9408 RVA: 0x0010BB5C File Offset: 0x00109D5C
-	private UnitModel GetNearTargetUnit()
+	public virtual UnitModel GetNearTargetUnit()
 	{
 		List<UnitModel> list = new List<UnitModel>();
 		MovableObjectNode movableNode = this.model.GetMovableNode();
@@ -131,10 +147,24 @@ public class MachineDawn : MachineOrdealCreature
 		this._killMotionTarget = target;
 		this.killMotionAfterDelayTimer.StartTimer(this.killMotionAfterDelay);
 		this.anim.KillMotion();
+		model.ClearCommand();
+		movable.StopMoving();
+		MovableObjectNode node = target.GetMovableNode();
+		if (node == null || node.currentPassage == null || movable.currentPassage == null || node.currentPassage != movable.currentPassage) return;
+		float num = (node.GetCurrentViewPosition().x - movable.GetCurrentViewPosition().x) / movable.currentScale;
+		UnitDirection direction = UnitDirection.RIGHT;
+		if (num < 0f)
+		{
+			direction = UnitDirection.LEFT;
+			num *= -1;
+		}
+		if (num <= 2f) return;
+		movable.StopMoving();
+		movable.MoveBy(direction, num - 2f);
 	}
 
 	// Token: 0x060024C2 RID: 9410 RVA: 0x0010BCD4 File Offset: 0x00109ED4
-	public void BloodEffect()
+	public virtual void BloodEffect()
 	{
 		List<UnitModel> list = new List<UnitModel>();
 		MovableObjectNode movableNode = this.model.GetMovableNode();
@@ -172,7 +202,7 @@ public class MachineDawn : MachineOrdealCreature
 	}
 
 	// Token: 0x060024C3 RID: 9411 RVA: 0x0002577A File Offset: 0x0002397A
-	public void FinishEffect()
+	public virtual void FinishEffect()
 	{
 		this.BloodEffect();
 		if (this._killMotionTarget is WorkerModel)
@@ -204,7 +234,10 @@ public class MachineDawn : MachineOrdealCreature
 				explodeGutEffect.SetCurrentPassage(target.GetMovableNode().GetPassage());
 			}
 		}
-		workerUnit.gameObject.SetActive(false);
+		if (target.IsDead())
+		{
+			workerUnit.gameObject.SetActive(false);
+		}
 	}
 
 	// Token: 0x060024C5 RID: 9413 RVA: 0x000257A8 File Offset: 0x000239A8
@@ -215,14 +248,14 @@ public class MachineDawn : MachineOrdealCreature
 	}
 
 	// Token: 0x040023CC RID: 9164
-	private MachineDawnAnim anim;
+	public MachineDawnAnim anim;
 
 	// Token: 0x040023CD RID: 9165
 	private float killMotionAfterDelay = 4f;
 
 	// Token: 0x040023CE RID: 9166
-	private Timer killMotionAfterDelayTimer = new Timer();
+	public Timer killMotionAfterDelayTimer = new Timer();
 
 	// Token: 0x040023CF RID: 9167
-	private UnitModel _killMotionTarget;
+	public UnitModel _killMotionTarget;
 }

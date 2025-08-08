@@ -1,3 +1,9 @@
+/*
+private void CheckResearchAvailable() // Squash 4th Mission Research
+public bool CheckBossClear() // Overtime Core Suppression Rewards
+public void CheckResearch() // 
+public bool OnClickSefiraBossSession(SefiraEnum sefira) // Overtime Core Suppressions
+*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -525,7 +531,7 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 
 	// Token: 0x060049EA RID: 18922 RVA: 0x001B6528 File Offset: 0x001B4728
 	private void CheckResearchAvailable()
-	{
+	{ // <Mod> Squash 4th Mission Research
 		List<Mission> clearedMissions = MissionManager.instance.GetClearedMissions();
 		List<string> list = new List<string>();
 		if (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL)
@@ -540,7 +546,12 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 		{
 			foreach (Mission mission in clearedMissions)
 			{
-				if (mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
+				
+				if (mission.metaInfo.sefira_Level % 5 == 4)
+				{
+					MissionManager.instance.CloseClearedMission(mission);
+				}
+				else if (mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
 				{
 					list.Add(mission.sefira_Name);
 				}
@@ -571,14 +582,15 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 
 	// Token: 0x060049ED RID: 18925 RVA: 0x001B6650 File Offset: 0x001B4850
 	public bool CheckBossClear()
-	{
+	{ // <Mod>
 		List<Mission> clearedMissions = MissionManager.instance.GetClearedMissions();
 		foreach (Mission mission in clearedMissions)
 		{
 			if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
 			{
+				bool isOvertime = mission.metaInfo.sefira_Level > 5;
 				this.researchWindow.Init(SefiraManager.instance.GetSefira(mission.metaInfo.sefira));
-				this.researchWindow.MakeSefiraBossReward(mission.metaInfo.sefira);
+				this.researchWindow.MakeSefiraBossReward(mission.metaInfo.sefira, isOvertime);
 				this.researchWindow.SetActive(true);
 				MissionManager.instance.CloseClearedMission(mission);
 				return true;
@@ -589,43 +601,78 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 
 	// Token: 0x060049EE RID: 18926 RVA: 0x001B6714 File Offset: 0x001B4914
 	public void CheckResearch()
-	{
-		if (this.ResearchUpgradeWaitQueue.Count > 0)
+	{ // <Mod>
+		int line = 0;
+		try
 		{
-			this.researchWindow.Init(this.ResearchUpgradeWaitQueue.Dequeue());
-			this.researchWindow.SetActive(true);
-		}
-		else
-		{
-			this.researchWindow.SetActive(false);
-			this.sefiraList.ResearchInit();
-			if (!GlobalGameManager.instance.lastLoaded)
+			line++;
+			if (this.ResearchUpgradeWaitQueue.Count > 0)
 			{
-				Notice.instance.Send(NoticeName.OnResearchEnd, new object[0]);
-				if (GlobalGameManager.instance.gameMode != GameMode.TUTORIAL)
+				line = 1000;
+				line++;
+				this.researchWindow.Init(this.ResearchUpgradeWaitQueue.Dequeue());
+				line++;
+				this.researchWindow.SetActive(true);
+				line++;
+			}
+			else
+			{
+				line = 2000;
+				this.researchWindow.SetActive(false);
+				line++;
+				this.sefiraList.ResearchInit();
+				line++;
+				if (!GlobalGameManager.instance.lastLoaded)
 				{
-					if (GlobalGameManager.instance.gameMode != GameMode.UNLIMIT_MODE)
+					line++;
+					Notice.instance.Send(NoticeName.OnResearchEnd, new object[0]);
+					line++;
+					ControlGroupManager.instance.ResetUpperGroups();
+					line++;
+					if (GlobalGameManager.instance.gameMode != GameMode.TUTORIAL)
 					{
-						if (this.CheckPointCheck())
+						line++;
+						if (GlobalGameManager.instance.gameMode != GameMode.UNLIMIT_MODE)
 						{
-							this.researchWindow.SetActive(false);
-							GlobalGameManager.instance.saveState = "manage";
-							GlobalGameManager.instance.SaveData(true);
-							this.checkPointUI.OnCheckpointUpdate(this.Day + 1);
+							line++;
+							if (this.CheckPointCheck())
+							{
+								line += 100;
+								this.researchWindow.SetActive(false);
+								line++;
+								GlobalGameManager.instance.saveState = "manage";
+								line++;
+								GlobalGameManager.instance.SaveData(true);
+								line++;
+								this.checkPointUI.OnCheckpointUpdate(this.Day + 1);
+								line++;
+							}
+							else
+							{
+								line += 200;
+								GlobalGameManager.instance.saveState = "manage";
+								line++;
+								GlobalGameManager.instance.SaveData(false);
+								line++;
+								this.checkPointUI.gameObject.SetActive(false);
+								line++;
+							}
+							line++;
+							int day = PlayerModel.instance.GetDay() + 1;
+							line++;
+							GlobalEtcDataModel.instance.UpdateUnlockedMaxDay(day);
+							line++;
+							GlobalGameManager.instance.SaveGlobalData();
+							line++;
 						}
-						else
-						{
-							GlobalGameManager.instance.saveState = "manage";
-							GlobalGameManager.instance.SaveData(false);
-							this.checkPointUI.gameObject.SetActive(false);
-						}
-						int day = PlayerModel.instance.GetDay() + 1;
-						GlobalEtcDataModel.instance.UpdateUnlockedMaxDay(day);
-						GlobalGameManager.instance.SaveGlobalData();
 					}
 				}
+				GlobalGameManager.instance.lastLoaded = false;
 			}
-			GlobalGameManager.instance.lastLoaded = false;
+		}
+		catch (Exception ex2)
+		{
+			File.WriteAllText(Application.dataPath + "/BaseMods/Deployerror.txt", ex2.Message + Environment.NewLine + ex2.StackTrace + Environment.NewLine + line);
 		}
 	}
 
@@ -947,7 +994,7 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 
 	// Token: 0x06004A01 RID: 18945 RVA: 0x001B6ED8 File Offset: 0x001B50D8
 	public bool OnClickSefiraBossSession(SefiraEnum sefira)
-	{
+	{ // <Mod>
 		if (SefiraBossManager.Instance.CheckBossActivation(sefira))
 		{
 			SefiraBossManager.Instance.SetActivatedBoss(SefiraEnum.DUMMY);
@@ -963,7 +1010,8 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 				sefiraPanel.DisableSefiraBoss();
 			}
 		}
-		if (SefiraBossManager.Instance.OnStartBossSession(sefira))
+		bool isOvertime = MissionManager.instance.GetBossMission(sefira).metaInfo.sefira_Level > 5;
+		if (SefiraBossManager.Instance.OnStartBossSession(sefira, isOvertime))
 		{
 			SefiraBossUI.Instance.OnEnterSefiraBossSession();
 			base.transform.GetComponent<AudioClipPlayer>().OnPlayInList(15);

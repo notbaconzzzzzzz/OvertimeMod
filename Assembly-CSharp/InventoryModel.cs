@@ -36,6 +36,23 @@ public class InventoryModel
 	// Token: 0x0600376C RID: 14188 RVA: 0x0016B070 File Offset: 0x00169270
 	public Dictionary<string, object> GetGlobalSaveData()
 	{
+        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+        List<InventoryModel.EquipmentSaveData> list = new List<InventoryModel.EquipmentSaveData>();
+        List<string> list2 = new List<string>();
+        foreach (EquipmentModel equipmentModel in this._equipList)
+        {
+            list.Add(new InventoryModel.EquipmentSaveData
+            {
+                equipTypeId = equipmentModel.metaInfo.id,
+                equipInstanceId = equipmentModel.instanceId
+            });
+            list2.Add(equipmentModel.metaInfo.modid);
+        }
+        dictionary.Add("equips", list);
+        dictionary.Add("equipsMod", list2);
+        dictionary.Add("nextInstanceId", this._nextInstanceId);
+        return dictionary;
+        /*
 		Dictionary<string, object> dictionary = new Dictionary<string, object>();
 		List<InventoryModel.EquipmentSaveData> list = new List<InventoryModel.EquipmentSaveData>();
 		foreach (EquipmentModel equipmentModel in this._equipList)
@@ -48,12 +65,82 @@ public class InventoryModel
 		}
 		dictionary.Add("equips", list);
 		dictionary.Add("nextInstanceId", this._nextInstanceId);
-		return dictionary;
+		return dictionary;*/
 	}
 
 	// Token: 0x0600376D RID: 14189 RVA: 0x0016B114 File Offset: 0x00169314
 	public void LoadGlobalData(Dictionary<string, object> dic)
 	{
+        try
+        {
+            this._equipList.Clear();
+            List<InventoryModel.EquipmentSaveData> list = new List<InventoryModel.EquipmentSaveData>();
+            List<string> list2 = new List<string>();
+            GameUtil.TryGetValue<List<InventoryModel.EquipmentSaveData>>(dic, "equips", ref list);
+            GameUtil.TryGetValue<long>(dic, "nextInstanceId", ref this._nextInstanceId);
+            bool flag = GameUtil.TryGetValue<List<string>>(dic, "equipsMod", ref list2);
+            this._nextInstanceId += 1L;
+            foreach (InventoryModel.EquipmentSaveData equipmentSaveData in list)
+            {
+                int equipTypeId = equipmentSaveData.equipTypeId;
+                if (flag)
+                {
+                    int index = list.IndexOf(equipmentSaveData);
+                    LobotomyBaseMod.LcId lcid = new LobotomyBaseMod.LcId(list2[index], equipTypeId);
+                    if (EquipmentTypeList.instance.GetData_Mod(lcid) != null)
+                    {
+                        this.CreateEquipment_Mod(lcid, equipmentSaveData.equipInstanceId);
+                    }
+                    else
+                    {
+                        if (list2[index] == string.Empty)
+                        {
+                            foreach (ModInfo modInfo_patch in Add_On.instance.ModList)
+                            {
+                                if (modInfo_patch.modid != string.Empty)
+                                {
+                                    lcid = new LobotomyBaseMod.LcId(modInfo_patch.modid, equipTypeId);
+                                    List<EquipmentModel> equipList = InventoryModel.Instance.equipList;
+                                    if (equipList.FindAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == lcid).Count <= 0)
+                                    {
+                                        if (this.CreateEquipment_Mod(lcid, equipmentSaveData.equipInstanceId) != null)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (EquipmentTypeList.instance.GetData(equipTypeId) != null)
+                    {
+                        this.CreateEquipment(equipTypeId, equipmentSaveData.equipInstanceId);
+                    }
+                    else
+                    {
+                        foreach (ModInfo modInfo_patch2 in Add_On.instance.ModList)
+                        {
+                            if (modInfo_patch2.modid != string.Empty)
+                            {
+                                LobotomyBaseMod.LcId id = new LobotomyBaseMod.LcId(modInfo_patch2.modid, equipTypeId);
+                                if (this.CreateEquipment_Mod(id, equipmentSaveData.equipInstanceId) != null)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LobotomyBaseMod.ModDebug.Log("InventoryModel.LoadGlobalData error - " + ex.Message + Environment.NewLine + ex.StackTrace);
+        }
+        /*
 		try
 		{
 			this._equipList.Clear();
@@ -73,7 +160,7 @@ public class InventoryModel
 		catch (Exception ex)
 		{
 			File.WriteAllText(Application.dataPath + "/BaseMods/error.txt", ex.Message + Environment.NewLine + ex.StackTrace);
-		}
+		}*/
 	}
 
 	// Token: 0x0600376E RID: 14190 RVA: 0x0016B1FC File Offset: 0x001693FC
@@ -90,18 +177,22 @@ public class InventoryModel
 
 	// Token: 0x0600376F RID: 14191 RVA: 0x0003211D File Offset: 0x0003031D
 	public EquipmentModel CreateEquipment(int id)
-	{
+	{ // <Patch>
+        return CreateEquipment_Mod(new LobotomyBaseMod.LcId(id));
+        /*
 		EquipmentModel equipmentModel = this.CreateEquipment(id, this._nextInstanceId);
 		if (equipmentModel != null)
 		{
 			this._nextInstanceId += 1L;
 		}
-		return equipmentModel;
+		return equipmentModel;*/
 	}
 
 	// Token: 0x06003770 RID: 14192 RVA: 0x0016B258 File Offset: 0x00169458
 	public EquipmentModel CreateEquipmentForcely(int id)
-	{
+	{ // <Patch>
+        return CreateEquipmentForcely_Mod(new LobotomyBaseMod.LcId(id));
+        /*
 		EquipmentModel result;
 		try
 		{
@@ -169,7 +260,7 @@ public class InventoryModel
 			File.WriteAllText(Application.dataPath + "/BaseMods/error.txt", ex.Message);
 			result = null;
 		}
-		return result;
+		return result;*/
 	}
 
 	// Token: 0x06003771 RID: 14193 RVA: 0x0003213E File Offset: 0x0003033E
@@ -187,7 +278,9 @@ public class InventoryModel
 
 	// Token: 0x06003772 RID: 14194 RVA: 0x0016B444 File Offset: 0x00169644
 	public bool GetEquipCount(int id, out int current, out int max)
-	{
+	{ // <Patch>
+        return this.GetEquipCount_Mod(new LobotomyBaseMod.LcId(id), out current, out max);
+        /*
 		try
 		{
 			EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(id);
@@ -201,19 +294,23 @@ public class InventoryModel
 			max = 0;
 			return false;
 		}
-		return true;
+		return true;*/
 	}
 
 	// Token: 0x06003773 RID: 14195 RVA: 0x0016B4B8 File Offset: 0x001696B8
 	public bool CheckEquipmentCount(int id)
-	{
+	{ // <Patch>
+        return CheckEquipmentCount_Mod(new LobotomyBaseMod.LcId(id));
+        /*
 		EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(id);
-		return this._equipList.FindAll((EquipmentModel x) => x.metaInfo.id == id).Count < data.MaxNum;
+		return this._equipList.FindAll((EquipmentModel x) => x.metaInfo.id == id).Count < data.MaxNum;*/
 	}
 
 	// Token: 0x06003774 RID: 14196 RVA: 0x0016B508 File Offset: 0x00169708
 	public EquipmentModel CreateEquipment(int id, long instanceId)
-	{
+	{ // <Patch>
+        return CreateEquipment_Mod(new LobotomyBaseMod.LcId(id), instanceId);
+        /*
 		EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(id);
 		if (this.equipList.FindAll((EquipmentModel x) => x.metaInfo.id == id).Count >= data.MaxNum)
 		{
@@ -270,7 +367,7 @@ public class InventoryModel
 		{
 			equipmentModel
 		});
-		return equipmentModel;
+		return equipmentModel;*/
 	}
 
 	// Token: 0x06003775 RID: 14197 RVA: 0x00032174 File Offset: 0x00030374
@@ -293,11 +390,11 @@ public class InventoryModel
 
 	// Token: 0x06003778 RID: 14200 RVA: 0x0016B6C8 File Offset: 0x001698C8
 	public bool RemoveAllDlcEquipment()
-	{
+	{ // <Patch>
 		bool result = false;
 		foreach (long id in CreatureGenerateInfo.creditCreatures)
 		{
-			CreatureTypeInfo data = CreatureTypeList.instance.GetData(id);
+			CreatureTypeInfo data = CreatureTypeList.instance.GetData_Mod(new LobotomyBaseMod.LcIdLong(id));
 			if (data != null)
 			{
 				using (List<CreatureEquipmentMakeInfo>.Enumerator enumerator = data.equipMakeInfos.GetEnumerator())
@@ -305,7 +402,7 @@ public class InventoryModel
 					while (enumerator.MoveNext())
 					{
 						CreatureEquipmentMakeInfo makeInfo = enumerator.Current;
-						if (this._equipList.RemoveAll((EquipmentModel x) => x.metaInfo.id == makeInfo.equipTypeInfo.id) > 0)
+						if (this._equipList.RemoveAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == EquipmentTypeInfo.GetLcId(makeInfo.equipTypeInfo)) > 0)
 						{
 							result = true;
 						}
@@ -357,6 +454,222 @@ public class InventoryModel
 			return this._equipList;
 		}
 	}
+
+    // <Patch>
+    public EquipmentModel CreateEquipmentForcely_Mod(LobotomyBaseMod.LcId id)
+    {
+        try
+        {
+            EquipmentTypeInfo data_Mod = EquipmentTypeList.instance.GetData_Mod(id);
+            this._equipList.FindAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id);
+            EquipmentModel equipmentModel = null;
+            EquipmentTypeInfo.EquipmentType type = data_Mod.type;
+            if (type == EquipmentTypeInfo.EquipmentType.WEAPON)
+            {
+                equipmentModel = new WeaponModel();
+            }
+            else if (type == EquipmentTypeInfo.EquipmentType.ARMOR)
+            {
+                equipmentModel = new ArmorModel();
+            }
+            else if (type == EquipmentTypeInfo.EquipmentType.SPECIAL)
+            {
+                equipmentModel = new EGOgiftModel();
+            }
+            equipmentModel.instanceId = this._nextInstanceId;
+            equipmentModel.metaInfo = data_Mod;
+            object obj = null;
+            try
+            {
+                foreach (Assembly assembly in Add_On.instance.AssemList)
+                {
+                    foreach (Type type2 in assembly.GetTypes())
+                    {
+                        if (type2.Name == data_Mod.script)
+                        {
+                            obj = Activator.CreateInstance(type2);
+                        }
+                    }
+                }
+                if (obj == null)
+                {
+                    obj = Activator.CreateInstance(Type.GetType(data_Mod.script));
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                obj = Activator.CreateInstance(Type.GetType("EquipmentScriptBase"));
+            }
+            if (obj is EquipmentScriptBase)
+            {
+                equipmentModel.script = (EquipmentScriptBase)obj;
+                equipmentModel.script.SetModel(equipmentModel);
+            }
+            this._equipList.Add(equipmentModel);
+            Notice.instance.Send(NoticeName.MakeEquipment, new object[]
+            {
+                equipmentModel
+            });
+            if (equipmentModel != null)
+            {
+                this._nextInstanceId += 1L;
+            }
+            return equipmentModel;
+        }
+        catch (Exception ex)
+        {
+            LobotomyBaseMod.ModDebug.Log("CreateEquipmentForcely error - " + ex.Message + Environment.NewLine + ex.StackTrace);
+        }
+        return null;
+    }
+
+    // <Patch>
+    public Dictionary<LobotomyBaseMod.LcId, List<EquipmentModel>> GetEquipmentListByTypeInfo_Mod()
+    {
+        Dictionary<LobotomyBaseMod.LcId, List<EquipmentModel>> dictionary = new Dictionary<LobotomyBaseMod.LcId, List<EquipmentModel>>();
+        foreach (EquipmentModel equipmentModel in this._equipList)
+        {
+            LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(equipmentModel.metaInfo);
+            List<EquipmentModel> list = null;
+            if (dictionary.TryGetValue(lcId, out list))
+            {
+                if (!list.Contains(equipmentModel))
+                {
+                    list.Add(equipmentModel);
+                }
+            }
+            else
+            {
+                list = new List<EquipmentModel>
+                {
+                    equipmentModel
+                };
+                dictionary.Add(lcId, list);
+            }
+        }
+        return dictionary;
+    }
+
+    // <Patch>
+    public EquipmentModel CreateEquipment_Mod(LobotomyBaseMod.LcId id)
+    {
+        EquipmentModel equipmentModel = this.CreateEquipment_Mod(id, this._nextInstanceId);
+        if (equipmentModel != null)
+        {
+            this._nextInstanceId += 1L;
+        }
+        return equipmentModel;
+    }
+
+    // <Patch>
+    public bool CheckEquipmentCount_Mod(LobotomyBaseMod.LcId id)
+    {
+        EquipmentTypeInfo data_Mod = EquipmentTypeList.instance.GetData_Mod(id);
+        return this._equipList.FindAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id).Count < data_Mod.MaxNum;
+    }
+
+    // <Patch>
+    public EquipmentModel CreateEquipment_Mod(LobotomyBaseMod.LcId id, long instanceId)
+    {
+        EquipmentModel result;
+        try
+        {
+            string str = "Try Make - ";
+            LobotomyBaseMod.LcId id2 = id;
+            LobotomyBaseMod.ModDebug.Log(str + ((id2 != null) ? id2.ToString() : null));
+            EquipmentTypeInfo data_Mod = EquipmentTypeList.instance.GetData_Mod(id);
+            if (data_Mod == null)
+            {
+                string str2 = "Fail Make(Null)- ";
+                LobotomyBaseMod.LcId id3 = id;
+                LobotomyBaseMod.ModDebug.Log(str2 + ((id3 != null) ? id3.ToString() : null));
+                return null;
+            }
+            if (this.equipList.FindAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id).Count >= data_Mod.MaxNum)
+            {
+                string str3 = "Fail Make(Full)- ";
+                LobotomyBaseMod.LcId id4 = id;
+                LobotomyBaseMod.ModDebug.Log(str3 + ((id4 != null) ? id4.ToString() : null));
+                return null;
+            }
+            EquipmentModel equipmentModel = null;
+            EquipmentTypeInfo.EquipmentType type = data_Mod.type;
+            if (type == EquipmentTypeInfo.EquipmentType.WEAPON)
+            {
+                equipmentModel = new WeaponModel();
+            }
+            else if (type == EquipmentTypeInfo.EquipmentType.ARMOR)
+            {
+                equipmentModel = new ArmorModel();
+            }
+            else if (type == EquipmentTypeInfo.EquipmentType.SPECIAL)
+            {
+                equipmentModel = new EGOgiftModel();
+            }
+            equipmentModel.instanceId = instanceId;
+            equipmentModel.metaInfo = data_Mod;
+            object obj = null;
+            foreach (Assembly assembly in Add_On.instance.AssemList)
+            {
+                foreach (Type type2 in assembly.GetTypes())
+                {
+                    if (type2.Name == data_Mod.script)
+                    {
+                        obj = Activator.CreateInstance(type2);
+                    }
+                }
+            }
+            if (obj == null)
+            {
+                try
+                {
+                    obj = Activator.CreateInstance(Type.GetType(data_Mod.script));
+                }
+                catch (ArgumentNullException)
+                {
+                    obj = Activator.CreateInstance(Type.GetType("EquipmentScriptBase"));
+                }
+            }
+            if (obj is EquipmentScriptBase)
+            {
+                equipmentModel.script = (EquipmentScriptBase)obj;
+                equipmentModel.script.SetModel(equipmentModel);
+            }
+            this.equipList.Add(equipmentModel);
+            Notice.instance.Send(NoticeName.MakeEquipment, new object[]
+            {
+                equipmentModel
+            });
+            string str4 = "Success Make - ";
+            LobotomyBaseMod.LcId id5 = id;
+            LobotomyBaseMod.ModDebug.Log(str4 + ((id5 != null) ? id5.ToString() : null));
+            return equipmentModel;
+        }
+        catch (Exception ex)
+        {
+            LobotomyBaseMod.ModDebug.Log("error make - " + ex.Message + Environment.NewLine + ex.StackTrace);
+        }
+        return null;
+    }
+
+    // <Patch>
+    public bool GetEquipCount_Mod(LobotomyBaseMod.LcId id, out int current, out int max)
+    {
+        try
+        {
+            EquipmentTypeInfo data_Mod = EquipmentTypeList.instance.GetData_Mod(id);
+            List<EquipmentModel> list = this._equipList.FindAll((EquipmentModel x) => EquipmentTypeInfo.GetLcId(x.metaInfo) == id);
+            current = list.Count;
+            max = data_Mod.MaxNum;
+        }
+        catch (Exception)
+        {
+            current = 0;
+            max = 0;
+            return false;
+        }
+        return true;
+    }
 
 	// Token: 0x040032EB RID: 13035
 	private static InventoryModel _instance;

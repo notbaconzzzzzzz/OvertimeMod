@@ -35,5 +35,5 @@ public class YoungPrinceWeaponDebuf : UnitBuf
 	private const float _debufDmgRatio = 1.5f;
 
 	// Token: 0x04003299 RID: 12953
-	private const float _remain_time = 3f;
+	private const float _remain_time = 1.5f;
 }

@@ -13,10 +13,10 @@ namespace CommandWindow
 	{
 		// Token: 0x06004909 RID: 18697 RVA: 0x001B85A0 File Offset: 0x001B67A0
 		public void SetData(AgentModel agent)
-		{
+		{ // <Patch>
 			this.WeaponName.text = agent.Equipment.weapon.metaInfo.Name;
 			DamageInfo damage = agent.Equipment.weapon.GetDamage(agent);
-			if (agent.Equipment.weapon.metaInfo.id != 200038 && agent.Equipment.weapon.metaInfo.id != 200004)
+			if (EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) != 200038 && EquipmentTypeInfo.GetLcId(agent.Equipment.weapon.metaInfo) != 200004)
 			{
 				RwbpType type = damage.type;
 				Color color;

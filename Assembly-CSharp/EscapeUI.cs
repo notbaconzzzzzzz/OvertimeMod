@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO; // 
 
 // Token: 0x02000AED RID: 2797
 public class EscapeUI : MonoBehaviour
@@ -45,12 +46,74 @@ public class EscapeUI : MonoBehaviour
 
 	// Token: 0x060054BB RID: 21691 RVA: 0x00044954 File Offset: 0x00042B54
 	private void Awake()
-	{
+	{ // <Mod>
 		if (EscapeUI.instance != null && EscapeUI.instance.gameObject)
 		{
 			UnityEngine.Object.Destroy(EscapeUI.instance.gameObject);
 		}
 		EscapeUI._instance = this;
+        if (SpecialModeConfig.instance.GetValue<bool>("Blind"))
+        {
+            try
+            {
+                LobotomyBaseMod.ModDebug.Debug_Log("Blinder Parent : " + ActiveControl.transform.parent.name);
+                foreach (Component component in ActiveControl.transform.parent.GetComponents<Component>())
+				{
+					LobotomyBaseMod.ModDebug.Debug_Log(component.GetType().ToString());
+				}
+                LobotomyBaseMod.ModDebug.Debug_Log("Blinder Parent Parent : " + ActiveControl.transform.parent.parent.name);
+                foreach (Component component in ActiveControl.transform.parent.parent.GetComponents<Component>())
+				{
+					LobotomyBaseMod.ModDebug.Debug_Log(component.GetType().ToString());
+				}
+                LobotomyBaseMod.ModDebug.Debug_Log("ActiveControl : " + ActiveControl.transform.parent.parent.name);
+                foreach (Component component in ActiveControl.GetComponents<Component>())
+				{
+					LobotomyBaseMod.ModDebug.Debug_Log(component.GetType().ToString());
+				}
+                
+                GameObject gameObject = new GameObject("Blinder");
+                Image image = gameObject.AddComponent<Image>();
+                Canvas canvas = gameObject.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+				//canvas.worldCamera = ActiveControl.GetComponent<Canvas>().worldCamera;
+				canvas.planeDistance = ActiveControl.GetComponent<Canvas>().planeDistance;
+                CanvasScaler canvasScaler = gameObject.AddComponent<CanvasScaler>();
+				//canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+                //image.transform.SetParent(ActiveControl.transform.parent.parent);
+                Texture2D texture2D = new Texture2D(2, 2);
+                texture2D.LoadImage(File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/Blinder.png"));
+                Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
+                image.sprite = sprite;
+                gameObject.layer = ActiveControl.layer;
+				//image.transform.position = new Vector3(0f, 0f, 0f);
+				//image.transform.localScale = new Vector3(20f, 20f, 1f);
+				//image.rectTransform.sizeDelta = new Vector2((float)texture2D.width, (float)texture2D.height) / 2f;
+				/*
+                image.rectTransform.sizeDelta = new Vector2(1f, 1f);
+                image.rectTransform.anchorMin = new Vector2(0f, 0f);
+                image.rectTransform.anchorMax = new Vector2(1f, 1f);
+				image.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+				image.preserveAspect = false;*/
+                gameObject.SetActive(true);
+                LobotomyBaseMod.ModDebug.Debug_Log("Blinder Position : " + gameObject.transform.position.ToString() + " : " + gameObject.transform.localScale.ToString());
+                /*
+                Texture2D texture2D = new Texture2D(2, 2);
+                texture2D.LoadImage(File.ReadAllBytes(Application.dataPath + "/Managed/BaseMod/AssetDump/Blinder.png"));
+                Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
+                
+                Image image = ActiveControl.transform.parent.parent.gameObject.AddComponent<Image>();
+                image.sprite = sprite;
+                Image image2 = ActiveControl.transform.parent.gameObject.AddComponent<Image>();
+                image2.sprite = sprite;
+                Image image3 = ActiveControl.AddComponent<Image>();
+                image3.sprite = sprite;*/
+            }
+            catch
+            {
+                LobotomyBaseMod.ModDebug.Debug_LogError("Blinder Error");
+            }
+        }
 	}
 
 	// Token: 0x060054BC RID: 21692 RVA: 0x0004498F File Offset: 0x00042B8F

@@ -1,3 +1,7 @@
+/*
+private void CheckUnit(UnitModel unit) // 
++private int healed // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -98,13 +102,13 @@ public class MagicalGirlWeaponProjectile : MonoBehaviour
 
 	// Token: 0x06002FC2 RID: 12226 RVA: 0x001461F8 File Offset: 0x001443F8
 	private void CheckUnit(UnitModel unit)
-	{
+	{ // <Mod>
 		if (this.done.Contains(unit))
 		{
 			return;
 		}
 		this.done.Add(unit);
-		if (this.script.CheckHit(unit, this.type))
+		if (this.script.CheckHit(unit, this.type, ref healed))
 		{
 			GameObject gameObject = Prefab.LoadPrefab("Effect/Creature/MagicalGirl/MagicalGirlDamageEffect_Hero");
 			if (gameObject == null)
@@ -148,4 +152,7 @@ public class MagicalGirlWeaponProjectile : MonoBehaviour
 
 	// Token: 0x04002D2A RID: 11562
 	public bool isEnabled;
+
+    // <Mod>
+    private int healed = 0;
 }

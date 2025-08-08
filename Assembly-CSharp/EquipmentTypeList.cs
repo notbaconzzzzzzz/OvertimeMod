@@ -59,6 +59,35 @@ public class EquipmentTypeList
 		return list;
 	}
 
+    // <Patch>
+    public void Init_Mod(Dictionary<string, Dictionary<int, EquipmentTypeInfo>> dic)
+    {
+        this.moddic = dic;
+    }
+
+    // <Patch>
+    public EquipmentTypeInfo GetData_Mod(LobotomyBaseMod.LcId id)
+    {
+        if (id.packageId == string.Empty)
+        {
+            LobotomyBaseMod.ModDebug.Log("none packageId");
+            return EquipmentTypeList.instance.GetData(id.id);
+        }
+        if (this.moddic.ContainsKey(id.packageId))
+        {
+            EquipmentTypeInfo equipmentTypeInfo = null;
+            this.moddic[id.packageId].TryGetValue(id.id, out equipmentTypeInfo);
+            return equipmentTypeInfo;
+        }
+        return null;
+    }
+
+    // <Patch>
+    public string GetModId(EquipmentTypeInfo equip)
+    {
+        return equip.modid;
+    }
+
 	// Token: 0x0400353A RID: 13626
 	private static EquipmentTypeList _instance;
 
@@ -67,4 +96,7 @@ public class EquipmentTypeList
 
 	// Token: 0x0400353C RID: 13628
 	private bool _loaded;
+
+    // <Patch>
+    public Dictionary<string, Dictionary<int, EquipmentTypeInfo>> moddic;
 }

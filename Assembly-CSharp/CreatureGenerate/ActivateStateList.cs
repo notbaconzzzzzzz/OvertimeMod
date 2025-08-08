@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using LobotomyBaseMod; // 
+using LobotomyBaseModLib; // 
 using UnityEngine;
 
 namespace CreatureGenerate
@@ -62,7 +64,30 @@ namespace CreatureGenerate
 
 		// Token: 0x06003E81 RID: 16001 RVA: 0x001863F0 File Offset: 0x001845F0
 		public void DayUpdate()
-		{
+		{ // <Patch>
+			List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>();
+			List<LobotomyBaseMod.LcIdLong> list2 = PlayerModel.instance.CopyWaitingCreatures_Mod();
+			foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
+			{
+				list.Add(CreatureTypeInfo_patch.GetLcId(creatureModel.metaInfo));
+			}
+			foreach (ActivateStateModel activateStateModel in this.list)
+			{
+				LobotomyBaseMod.LcIdLong item = new LobotomyBaseMod.LcIdLong(activateStateModel.modid, activateStateModel.id);
+				activateStateModel.isRemoved = false;
+				if (!activateStateModel.isUsed)
+				{
+					if (list.Contains(item))
+					{
+						activateStateModel.isUsed = true;
+					}
+					else if (list2.Contains(item))
+					{
+						activateStateModel.isUsed = true;
+					}
+				}
+			}
+            /*
 			List<long> list = new List<long>();
 			List<long> list2 = PlayerModel.instance.CopyWaitingCreatures();
 			foreach (CreatureModel creatureModel in CreatureManager.instance.GetCreatureList())
@@ -83,12 +108,56 @@ namespace CreatureGenerate
 						activateStateModel.isUsed = true;
 					}
 				}
-			}
+			}*/
 		}
 
 		// Token: 0x06003E82 RID: 16002 RVA: 0x001864E0 File Offset: 0x001846E0
 		public List<ActivateStateModel> GetUsableCreatures()
-		{
+		{ // <Patch>
+			List<ActivateStateModel> list = new List<ActivateStateModel>();
+			int currentDay = CurrentDay;
+			bool genKit = CreatureGenerateInfoManager.Instance.GenKit;
+			List<LobotomyBaseMod.LcIdLong> list2 = PlayerModel.instance.CopyWaitingCreatures_Mod();
+			foreach (ActivateStateModel activateStateModel in this.list)
+			{
+				LobotomyBaseMod.LcIdLong lcIdLong = new LobotomyBaseMod.LcIdLong(activateStateModel.modid, activateStateModel.id);
+				bool flag = list2.Contains(lcIdLong);
+				if (flag)
+				{
+					activateStateModel.isUsed = true;
+				}
+				bool flag2 = !activateStateModel.isUsed && !activateStateModel.isRemoved;
+				if (flag2)
+				{
+					bool flag3 = genKit && activateStateModel.isKit;
+					if (flag3)
+					{
+						bool flag4 = lcIdLong != 300109L || CreatureSelectUI.CheckCreatureExisting(100104L);
+						if (flag4)
+						{
+							list.Add(activateStateModel);
+						}
+					}
+					else
+					{
+						bool flag5 = !genKit && !activateStateModel.isKit;
+						if (flag5)
+						{
+							bool flag6 = lcIdLong != 100014L || !CreatureSelectUI.CheckCreatureExisting(100015L);
+							if (flag6)
+							{
+								bool flag7 = lcIdLong != 100015L;
+								if (flag7)
+								{
+									list.Add(activateStateModel);
+								}
+							}
+						}
+					}
+				}
+			}
+			return list;
+            /*
 			List<ActivateStateModel> list = new List<ActivateStateModel>();
 			int currentDay = this.CurrentDay;
 			bool genKit = CreatureGenerateInfoManager.Instance.GenKit;
@@ -120,7 +189,7 @@ namespace CreatureGenerate
 					}
 				}
 			}
-			return list;
+			return list;*/
 		}
 
 		// Token: 0x06003E83 RID: 16003 RVA: 0x0003683A File Offset: 0x00034A3A
@@ -154,6 +223,33 @@ namespace CreatureGenerate
 				if (activateStateModel.id == id)
 				{
 					activateStateModel.isUsed = true;
+					break;
+				}
+			}
+		}
+
+		// <Patch>
+		public void OnUsed_Mod(LobotomyBaseMod.LcIdLong id)
+		{
+			foreach (ActivateStateModel activateStateModel in this.list)
+			{
+				if (activateStateModel.id == id.id && activateStateModel.modid == id.packageId)
+				{
+					activateStateModel.isUsed = true;
+					break;
+				}
+			}
+		}
+
+		// <Patch>
+		public void RemoveAction_Mod(LobotomyBaseMod.LcIdLong id)
+		{
+			foreach (ActivateStateModel activateStateModel in this.list)
+			{
+				LobotomyBaseMod.LcIdLong lhs = new LobotomyBaseMod.LcIdLong(activateStateModel.modid, activateStateModel.id);
+				if (lhs == id)
+				{
+					activateStateModel.isRemoved = true;
 					break;
 				}
 			}

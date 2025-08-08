@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LobotomyBaseMod; // 
 using UnityEngine;
 
 namespace CreatureGenerate
@@ -41,13 +42,13 @@ namespace CreatureGenerate
 
 		// Token: 0x06003EC7 RID: 16071 RVA: 0x001877E0 File Offset: 0x001859E0
 		public override void OnlyAction(params object[] ids)
-		{
+		{ // <Patch>
 			foreach (object obj in ids)
 			{
 				if (obj is long)
 				{
 					Debug.Log((long)obj);
-					this.creature.Add((long)obj);
+                    this.creatureMod.Add(new LobotomyBaseMod.LcIdLong((long)obj)); // this.creature.Add((long)obj);
 					this.stop = true;
 				}
 			}
@@ -55,11 +56,12 @@ namespace CreatureGenerate
 
 		// Token: 0x06003EC8 RID: 16072 RVA: 0x0018783C File Offset: 0x00185A3C
 		public void SetCreature()
-		{
+		{ // <Patch>
 			if (this.commonAction != null)
 			{
 				this.commonAction.Exectue();
 			}
+			LobotomyBaseMod.ModDebug.Log(this.stop ? "Stop" : "Not Stop"); // 
 			if (!this.stop)
 			{
 				if (this.door1.commonAction != null)
@@ -77,18 +79,31 @@ namespace CreatureGenerate
 				this.door1.SetCreature();
 				this.door2.SetCreature();
 				this.door3.SetCreature();
-				if (this.door1.Creature != -1L)
+                /*>*/
+				if (this.door1.CreatureMod != -1L)
 				{
-					this.creature.Add(this.door1.Creature);
+					this.creatureMod.Add(this.door1.CreatureMod);
 				}
-				if (this.door2.Creature != -1L)
+				if (this.door2.CreatureMod != -1L)
 				{
-					this.creature.Add(this.door2.Creature);
+					this.creatureMod.Add(this.door2.CreatureMod);
 				}
-				if (this.door3.Creature != -1L)
+				if (this.door3.CreatureMod != -1L)
 				{
-					this.creature.Add(this.door3.Creature);
+					this.creatureMod.Add(this.door3.CreatureMod);
+				}/*<
+                if (this.door1.CreatureMod != -1L)
+				{
+					this.creatureMod.Add(this.door1.CreatureMod);
 				}
+				if (this.door2.CreatureMod != -1L)
+				{
+					this.creatureMod.Add(this.door2.CreatureMod);
+				}
+				if (this.door3.CreatureMod != -1L)
+				{
+					this.creatureMod.Add(this.door3.CreatureMod);
+				}*/
 				return;
 			}
 		}
@@ -110,5 +125,8 @@ namespace CreatureGenerate
 
 		// Token: 0x04003961 RID: 14689
 		public bool stop;
+
+		// <Patch>
+		public List<LobotomyBaseMod.LcIdLong> creatureMod = new List<LobotomyBaseMod.LcIdLong>();
 	}
 }

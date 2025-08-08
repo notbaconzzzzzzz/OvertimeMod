@@ -1,3 +1,6 @@
+/*
+public static EGOgiftModel MakeGift(EquipmentTypeInfo info) // 
+*/
 using System;
 using System.Reflection;
 
@@ -11,12 +14,12 @@ public class EGOgiftModel : EquipmentModel
 
 	// Token: 0x0600373D RID: 14141 RVA: 0x00168654 File Offset: 0x00166854
 	public static EGOgiftModel MakeGift(EquipmentTypeInfo info)
-	{
+	{ // <Mod> Fixed it not loading Modded scripts proplerly
 		EGOgiftModel egogiftModel = new EGOgiftModel();
 		egogiftModel.metaInfo = info;
 		Type type = Type.GetType(info.script);
 		object obj = null;
-		if (type != null)
+		if (type == null)
 		{
 			foreach (Assembly assembly in Add_On.instance.AssemList)
 			{
@@ -28,11 +31,11 @@ public class EGOgiftModel : EquipmentModel
 					}
 				}
 			}
-			if (obj == null)
-			{
-				obj = Activator.CreateInstance(type);
-			}
 		}
+        else
+        {
+            obj = Activator.CreateInstance(type);
+        }
 		if (obj is EquipmentScriptBase)
 		{
 			egogiftModel.script = (EquipmentScriptBase)obj;

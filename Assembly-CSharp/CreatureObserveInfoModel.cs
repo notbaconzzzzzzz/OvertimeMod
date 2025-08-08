@@ -15,15 +15,18 @@ public class CreatureObserveInfoModel
 
 	// Token: 0x06003508 RID: 13576 RVA: 0x0016142C File Offset: 0x0015F62C
 	public void InitData()
-	{
-		try
-		{
-			this.InitObserveRegion(CreatureTypeList.instance.GetData(this.creatureTypeId).observeData);
-		}
-		catch (Exception arg)
-		{
-			Debug.LogError(string.Format("{0}\n{1}", this.creatureTypeId, arg));
-		}
+	{ // <Patch>
+        try
+        {
+            if (CreatureTypeList.instance.GetData_Mod(this.lcid) != null)
+            {
+                this.InitObserveRegion(CreatureTypeList.instance.GetData_Mod(this.lcid).observeData);
+            }
+        }
+        catch (Exception arg)
+        {
+            Debug.LogError(string.Format("{0}\n{1}", this.creatureTypeId, arg));
+        }
 	}
 
 	// Token: 0x06003509 RID: 13577 RVA: 0x0016148C File Offset: 0x0015F68C
@@ -217,18 +220,23 @@ public class CreatureObserveInfoModel
 
 	// Token: 0x06003516 RID: 13590 RVA: 0x001619AC File Offset: 0x0015FBAC
 	public bool IsMaxObserved()
-	{
-		if (this._metaInfo.creatureWorkType == CreatureWorkType.KIT)
-		{
-			if (this._metaInfo.specialSkillTable == null)
-			{
-				this._metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(this._metaInfo.id).GetCopy();
-			}
-			int num = Mathf.Max(this._metaInfo.specialSkillTable.descList.Count, this._metaInfo.desc.Count);
-			num = Mathf.Min(num, CreatureModel.careTakingRegion.Length);
-			return this.GetObservationLevel() >= num;
-		}
-		return this.GetObservationLevel() >= 4;
+	{ // <Patch>
+        if (this._metaInfo == null)
+        {
+            LobotomyBaseMod.ModDebug.Log("IsMaxObserved - observeInfo NULL!");
+            return false;
+        }
+        if (this._metaInfo.creatureWorkType == CreatureWorkType.KIT)
+        {
+            if (this._metaInfo.specialSkillTable == null)
+            {
+                this._metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(CreatureTypeInfo.GetLcId(this._metaInfo)).GetCopy();
+            }
+            int num = Mathf.Max(this._metaInfo.specialSkillTable.descList.Count, this._metaInfo.desc.Count);
+            num = Mathf.Min(num, CreatureModel.careTakingRegion.Length);
+            return this.GetObservationLevel() >= num;
+        }
+        return this.GetObservationLevel() >= 4;
 	}
 
 	// Token: 0x06003517 RID: 13591 RVA: 0x00030878 File Offset: 0x0002EA78
@@ -236,6 +244,28 @@ public class CreatureObserveInfoModel
 	{
 		this.cubeNum += trans;
 	}
+
+    // <Patch>
+    public void Init_Mod(LobotomyBaseMod.LcIdLong lcid)
+    {
+        this.creatureTypeId = lcid.id;
+        this.lcid = lcid;
+        this._metaInfo = CreatureTypeList.instance.GetData_Mod(lcid);
+        this.InitData_Mod(lcid);
+    }
+
+    // <Patch>
+    public void InitData_Mod(LobotomyBaseMod.LcIdLong lcid)
+    {
+        try
+        {
+            this.InitObserveRegion(CreatureTypeList.instance.GetData_Mod(lcid).observeData);
+        }
+        catch (Exception arg)
+        {
+            LobotomyBaseMod.ModDebug.Log(string.Format("{0}\n{1}", this.creatureTypeId, arg));
+        }
+    }
 
 	// Token: 0x0400314C RID: 12620
 	private CreatureTypeInfo _metaInfo;
@@ -257,4 +287,7 @@ public class CreatureObserveInfoModel
 
 	// Token: 0x04003152 RID: 12626
 	private Dictionary<string, ObserveRegion> observeRegions = new Dictionary<string, ObserveRegion>();
+
+    // <Patch>
+    public LobotomyBaseMod.LcIdLong lcid;
 }

@@ -1,3 +1,9 @@
+/*
+public AgentData() // Title Specification
+public void AppearCopy(AgentData copied) // Title Specification
++public bool isCustomTitles; // Title Specification
++public int[] customTitles; // Title Specification
+*/
 using System;
 
 namespace Customizing
@@ -7,7 +13,7 @@ namespace Customizing
 	{
 		// Token: 0x06002E66 RID: 11878 RVA: 0x0013801C File Offset: 0x0013621C
 		public AgentData()
-		{
+		{ // <Mod>
 			this.agentName = null;
 			this.isCustomName = false;
 			this.appearance = new Appearance();
@@ -15,6 +21,12 @@ namespace Customizing
 			this.statBonus = new StatBonus();
 			this.isStatBonusAdded = false;
 			this.CustomName = string.Empty;
+			this.isCustomTitles = false;
+            this.customTitles = new int[4];
+			this.customTitles[0] = 0;
+			this.customTitles[1] = 0;
+			this.customTitles[2] = 0;
+			this.customTitles[3] = 0;
 		}
 
 		// Token: 0x1700045E RID: 1118
@@ -75,7 +87,7 @@ namespace Customizing
 
 		// Token: 0x06002E6B RID: 11883 RVA: 0x00138074 File Offset: 0x00136274
 		public void AppearCopy(AgentData copied)
-		{
+		{ // <Mod>
 			this.agentName = copied.agentName;
 			this.CustomName = copied.CustomName;
 			this.isCustomName = copied.isCustomName;
@@ -95,6 +107,12 @@ namespace Customizing
 			this.appearance.Mouth_Battle = copied.appearance.Mouth_Battle;
 			this.appearance.HairColor = copied.appearance.HairColor;
 			this.appearance.EyeColor = copied.appearance.EyeColor;
+			this.isCustomTitles = copied.isCustomTitles;
+            this.customTitles = new int[4];
+			this.customTitles[0] = copied.customTitles[0];
+			this.customTitles[1] = copied.customTitles[1];
+			this.customTitles[2] = copied.customTitles[2];
+			this.customTitles[3] = copied.customTitles[3];
 		}
 
 		// Token: 0x06002E6C RID: 11884 RVA: 0x001381E8 File Offset: 0x001363E8
@@ -152,5 +170,11 @@ namespace Customizing
 
 		// Token: 0x04002BFA RID: 11258
 		public int uniqueScriptIndex = -1;
+
+		// <Mod>
+		public bool isCustomTitles;
+
+        // <Mod>
+        public int[] customTitles;
 	}
 }

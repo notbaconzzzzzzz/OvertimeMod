@@ -1,3 +1,7 @@
+/*
+public int GetRequestCost(UnitModel unit) // 
++public bool HasSuppressedWolf() // 
+*/
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.UI.Utils;
@@ -172,17 +176,22 @@ public class RedHood : CreatureBase, IObserver
 
 	// Token: 0x0600280B RID: 10251 RVA: 0x0011885C File Offset: 0x00116A5C
 	public int GetRequestCost(UnitModel unit)
-	{
+	{ // <Mod>
+		int cost = 40;
 		if (unit is CreatureModel)
 		{
 			CreatureModel creatureModel = unit as CreatureModel;
-			return creatureModel.GetRiskLevel() * 40;
+			cost = creatureModel.GetRiskLevel() * 40;
 		}
 		if (unit is AgentModel)
 		{
-			return (unit as AgentModel).level * 40;
+			cost = (unit as AgentModel).level * 40;
 		}
-		return 40;
+		if (ResearchDataModel.instance.IsUpgradedAbility("energy_discount"))
+		{
+			cost = cost * 9 / 10;
+		}
+		return cost;
 	}
 
 	// Token: 0x0600280C RID: 10252 RVA: 0x001188A4 File Offset: 0x00116AA4
@@ -1239,6 +1248,12 @@ public class RedHood : CreatureBase, IObserver
 			return 1.5f;
 		}
 		return base.GetDamageFactor(target, damage);
+	}
+
+	// <Mod>
+	public bool HasSuppressedWolf()
+	{
+		return _isWolfSuppressed;
 	}
 
 	// Token: 0x04002697 RID: 9879

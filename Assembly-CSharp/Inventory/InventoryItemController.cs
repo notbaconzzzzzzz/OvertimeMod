@@ -27,27 +27,28 @@ namespace Inventory
 
 		// Token: 0x06004CC4 RID: 19652 RVA: 0x001C9548 File Offset: 0x001C7748
 		public void Init()
-		{
-			if (this.slotDic == null)
+		{ // <Patch>
+			if (this.slotDicMod == null)
 			{
-				this.slotDic = new Dictionary<int, InventorySlot>();
+				this.slotDicMod = new Dictionary<LobotomyBaseMod.LcId, InventorySlot>();
 			}
-			Dictionary<int, List<EquipmentModel>> equipmentListByTypeInfo = InventoryModel.Instance.GetEquipmentListByTypeInfo();
+			this._currentDetailMod = new LobotomyBaseMod.LcId(-1);
+			Dictionary<LobotomyBaseMod.LcId, List<EquipmentModel>> equipmentListByTypeInfo = InventoryModel.Instance.GetEquipmentListByTypeInfo_Mod();
 			if (equipmentListByTypeInfo == null)
 			{
 				Debug.LogError("inventory is null");
 				return;
 			}
-			List<int> list = new List<int>();
-			foreach (KeyValuePair<int, List<EquipmentModel>> keyValuePair in equipmentListByTypeInfo)
+			List<LobotomyBaseMod.LcId> list = new List<LobotomyBaseMod.LcId>();
+			foreach (KeyValuePair<LobotomyBaseMod.LcId, List<EquipmentModel>> keyValuePair in equipmentListByTypeInfo)
 			{
-				EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(keyValuePair.Key);
+				EquipmentTypeInfo data = EquipmentTypeList.instance.GetData_Mod(keyValuePair.Key);
 				if (data.type != EquipmentTypeInfo.EquipmentType.SPECIAL)
 				{
-					if (data.id != 2)
+					if (EquipmentTypeInfo.GetLcId(data) != 2)
 					{
 						InventorySlot inventorySlot = null;
-						if (!this.slotDic.TryGetValue(keyValuePair.Key, out inventorySlot))
+						if (!this.slotDicMod.TryGetValue(keyValuePair.Key, out inventorySlot))
 						{
 							if (data.type == EquipmentTypeInfo.EquipmentType.WEAPON)
 							{
@@ -63,7 +64,7 @@ namespace Inventory
 							}
 							inventorySlot.RectTransform.localScale = Vector3.one;
 							inventorySlot.SetModel(data, keyValuePair.Value);
-							this.slotDic.Add(keyValuePair.Key, inventorySlot);
+							this.slotDicMod.Add(keyValuePair.Key, inventorySlot);
 						}
 						else if (keyValuePair.Value.Count == 0)
 						{
@@ -76,14 +77,14 @@ namespace Inventory
 					}
 				}
 			}
-			foreach (int key in list)
+			foreach (LobotomyBaseMod.LcId key in list)
 			{
 				InventorySlot inventorySlot2 = null;
-				if (this.slotDic.TryGetValue(key, out inventorySlot2))
+				if (this.slotDicMod.TryGetValue(key, out inventorySlot2))
 				{
 					UnityEngine.Object.Destroy(inventorySlot2.gameObject);
 				}
-				this.slotDic.Remove(key);
+				this.slotDicMod.Remove(key);
 			}
 			this.OnClickButton((int)this._currentWeaponType);
 			if (this.selectedLevel == -1)
@@ -146,11 +147,13 @@ namespace Inventory
 
 		// Token: 0x06004CC6 RID: 19654 RVA: 0x001C9920 File Offset: 0x001C7B20
 		public void OnEquipAction(EquipmentModel equipment, AgentModel agent = null)
-		{
+		{ // <Patch>
 			InventorySlot inventorySlot = null;
 			if (!this.GetSlot(equipment, out inventorySlot))
 			{
-				Debug.LogError("Couldn't find slot about " + equipment.metaInfo.id);
+				string str = "Couldn't find slot about ";
+				LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(equipment.metaInfo);
+				Debug.LogError(str + ((lcId != null) ? lcId.ToString() : null));
 				return;
 			}
 			if (agent == null)
@@ -336,21 +339,21 @@ namespace Inventory
 
 		// Token: 0x06004CC9 RID: 19657 RVA: 0x001C9D14 File Offset: 0x001C7F14
 		public bool GetSlot(EquipmentModel equipment, out InventorySlot slot)
-		{
-			int id = equipment.metaInfo.id;
-			return this.slotDic.TryGetValue(id, out slot);
+		{ // <Patch>
+			LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(equipment.metaInfo);
+			return this.slotDicMod.TryGetValue(lcId, out slot);
 		}
 
 		// Token: 0x06004CCA RID: 19658 RVA: 0x001C9D3C File Offset: 0x001C7F3C
 		public bool GetSlot(EquipmentTypeInfo info, out InventorySlot slot)
-		{
-			int id = info.id;
-			return this.slotDic.TryGetValue(id, out slot);
+		{ // <Patch>
+			LobotomyBaseMod.LcId lcId = EquipmentTypeInfo.GetLcId(info);
+			return this.slotDicMod.TryGetValue(lcId, out slot);
 		}
 
 		// Token: 0x06004CCB RID: 19659 RVA: 0x001C9D60 File Offset: 0x001C7F60
 		public void OnClickDetailInfo(EquipmentTypeInfo info)
-		{
+		{ // <Patch>
 			InventorySlot inventorySlot = null;
 			InventoryUI.CurrentWindow.audioClipPlayer.OnPlayInList(3);
 			this.TooltipDesc.text = info.Description;
@@ -359,16 +362,16 @@ namespace Inventory
 			{
 				return;
 			}
-			if (this._currentDetail == info.id)
+			if (this._currentDetailMod == EquipmentTypeInfo.GetLcId(info))
 			{
 				this.ToolTipControl.gameObject.SetActive(false);
-				this._currentDetail = -1;
+				this._currentDetailMod = new LobotomyBaseMod.LcId(-1);
 				inventorySlot.TooltipButton.interactable = true;
 				inventorySlot.TooltipButton.OnPointerExit(null);
 				return;
 			}
 			InventorySlot inventorySlot2 = null;
-			if (this.slotDic.TryGetValue(this._currentDetail, out inventorySlot2))
+			if (this.slotDicMod.TryGetValue(this._currentDetailMod, out inventorySlot2))
 			{
 				inventorySlot2.TooltipButton.interactable = true;
 				inventorySlot2.TooltipButton.OnPointerExit(null);
@@ -402,7 +405,7 @@ namespace Inventory
 				num--;
 			}
 			this.ToolTipControl.SetSiblingIndex(num + 1);
-			this._currentDetail = info.id;
+			this._currentDetailMod = EquipmentTypeInfo.GetLcId(info);
 			this.ToolTipControl.transform.parent.GetComponent<ContentSizeFitter>().SetLayoutVertical();
 			this.ToolTipControl.transform.parent.GetComponent<ContentSizeFitter>().enabled = false;
 			this.ToolTipControl.transform.parent.GetComponent<ContentSizeFitter>().enabled = true;
@@ -410,17 +413,19 @@ namespace Inventory
 
 		// Token: 0x06004CCC RID: 19660 RVA: 0x0003F80F File Offset: 0x0003DA0F
 		public void CloseTooltip()
-		{
-			if (this._currentDetail != -1)
+		{ // <Patch>
+			if (this._currentDetailMod != -1)
 			{
-				this.OnClickDetailInfo(EquipmentTypeList.instance.GetData(this._currentDetail));
+				this.OnClickDetailInfo(EquipmentTypeList.instance.GetData_Mod(this._currentDetailMod));
 			}
-			this._currentDetail = -1;
+			this._currentDetailMod = new LobotomyBaseMod.LcId(-1);
 		}
 
 		// Token: 0x06004CCD RID: 19661 RVA: 0x001C9F4C File Offset: 0x001C814C
 		public void OnClickDetailInfo(EquipmentModel equipment)
-		{
+		{ // <Patch>
+            OnClickDetailInfo(equipment.metaInfo);
+            /*
 			InventoryUI.CurrentWindow.audioClipPlayer.OnPlayInList(3);
 			this.TooltipDesc.text = equipment.metaInfo.Description;
 			this.TooltipPosSet();
@@ -510,6 +515,7 @@ namespace Inventory
 				}
 			}
 			this.ToolTipControl.transform.parent.GetComponent<ContentSizeFitter>().SetLayoutVertical();
+            */
 		}
 
 		// Token: 0x06004CCE RID: 19662 RVA: 0x001CA218 File Offset: 0x001C8418
@@ -553,14 +559,14 @@ namespace Inventory
 
 		// Token: 0x06004CD2 RID: 19666 RVA: 0x001CA2DC File Offset: 0x001C84DC
 		public void SetList()
-		{
+		{ // <Patch>
 			List<InventorySlot> list = new List<InventorySlot>();
 			RiskLevel riskLevel = RiskLevel.ZAYIN;
 			if (this.selectedLevel != -1)
 			{
 				riskLevel = (RiskLevel)this.selectedLevel;
 			}
-			foreach (InventorySlot inventorySlot in this.slotDic.Values)
+			foreach (InventorySlot inventorySlot in this.slotDicMod.Values)
 			{
 				if (this._currentWeaponType == InventoryItemType.WEAPON)
 				{
@@ -678,8 +684,8 @@ namespace Inventory
 
 		// Token: 0x06004CDB RID: 19675 RVA: 0x001CA530 File Offset: 0x001C8730
 		public void CheckAgentContains(AgentModel target, Color c)
-		{
-			foreach (InventorySlot inventorySlot in this.slotDic.Values)
+		{ // <Patch>
+			foreach (InventorySlot inventorySlot in this.slotDicMod.Values)
 			{
 				int agentSlotIndex = inventorySlot.GetAgentSlotIndex(target);
 				if (agentSlotIndex != -1)
@@ -773,6 +779,14 @@ namespace Inventory
 
 		// Token: 0x04004717 RID: 18199
 		private int selectedLevel = -1;
+
+		// <Patch>
+		[NonSerialized]
+		private LobotomyBaseMod.LcId _currentDetailMod;
+
+		// <Patch>
+		[NonSerialized]
+		private Dictionary<LobotomyBaseMod.LcId, InventorySlot> slotDicMod;
 
 		// Token: 0x04004718 RID: 18200
 		[CompilerGenerated]

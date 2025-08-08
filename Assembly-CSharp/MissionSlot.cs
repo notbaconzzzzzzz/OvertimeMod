@@ -1,3 +1,9 @@
+/*
++public void Init(Mission mission, int line) // 
+public void Refresh() // 
++public int multiLine // 
++public bool hasTimerCondition // 
+*/
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,26 +24,70 @@ public class MissionSlot : MonoBehaviour
 		if (mission.successCondition.condition_Type == ConditionType.CLEAR_TIME)
 		{
 			mission.successCondition.current = 0;
+			hasTimerCondition = true;
 		}
+        for (int i = 0; i < mission.failConditions.Count; i++)
+        {
+			if (mission.failConditions[i].condition_Type == ConditionType.COMPLETION_TIME)
+			{
+				mission.failConditions[i].current = 0;
+				hasTimerCondition = true;
+			}
+        }
+	}
+
+	public void Init(Mission mission, int line)
+	{
+        multiLine = line;
+		if (multiLine > 0)
+		{
+			txt.fontSize = txt.fontSize * 5 / 6;
+		}
+		Init(mission);
 	}
 
 	// Token: 0x06004F6E RID: 20334 RVA: 0x001D0008 File Offset: 0x001CE208
 	public void Refresh()
-	{
+	{ // <Mod>
 		if (this.mission == null || this.mission.successCondition == null)
 		{
 			Debug.Log("Invalid mission inited");
 			return;
 		}
+        if (mission.missionScript != null)
+        {
+            txt.text = mission.missionScript.GetLineText(multiLine);
+            if (this.AutoResize)
+            {
+                this.AutoResizing();
+            }
+            return;
+        }
 		this.txt.text = LocalizeTextDataModel.instance.GetTextAppend(new string[]
 		{
 			this.mission.sefira_Name,
 			"Name"
 		}) + " : ";
+		Condition timeCondition = null;
 		if (this.mission.successCondition.condition_Type == ConditionType.CLEAR_TIME)
 		{
-			this.mission.successCondition.current = (int)GlobalHistory.instance.GetCurrentTime();
+			timeCondition = mission.successCondition;
+			timeCondition.current = (int)GlobalHistory.instance.GetCurrentTime();
 		}
+		bool flag = false;
+        for (int i = 0; i < mission.failConditions.Count; i++)
+        {
+            if (!mission.doneConditions[mission.failConditions[i].index])
+            {
+                flag = true;
+                break;
+            }
+			if (mission.failConditions[i].condition_Type == ConditionType.COMPLETION_TIME)
+			{
+				timeCondition = mission.failConditions[i];
+				timeCondition.current = (int)GlobalHistory.instance.GetCurrentTime();
+			}
+        }
 		if (this.mission.isCleared)
 		{
 			Text text = this.txt;
@@ -55,7 +105,7 @@ public class MissionSlot : MonoBehaviour
 				})
 			});
 		}
-		else if (this.mission.successCondition.goal_Type == GoalType.MAX && this.mission.successCondition.goal < this.mission.successCondition.current)
+		else if (flag || (this.mission.successCondition.goal_Type == GoalType.MAX && this.mission.successCondition.goal < this.mission.successCondition.current))
 		{
 			Text text3 = this.txt;
 			string text2 = text3.text;
@@ -75,9 +125,9 @@ public class MissionSlot : MonoBehaviour
 		else
 		{
 			string text4 = LocalizeTextDataModel.instance.GetText(this.mission.metaInfo.shortDesc) + " ";
-			if (this.mission.successCondition.condition_Type == ConditionType.CLEAR_TIME)
+			if (timeCondition != null)
 			{
-				int num = this.mission.successCondition.goal - this.mission.successCondition.current;
+				int num = timeCondition.goal - timeCondition.current;
 				if (num < 0)
 				{
 					text4 = "'" + LocalizeTextDataModel.instance.GetText(this.mission.metaInfo.title) + "' " + LocalizeTextDataModel.instance.GetTextAppend(new string[]
@@ -93,14 +143,52 @@ public class MissionSlot : MonoBehaviour
 			}
 			else
 			{
-				string text2 = text4;
-				text4 = string.Concat(new object[]
+				if (mission.successCondition.condition_Type == ConditionType.CLEAR_DAY)
 				{
-					text2,
-					this.mission.successCondition.current,
-					"/",
-					this.mission.successCondition.goal
-				});
+					int cur = 0;
+					int gol = 0;
+					float perc = -1f;
+					for (int i = 0; i < mission.failConditions.Count; i++)
+					{
+						Condition failCond = mission.failConditions[i];
+						int _cur = failCond.current;
+						int _gol = failCond.goal;
+						float _perc = -1f;
+						if (failCond.goal_Type == GoalType.MAX)
+						{
+							_perc = (float)_cur / (float)_gol;
+						}
+						else if (failCond.goal_Type == GoalType.MIN)
+						{
+							_perc = 1f - (float)_cur / (float)_gol;
+						}
+						if (_perc > perc)
+						{
+							cur = _cur;
+							gol = _gol;
+							perc = _perc;
+						}
+					}
+					string text2 = text4;
+					text4 = string.Concat(new object[]
+					{
+						text2,
+						cur,
+						"/",
+						gol
+					});
+				}
+				else
+				{
+					string text2 = text4;
+					text4 = string.Concat(new object[]
+					{
+						text2,
+						this.mission.successCondition.current,
+						"/",
+						this.mission.successCondition.goal
+					});
+				}
 			}
 			Text text5 = this.txt;
 			text5.text += text4;
@@ -140,4 +228,10 @@ public class MissionSlot : MonoBehaviour
 
 	// Token: 0x04004992 RID: 18834
 	public bool AutoResize;
+
+    // <Mod>
+    public int multiLine;
+
+	// <Mod>
+	public bool hasTimerCondition;
 }

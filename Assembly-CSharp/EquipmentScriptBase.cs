@@ -1,3 +1,6 @@
+/*
++Various new overridable functions // 
+*/
 using System;
 using UnityEngine;
 
@@ -103,6 +106,12 @@ public class EquipmentScriptBase
 		return true;
 	}
 
+    // <Mod>
+	public virtual void OnTakeDamage_After(UnitModel actor, DamageInfo dmg)
+	{
+		
+	}
+
 	// Token: 0x17000528 RID: 1320
 	// (get) Token: 0x0600374F RID: 14159 RVA: 0x00031F5B File Offset: 0x0003015B
 	public int reinforcementLevel
@@ -186,6 +195,12 @@ public class EquipmentScriptBase
 	// Token: 0x06003758 RID: 14168 RVA: 0x000043AD File Offset: 0x000025AD
 	public virtual void OwnerHeal(bool isMental, ref float amount)
 	{
+	}
+
+	// <Mod>
+	public virtual float RecoveryMultiplier(bool isMental, float amount)
+	{
+		return 1f;
 	}
 
 	// Token: 0x040032E2 RID: 13026

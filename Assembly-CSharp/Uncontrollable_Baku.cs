@@ -36,7 +36,7 @@ public class Uncontrollable_Baku : UncontrollableAction
 
 	// Token: 0x0600583F RID: 22591 RVA: 0x00046FB9 File Offset: 0x000451B9
 	public override void Execute()
-	{
+	{ // <Mod>
 		base.Execute();
 		if (this.model == null)
 		{
@@ -45,6 +45,21 @@ public class Uncontrollable_Baku : UncontrollableAction
 		this.model.StopAction();
 		this.model.GetMovableNode().StopMoving();
 		this.CheckAnnoyed();
+        if (wakeUpTimer.started && wakeUpTimer.RunTimer())
+        {
+            model.GetControl();
+		    model.SetInvincible(false);
+        }
+        if (annoyTimer.started && annoyTimer.RunTimer())
+        {
+            model.GetControl();
+            if (!model.HasUnitBuf(UnitBufType.DEATH_ANGEL_BETRAYER))
+            {
+                model.invincible = false;
+                model.mental = 0f;
+                model.Panic();
+            }
+        }
 	}
 
 	// Token: 0x06005840 RID: 22592 RVA: 0x001F9A24 File Offset: 0x001F7C24
@@ -113,8 +128,9 @@ public class Uncontrollable_Baku : UncontrollableAction
 
 	// Token: 0x06005844 RID: 22596 RVA: 0x00047040 File Offset: 0x00045240
 	private void Annoyed()
-	{
+	{ // <Mod>
 		this.script.AnnoyWorker(this.model);
+        annoyTimer.StartTimer(6f);
 	}
 
 	// Token: 0x06005845 RID: 22597 RVA: 0x00047053 File Offset: 0x00045253
@@ -125,9 +141,10 @@ public class Uncontrollable_Baku : UncontrollableAction
 
 	// Token: 0x06005846 RID: 22598 RVA: 0x0004705C File Offset: 0x0004525C
 	private void WakeUp()
-	{
+	{ // <Mod>
 		this.waked = true;
 		this.script.WakeWorker(this.model);
+        wakeUpTimer.StartTimer(6f);
 	}
 
 	// Token: 0x04005120 RID: 20768
@@ -153,4 +170,10 @@ public class Uncontrollable_Baku : UncontrollableAction
 
 	// Token: 0x04005127 RID: 20775
 	private int remainClicked = 5;
+
+    // <Mod>
+    private Timer wakeUpTimer = new Timer();
+
+    // <Mod>
+    private Timer annoyTimer = new Timer();
 }

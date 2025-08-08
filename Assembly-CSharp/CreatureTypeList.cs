@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LobotomyBaseMod; // 
 using CreatureGenerate;
 
 // Token: 0x0200070D RID: 1805
@@ -103,6 +104,143 @@ public class CreatureTypeList
 		return 0;
 	}
 
+    // <Patch>
+    public void Init_Mod(Dictionary<string, List<CreatureTypeInfo>> CTIdic, Dictionary<string, List<CreatureSpecialSkillTipTable>> CSSTTdic)
+    {
+        this._modlist = CTIdic;
+        this._modtableList = CSSTTdic;
+    }
+
+    // <Patch>
+    public CreatureTypeInfo GetData_Mod(LobotomyBaseMod.LcIdLong lcid)
+    {
+        bool flag = lcid.packageId == string.Empty;
+        CreatureTypeInfo result;
+        if (flag)
+        {
+            result = CreatureTypeList.instance.GetData(lcid.id);
+        }
+        else
+        {
+            bool flag2 = this._modlist.ContainsKey(lcid.packageId);
+            if (flag2)
+            {
+                CreatureTypeInfo creatureTypeInfo = this._modlist[lcid.packageId].Find((CreatureTypeInfo x) => x.id == lcid.id);
+                result = creatureTypeInfo;
+            }
+            else
+            {
+                result = null;
+            }
+        }
+        return result;
+    }
+
+    // <Patch>
+    public CreatureSpecialSkillTipTable GetSkillTipData_Mod(LobotomyBaseMod.LcIdLong lcid)
+    {
+        bool flag = lcid.packageId == string.Empty;
+        CreatureSpecialSkillTipTable result;
+        if (flag)
+        {
+            result = CreatureTypeList.instance.GetSkillTipData(lcid.id);
+        }
+        else
+        {
+            bool flag2 = this._modtableList.ContainsKey(lcid.packageId);
+            if (flag2)
+            {
+                CreatureSpecialSkillTipTable creatureSpecialSkillTipTable = this._modtableList[lcid.packageId].Find((CreatureSpecialSkillTipTable x) => x.creatureTypeId == lcid.id);
+                result = creatureSpecialSkillTipTable;
+            }
+            else
+            {
+                result = null;
+            }
+        }
+        return result;
+    }
+
+    // <Patch>
+    public LobotomyBaseMod.LcIdLong GetLcId(CreatureTypeInfo info)
+    {
+        bool flag = info is ChildCreatureTypeInfo;
+        if (flag)
+        {
+            Predicate<CreatureTypeInfo> pred = null;
+            foreach (KeyValuePair<string, List<CreatureTypeInfo>> keyValuePair in this._modlist)
+            {
+                List<CreatureTypeInfo> value = keyValuePair.Value;
+                Predicate<CreatureTypeInfo> match;
+                if ((match = pred) == null)
+                {
+                    match = (pred = ((CreatureTypeInfo x) => x.childTypeInfo == info));
+                }
+                CreatureTypeInfo creatureTypeInfo = value.Find(match);
+                bool flag2 = creatureTypeInfo != null;
+                if (flag2)
+                {
+                    return new LobotomyBaseMod.LcIdLong(keyValuePair.Key, info.id);
+                }
+            }
+        }
+        foreach (KeyValuePair<string, List<CreatureTypeInfo>> keyValuePair2 in this._modlist)
+        {
+            bool flag3 = keyValuePair2.Value.Contains(info);
+            if (flag3)
+            {
+                return new LobotomyBaseMod.LcIdLong(keyValuePair2.Key, info.id);
+            }
+        }
+        return new LobotomyBaseMod.LcIdLong(info.id);
+    }
+
+    // <Patch>
+    public LobotomyBaseMod.LcIdLong GetLcId(CreatureSpecialSkillTipTable info)
+    {
+        return new LobotomyBaseMod.LcIdLong(info.modid, info.creatureTypeId);
+    }
+
+    // <Patch>
+    public string GetModId(CreatureTypeInfo info)
+    {
+        bool flag = info is ChildCreatureTypeInfo;
+        if (flag)
+        {
+            Predicate<CreatureTypeInfo> pred = null;
+            foreach (KeyValuePair<string, List<CreatureTypeInfo>> keyValuePair in this._modlist)
+            {
+                List<CreatureTypeInfo> value = keyValuePair.Value;
+                Predicate<CreatureTypeInfo> match;
+                if ((match = pred) == null)
+                {
+                    match = (pred = ((CreatureTypeInfo x) => x.childTypeInfo == info));
+                }
+                CreatureTypeInfo creatureTypeInfo = value.Find(match);
+                bool flag2 = creatureTypeInfo != null;
+                if (flag2)
+                {
+                    return keyValuePair.Key;
+                }
+            }
+        }
+        foreach (KeyValuePair<string, List<CreatureTypeInfo>> keyValuePair2 in this._modlist)
+        {
+            bool flag3 = keyValuePair2.Value.Contains(info);
+            if (flag3)
+            {
+                return keyValuePair2.Key;
+            }
+        }
+        return string.Empty;
+    }
+
+    // <Patch>
+    public string GetModId(CreatureSpecialSkillTipTable info)
+    {
+        return info.modid;
+    }
+
 	// Token: 0x040034D9 RID: 13529
 	private static CreatureTypeList _instance;
 
@@ -117,4 +255,10 @@ public class CreatureTypeList
 
 	// Token: 0x040034DD RID: 13533
 	private bool _loaded;
+
+    // <Patch>
+    public Dictionary<string, List<CreatureTypeInfo>> _modlist;
+
+    // <Patch>
+    public Dictionary<string, List<CreatureSpecialSkillTipTable>> _modtableList;
 }

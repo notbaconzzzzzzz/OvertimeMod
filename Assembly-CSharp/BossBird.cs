@@ -304,7 +304,7 @@ public class BossBird : BirdCreatureBase
 
 	// Token: 0x06001E96 RID: 7830 RVA: 0x000F6C04 File Offset: 0x000F4E04
 	private bool CheckTwilight()
-	{
+	{ // <Patch>
 		List<AgentModel> list = new List<AgentModel>(AgentManager.instance.GetAgentList());
 		foreach (AgentModel agentModel in list)
 		{
@@ -312,11 +312,11 @@ public class BossBird : BirdCreatureBase
 			{
 				WeaponModel weapon = agentModel.Equipment.weapon;
 				ArmorModel armor = agentModel.Equipment.armor;
-				if (weapon != null && weapon.metaInfo.id == 200038)
+				if (weapon != null && EquipmentTypeInfo.GetLcId(weapon.metaInfo) == 200038)
 				{
 					return false;
 				}
-				if (armor != null && armor.metaInfo.id == 300038)
+				if (armor != null && EquipmentTypeInfo.GetLcId(armor.metaInfo) == 300038)
 				{
 					return false;
 				}

@@ -11,16 +11,24 @@ public class YesodCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x060014C1 RID: 5313 RVA: 0x00019A10 File Offset: 0x00017C10
 	public void SetScript(YesodCoreScript script)
-	{
+	{ // <Mod>
+		if (script is OvertimeYesodCoreScript)
+		{
+			overtimeScript = script as OvertimeYesodCoreScript;
+		}
 		this.script = script;
 	}
 
 	// Token: 0x17000165 RID: 357
 	// (get) Token: 0x060014C2 RID: 5314 RVA: 0x00019A19 File Offset: 0x00017C19
 	private UnscaledTimer closeTimer
-	{
+	{ // <Mod>
 		get
 		{
+            if (overtimeScript != null)
+            {
+                return overtimeScript.bossBase._closeTimer;
+            }
 			return this.script.bossBase._closeTimer;
 		}
 	}
@@ -49,6 +57,9 @@ public class YesodCoreAnim : CreatureAnimEventCalled
 
 	// Token: 0x040017BF RID: 6079
 	private YesodCoreScript script;
+
+	// <Mod>
+	private OvertimeYesodCoreScript overtimeScript;
 
 	// Token: 0x040017C0 RID: 6080
 	public Transform middlePivot;

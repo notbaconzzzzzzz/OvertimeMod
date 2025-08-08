@@ -102,7 +102,7 @@ namespace CreatureInfo
 
 		// Token: 0x06005370 RID: 21360 RVA: 0x001E60E0 File Offset: 0x001E42E0
 		public void Init()
-		{
+		{ // <Patch>
 			this.Clear();
 			List<CreatureObserveInfoModel> observeInfoList = CreatureManager.instance.GetObserveInfoList();
 			List<CreatureObserveInfoModel> list = new List<CreatureObserveInfoModel>();
@@ -119,40 +119,44 @@ namespace CreatureInfo
 					}
 				}
 			}
-			List<CreatureInfoCodex.SortData> list2 = new List<CreatureInfoCodex.SortData>();
+			List<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod> list2 = new List<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod>();
 			foreach (CreatureObserveInfoModel creatureObserveInfoModel2 in list)
 			{
-				CreatureTypeInfo data = CreatureTypeList.instance.GetData(creatureObserveInfoModel2.creatureTypeId);
+				CreatureTypeInfo data = CreatureTypeList.instance.GetData_Mod(creatureObserveInfoModel2.lcid);
 				string codeId = data.codeId;
 				int num = -1;
 				if (!this.TryParse(codeId, out num))
 				{
-					if (creatureObserveInfoModel2.creatureTypeId != CreatureInfoCodex.uniqueId[1])
+					if (creatureObserveInfoModel2.lcid.packageId != string.Empty || creatureObserveInfoModel2.creatureTypeId != CreatureInfoCodex.uniqueId[1])
 					{
 						continue;
 					}
 					num = 1000;
 				}
 				int num2 = num;
-				if (this.CheckUniqueGeneration(creatureObserveInfoModel2.creatureTypeId, list2, num, out num2))
+				if (creatureObserveInfoModel2.lcid.packageId != string.Empty)
+				{
+					this.GenerateSlot_Mod(list2, creatureObserveInfoModel2, data, num);
+				}
+				else if (this.CheckUniqueGeneration_Mod(creatureObserveInfoModel2.lcid, list2, num, out num2))
 				{
 					num = num2;
-					this.GenerateSlot(list2, creatureObserveInfoModel2, data, num);
+					this.GenerateSlot_Mod(list2, creatureObserveInfoModel2, data, num);
 				}
 			}
-			List<CreatureInfoCodex.SortData> list3 = list2;
-			if (CreatureInfoCodex.cache0 == null)
+			List<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod> list3 = list2;
+			if (CreatureInfoCodex.cache1 == null)
 			{
-				CreatureInfoCodex.cache0 = new Comparison<CreatureInfoCodex.SortData>(CreatureInfoCodex.SortData.Compare);
+				CreatureInfoCodex.cache1 = new Comparison<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod>(LobotomyBaseMod.CreatureInfoCodex_SortData_Mod.Compare);
 			}
-			list3.Sort(CreatureInfoCodex.cache0);
-			this.displayList.Clear();
-			foreach (CreatureInfoCodex.SortData sortData in list2)
+			list3.Sort(CreatureInfoCodex.cache1);
+			this.displayList_Mod.Clear();
+			foreach (LobotomyBaseMod.CreatureInfoCodex_SortData_Mod sortData in list2)
 			{
-				this.displayList.Add(sortData.id);
+				this.displayList_Mod.Add(sortData.id);
 			}
-			int num3 = this.displayList.Count % 15;
-			this.maxDisplayIndex = this.displayList.Count / 15;
+			int num3 = this.displayList_Mod.Count % 15;
+			this.maxDisplayIndex = this.displayList_Mod.Count / 15;
 			if (num3 == 0)
 			{
 				this.maxDisplayIndex--;
@@ -214,17 +218,17 @@ namespace CreatureInfo
 
 		// Token: 0x06005375 RID: 21365 RVA: 0x001E6428 File Offset: 0x001E4628
 		private void Clear()
-		{
-			foreach (GameObject gameObject in this.slotDic.Values)
+		{ // <Patch>
+			foreach (GameObject gameObject in this.slotDic_Mod.Values)
 			{
 				UnityEngine.Object.Destroy(gameObject.gameObject);
 			}
-			this.slotDic.Clear();
+			this.slotDic_Mod.Clear();
 		}
 
 		// Token: 0x06005376 RID: 21366 RVA: 0x001E6498 File Offset: 0x001E4698
 		public void SetList(int index)
-		{
+		{ // <Patch>
 			if (index < 0)
 			{
 				return;
@@ -239,9 +243,9 @@ namespace CreatureInfo
 			int num2 = num + 15;
 			for (int i = num; i < num2; i++)
 			{
-				if (i < this.displayList.Count)
+				if (i < this.displayList_Mod.Count)
 				{
-					GameObject gameObject = this.slotDic[this.displayList[i]];
+					GameObject gameObject = this.slotDic_Mod[this.displayList_Mod[i]];
 					gameObject.transform.SetParent(this._layout);
 				}
 			}
@@ -319,79 +323,79 @@ namespace CreatureInfo
 
 		// Token: 0x0600537B RID: 21371 RVA: 0x001E66C8 File Offset: 0x001E48C8
 		private int GetCurrentDisplayedIndex()
-		{
-			long currentMetaId = CreatureInfoWindow.CurrentWindow.CurrentMetaId;
+		{ // <Patch>
+			LobotomyBaseMod.LcIdLong currentMetaId = CreatureInfoWindow.CurrentWindow.CurrentMetaIdMod;
 			if (currentMetaId == -1L)
 			{
 				return -1;
 			}
-			if (!this.displayList.Contains(currentMetaId))
+			if (!this.displayList_Mod.Contains(currentMetaId))
 			{
 				return -1;
 			}
-			return this.displayList.IndexOf(currentMetaId);
+			return this.displayList_Mod.IndexOf(currentMetaId);
 		}
 
 		// Token: 0x0600537C RID: 21372 RVA: 0x001E670C File Offset: 0x001E490C
 		public void MoveNext()
-		{
+		{ // <Patch>
 			int num = this.GetCurrentDisplayedIndex();
-			if (num == this.displayList.Count - 1)
+			if (num == this.displayList_Mod.Count - 1)
 			{
 				return;
 			}
-			long metaId = this.displayList[++num];
-			while (!this.CheckIdValidation(metaId))
+			LobotomyBaseMod.LcIdLong metaId = this.displayList_Mod[++num];
+			while (!this.CheckIdValidation_Mod(metaId))
 			{
 				try
 				{
-					metaId = this.displayList[++num];
+					metaId = this.displayList_Mod[++num];
 				}
 				catch (Exception ex)
 				{
 					return;
 				}
 			}
-			CreatureInfoWindow.CurrentWindow.OpenCodexCreatureInfo(metaId);
+			CreatureInfoWindow.CurrentWindow.OpenCodexCreatureInfo_Mod(metaId);
 			CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(3);
 			this.UpdateArrow(num);
 		}
 
 		// Token: 0x0600537D RID: 21373 RVA: 0x001E67A4 File Offset: 0x001E49A4
 		public void MovePrev()
-		{
+		{ // <Patch>
 			int num = this.GetCurrentDisplayedIndex();
 			if (num == 0)
 			{
 				return;
 			}
-			long metaId = this.displayList[--num];
-			while (!this.CheckIdValidation(metaId))
+			LobotomyBaseMod.LcIdLong metaId = this.displayList_Mod[--num];
+			while (!this.CheckIdValidation_Mod(metaId))
 			{
 				try
 				{
-					metaId = this.displayList[--num];
+					metaId = this.displayList_Mod[--num];
 				}
 				catch (Exception ex)
 				{
 					return;
 				}
 			}
-			CreatureInfoWindow.CurrentWindow.OpenCodexCreatureInfo(metaId);
+			CreatureInfoWindow.CurrentWindow.OpenCodexCreatureInfo_Mod(metaId);
 			CreatureInfoWindow.CurrentWindow.audioClipPlayer.OnPlayInList(3);
 			this.UpdateArrow(num);
 		}
 
 		// Token: 0x0600537E RID: 21374 RVA: 0x001E6830 File Offset: 0x001E4A30
 		private void UpdateArrow(int current)
-		{
+		{ // <Patch>
 			CreatureInfoWindow.CurrentWindow.PrevCodex.interactable = true;
 			CreatureInfoWindow.CurrentWindow.NextCodex.interactable = true;
 			if (current == 0)
 			{
 				CreatureInfoWindow.CurrentWindow.PrevCodex.interactable = false;
 			}
-			else if (current == this.displayList.Count - 1)
+			else if (current == this.displayList_Mod.Count - 1)
 			{
 				CreatureInfoWindow.CurrentWindow.NextCodex.interactable = false;
 			}
@@ -493,6 +497,65 @@ namespace CreatureInfo
 			this.Observation_Percent.text = string.Format("{0}%", num);
 		}
 
+		// <Patch>
+		public bool CheckIdValidation_Mod(LobotomyBaseMod.LcIdLong metaId)
+		{
+			return metaId != CreatureInfoCodex.uniqueId[2];
+		}
+
+		// <Patch>
+		private bool CheckUniqueGeneration_Mod(LobotomyBaseMod.LcIdLong id, List<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod> list, int currentIndex, out int changedIndex)
+		{
+			changedIndex = currentIndex;
+			if (id == CreatureInfoCodex.uniqueId[0])
+			{
+				return false;
+			}
+			if (id == CreatureInfoCodex.uniqueId[3])
+			{
+				return false;
+			}
+			if (id == CreatureInfoCodex.uniqueId[4])
+			{
+				CreatureTypeInfo data = CreatureTypeList.instance.GetData(CreatureInfoCodex.uniqueId[3]);
+				CreatureObserveInfoModel observeInfo = CreatureManager.instance.GetObserveInfo(CreatureInfoCodex.uniqueId[3]);
+				if (!observeInfo.IsMaxObserved())
+				{
+					observeInfo.ObserveAll(new string[0]);
+				}
+				this.GenerateSlot_Mod(list, observeInfo, data, currentIndex);
+				changedIndex = currentIndex + 1;
+			}
+			return true;
+		}
+
+		// <Patch>
+		private void GenerateSlot_Mod(List<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod> sort, CreatureObserveInfoModel info, CreatureTypeInfo typeInfo, int index)
+		{
+			LobotomyBaseMod.LcIdLong lcIdLong = new LobotomyBaseMod.LcIdLong(CreatureTypeList.instance.GetModId(typeInfo), typeInfo.id);
+			LobotomyBaseMod.CreatureInfoCodex_SortData_Mod item = new LobotomyBaseMod.CreatureInfoCodex_SortData_Mod
+			{
+				index = index,
+				id = lcIdLong
+			};
+			sort.Add(item);
+			GameObject gameObject;
+			if (lcIdLong.packageId == string.Empty && CreatureGenerateInfo.IsCreditCreature(typeInfo.id))
+			{
+				gameObject = UnityEngine.Object.Instantiate<GameObject>(this._creditSlot);
+			}
+			else
+			{
+				gameObject = UnityEngine.Object.Instantiate<GameObject>(this._slot);
+			}
+			gameObject.transform.SetParent(this._disabledLayout);
+			gameObject.transform.localScale = Vector3.one;
+			gameObject.transform.localPosition = Vector3.zero;
+			this.slotDic_Mod.Add(info.lcid, gameObject);
+			CreatureInfoCodexSlot component = gameObject.GetComponent<CreatureInfoCodexSlot>();
+			component.Init(typeInfo, info);
+		}
+
 		// Token: 0x04004CC9 RID: 19657
 		public GameObject _activeControl;
 
@@ -586,6 +649,18 @@ namespace CreatureInfo
 		// Token: 0x04004CE4 RID: 19684
 		[CompilerGenerated]
 		private static Comparison<CreatureInfoCodex.SortData> f__mg_cache0;
+
+		// <Patch>
+		[NonSerialized]
+		private Dictionary<LobotomyBaseMod.LcIdLong, GameObject> slotDic_Mod = new Dictionary<LobotomyBaseMod.LcIdLong, GameObject>();
+
+		// <Patch>
+		[NonSerialized]
+		private List<LobotomyBaseMod.LcIdLong> displayList_Mod = new List<LobotomyBaseMod.LcIdLong>();
+
+		// <Patch>
+		[NonSerialized]
+		private static Comparison<LobotomyBaseMod.CreatureInfoCodex_SortData_Mod> cache1;
 
 		// Token: 0x02000ACD RID: 2765
 		public class SortData

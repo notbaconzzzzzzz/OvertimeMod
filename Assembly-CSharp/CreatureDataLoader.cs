@@ -1,9 +1,14 @@
+/*
+private void LoadCreatureStat(XmlNode stat, XmlNode statCreature, CreatureTypeInfo model) // (!) 
+private void LoadCreatureStat_Mod(XmlNode stat, XmlNode statCreature, CreatureTypeInfo model, string modid) // 
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using LobotomyBaseMod; // 
 using UnityEngine;
 
 // Token: 0x0200051C RID: 1308
@@ -16,7 +21,199 @@ public class CreatureDataLoader
 
 	// Token: 0x06002E73 RID: 11891 RVA: 0x00135F9C File Offset: 0x0013419C
 	public void Load()
-	{
+	{ // <Patch>
+		LobotomyBaseMod.ModDebug.Log("CDL Load 1");
+		try
+		{
+			LobotomyBaseMod.ModDebug.Log("CDL Load 2");
+			FieldInfo field = typeof(CreatureGenerateInfo).GetField("all", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			List<long> list = new List<long>();
+			List<LobotomyBaseMod.LcIdLong> list2 = new List<LobotomyBaseMod.LcIdLong>();
+			string xml = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseCreatureGen.xml");
+			XmlDocument xmlDocument = new XmlDocument();
+			xmlDocument.LoadXml(xml);
+			foreach (object obj in xmlDocument.SelectNodes("/All/id"))
+			{
+				long item = (long)int.Parse(((XmlNode)obj).InnerText);
+				list.Add(item);
+			}
+			foreach (ModInfo modInfo in Add_On.instance.ModList)
+			{
+				DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(modInfo.modpath, "Creature");
+				bool flag = directoryInfo != null && Directory.Exists(directoryInfo.FullName + "/CreatureGen");
+				if (flag)
+				{
+					DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/CreatureGen");
+					bool flag2 = directoryInfo2.GetFiles().Length != 0;
+					if (flag2)
+					{
+						foreach (FileInfo fileInfo in directoryInfo2.GetFiles())
+						{
+							bool flag3 = fileInfo.Name.Contains(".xml") || fileInfo.Name.Contains(".txt");
+							if (flag3)
+							{
+								xml = File.ReadAllText(fileInfo.FullName);
+								XmlDocument xmlDocument2 = new XmlDocument();
+								xmlDocument2.LoadXml(xml);
+								bool flag4 = modInfo.modid == string.Empty;
+								if (flag4)
+								{
+									foreach (object obj2 in xmlDocument2.SelectNodes("/All/add"))
+									{
+										long item2 = (long)int.Parse(((XmlNode)obj2).InnerText);
+										list.Add(item2);
+									}
+									foreach (object obj3 in xmlDocument2.SelectNodes("/All/remove"))
+									{
+										long item3 = (long)int.Parse(((XmlNode)obj3).InnerText);
+										list.Remove(item3);
+									}
+								}
+								else
+								{
+									foreach (object obj4 in xmlDocument2.SelectNodes("/All/add"))
+									{
+										long id = (long)int.Parse(((XmlNode)obj4).InnerText);
+										LobotomyBaseMod.LcIdLong item4 = new LobotomyBaseMod.LcIdLong(modInfo.modid, id);
+										list2.Add(item4);
+									}
+									foreach (object obj5 in xmlDocument2.SelectNodes("/All/remove"))
+									{
+										long id2 = (long)int.Parse(((XmlNode)obj5).InnerText);
+										LobotomyBaseMod.LcIdLong item5 = new LobotomyBaseMod.LcIdLong(modInfo.modid, id2);
+										list2.Remove(item5);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			LobotomyBaseMod.ModDebug.Log("CDL Load 3");
+			field.SetValue(null, list.ToArray());
+			CreatureGenerateInfo.all_mod = list2;
+			bool flag5 = !EquipmentTypeList.instance.loaded;
+			if (flag5)
+			{
+				LobotomyBaseMod.ModDebug.Log("LoadCreatureList >> EquipmentTypeList must be loaded. ");
+			}
+			this.currentLn = GlobalGameManager.instance.GetCurrentLanguage();
+			string xml2 = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseList.txt");
+			XmlDocument xmlDocument3 = new XmlDocument();
+			xmlDocument3.LoadXml(xml2);
+			XmlNodeList xmlNodeList = xmlDocument3.SelectNodes("/creature_list/creature");
+			List<CreatureTypeInfo> list3 = new List<CreatureTypeInfo>();
+			Dictionary<string, List<CreatureTypeInfo>> dictionary = new Dictionary<string, List<CreatureTypeInfo>>();
+			List<CreatureSpecialSkillTipTable> list4 = new List<CreatureSpecialSkillTipTable>();
+			Dictionary<string, List<CreatureSpecialSkillTipTable>> dictionary2 = new Dictionary<string, List<CreatureSpecialSkillTipTable>>();
+			Dictionary<long, int> dictionary3 = new Dictionary<long, int>();
+			Loading(xmlNodeList, list3, list4, dictionary3, false);
+			LobotomyBaseMod.ModDebug.Log("CDL Load 4");
+			foreach (ModInfo modInfo2 in Add_On.instance.ModList)
+			{
+				DirectoryInfo directoryInfo3 = EquipmentDataLoader.CheckNamedDir(modInfo2.modpath, "Creature");
+				bool flag6 = directoryInfo3 != null && Directory.Exists(directoryInfo3.FullName + "/CreatureList");
+				if (flag6)
+				{
+					DirectoryInfo directoryInfo4 = new DirectoryInfo(directoryInfo3.FullName + "/CreatureList");
+					bool flag7 = directoryInfo4.GetFiles().Length != 0;
+					if (flag7)
+					{
+						bool flag8 = modInfo2.modid != string.Empty;
+						if (flag8)
+						{
+							dictionary[modInfo2.modid] = new List<CreatureTypeInfo>();
+							dictionary2[modInfo2.modid] = new List<CreatureSpecialSkillTipTable>();
+						}
+						foreach (FileInfo fileInfo2 in directoryInfo4.GetFiles())
+						{
+							bool flag9 = fileInfo2.Name.Contains(".txt") || fileInfo2.Name.Contains(".xml");
+							if (flag9)
+							{
+								bool flag10 = modInfo2.modid == string.Empty;
+								if (flag10)
+								{
+									XmlDocument xmlDocument4 = new XmlDocument();
+									xmlDocument4.LoadXml(File.ReadAllText(fileInfo2.FullName));
+									XmlNodeList xmlNodeList2 = xmlDocument4.SelectNodes("/creature_list/creature");
+									List<CreatureTypeInfo> list5 = new List<CreatureTypeInfo>();
+									List<CreatureSpecialSkillTipTable> list6 = new List<CreatureSpecialSkillTipTable>();
+									Dictionary<long, int> dictionary4 = new Dictionary<long, int>();
+									Loading(xmlNodeList2, list5, list6, dictionary4, true);
+									foreach (KeyValuePair<long, int> keyValuePair in dictionary4)
+									{
+										bool flag11 = dictionary3.ContainsKey(keyValuePair.Key);
+										if (flag11)
+										{
+											for (int k = 0; k < list3.Count; k++)
+											{
+												dictionary3.Remove(keyValuePair.Key);
+												dictionary3.Add(keyValuePair.Key, keyValuePair.Value);
+											}
+										}
+									}
+									foreach (CreatureTypeInfo creatureTypeInfo in list5)
+									{
+										foreach (CreatureTypeInfo creatureTypeInfo2 in list3)
+										{
+											bool flag12 = creatureTypeInfo.id == creatureTypeInfo2.id;
+											if (flag12)
+											{
+												list3.Remove(creatureTypeInfo2);
+												break;
+											}
+										}
+										list3.Add(creatureTypeInfo);
+									}
+									foreach (CreatureSpecialSkillTipTable creatureSpecialSkillTipTable in list6)
+									{
+										foreach (CreatureSpecialSkillTipTable creatureSpecialSkillTipTable2 in list4)
+										{
+											bool flag13 = creatureSpecialSkillTipTable2.creatureTypeId == creatureSpecialSkillTipTable.creatureTypeId;
+											if (flag13)
+											{
+												list4.Remove(creatureSpecialSkillTipTable2);
+												break;
+											}
+										}
+										list4.Add(creatureSpecialSkillTipTable);
+									}
+								}
+								else
+								{
+									XmlDocument xmlDocument5 = new XmlDocument();
+									xmlDocument5.LoadXml(File.ReadAllText(fileInfo2.FullName));
+									XmlNodeList xmlNodeList3 = xmlDocument5.SelectNodes("/creature_list/creature");
+									List<CreatureTypeInfo> list7 = new List<CreatureTypeInfo>();
+									List<CreatureSpecialSkillTipTable> list8 = new List<CreatureSpecialSkillTipTable>();
+									Dictionary<long, int> specialTipSize = new Dictionary<long, int>();
+									this.Loading_Mod(xmlNodeList3, list7, list8, specialTipSize, modInfo2.modid);
+									foreach (CreatureTypeInfo creatureTypeInfo3 in list7)
+									{
+										creatureTypeInfo3.modid = modInfo2.modid;
+									}
+									foreach (CreatureSpecialSkillTipTable creatureSpecialSkillTipTable3 in list8)
+									{
+										creatureSpecialSkillTipTable3.modid = modInfo2.modid;
+									}
+									dictionary[modInfo2.modid].AddRange(list7);
+									dictionary2[modInfo2.modid].AddRange(list8);
+								}
+							}
+						}
+					}
+				}
+			}
+			LobotomyBaseMod.ModDebug.Log("CDL Load 5");
+			CreatureTypeList.instance.Init_Mod(dictionary, dictionary2);
+			CreatureTypeList.instance.Init(list3.ToArray(), list4.ToArray(), dictionary3);
+			LobotomyBaseMod.ModDebug.Log("CDL Load 6");
+		}
+		catch (Exception ex)
+		{
+			LobotomyBaseMod.ModDebug.Log("CDLerror - " + ex.Message + Environment.NewLine + ex.StackTrace);
+		}
+		/*
 		try
 		{
 			FieldInfo field = typeof(CreatureGenerateInfo).GetField("all", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
@@ -137,16 +334,22 @@ public class CreatureDataLoader
 		catch (Exception ex)
 		{
 			File.WriteAllText(Application.dataPath + "/BaseMods/CDLerror.txt", ex.Message + Environment.NewLine + ex.StackTrace);
-		}
+		}*/
 	}
 
 	// Token: 0x06002E74 RID: 11892 RVA: 0x00136658 File Offset: 0x00134858
 	private void LoadCreatureStat(XmlNode stat, XmlNode statCreature, CreatureTypeInfo model)
-	{
+	{ // <Mod> initialize gifts with a reference to the abnormality that they belong to
 		XmlNode xmlNode;
 		if ((xmlNode = statCreature.SelectSingleNode("script")) != null)
 		{
 			model.script = xmlNode.InnerText;
+		}
+		XmlNode xmlNode32;
+		if ((xmlNode32 = stat.SelectSingleNode("riskLevel")) != null)
+		{
+			string innerText = xmlNode32.InnerText;
+			model._riskLevel = int.Parse(innerText);
 		}
 		XmlNode xmlNode2;
 		if ((xmlNode2 = statCreature.SelectSingleNode("workAnim")) != null)
@@ -549,6 +752,7 @@ public class CreatureDataLoader
 				{
 					creatureEquipmentMakeInfo.prob = float.Parse(namedItem5.InnerText);
 				}
+				creatureEquipmentMakeInfo.creature = model; // 
 				list4.Add(creatureEquipmentMakeInfo);
 			}
 		}
@@ -626,6 +830,7 @@ public class CreatureDataLoader
 		XmlNode xmlNode4 = doc.SelectSingleNode("/creature/child");
 		CreatureTypeInfo creatureTypeInfo = new CreatureTypeInfo();
 		creatureTypeInfo.id = long.Parse(xmlNode.Attributes.GetNamedItem("id").InnerText);
+		LobotomyBaseMod.ModDebug.Log(creatureTypeInfo.id.ToString());
 		ChildCreatureData childCreatureData = new ChildCreatureData();
 		if (xmlNode4 != null)
 		{
@@ -1507,6 +1712,802 @@ public class CreatureDataLoader
 			}
 		}
 		CreatureTypeList.instance.Init(list.ToArray(), list2.ToArray(), dictionary);
+	}
+
+	// <Patch>
+	private void LoadCreatureStat_Mod(XmlNode stat, XmlNode statCreature, CreatureTypeInfo model, string modid)
+	{ // <Mod>
+		XmlNode xmlNode;
+		bool flag = (xmlNode = statCreature.SelectSingleNode("script")) != null;
+		if (flag)
+		{
+			model.script = xmlNode.InnerText;
+		}
+		XmlNode xmlNode32;
+		if ((xmlNode32 = stat.SelectSingleNode("riskLevel")) != null)
+		{
+			string innerText = xmlNode32.InnerText;
+			model._riskLevel = int.Parse(innerText);
+		}
+		XmlNode xmlNode2;
+		bool flag2 = (xmlNode2 = statCreature.SelectSingleNode("workAnim")) != null;
+		if (flag2)
+		{
+			model.workAnim = xmlNode2.InnerText;
+			XmlNode namedItem = xmlNode2.Attributes.GetNamedItem("face");
+			bool flag3 = namedItem != null;
+			if (flag3)
+			{
+				model.workAnimFace = namedItem.InnerText;
+			}
+		}
+		XmlNode xmlNode3;
+		bool flag4 = (xmlNode3 = statCreature.SelectSingleNode("kitIcon")) != null;
+		if (flag4)
+		{
+			model.kitIconSrc = xmlNode3.InnerText;
+		}
+		XmlNode xmlNode4;
+		bool flag5 = (xmlNode4 = stat.SelectSingleNode("workType")) != null;
+		if (flag5)
+		{
+			string innerText = xmlNode4.InnerText;
+			bool flag6 = innerText != null;
+			if (flag6)
+			{
+				bool flag7 = !(innerText == "normal");
+				if (flag7)
+				{
+					bool flag8 = innerText == "kit";
+					if (flag8)
+					{
+						model.creatureWorkType = CreatureWorkType.KIT;
+					}
+				}
+				else
+				{
+					model.creatureWorkType = CreatureWorkType.NORMAL;
+				}
+			}
+		}
+		XmlNode xmlNode5;
+		bool flag9 = (xmlNode5 = stat.SelectSingleNode("kitType")) != null;
+		if (flag9)
+		{
+			string innerText2 = xmlNode5.InnerText;
+			bool flag10 = innerText2 != null;
+			if (flag10)
+			{
+				bool flag11 = !(innerText2 == "equip");
+				if (flag11)
+				{
+					bool flag12 = !(innerText2 == "channel");
+					if (flag12)
+					{
+						bool flag13 = innerText2 == "oneshot";
+						if (flag13)
+						{
+							model.creatureKitType = CreatureKitType.ONESHOT;
+						}
+					}
+					else
+					{
+						model.creatureKitType = CreatureKitType.CHANNEL;
+					}
+				}
+				else
+				{
+					model.creatureKitType = CreatureKitType.EQUIP;
+				}
+			}
+		}
+		XmlNode xmlNode6;
+		bool flag14 = (xmlNode6 = stat.SelectSingleNode("qliphoth")) != null;
+		if (flag14)
+		{
+			model.qliphothMax = int.Parse(xmlNode6.InnerText);
+		}
+		XmlNode xmlNode7;
+		bool flag15 = (xmlNode7 = stat.SelectSingleNode("speed")) != null;
+		if (flag15)
+		{
+			model.speed = float.Parse(xmlNode7.InnerText);
+		}
+		XmlNode xmlNode8 = stat.SelectSingleNode("escapeable");
+		bool flag16 = xmlNode8 != null;
+		if (flag16)
+		{
+			bool booleanData = GetBooleanData(xmlNode8.InnerText.Trim());
+			model.isEscapeAble = booleanData;
+		}
+		else
+		{
+			model.isEscapeAble = true;
+		}
+		XmlNode xmlNode9 = stat.SelectSingleNode("hp");
+		bool flag17 = xmlNode9 != null;
+		if (flag17)
+		{
+			model.maxHp = (int)float.Parse(xmlNode9.InnerText);
+		}
+		else
+		{
+			model.maxHp = 5;
+		}
+		IEnumerator enumerator = stat.SelectNodes("workProb").GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				object obj = enumerator.Current;
+				XmlNode xmlNode10 = (XmlNode)obj;
+				RwbpType type = CreatureDataLoader.ConvertToRWBP(xmlNode10.Attributes.GetNamedItem("type").InnerText);
+				IEnumerator enumerator2 = xmlNode10.SelectNodes("prob").GetEnumerator();
+				try
+				{
+					while (enumerator2.MoveNext())
+					{
+						object obj2 = enumerator2.Current;
+						XmlNode xmlNode11 = (XmlNode)obj2;
+						int level = int.Parse(xmlNode11.Attributes.GetNamedItem("level").InnerText);
+						float prob = float.Parse(xmlNode11.InnerText);
+						model.workProbTable.SetWorkProb(type, level, prob);
+					}
+				}
+				finally
+				{
+					IDisposable disposable;
+					bool flag18 = (disposable = (enumerator2 as IDisposable)) != null;
+					if (flag18)
+					{
+						disposable.Dispose();
+					}
+				}
+			}
+		}
+		finally
+		{
+			IDisposable disposable2;
+			bool flag19 = (disposable2 = (enumerator as IDisposable)) != null;
+			if (flag19)
+			{
+				disposable2.Dispose();
+			}
+		}
+		XmlNode xmlNode12 = stat.SelectSingleNode("workCooltime");
+		bool flag20 = xmlNode12 != null;
+		if (flag20)
+		{
+			model.workCooltime = int.Parse(xmlNode12.InnerText);
+		}
+		XmlNode xmlNode13 = stat.SelectSingleNode("workSpeed");
+		bool flag21 = xmlNode13 != null;
+		if (flag21)
+		{
+			model.cubeSpeed = float.Parse(xmlNode13.InnerText);
+		}
+		XmlNode xmlNode14 = statCreature.SelectSingleNode("skillTrigger");
+		bool flag22 = xmlNode14 != null;
+		if (flag22)
+		{
+			LoadSkillTrigger(xmlNode14, model);
+		}
+		Dictionary<string, string> dictionary = new Dictionary<string, string>();
+		IEnumerator enumerator3 = statCreature.SelectNodes("sound").GetEnumerator();
+		try
+		{
+			while (enumerator3.MoveNext())
+			{
+				object obj3 = enumerator3.Current;
+				XmlNode xmlNode15 = (XmlNode)obj3;
+				string innerText3 = xmlNode15.Attributes.GetNamedItem("action").InnerText;
+				string innerText4 = xmlNode15.Attributes.GetNamedItem("src").InnerText;
+				dictionary.Add(innerText3, innerText4);
+			}
+		}
+		finally
+		{
+			IDisposable disposable3;
+			bool flag23 = (disposable3 = (enumerator3 as IDisposable)) != null;
+			if (flag23)
+			{
+				disposable3.Dispose();
+			}
+		}
+		model.soundTable = dictionary;
+		model.nodeInfo = statCreature.SelectNodes("graph/node");
+		model.edgeInfo = statCreature.SelectNodes("graph/edge");
+		XmlNode xmlNode16 = statCreature.SelectSingleNode("anim");
+		bool flag24 = xmlNode16 != null;
+		if (flag24)
+		{
+			model.animSrc = xmlNode16.Attributes.GetNamedItem("prefab").InnerText;
+		}
+		XmlNode xmlNode17 = statCreature.SelectSingleNode("returnImg");
+		bool flag25 = xmlNode17 != null;
+		if (flag25)
+		{
+			model.roomReturnSrc = xmlNode17.Attributes.GetNamedItem("src").InnerText;
+		}
+		else
+		{
+			model.roomReturnSrc = string.Empty;
+		}
+		XmlNode xmlNode18 = stat.SelectSingleNode("feelingStateCubeBounds");
+		bool flag26 = xmlNode18 != null;
+		if (flag26)
+		{
+			List<int> list = new List<int>();
+			IEnumerator enumerator4 = xmlNode18.SelectNodes("cube").GetEnumerator();
+			try
+			{
+				while (enumerator4.MoveNext())
+				{
+					object obj4 = enumerator4.Current;
+					XmlNode xmlNode19 = (XmlNode)obj4;
+					list.Add(int.Parse(xmlNode19.InnerText));
+				}
+			}
+			finally
+			{
+				IDisposable disposable4;
+				bool flag27 = (disposable4 = (enumerator4 as IDisposable)) != null;
+				if (flag27)
+				{
+					disposable4.Dispose();
+				}
+			}
+			model.feelingStateCubeBounds.upperBounds = list.ToArray();
+		}
+		XmlNode xmlNode20 = stat.SelectSingleNode("workDamage");
+		bool flag28 = xmlNode20 != null;
+		if (flag28)
+		{
+			model.workDamage = CreatureDataLoader.ConvertToDamageInfo(xmlNode20);
+		}
+		XmlNode xmlNode21 = stat.SelectSingleNode("specialDamage");
+		bool flag29 = xmlNode21 != null;
+		if (flag29)
+		{
+			Dictionary<string, EquipmentTypeInfo> dictionary2 = new Dictionary<string, EquipmentTypeInfo>();
+			IEnumerator enumerator5 = xmlNode21.ChildNodes.GetEnumerator();
+			try
+			{
+				while (enumerator5.MoveNext())
+				{
+					object obj5 = enumerator5.Current;
+					XmlNode xmlNode22 = (XmlNode)obj5;
+					bool flag30 = xmlNode22.Name == "damage";
+					if (flag30)
+					{
+						string innerText5 = xmlNode22.Attributes.GetNamedItem("id").InnerText;
+						EquipmentTypeInfo value = EquipmentTypeInfo.MakeWeaponInfoByDamageInfo(CreatureDataLoader.ConvertToDamageInfo(xmlNode22));
+						dictionary2.Add(innerText5, value);
+					}
+					else
+					{
+						bool flag31 = xmlNode22.Name == "weapon";
+						if (flag31)
+						{
+							string innerText6 = xmlNode22.Attributes.GetNamedItem("id").InnerText;
+							string innerText7 = xmlNode22.Attributes.GetNamedItem("weaponId").InnerText;
+							EquipmentTypeInfo data = EquipmentTypeList.instance.GetData(int.Parse(innerText7));
+							dictionary2.Add(innerText6, data);
+						}
+					}
+				}
+			}
+			finally
+			{
+				IDisposable disposable5;
+				bool flag32 = (disposable5 = (enumerator5 as IDisposable)) != null;
+				if (flag32)
+				{
+					disposable5.Dispose();
+				}
+			}
+			model.creatureSpecialDamageTable.Init(dictionary2);
+		}
+		Dictionary<string, DefenseInfo> dictionary3 = new Dictionary<string, DefenseInfo>();
+		IEnumerator enumerator6 = stat.SelectNodes("defense").GetEnumerator();
+		try
+		{
+			while (enumerator6.MoveNext())
+			{
+				object obj6 = enumerator6.Current;
+				XmlNode xmlNode23 = (XmlNode)obj6;
+				string innerText8 = xmlNode23.Attributes.GetNamedItem("id").InnerText;
+				DefenseInfo defenseInfo = new DefenseInfo();
+				IEnumerator enumerator7 = xmlNode23.SelectNodes("defenseElement").GetEnumerator();
+				try
+				{
+					while (enumerator7.MoveNext())
+					{
+						object obj7 = enumerator7.Current;
+						XmlNode xmlNode24 = (XmlNode)obj7;
+						string innerText9 = xmlNode24.Attributes.GetNamedItem("type").InnerText;
+						bool flag33 = innerText9 != null;
+						if (flag33)
+						{
+							bool flag34 = !(innerText9 == "R");
+							if (flag34)
+							{
+								bool flag35 = !(innerText9 == "W");
+								if (flag35)
+								{
+									bool flag36 = !(innerText9 == "B");
+									if (flag36)
+									{
+										bool flag37 = innerText9 == "P";
+										if (flag37)
+										{
+											defenseInfo.P = float.Parse(xmlNode24.InnerText);
+										}
+									}
+									else
+									{
+										defenseInfo.B = float.Parse(xmlNode24.InnerText);
+									}
+								}
+								else
+								{
+									defenseInfo.W = float.Parse(xmlNode24.InnerText);
+								}
+							}
+							else
+							{
+								defenseInfo.R = float.Parse(xmlNode24.InnerText);
+							}
+						}
+					}
+				}
+				finally
+				{
+					IDisposable disposable6;
+					bool flag38 = (disposable6 = (enumerator7 as IDisposable)) != null;
+					if (flag38)
+					{
+						disposable6.Dispose();
+					}
+				}
+				dictionary3.Add(innerText8, defenseInfo);
+			}
+		}
+		finally
+		{
+			IDisposable disposable7;
+			bool flag39 = (disposable7 = (enumerator6 as IDisposable)) != null;
+			if (flag39)
+			{
+				disposable7.Dispose();
+			}
+		}
+		model.defenseTable.Init(dictionary3);
+		XmlNode xmlNode25 = stat.SelectSingleNode("observeInfo");
+		bool flag40 = xmlNode25 != null;
+		if (flag40)
+		{
+			List<ObserveInfoData> list2 = new List<ObserveInfoData>();
+			IEnumerator enumerator8 = xmlNode25.SelectNodes("observeElement").GetEnumerator();
+			try
+			{
+				while (enumerator8.MoveNext())
+				{
+					object obj8 = enumerator8.Current;
+					XmlNode xmlNode26 = (XmlNode)obj8;
+					string regionName = xmlNode26.Attributes.GetNamedItem("name").InnerText.Trim();
+					int observeCost = (int)float.Parse(xmlNode26.Attributes.GetNamedItem("cost").InnerText);
+					ObserveInfoData item = new ObserveInfoData
+					{
+						observeCost = observeCost,
+						regionName = regionName
+					};
+					list2.Add(item);
+				}
+			}
+			finally
+			{
+				IDisposable disposable8;
+				bool flag41 = (disposable8 = (enumerator8 as IDisposable)) != null;
+				if (flag41)
+				{
+					disposable8.Dispose();
+				}
+			}
+			model.observeData = list2;
+		}
+		else
+		{
+			List<ObserveInfoData> list3 = new List<ObserveInfoData>();
+			for (int i = 0; i < CreatureModel.regionName.Length; i++)
+			{
+				ObserveInfoData item2 = new ObserveInfoData
+				{
+					observeCost = 0,
+					regionName = CreatureModel.regionName[i]
+				};
+				list3.Add(item2);
+			}
+			for (int j = 0; j < CreatureModel.careTakingRegion.Length; j++)
+			{
+				ObserveInfoData item3 = new ObserveInfoData
+				{
+					observeCost = 0,
+					regionName = CreatureModel.careTakingRegion[j]
+				};
+				list3.Add(item3);
+			}
+			model.observeData = list3;
+		}
+		List<CreatureEquipmentMakeInfo> list4 = new List<CreatureEquipmentMakeInfo>();
+		IEnumerator enumerator9 = stat.SelectNodes("equipment").GetEnumerator();
+		try
+		{
+			while (enumerator9.MoveNext())
+			{
+				object obj9 = enumerator9.Current;
+				XmlNode xmlNode27 = (XmlNode)obj9;
+				XmlNode namedItem2 = xmlNode27.Attributes.GetNamedItem("equipId");
+				XmlNode namedItem3 = xmlNode27.Attributes.GetNamedItem("level");
+				XmlNode namedItem4 = xmlNode27.Attributes.GetNamedItem("cost");
+				XmlNode namedItem5 = xmlNode27.Attributes.GetNamedItem("prob");
+				CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = new CreatureEquipmentMakeInfo();
+				bool flag42 = namedItem2 != null;
+				if (flag42)
+				{
+					int id = int.Parse(namedItem2.InnerText);
+					LobotomyBaseMod.LcId id2 = new LobotomyBaseMod.LcId(modid, id);
+					creatureEquipmentMakeInfo.equipTypeInfo = EquipmentTypeList.instance.GetData_Mod(id2);
+					bool flag43 = creatureEquipmentMakeInfo.equipTypeInfo == null;
+					if (flag43)
+					{
+						continue;
+					}
+				}
+				bool flag44 = namedItem3 != null;
+				if (flag44)
+				{
+					creatureEquipmentMakeInfo.level = int.Parse(namedItem3.InnerText);
+				}
+				bool flag45 = namedItem4 != null;
+				if (flag45)
+				{
+					creatureEquipmentMakeInfo.cost = int.Parse(namedItem4.InnerText);
+				}
+				bool flag46 = namedItem5 != null;
+				if (flag46)
+				{
+					creatureEquipmentMakeInfo.prob = float.Parse(namedItem5.InnerText);
+				}
+				list4.Add(creatureEquipmentMakeInfo);
+				creatureEquipmentMakeInfo.creature = model; // 
+			}
+		}
+		finally
+		{
+			IDisposable disposable9;
+			bool flag47 = (disposable9 = (enumerator9 as IDisposable)) != null;
+			if (flag47)
+			{
+				disposable9.Dispose();
+			}
+		}
+		model.equipMakeInfos = list4;
+		List<CreatureObserveBonusData> list5 = new List<CreatureObserveBonusData>();
+		IEnumerator enumerator10 = stat.SelectNodes("observeBonus").GetEnumerator();
+		try
+		{
+			while (enumerator10.MoveNext())
+			{
+				object obj10 = enumerator10.Current;
+				XmlNode xmlNode28 = (XmlNode)obj10;
+				int level2 = int.Parse(xmlNode28.Attributes.GetNamedItem("level").InnerText);
+				string innerText10 = xmlNode28.Attributes.GetNamedItem("type").InnerText;
+				CreatureObserveBonusData creatureObserveBonusData = new CreatureObserveBonusData();
+				bool flag48 = innerText10 != null;
+				if (flag48)
+				{
+					bool flag49 = !(innerText10 == "prob");
+					if (flag49)
+					{
+						bool flag50 = innerText10 == "speed";
+						if (flag50)
+						{
+							creatureObserveBonusData.bonus = CreatureObserveBonusData.BonusType.SPEED;
+						}
+					}
+					else
+					{
+						creatureObserveBonusData.bonus = CreatureObserveBonusData.BonusType.PROB;
+					}
+				}
+				creatureObserveBonusData.level = level2;
+				creatureObserveBonusData.value = int.Parse(xmlNode28.InnerText);
+				list5.Add(creatureObserveBonusData);
+			}
+		}
+		finally
+		{
+			IDisposable disposable10;
+			bool flag51 = (disposable10 = (enumerator10 as IDisposable)) != null;
+			if (flag51)
+			{
+				disposable10.Dispose();
+			}
+		}
+		model.observeBonus.Init(list5);
+		XmlNode xmlNode29 = stat.SelectSingleNode("maxWorkCount");
+		bool flag52 = xmlNode29 != null;
+		if (flag52)
+		{
+			model.maxWorkCount = int.Parse(xmlNode29.InnerText);
+		}
+		XmlNode xmlNode30 = stat.SelectSingleNode("maxProbReductionCounter");
+		bool flag53 = xmlNode30 != null;
+		if (flag53)
+		{
+			model.maxProbReductionCounter = int.Parse(xmlNode30.InnerText);
+		}
+		XmlNode xmlNode31 = stat.SelectSingleNode("probReduction");
+		bool flag54 = xmlNode31 != null;
+		if (flag54)
+		{
+			model.probReduction = float.Parse(xmlNode31.InnerText);
+		}
+	}
+
+	// <Patch>
+	public void Loading_Mod(XmlNodeList xmlNodeList, List<CreatureTypeInfo> list, List<CreatureSpecialSkillTipTable> list2, Dictionary<long, int> specialTipSize, string modid)
+	{
+		IEnumerator enumerator = xmlNodeList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				object obj = enumerator.Current;
+				XmlNode xmlNode = (XmlNode)obj;
+				string innerText = xmlNode.Attributes.GetNamedItem("src").InnerText;
+				string xml = "";
+				foreach (DirectoryInfo dir in Add_On.instance.DirList)
+				{
+					bool flag = false;
+					DirectoryInfo directoryInfo = EquipmentDataLoader.CheckNamedDir(dir, "Creature");
+					bool flag2 = directoryInfo != null && Directory.Exists(directoryInfo.FullName + "/Creatures");
+					if (flag2)
+					{
+						DirectoryInfo directoryInfo2 = new DirectoryInfo(directoryInfo.FullName + "/Creatures");
+						bool flag3 = directoryInfo2.GetFiles().Length != 0;
+						if (flag3)
+						{
+							FileInfo[] files = directoryInfo2.GetFiles();
+							foreach (FileInfo fileInfo in files)
+							{
+								bool flag4 = fileInfo.Name == xmlNode.SelectSingleNode("stat").InnerText + ".txt" || fileInfo.Name == xmlNode.SelectSingleNode("stat").InnerText + ".xml";
+								if (flag4)
+								{
+									xml = File.ReadAllText(fileInfo.FullName);
+									flag = true;
+									break;
+								}
+							}
+						}
+					}
+					bool flag5 = flag;
+					if (flag5)
+					{
+						break;
+					}
+				}
+				XmlDocument xmlDocument = new XmlDocument();
+				XmlDocument doc = LoadDoc(innerText, this.currentLn, true);
+				xmlDocument.LoadXml(xml);
+				ChildCreatureData data = null;
+				CreatureTypeInfo creatureTypeInfo = LoadCreatureTypeInfo(doc, ref list2, ref specialTipSize, out data);
+				XmlNode xmlNode2 = xmlDocument.SelectSingleNode("creature");
+				XmlNode stat = xmlDocument.SelectSingleNode("creature/stat");
+				XmlNode xmlNode3 = xmlNode2.SelectSingleNode("child");
+				this.LoadCreatureStat_Mod(stat, xmlNode2, creatureTypeInfo, modid);
+				bool flag6 = xmlNode3 != null;
+				if (flag6)
+				{
+					string innerText2 = xmlNode3.InnerText;
+					string text = "";
+					foreach (DirectoryInfo directoryInfo3 in Add_On.instance.DirList)
+					{
+						bool flag7 = !Directory.Exists(directoryInfo3.FullName + "/Creature/Creatures");
+						if (!flag7)
+						{
+							FileInfo[] files2 = new DirectoryInfo(directoryInfo3.FullName + "/Creature/Creatures").GetFiles();
+							foreach (FileInfo fileInfo2 in files2)
+							{
+								bool flag8 = fileInfo2.Name == innerText2 + ".txt" || fileInfo2.Name == innerText2 + ".xml";
+								if (flag8)
+								{
+									text = File.ReadAllText(fileInfo2.FullName);
+									break;
+								}
+							}
+							bool flag9 = text != "";
+							if (flag9)
+							{
+								break;
+							}
+						}
+					}
+					bool flag10 = text == "";
+					if (flag10)
+					{
+						bool flag11 = !File.Exists(Application.dataPath + "/Managed/BaseMod/BaseCreatures/ChildCreatures/" + innerText2 + ".txt");
+						if (flag11)
+						{
+							text = Resources.Load<TextAsset>("xml/creatureStats/" + innerText2).text;
+							File.WriteAllText(Application.dataPath + "/Managed/BaseMod/BaseCreatures/ChildCreatures/" + innerText2 + ".txt", text);
+						}
+						text = File.ReadAllText(Application.dataPath + "/Managed/BaseMod/BaseCreatures/ChildCreatures/" + innerText2 + ".txt");
+					}
+					XmlDocument xmlDocument2 = new XmlDocument();
+					xmlDocument2.LoadXml(text);
+					ChildCreatureTypeInfo childCreatureTypeInfo = new ChildCreatureTypeInfo();
+					XmlNode xmlNode4 = xmlDocument2.SelectSingleNode("creature");
+					childCreatureTypeInfo.maxHp = (int)float.Parse(xmlNode4.SelectSingleNode("stat/hp").InnerText);
+					childCreatureTypeInfo.speed = float.Parse(xmlNode4.SelectSingleNode("stat/speed").InnerText);
+					XmlNode xmlNode5 = xmlNode4.SelectSingleNode("anim");
+					bool flag12 = xmlNode5 != null;
+					if (flag12)
+					{
+						childCreatureTypeInfo.animSrc = xmlNode5.Attributes.GetNamedItem("prefab").InnerText;
+					}
+					XmlNode xmlNode6 = xmlNode4.SelectSingleNode("riskLevel");
+					bool flag13 = xmlNode6 != null;
+					if (flag13)
+					{
+						int riskLevelOpen = (int)float.Parse(xmlNode6.Attributes.GetNamedItem("openLevel").InnerText);
+						string innerText3 = xmlNode6.InnerText;
+						childCreatureTypeInfo.riskLevelOpen = riskLevelOpen;
+						childCreatureTypeInfo._riskLevel = innerText3;
+					}
+					XmlNode xmlNode7 = xmlNode4.SelectSingleNode("attackType");
+					bool flag14 = xmlNode7 != null;
+					if (flag14)
+					{
+						int attackTypeOpen = (int)float.Parse(xmlNode7.Attributes.GetNamedItem("openLevel").InnerText);
+						string innerText4 = xmlNode7.InnerText;
+						childCreatureTypeInfo.attackTypeOpen = attackTypeOpen;
+						childCreatureTypeInfo._attackType = innerText4;
+					}
+					Dictionary<string, DefenseInfo> dictionary = new Dictionary<string, DefenseInfo>();
+					IEnumerator enumerator4 = xmlNode4.SelectNodes("stat/defense").GetEnumerator();
+					try
+					{
+						while (enumerator4.MoveNext())
+						{
+							object obj2 = enumerator4.Current;
+							XmlNode xmlNode8 = (XmlNode)obj2;
+							string innerText5 = xmlNode8.Attributes.GetNamedItem("id").InnerText;
+							DefenseInfo defenseInfo = new DefenseInfo();
+							IEnumerator enumerator5 = xmlNode8.SelectNodes("defenseElement").GetEnumerator();
+							try
+							{
+								while (enumerator5.MoveNext())
+								{
+									object obj3 = enumerator5.Current;
+									XmlNode xmlNode9 = (XmlNode)obj3;
+									string innerText6 = xmlNode9.Attributes.GetNamedItem("type").InnerText;
+									string a = innerText6;
+									if (!(a == "P"))
+									{
+										if (!(a == "B"))
+										{
+											if (!(a == "W"))
+											{
+												if (a == "R")
+												{
+													defenseInfo.R = float.Parse(xmlNode9.InnerText);
+												}
+											}
+											else
+											{
+												defenseInfo.W = float.Parse(xmlNode9.InnerText);
+											}
+										}
+										else
+										{
+											defenseInfo.B = float.Parse(xmlNode9.InnerText);
+										}
+									}
+									else
+									{
+										defenseInfo.P = float.Parse(xmlNode9.InnerText);
+									}
+								}
+							}
+							finally
+							{
+								IDisposable disposable;
+								bool flag15 = (disposable = (enumerator5 as IDisposable)) != null;
+								if (flag15)
+								{
+									disposable.Dispose();
+								}
+							}
+							dictionary.Add(innerText5, defenseInfo);
+						}
+					}
+					finally
+					{
+						IDisposable disposable2;
+						bool flag16 = (disposable2 = (enumerator4 as IDisposable)) != null;
+						if (flag16)
+						{
+							disposable2.Dispose();
+						}
+					}
+					childCreatureTypeInfo.defenseTable.Init(dictionary);
+					XmlNode xmlNode10 = xmlNode4.SelectSingleNode("script");
+					bool flag17 = xmlNode10 != null;
+					if (flag17)
+					{
+						childCreatureTypeInfo.script = xmlNode10.InnerText;
+					}
+					XmlNode xmlNode11 = xmlNode4.SelectSingleNode("portrait");
+					bool flag18 = xmlNode11 != null;
+					if (flag18)
+					{
+						childCreatureTypeInfo._tempPortrait = xmlNode11.InnerText.Trim();
+						childCreatureTypeInfo._isChildAndHasData = true;
+					}
+					XmlNode xmlNode12 = xmlNode4.SelectSingleNode("metaInfo");
+					bool flag19 = xmlNode12 != null;
+					if (flag19)
+					{
+						string innerText7 = xmlNode12.InnerText;
+						CreatureTypeInfo creatureTypeInfo2 = LoadChildMeta(innerText7, ref list2, ref specialTipSize, true);
+						XmlNode statCreature = xmlNode4;
+						XmlNode stat2 = xmlNode4.SelectSingleNode("stat");
+						this.LoadCreatureStat_Mod(stat2, statCreature, creatureTypeInfo2, modid);
+						list.Add(creatureTypeInfo2);
+						childCreatureTypeInfo.id = creatureTypeInfo2.id;
+						childCreatureTypeInfo.isHasBaseMeta = true;
+					}
+					XmlNodeList xmlNodeList2 = xmlNode4.SelectNodes("sound");
+					Dictionary<string, string> dictionary2 = new Dictionary<string, string>();
+					IEnumerator enumerator6 = xmlNodeList2.GetEnumerator();
+					try
+					{
+						while (enumerator6.MoveNext())
+						{
+							object obj4 = enumerator6.Current;
+							XmlNode xmlNode13 = (XmlNode)obj4;
+							string innerText8 = xmlNode13.Attributes.GetNamedItem("action").InnerText;
+							string innerText9 = xmlNode13.Attributes.GetNamedItem("src").InnerText;
+							dictionary2.Add(innerText8, innerText9);
+						}
+					}
+					finally
+					{
+						IDisposable disposable3;
+						bool flag20 = (disposable3 = (enumerator6 as IDisposable)) != null;
+						if (flag20)
+						{
+							disposable3.Dispose();
+						}
+					}
+					childCreatureTypeInfo.soundTable = dictionary2;
+					creatureTypeInfo.childTypeInfo = childCreatureTypeInfo;
+					creatureTypeInfo.childTypeInfo.data = data;
+				}
+				list.Add(creatureTypeInfo);
+			}
+		}
+		finally
+		{
+			IDisposable disposable4;
+			bool flag21 = (disposable4 = (enumerator as IDisposable)) != null;
+			if (flag21)
+			{
+				disposable4.Dispose();
+			}
+		}
 	}
 
 	// Token: 0x04002C19 RID: 11289

@@ -1,3 +1,8 @@
+/*
+public void OnGiveDamage(UnitModel actor) // If the initial target of an attack isn't in range, hit the closest unit in range
+public static WeaponModel MakeWeapon(EquipmentTypeInfo info) // 
++public Queue<DamageInfo> GetDamageQueue() // 
+*/
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -42,7 +47,7 @@ public class WeaponModel : EquipmentModel
 
 	// Token: 0x060036E7 RID: 14055 RVA: 0x00163690 File Offset: 0x00161890
 	public string OnAttack(UnitModel actor, UnitModel target)
-	{
+	{ // <Patch>
 		this.fireEffectRunned = false;
 		this.remainDelay = 8f;
 		this.currentTarget = target;
@@ -50,7 +55,7 @@ public class WeaponModel : EquipmentModel
 		this._currentDamageInfos = new Queue<DamageInfo>(weaponDamageInfo.dmgs);
 		if (weaponDamageInfo.dmgs[0].soundInfo != null && weaponDamageInfo.dmgs[0].soundInfo.soundType == DamageInfo_EffectType.ANIM_START)
 		{
-			weaponDamageInfo.dmgs[0].soundInfo.PlaySound(target.GetCurrentViewPosition());
+			weaponDamageInfo.dmgs[0].soundInfo.PlaySound_Mod(EquipmentTypeInfo.GetLcId(this.metaInfo).packageId, target.GetCurrentViewPosition());
 		}
 		if (weaponDamageInfo.dmgs[0].effectInfos.Count > 0)
 		{
@@ -96,42 +101,112 @@ public class WeaponModel : EquipmentModel
 
 	// Token: 0x060036EA RID: 14058 RVA: 0x001637D0 File Offset: 0x001619D0
 	public void OnGiveDamage(UnitModel actor)
-	{
+	{ // <Mod>
 		try
 		{
-			if (this.currentTarget != null)
+			this.fireEffectRunned = false;
+			if (this._currentDamageInfos.Count != 0)
 			{
-				this.fireEffectRunned = false;
-				if (this._currentDamageInfos.Count != 0)
+				DamageInfo damageInfo = this._currentDamageInfos.Dequeue();
+				float num = actor.GetDamageFactorByEquipment();
+				if (actor is CreatureModel)
 				{
-					DamageInfo damageInfo = this._currentDamageInfos.Dequeue();
-					float num = actor.GetDamageFactorByEquipment();
-					num *= actor.GetDamageFactorBySefiraAbility();
-					float reinforcementDmg = this.script.GetReinforcementDmg();
-					damageInfo.min = damageInfo.min * num * reinforcementDmg;
-					damageInfo.max = damageInfo.max * num * reinforcementDmg;
-					List<UnitModel> list = new List<UnitModel>();
-					SplashInfo splashInfo = this.metaInfo.splashInfo;
-					if ((splashInfo.type == SplashType.PENETRATION || splashInfo.type == SplashType.SPLASH) && actor.GetMovableNode().GetPassage() != null)
+					num = 1f;
+				}
+				num *= actor.GetDamageFactorBySefiraAbility();
+				float reinforcementDmg = this.script.GetReinforcementDmg();
+				damageInfo.min = damageInfo.min * num * reinforcementDmg;
+				damageInfo.max = damageInfo.max * num * reinforcementDmg;
+				List<UnitModel> list = new List<UnitModel>();
+				SplashInfo splashInfo = this.metaInfo.splashInfo;
+				UnitModel attackTarget = currentTarget;
+				if (attackTarget != null && attackTarget.IsAttackTargetable() && this.InRangeDirectionalAtDamageTime(actor, attackTarget, 2f + metaInfo.range * 0.2f))
+				{
+					DamageInfo damageInfo2 = damageInfo.Copy();
+					bool flag = this.script.OnGiveDamage(actor, attackTarget, ref damageInfo2);
+					if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, attackTarget, ref damageInfo2))
 					{
-						foreach (MovableObjectNode movableObjectNode in actor.GetMovableNode().GetPassage().GetEnteredTargets())
+						flag = false;
+					}
+					if (actor.Equipment.gifts != null && !actor.Equipment.gifts.OnGiveDamage(actor, attackTarget, ref damageInfo2))
+					{
+						flag = false;
+					}
+					if (actor.GetUnitBufList().Count > 0)
+					{
+						using (List<UnitBuf>.Enumerator enumerator2 = actor.GetUnitBufList().GetEnumerator())
 						{
-							UnitModel unit = movableObjectNode.GetUnit();
-							if (unit != null && unit != actor && unit != this.currentTarget && unit.IsAttackTargetable() && (actor.IsHostile(unit) || !splashInfo.iff))
+							while (enumerator2.MoveNext())
 							{
-								list.Add(unit);
+								if (!enumerator2.Current.OnGiveDamage(actor, attackTarget, ref damageInfo2))
+								{
+									flag = false;
+								}
 							}
 						}
 					}
-					if (this.currentTarget.IsAttackTargetable() && this.InRangeDirectionalAtDamageTime(actor, this.currentTarget, 2f))
+					if (flag)
+					{
+						attackTarget.TakeDamage(actor, damageInfo2);
+						this.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
+						if (actor.Equipment.armor != null && actor.Equipment.armor.script != null)
+						{
+							actor.Equipment.armor.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
+						}
+						if (actor.GetUnitBufList().Count > 0)
+						{
+							foreach (UnitBuf unitBuf in actor.GetUnitBufList())
+							{
+								unitBuf.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
+							}
+						}
+						if (attackTarget is WorkerModel && (attackTarget as WorkerModel).IsDead())
+						{
+							this.script.OnKillMainTarget(actor, attackTarget);
+						}
+						this.InvokeEffect(attackTarget, damageInfo2, this.GetDir(actor, attackTarget));
+					}
+				}
+				else if (actor.GetMovableNode().GetPassage() != null)
+				{
+					UnitModel closestUnit = null;
+					float closestDist = metaInfo.range + actor.radius;
+					foreach (MovableObjectNode movableObjectNode in actor.GetMovableNode().GetPassage().GetEnteredTargets())
+					{
+						UnitModel unit = movableObjectNode.GetUnit();
+						if (unit != null && unit != actor && unit.IsAttackTargetable() && (actor.IsHostile(unit) || !splashInfo.iff))
+						{
+							UnitDirection direction = actor.GetMovableNode().GetDirection();
+							float x = actor.GetMovableNode().GetCurrentViewPosition().x;
+							float x2 = unit.GetMovableNode().GetCurrentViewPosition().x;
+							bool flag = x < x2;
+							bool flag2 = x > x2;
+							if (flag && direction == UnitDirection.LEFT)
+							{
+								continue;
+							}
+							if (flag2 && direction == UnitDirection.RIGHT)
+							{
+								continue;
+							}
+							float dist = MovableObjectNode.GetDistance(actor.GetMovableNode(), unit.GetMovableNode()) - unit.radius;
+							if (dist < closestDist)
+							{
+								closestUnit = unit;
+								closestDist = dist;
+							}
+						}
+					}
+					attackTarget = closestUnit;
+					if (attackTarget != null)
 					{
 						DamageInfo damageInfo2 = damageInfo.Copy();
-						bool flag = this.script.OnGiveDamage(actor, this.currentTarget, ref damageInfo2);
-						if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, this.currentTarget, ref damageInfo2))
+						bool flag = this.script.OnGiveDamage(actor, attackTarget, ref damageInfo2);
+						if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, attackTarget, ref damageInfo2))
 						{
 							flag = false;
 						}
-						if (actor.Equipment.gifts != null && !actor.Equipment.gifts.OnGiveDamage(actor, this.currentTarget, ref damageInfo2))
+						if (actor.Equipment.gifts != null && !actor.Equipment.gifts.OnGiveDamage(actor, attackTarget, ref damageInfo2))
 						{
 							flag = false;
 						}
@@ -141,7 +216,7 @@ public class WeaponModel : EquipmentModel
 							{
 								while (enumerator2.MoveNext())
 								{
-									if (!enumerator2.Current.OnGiveDamage(actor, this.currentTarget, ref damageInfo2))
+									if (!enumerator2.Current.OnGiveDamage(actor, attackTarget, ref damageInfo2))
 									{
 										flag = false;
 									}
@@ -150,120 +225,145 @@ public class WeaponModel : EquipmentModel
 						}
 						if (flag)
 						{
-							this.currentTarget.TakeDamage(actor, damageInfo2);
-							this.script.OnGiveDamageAfter(actor, this.currentTarget, damageInfo2);
+							attackTarget.TakeDamage(actor, damageInfo2);
+							this.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 							if (actor.Equipment.armor != null && actor.Equipment.armor.script != null)
 							{
-								actor.Equipment.armor.script.OnGiveDamageAfter(actor, this.currentTarget, damageInfo2);
+								actor.Equipment.armor.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 							}
 							if (actor.GetUnitBufList().Count > 0)
 							{
 								foreach (UnitBuf unitBuf in actor.GetUnitBufList())
 								{
-									unitBuf.OnGiveDamageAfter(actor, this.currentTarget, damageInfo2);
+									unitBuf.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 								}
 							}
-							if (this.currentTarget is WorkerModel && (this.currentTarget as WorkerModel).IsDead())
+							if (attackTarget is WorkerModel && (attackTarget as WorkerModel).IsDead())
 							{
-								this.script.OnKillMainTarget(actor, this.currentTarget);
+								this.script.OnKillMainTarget(actor, attackTarget);
 							}
-							this.InvokeEffect(this.currentTarget, damageInfo2, this.GetDir(actor, this.currentTarget));
+							this.InvokeEffect(attackTarget, damageInfo2, this.GetDir(actor, attackTarget));
 						}
 					}
-					if (splashInfo.type == SplashType.PENETRATION)
+				}
+				if ((splashInfo.type == SplashType.PENETRATION || splashInfo.type == SplashType.SPLASH) && actor.GetMovableNode().GetPassage() != null)
+				{
+					foreach (MovableObjectNode movableObjectNode in actor.GetMovableNode().GetPassage().GetEnteredTargets())
 					{
-						using (List<UnitModel>.Enumerator enumerator4 = list.GetEnumerator())
+						UnitModel unit = movableObjectNode.GetUnit();
+						if (unit != null && unit != actor && unit != attackTarget && unit.IsAttackTargetable() && (actor.IsHostile(unit) || !splashInfo.iff))
 						{
-							while (enumerator4.MoveNext())
-							{
-								UnitModel unitModel = enumerator4.Current;
-								if (unitModel.IsAttackTargetable() && this.InRangeDirectionalAtDamageTime(actor, unitModel, 1f))
-								{
-									DamageInfo damageInfo3 = damageInfo.Copy();
-									bool flag2 = this.script.OnGiveDamage(actor, unitModel, ref damageInfo3);
-									if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, this.currentTarget, ref damageInfo3))
-									{
-										flag2 = false;
-									}
-									if (!actor.Equipment.gifts.OnGiveDamage(actor, this.currentTarget, ref damageInfo3))
-									{
-										flag2 = false;
-									}
-									if (actor.GetUnitBufList().Count > 0)
-									{
-										using (List<UnitBuf>.Enumerator enumerator5 = actor.GetUnitBufList().GetEnumerator())
-										{
-											while (enumerator5.MoveNext())
-											{
-												if (!enumerator5.Current.OnGiveDamage(actor, this.currentTarget, ref damageInfo3))
-												{
-													flag2 = false;
-												}
-											}
-										}
-									}
-									if (flag2)
-									{
-										unitModel.TakeDamage(actor, damageInfo3);
-										this.script.OnGiveDamageAfter(actor, unitModel, damageInfo3);
-										actor.Equipment.armor.script.OnGiveDamageAfter(actor, this.currentTarget, damageInfo3);
-										if (actor.GetUnitBufList().Count > 0)
-										{
-											foreach (UnitBuf unitBuf2 in actor.GetUnitBufList())
-											{
-												unitBuf2.OnGiveDamageAfter(actor, this.currentTarget, damageInfo3);
-											}
-										}
-										this.InvokeEffect(unitModel, damageInfo3, this.GetDir(actor, unitModel));
-									}
-								}
-							}
-							return;
+							list.Add(unit);
 						}
 					}
-					if (this.metaInfo.splashInfo.type == SplashType.SPLASH)
+				}
+				if (splashInfo.type == SplashType.PENETRATION)
+				{
+					using (List<UnitModel>.Enumerator enumerator4 = list.GetEnumerator())
 					{
-						foreach (UnitModel unitModel2 in list)
+						while (enumerator4.MoveNext())
 						{
-							if (unitModel2.IsAttackTargetable() && MovableObjectNode.GetDistance(unitModel2.GetMovableNode(), this.currentTarget.GetMovableNode()) - unitModel2.radius <= this.metaInfo.splashInfo.range)
+							UnitModel unitModel = enumerator4.Current;
+							if (unitModel.IsAttackTargetable() && this.InRangeDirectionalAtDamageTime(actor, unitModel, 1f))
 							{
-								DamageInfo damageInfo4 = damageInfo.Copy();
-								bool flag3 = this.script.OnGiveDamage(actor, unitModel2, ref damageInfo4);
-								if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, this.currentTarget, ref damageInfo4))
+								DamageInfo damageInfo3 = damageInfo.Copy();
+								bool flag2 = this.script.OnGiveDamage(actor, unitModel, ref damageInfo3);
+								if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, unitModel, ref damageInfo3))
 								{
-									flag3 = false;
+									flag2 = false;
 								}
-								if (!actor.Equipment.gifts.OnGiveDamage(actor, this.currentTarget, ref damageInfo4))
+								if (!actor.Equipment.gifts.OnGiveDamage(actor, unitModel, ref damageInfo3))
 								{
-									flag3 = false;
+									flag2 = false;
 								}
 								if (actor.GetUnitBufList().Count > 0)
 								{
-									using (List<UnitBuf>.Enumerator enumerator7 = actor.GetUnitBufList().GetEnumerator())
+									using (List<UnitBuf>.Enumerator enumerator5 = actor.GetUnitBufList().GetEnumerator())
 									{
-										while (enumerator7.MoveNext())
+										while (enumerator5.MoveNext())
 										{
-											if (!enumerator7.Current.OnGiveDamage(actor, this.currentTarget, ref damageInfo4))
+											if (!enumerator5.Current.OnGiveDamage(actor, unitModel, ref damageInfo3))
 											{
-												flag3 = false;
+												flag2 = false;
 											}
 										}
 									}
 								}
-								if (flag3)
+								if (flag2)
 								{
-									unitModel2.TakeDamage(actor, damageInfo4);
-									this.script.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
-									actor.Equipment.armor.script.OnGiveDamageAfter(actor, this.currentTarget, damageInfo4);
+									unitModel.TakeDamage(actor, damageInfo3);
+									this.script.OnGiveDamageAfter(actor, unitModel, damageInfo3);
+									actor.Equipment.armor.script.OnGiveDamageAfter(actor, unitModel, damageInfo3);
 									if (actor.GetUnitBufList().Count > 0)
 									{
-										foreach (UnitBuf unitBuf3 in actor.GetUnitBufList())
+										foreach (UnitBuf unitBuf2 in actor.GetUnitBufList())
 										{
-											unitBuf3.OnGiveDamageAfter(actor, this.currentTarget, damageInfo4);
+											unitBuf2.OnGiveDamageAfter(actor, unitModel, damageInfo3);
 										}
 									}
-									this.InvokeEffect(unitModel2, damageInfo4, this.GetDir(actor, unitModel2));
+									this.InvokeEffect(unitModel, damageInfo3, this.GetDir(actor, unitModel));
 								}
+							}
+						}
+						return;
+					}
+				}
+				if (this.metaInfo.splashInfo.type == SplashType.SPLASH)
+				{
+					foreach (UnitModel unitModel2 in list)
+					{
+						if (unitModel2.IsAttackTargetable())
+						{
+							if (attackTarget == null)
+							{
+								if (!InRangeDirectionalAtDamageTime(actor, unitModel2, metaInfo.splashInfo.range))
+								{
+									continue;
+								}
+							}
+							else
+							{
+								if (MovableObjectNode.GetDistance(unitModel2.GetMovableNode(), attackTarget.GetMovableNode()) - unitModel2.radius > this.metaInfo.splashInfo.range)
+								{
+									continue;
+								}
+							}
+							DamageInfo damageInfo4 = damageInfo.Copy();
+							bool flag3 = this.script.OnGiveDamage(actor, unitModel2, ref damageInfo4);
+							if (actor.Equipment.armor != null && actor.Equipment.armor.script != null && !actor.Equipment.armor.script.OnGiveDamage(actor, unitModel2, ref damageInfo4))
+							{
+								flag3 = false;
+							}
+							if (!actor.Equipment.gifts.OnGiveDamage(actor, unitModel2, ref damageInfo4))
+							{
+								flag3 = false;
+							}
+							if (actor.GetUnitBufList().Count > 0)
+							{
+								using (List<UnitBuf>.Enumerator enumerator7 = actor.GetUnitBufList().GetEnumerator())
+								{
+									while (enumerator7.MoveNext())
+									{
+										if (!enumerator7.Current.OnGiveDamage(actor, unitModel2, ref damageInfo4))
+										{
+											flag3 = false;
+										}
+									}
+								}
+							}
+							if (flag3)
+							{
+								unitModel2.TakeDamage(actor, damageInfo4);
+								this.script.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
+								actor.Equipment.armor.script.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
+								if (actor.GetUnitBufList().Count > 0)
+								{
+									foreach (UnitBuf unitBuf3 in actor.GetUnitBufList())
+									{
+										unitBuf3.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
+									}
+								}
+								this.InvokeEffect(unitModel2, damageInfo4, this.GetDir(actor, unitModel2));
 							}
 						}
 					}
@@ -285,12 +385,12 @@ public class WeaponModel : EquipmentModel
 
 	// Token: 0x060036EC RID: 14060 RVA: 0x00163FE0 File Offset: 0x001621E0
 	public void InvokeEffect(UnitModel unit, DamageInfo damageInfo, UnitDirection dir)
-	{
+	{ // <Patch>
 		RwbpType type = damageInfo.type;
 		DefenseInfo defense = unit.defense;
 		if (damageInfo.soundInfo != null && damageInfo.soundInfo.soundType == DamageInfo_EffectType.DAMAGE_INVOKED)
 		{
-			damageInfo.soundInfo.PlaySound(unit.GetCurrentViewPosition());
+			damageInfo.soundInfo.PlaySound_Mod(EquipmentTypeInfo.GetLcId(this.metaInfo).packageId, unit.GetCurrentViewPosition());
 		}
 		if (damageInfo.effectInfos.Count > 0)
 		{
@@ -322,12 +422,12 @@ public class WeaponModel : EquipmentModel
 
 	// Token: 0x060036ED RID: 14061 RVA: 0x001640F4 File Offset: 0x001622F4
 	public static WeaponModel MakeWeapon(EquipmentTypeInfo info)
-	{
+	{ // <Mod> Fixed it not loading Modded scripts proplerly
 		WeaponModel weaponModel = new WeaponModel();
 		weaponModel.metaInfo = info;
 		Type type = Type.GetType(info.script);
 		object obj = null;
-		if (type != null)
+		if (type == null)
 		{
 			foreach (Assembly assembly in Add_On.instance.AssemList)
 			{
@@ -339,11 +439,11 @@ public class WeaponModel : EquipmentModel
 					}
 				}
 			}
-			if (obj == null)
-			{
-				obj = Activator.CreateInstance(type);
-			}
 		}
+        else
+        {
+            obj = Activator.CreateInstance(type);
+        }
 		if (obj is EquipmentScriptBase)
 		{
 			weaponModel.script = (EquipmentScriptBase)obj;
@@ -368,6 +468,12 @@ public class WeaponModel : EquipmentModel
 	public DamageInfo GetDamage(UnitModel actor)
 	{
 		return this.script.GetDamage(actor);
+	}
+
+	// <Mod>
+	public Queue<DamageInfo> GetDamageQueue()
+	{
+		return _currentDamageInfos;
 	}
 
 	// Token: 0x040032A6 RID: 12966

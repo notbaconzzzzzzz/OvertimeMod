@@ -1,3 +1,6 @@
+/*
+public void OnDisplayEffectInfo() // 
+*/
 using System;
 using System.Collections;
 using System.Text;
@@ -203,7 +206,7 @@ public class SefiraRecoverGaugeUI : MonoBehaviour, IObserver
 
 	// Token: 0x06004BC6 RID: 19398 RVA: 0x001BE7FC File Offset: 0x001BC9FC
 	public void OnDisplayEffectInfo()
-	{
+	{ // <Mod>
 		int officerAliveLevel = this.Sefira.GetOfficerAliveLevel();
 		if (officerAliveLevel == 0)
 		{
@@ -213,7 +216,12 @@ public class SefiraRecoverGaugeUI : MonoBehaviour, IObserver
 		StringBuilder stringBuilder = new StringBuilder();
 		string arg = string.Format(LocalizeTextDataModel.instance.GetText(SefiraRecoverGaugeUI.f1), officerAliveLevel);
 		string text = LocalizeTextDataModel.instance.GetText(SefiraRecoverGaugeUI.f2);
-		string arg2 = string.Format(LocalizeTextDataModel.instance.GetText(SefiraRecoverGaugeUI.f3 + this.Sefira.name.ToLower()), SefiraAbilityValueInfo.GetOfficerAliveValues(this.sefiraEnum)[officerAliveLevel]);
+        int num = 1;
+        if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+        {
+            num = 2;
+        }
+		string arg2 = string.Format(LocalizeTextDataModel.instance.GetText(SefiraRecoverGaugeUI.f3 + this.Sefira.name.ToLower()), SefiraAbilityValueInfo.GetOfficerAliveValues(this.sefiraEnum)[officerAliveLevel] * num);
 		stringBuilder.AppendFormat("{0}\n\n{1}\n{2}", arg, text, arg2);
 		OverlayManager.Instance.SetText(stringBuilder.ToString());
 	}

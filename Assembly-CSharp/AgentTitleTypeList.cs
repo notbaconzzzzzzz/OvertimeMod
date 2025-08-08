@@ -44,7 +44,7 @@ public class AgentTitleTypeList
 
 	// Token: 0x06003944 RID: 14660 RVA: 0x0016E6CC File Offset: 0x0016C8CC
 	private AgentTitleTypeInfo GetData(AgentModel agent, int level, string pos, bool randomly = true)
-	{
+	{ // <Mod> Changed how non-random title bonus selection works
 		string rwbp = "A";
 		int hp = agent.primaryStat.hp;
 		int mental = agent.primaryStat.mental;
@@ -84,11 +84,15 @@ public class AgentTitleTypeList
 		{
 			return null;
 		}
-		if (randomly)
+		if (randomly || !SpecialModeConfig.instance.GetValue<bool>("PseudoRandomTitles"))
 		{
 			return list3[UnityEngine.Random.Range(0, list3.Count)];
 		}
-		return list3[(hp + mental + work + battle) % list3.Count];
+		if (list3.Count >= 4 && list3.Count % 7 != 0)
+		{
+			return list3[((hp + mental + work + battle + (int)agent.instanceId) * 7) % list3.Count];
+		}
+		return list3[(hp + mental + work + battle + (int)agent.instanceId) % list3.Count];
 	}
 
 	// Token: 0x06003945 RID: 14661 RVA: 0x0016E86C File Offset: 0x0016CA6C

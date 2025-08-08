@@ -1,3 +1,10 @@
+/*
+private void Update() // Hp Bar Stacking
++private void UpdateBarStacking() // Hp Bar Stacking
++public void LiftHpBar(AgentUnit unit, List<AgentUnit> obst) // Hp Bar Stacking
++public float CurrentBarAdjust // Hp Bar Stacking
++private float _currentBarAdjust // Hp Bar Stacking
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,7 +64,7 @@ public class AgentUnit : WorkerUnit, IOverlapOnclick, IMouseOnSelectListener, IM
 		this.OnChangeArmor();
 		this.UpdateGiftModel();
 		this.DisappearNote();
-		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
+		if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
 		{
 			int layer = LayerMask.NameToLayer("Front1");
 			IEnumerator enumerator = this.showSpeech.transform.GetEnumerator();
@@ -586,7 +593,7 @@ public class AgentUnit : WorkerUnit, IOverlapOnclick, IMouseOnSelectListener, IM
 
 	// Token: 0x060054CF RID: 21711 RVA: 0x001E65BC File Offset: 0x001E47BC
 	public void OnChangeArmor()
-	{
+	{ // <Patch>
 		if (this.model == null)
 		{
 			return;
@@ -595,7 +602,8 @@ public class AgentUnit : WorkerUnit, IOverlapOnclick, IMouseOnSelectListener, IM
 		{
 			return;
 		}
-		this.spriteSetter.ArmorEquip(this.model.Equipment.armor.metaInfo.armorId);
+		this.spriteSetter.ArmorEquip_Mod(new LobotomyBaseMod.LcId(EquipmentTypeInfo.GetLcId(this.model.Equipment.armor.metaInfo).packageId, this.model.Equipment.armor.metaInfo.armorId));
+		// this.spriteSetter.ArmorEquip(this.model.Equipment.armor.metaInfo.armorId);
 	}
 
 	// Token: 0x060054D0 RID: 21712 RVA: 0x001E6610 File Offset: 0x001E4810
@@ -1074,6 +1082,127 @@ public class AgentUnit : WorkerUnit, IOverlapOnclick, IMouseOnSelectListener, IM
 		this.agentUI.Init(this.model);
 		this.continueUI.SetAgent(this.model);
 	}
+
+	//> <Mod> Hp Bar Stacking
+	private void UpdateBarStacking()
+	{
+		if (!SpecialModeConfig.instance.GetValue<bool>("HpBarStackingAgent")) return;
+		if (GameManager.currentGameManager.state == GameState.STOP) return;
+		if (model.GetMovableNode().currentPassage == null) return;
+		float newBarAdjust = CurrentBarAdjust - 0.5f;
+		if (newBarAdjust < 0f)
+		{
+			newBarAdjust = 0f;
+		}
+		Vector3 position = transform.position;
+		List<AgentUnit> obst = new List<AgentUnit>();
+		foreach (MovableObjectNode node in model.GetMovableNode().currentPassage.GetEnteredTargets())
+		{
+			if (!(node.GetUnit() is AgentModel)) continue;
+			AgentModel agent = node.GetUnit() as AgentModel;
+			if (model.instanceId == agent.instanceId) continue;
+			AgentUnit unit = agent.GetUnit();
+			int ind = 0;
+			foreach (AgentUnit unit2 in obst)
+			{
+				if (CurrentBarAdjust <= unit2.CurrentBarAdjust) break;
+				ind++;
+			}
+			obst.Insert(ind, unit);
+			unit.ShutUp();
+		}
+		foreach (AgentUnit unit in obst)
+		{
+			Vector3 position2 = unit.transform.position;
+			float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+			if (offset > 3f) continue;
+			float dest;
+			if (offset <= 2f)
+			{
+				if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
+				dest = unit.CurrentBarAdjust + 1f;
+			}
+			else
+			{
+				if (newBarAdjust - unit.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) continue;
+				dest = unit.CurrentBarAdjust + 3f - offset;
+			}
+			if (unit.CurrentBarAdjust > CurrentBarAdjust)
+			{
+				unit.LiftHpBar(this, obst);
+				continue;
+			}
+			if (dest > CurrentBarAdjust + 1f) continue;
+			newBarAdjust = dest;
+		}
+		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
+		CurrentBarAdjust = newBarAdjust;
+	}
+
+	public void LiftHpBar(AgentUnit unit, List<AgentUnit> obst)
+	{
+		float newBarAdjust = CurrentBarAdjust;
+		Vector3 position = transform.position;
+		Vector3 position2 = unit.transform.position;
+		float offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+		float dest;
+		if (offset <= 2f)
+		{
+			if (newBarAdjust - unit.CurrentBarAdjust > 0.99f || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
+			dest = unit.CurrentBarAdjust + 1f;
+		}
+		else
+		{
+			if (newBarAdjust - unit.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit.CurrentBarAdjust < -0.99f) return;
+			dest = unit.CurrentBarAdjust + 3f - offset;
+		}
+		if (dest > CurrentBarAdjust + 1f) return;
+		newBarAdjust = dest;
+		foreach (AgentUnit unit2 in obst)
+		{
+			if (unit2 == this) continue;
+			position2 = unit2.transform.position;
+			offset = Mathf.Abs(position.x - position2.x) / transform.localScale.x;
+			if (offset > 3f) continue;
+			if (offset <= 2f)
+			{
+				if (newBarAdjust - unit2.CurrentBarAdjust > 0.99f || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
+				dest = unit2.CurrentBarAdjust + 1f;
+			}
+			else
+			{
+				if (newBarAdjust - unit2.CurrentBarAdjust > 2.99f - offset || newBarAdjust - unit2.CurrentBarAdjust < -0.99f) continue;
+				dest = unit2.CurrentBarAdjust + 3f - offset;
+			}
+			if (unit2.CurrentBarAdjust > CurrentBarAdjust)
+			{
+				unit2.LiftHpBar(this, obst);
+				continue;
+			}
+			if (dest > CurrentBarAdjust + 1f) continue;
+			newBarAdjust = dest;
+		}
+		newBarAdjust = Mathf.Clamp(newBarAdjust, 0f, CurrentBarAdjust + 1f);
+		CurrentBarAdjust = newBarAdjust;
+	}
+
+	public float CurrentBarAdjust
+	{
+		get
+		{
+			return _currentBarAdjust;
+		}
+		set
+		{
+			if (_currentBarAdjust == value) return;
+			agentUI.ActiveControl.gameObject.transform.Translate(0f, 0.5f * (float)(value - _currentBarAdjust) * transform.localScale.x, 0f);
+			_currentBarAdjust = value;
+		}
+	}
+
+	private float _currentBarAdjust = 0f;
+
+	//< <Mod>
 
 	// Token: 0x04004E2E RID: 20014
 	public AgentModel model;

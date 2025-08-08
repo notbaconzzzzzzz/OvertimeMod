@@ -1,3 +1,6 @@
+/*
+YangKit public override void OnFixedUpdateInKitEquip(AgentModel actor) // Made not lower qliphoth counter while returning
+*/
 using System;
 using UnityEngine;
 
@@ -352,7 +355,7 @@ public class Yang : YinAndYangBase
 
 		// Token: 0x06002B5A RID: 11098 RVA: 0x001276FC File Offset: 0x001258FC
 		public override void OnFixedUpdateInKitEquip(AgentModel actor)
-		{
+		{ // <Mod> made not reduce qliphoth counter if you're activaly trying to return it
 			base.OnFixedUpdateInKitEquip(actor);
 			if (!this._model.hasYin)
 			{
@@ -367,7 +370,7 @@ public class Yang : YinAndYangBase
 			{
 				this._equipElapsedTime += Time.deltaTime;
 			}
-			if (this._yinQliphothElapsedTime >= 30f)
+			if (this._yinQliphothElapsedTime >= 30f && !(SpecialModeConfig.instance.GetValue<bool>("LuminousAndYangForgiveness") && actor.GetCurrentCommand() != null && actor.GetCurrentCommand() is ReturnKitCreatureCommand))
 			{
 				this._model.DecreaseYinQliphoth();
 				this._yinQliphothElapsedTime = 0f;

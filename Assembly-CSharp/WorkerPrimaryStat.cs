@@ -1,3 +1,9 @@
+/*
+public static int MaxStatR() // 
+public static int MaxStatW() // 
+public static int MaxStatB() // 
+public static int MaxStatP() // 
+*/
 using System;
 using UnityEngine;
 
@@ -87,7 +93,15 @@ public class WorkerPrimaryStat
 
 	// Token: 0x060032F2 RID: 13042 RVA: 0x0002ECC4 File Offset: 0x0002CEC4
 	public static int MaxStatR()
-	{
+	{ // <Mod>
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHOKHMAH))
+		{
+			return 160;
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("stat_max_r_2"))
+		{
+			return 150;
+		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHOKHMAH))
 		{
 			return 130;
@@ -101,7 +115,15 @@ public class WorkerPrimaryStat
 
 	// Token: 0x060032F3 RID: 13043 RVA: 0x0002ECF6 File Offset: 0x0002CEF6
 	public static int MaxStatW()
-	{
+	{ // <Mod>
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHOKHMAH))
+		{
+			return 160;
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("stat_max_w_2"))
+		{
+			return 150;
+		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHOKHMAH))
 		{
 			return 130;
@@ -115,7 +137,15 @@ public class WorkerPrimaryStat
 
 	// Token: 0x060032F4 RID: 13044 RVA: 0x0002ED28 File Offset: 0x0002CF28
 	public static int MaxStatB()
-	{
+	{ // <Mod>
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHOKHMAH))
+		{
+			return 160;
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("stat_max_b_2"))
+		{
+			return 150;
+		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHOKHMAH))
 		{
 			return 130;
@@ -129,7 +159,11 @@ public class WorkerPrimaryStat
 
 	// Token: 0x060032F5 RID: 13045 RVA: 0x0002ED5A File Offset: 0x0002CF5A
 	public static int MaxStatP()
-	{
+	{ // <Mod>
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHOKHMAH))
+		{
+			return 160;
+		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHOKHMAH))
 		{
 			return 130;

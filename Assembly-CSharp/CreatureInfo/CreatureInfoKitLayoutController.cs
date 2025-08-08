@@ -104,11 +104,11 @@ namespace CreatureInfo
 
 		// Token: 0x06005454 RID: 21588 RVA: 0x001EA42C File Offset: 0x001E862C
 		public void SetDataList(CreatureTypeInfo metaInfo, CreatureObserveInfoModel observeInfo)
-		{
+		{ // <Patch>
 			this.Clear();
 			if (metaInfo.specialSkillTable == null)
 			{
-				metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData(metaInfo.id).GetCopy();
+				metaInfo.specialSkillTable = CreatureTypeList.instance.GetSkillTipData_Mod(CreatureTypeInfo.GetLcId(metaInfo)).GetCopy();
 			}
 			int num = Mathf.Max(metaInfo.specialSkillTable.descList.Count, metaInfo.desc.Count);
 			num = Mathf.Min(num, CreatureModel.careTakingRegion.Length);

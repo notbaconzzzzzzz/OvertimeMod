@@ -1,3 +1,6 @@
+/*
+public override void Update() // Hp Bar Stacking, DisplayAbnoHp
+*/
 using System;
 using CommandWindow;
 using UnityEngine;
@@ -67,13 +70,13 @@ public class ChildCreatureUnit : CreatureUnit
 
 	// Token: 0x06005545 RID: 21829 RVA: 0x001E7EAC File Offset: 0x001E60AC
 	public override void Update()
-	{
+	{ // <Mod>
 		if (this.oldState != this.model.state)
 		{
 			this.OnChangeState();
 			this.oldState = this.model.state;
 		}
-		if (this.Model.state == CreatureState.ESCAPE && (ResearchDataModel.instance.IsUpgradedAbility("show_agent_ui") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1)) && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD))
+		if (this.Model.state == CreatureState.ESCAPE && (ResearchDataModel.instance.IsUpgradedAbility("show_agent_ui") || (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL && GlobalGameManager.instance.tutorialStep > 1)) && !SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.YESOD, false))
 		{
 			if (!this.escapeUIRoot.activeInHierarchy && this.model.script.HasEscapeUI())
 			{
@@ -102,6 +105,40 @@ public class ChildCreatureUnit : CreatureUnit
 		else if (this.hpSlider.gameObject.activeInHierarchy)
 		{
 			this.hpSlider.gameObject.SetActive(false);
+		}
+		UpdateBarStacking();
+		if (hpSlider.gameObject.activeInHierarchy)
+		{
+			AbnoHpDisplayMode displayeMode = SpecialModeConfig.instance.GetValue<AbnoHpDisplayMode>("DisplayAbnoHp");
+			if (displayeMode == AbnoHpDisplayMode.NAME_AND_HP)
+			{
+				string str = string.Concat(new object[]
+				{
+					" (",
+					Math.Round((decimal)model.hp, 0),
+					"/",
+					model.maxHp,
+					")"
+				});
+				int num = escapeCreatureName.text.IndexOf("(");
+				if (num > 0)
+				{
+					escapeCreatureName.text = escapeCreatureName.text.Substring(0, num - 1);
+				}
+				escapeCreatureName.text += str;
+			}
+			else if (displayeMode == AbnoHpDisplayMode.HP_ONLY)
+			{
+				string str = string.Concat(new object[]
+				{
+					"(",
+					Math.Round((decimal)model.hp, 0),
+					"/",
+					model.maxHp,
+					")"
+				});
+				escapeCreatureName.text = str;
+			}
 		}
 	}
 

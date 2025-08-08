@@ -1,3 +1,17 @@
+/*
+public virtual void OnStageStart() // 
+public virtual void OnFixedUpdate() // 
+public int GetRedusedWorkProbByCounter() // 
+public void ActivateOverload(int level, float iOverloadTime = 60f, OverloadType overloadType = OverloadType.DEFAULT) // 
+public void ExplodeOverload() // 
+public override void TakeDamage(UnitModel actor, DamageInfo dmg) // 
+public virtual void Suppressed() // 
+public void SetFeelingStateInWork(CreatureFeelingState state) // 
+public void FinishReturn() // 
+public void AddCreatureSuccessCube(int count) // 
++public void RecoverHP(float amount) //
++buncha stuff // Tranquilizer Bullets
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -142,7 +156,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x06003448 RID: 13384 RVA: 0x0015AE68 File Offset: 0x00159068
 	public Dictionary<string, object> GetSaveData()
-	{
+	{ // <Patch>
 		return new Dictionary<string, object>
 		{
 			{
@@ -164,6 +178,10 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 			{
 				"basePosition",
 				new Vector2Serializer(this.basePosition)
+			},
+			{
+				"modid",
+				CreatureTypeList.instance.GetModId(this.metaInfo)
 			}
 		};
 	}
@@ -203,7 +221,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600344C RID: 13388 RVA: 0x0015AF8C File Offset: 0x0015918C
 	public virtual void OnStageStart()
-	{
+	{ // <Mod>
 		if (this.state != CreatureState.WAIT)
 		{
 			if (this.state == CreatureState.ESCAPE)
@@ -228,6 +246,25 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		this.childInst = 1L;
 		this._probReductionValue = 0;
 		this.script.OnStageStart();
+		overloadReduction = 0;
+		_isTranquilized = false;
+		script.isTranq = false;
+		tranqQliphoth = -1;
+		tranqRemainTime = 0f;
+		int num = (int)metaInfo.GetRiskLevel() + 1;
+		if (this.metaInfo.LcId == new LobotomyBaseMod.LcIdLong(100064L))
+		{
+			num = 5;
+		}
+		switch (num)
+		{
+			case 1: tranqCap = 60; tranqDim = 5; tranqRejuv = 20; break;
+			case 2: tranqCap = 50; tranqDim = 5; tranqRejuv = 15; break;
+			case 3: tranqCap = 40; tranqDim = 5; tranqRejuv = 10; break;
+			case 4: tranqCap = 30; tranqDim = 6; tranqRejuv = 9; break;
+			case 5: tranqCap = 24; tranqDim = 6; tranqRejuv = 6; break;
+		}
+		tranqEffectiveness = tranqCap;
 	}
 
 	// Token: 0x0600344D RID: 13389 RVA: 0x0015B068 File Offset: 0x00159268
@@ -428,7 +465,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x06003462 RID: 13410 RVA: 0x0015B3D8 File Offset: 0x001595D8
 	public virtual void OnFixedUpdate()
-	{
+	{ // <Mod> Tranquilizer Bullets
 		if (this.remainMoveDelay > 0f)
 		{
 			this.remainMoveDelay -= Time.deltaTime;
@@ -438,7 +475,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 			this.remainAttackDelay -= Time.deltaTime;
 		}
 		this.UpdateBufState();
-		if (this.feelingState != CreatureFeelingState.NONE)
+		if (this.feelingState != CreatureFeelingState.NONE && !isTranquilized)
 		{
 			this.script.OnAllocatedWork(null);
 			this.feelingStateRemainTime -= Time.deltaTime;
@@ -476,7 +513,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 				this._unit.animTarget.StopMoving();
 			}
 		}
-		if (GameManager.currentGameManager.ManageStarted)
+		if (GameManager.currentGameManager.ManageStarted && (script.UpdateWhileTranqed || !isTranquilized))
 		{
 			this.script.OnFixedUpdate(this);
 		}
@@ -494,7 +531,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 				this.FinishReturn();
 			}
 		}
-		else if (this.state == CreatureState.WAIT && this.isOverloaded && this.feelingState == CreatureFeelingState.NONE)
+		else if (this.state == CreatureState.WAIT && this.isOverloaded && this.feelingState == CreatureFeelingState.NONE && !isTranquilized)
 		{
 			this.overloadTimer += Time.deltaTime;
 			if (this.overloadTimer >= this.currentOverloadMaxTime)
@@ -516,6 +553,14 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		catch (MovableObjectNode.MovableElevatorStuckException)
 		{
 			this.script.OnElevatorStuck();
+		}
+		if (isTranquilized)
+		{
+			tranqRemainTime -= Time.deltaTime;
+			if (tranqRemainTime <= 0f)
+			{
+				EndTranq();
+			}
 		}
 	}
 
@@ -582,7 +627,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 					break;
 				}
 			}
-			if (this.metaInfo.id == 100064L)
+			if (this.metaInfo.LcId == new LobotomyBaseMod.LcIdLong(100064L))
 			{
 				num = 5;
 			}
@@ -596,14 +641,16 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600346A RID: 13418 RVA: 0x0002FBE8 File Offset: 0x0002DDE8
 	public void ResetProbReductionCounter()
-	{
+	{ // <Mod>
 		this._probReductionCounter = 0;
 		this.OnChangeProbReduectionCounter();
+		tranqEffectiveness += tranqRejuv;
+		if (tranqEffectiveness > tranqCap) tranqEffectiveness = tranqCap;
 	}
 
 	// Token: 0x0600346B RID: 13419 RVA: 0x0015B700 File Offset: 0x00159900
 	public int GetRedusedWorkProbByCounter()
-	{
+	{ // <Mod>
 		int num = 0;
 		switch (this.metaInfo.GetRiskLevel())
 		{
@@ -611,7 +658,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		case RiskLevel.TETH:
 		case RiskLevel.HE:
 			num = 0;
-			if (this.metaInfo.id == 100064L)
+			if (this.metaInfo.LcId == new LobotomyBaseMod.LcIdLong(100064L))
 			{
 				num = 6;
 			}
@@ -622,6 +669,10 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		case RiskLevel.ALEPH:
 			num = 6;
 			break;
+		}
+		if (num > 0 && MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.YESOD))
+		{
+			num -= 1;
 		}
 		return this.probReductionCounter * num;
 	}
@@ -646,13 +697,47 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600346E RID: 13422 RVA: 0x0015B760 File Offset: 0x00159960
 	public void ActivateOverload(int level, float iOverloadTime = 60f, OverloadType overloadType = OverloadType.DEFAULT)
+	{ // <Mod>
+		ActivateOverload(level, iOverloadTime, overloadType, false);
+	}
+
+	// <Mod>
+	public void ActivateOverload(int level, float iOverloadTime = 60f, OverloadType overloadType = OverloadType.DEFAULT, bool isNatural = false)
 	{
 		this.isOverloaded = true;
+		isNaturalOverload = isNatural;
 		this.overloadLevel = level;
 		this.overloadTimer = 0f;
 		this.overloadType = overloadType;
 		int num = 0;
 		num += SefiraAbilityValueInfo.tipherethOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.TIPERERTH1)];
+		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses"))
+		{
+			num *= 2;
+		}
+		if (ResearchDataModel.instance.IsUpgradedAbility("officer_department_bonus"))
+		{
+			switch (sefira.GetOfficerAliveLevel())
+			{
+				case 1:
+					num += 3;
+					break;
+				case 2:
+					num += 7;
+					break;
+				case 3:
+					num += 10;
+					break;
+			}
+		}
+		if (num >= 60)
+		{
+			num -= overloadReduction;
+		}
+		else
+		{
+			num -= overloadReduction * num / 60;
+		}
 		this.currentOverloadMaxTime = iOverloadTime + (float)num;
 		if (overloadType != OverloadType.DEFAULT)
 		{
@@ -662,7 +747,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600346F RID: 13423 RVA: 0x0015B7C4 File Offset: 0x001599C4
 	public void ExplodeOverload()
-	{
+	{ // <Mod> Capped energy loss at 50 PE; Secondary Qliphoth Overload
 		Notice.instance.Send(NoticeName.OnIsolateOverloaded, new object[]
 		{
 			this,
@@ -673,7 +758,24 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 			this.ProbReductionValue = 0;
 		}
 		this.isOverloaded = false;
+		if (overloadType == OverloadType.DEFAULT)
+		{
+			if (qliphothCounter <= 0)
+			{
+				int num2 = 3 + (int)metaInfo.GetRiskLevel();
+				if (num2 == 7) num2 = 9;
+				CreatureOverloadManager.instance.AddSecondaryGague(num2);
+			}
+			else
+			{
+				CreatureOverloadManager.instance.AddSecondaryGague(1);
+			}
+		}
 		int num = 5 * this.overloadLevel;
+		if (num > 50)
+		{
+			num = 50;
+		}
 		EnergyModel.instance.SubEnergy((float)num);
 		if (this.qliphothCounter > 0)
 		{
@@ -853,7 +955,12 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600347B RID: 13435 RVA: 0x0015BB1C File Offset: 0x00159D1C
 	public virtual void Escape()
-	{
+	{ // <Mod>
+		if (Unit.room == null)
+		{
+			EscapeWithoutIsolateRoom();
+			return;
+		}
 		if (this.state == CreatureState.WORKING && this.currentSkill != null)
 		{
 			this.currentSkill.CancelWork();
@@ -891,8 +998,27 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600347E RID: 13438 RVA: 0x0015BBE8 File Offset: 0x00159DE8
 	public override void TakeDamage(UnitModel actor, DamageInfo dmg)
-	{
-		dmg = dmg.Copy();
+	{ // <Mod>
+		if (dmg.result.activated)
+		{
+			dmg.result.activated = false;
+			dmg = dmg.Copy();
+			dmg.result.activated = true;
+		}
+		else
+		{
+			dmg.result.activated = true;
+			dmg = dmg.Copy();
+		}
+		if (actor is CreatureModel)
+		{
+			float mult = 1f;
+			mult = actor.GetDamageFactorByEquipment();
+			dmg.min *= mult;
+			dmg.max *= mult;
+		}
+		DamageResult result = dmg.result;
+		result.ResetValues(dmg);
 		if (!this.script.CanTakeDamage(actor, dmg))
 		{
 			return;
@@ -931,13 +1057,22 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		{
 			num = dmg.GetDamageWithDefenseInfo(this.defense) * num2;
 		}
+		result.beforeShield = num;
+		float originalDamage = num;
+		originalDamage /= num2;
+		result.byResist = originalDamage;
+		originalDamage /= defense.GetMultiplier(dmg.type);
+		result.originDamage = originalDamage;
 		if (this.hp > 0f)
 		{
+			result.resultDamage = num;
+			result.hpDamage = num;
 			if (num >= 0f)
 			{
 				float num3 = (float)((int)this.hp);
 				this.hp -= num;
 				float num4 = num3 - (float)((int)this.hp);
+				result.resultNumber = (int)num4;
 				this.MakeDamageEffect(dmg.type, num4, this.defense.GetDefenseType(dmg.type));
 				if (dmg.type == RwbpType.R || dmg.type == RwbpType.B || num4 > 1f)
 				{
@@ -947,15 +1082,11 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 			}
 			else if (num < 0f)
 			{
+				float num3 = (float)((int)this.hp);
 				float num5 = -num;
-				if ((float)this.maxHp - this.hp >= num5)
-				{
-					this.hp += num5;
-				}
-				else
-				{
-					this.hp = (float)this.maxHp;
-				}
+				this.hp += num5;
+				float num4 = num3 - (float)((int)this.hp);
+				result.resultNumber = (int)num4;
 				GameObject gameObject = Prefab.LoadPrefab("Effect/RecoverHP");
 				gameObject.transform.SetParent(this.Unit.animTarget.transform);
 				gameObject.transform.localPosition = Vector3.zero;
@@ -968,34 +1099,58 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		{
 			this.Suppressed();
 		}
+		script.OnTakeDamage_After(actor, dmg);
 		if (base.Equipment.armor != null)
 		{
 			base.Equipment.armor.OnTakeDamage_After(num, dmg.type);
+			base.Equipment.armor.OnTakeDamage_After(actor, dmg);
 		}
 		if (base.Equipment.weapon != null)
 		{
 			base.Equipment.weapon.OnTakeDamage_After(num, dmg.type);
+			base.Equipment.weapon.OnTakeDamage_After(actor, dmg);
 		}
 		base.Equipment.gifts.OnTakeDamage_After(num, dmg.type);
+		base.Equipment.gifts.OnTakeDamage_After(actor, dmg);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			unitBuf.OnTakeDamage_After(actor, dmg);
+		}
+		if (actor != null && actor is AgentModel)
+		{
+            Notice.instance.Send(NoticeName.CreatureDamagedByAgent, new object[]
+            {
+				this,
+				num,
+                dmg
+            });
+		}
 	}
 
 	// Token: 0x0600347F RID: 13439 RVA: 0x0015BEC4 File Offset: 0x0015A0C4
 	public virtual void Suppressed()
-	{
+	{ // <Mod> Overtime Yesod Suppression; Suppress for energy
 		Notice.instance.Send(NoticeName.OnCreatureSuppressed, new object[]
 		{
 			this
 		});
 		this.state = CreatureState.SUPPRESSED;
 		this.script.OnSuppressed();
+		if (ResearchDataModel.instance.IsUpgradedAbility("suppress_for_energy"))
+		{
+			EnergyModel.instance.AddEnergy(script.SuppressionEnergy);
+		}
 		this.commandQueue.Clear();
 		base.ClearWorkerEncounting();
 		if (this.roomNode != null)
 		{
 			try
 			{
-				Sefira sefira = SefiraManager.instance.GetSefira(this.roomNode.GetAttachedPassage().GetSefiraName());
-				this.sefira = sefira;
+				if (sefiraOrigin == null)
+				{
+					sefiraOrigin = SefiraManager.instance.GetSefira(this.roomNode.GetAttachedPassage().GetSefiraName());
+				}
+				this.sefira = sefiraOrigin;
 				this.sefiraNum = this.sefira.indexString;
 			}
 			catch (Exception)
@@ -1049,7 +1204,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 	// Token: 0x06003484 RID: 13444 RVA: 0x0002FD26 File Offset: 0x0002DF26
 	public override int GetAttackLevel()
 	{
-		if (this.metaInfo.id == 100064L)
+		if (this.metaInfo.LcId == new LobotomyBaseMod.LcIdLong(100064L))
 		{
 			return 5;
 		}
@@ -1064,9 +1219,14 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x06003486 RID: 13446 RVA: 0x0002FD4B File Offset: 0x0002DF4B
 	public void SetFeelingStateInWork(CreatureFeelingState state)
-	{
+	{ // <Mod>
 		this.feelingState = state;
-		this.feelingStateRemainTime = (float)this.metaInfo.workCooltime;
+		float num = 1f;
+		if (currentSkill != null && currentSkill._isOverloadedCreature && currentSkill._overloadType == OverloadType.GRIEF)
+		{
+			num = 0.5f;
+		}
+		this.feelingStateRemainTime = (float)this.metaInfo.workCooltime * num;
 	}
 
 	// Token: 0x06003487 RID: 13447 RVA: 0x0002FD66 File Offset: 0x0002DF66
@@ -1140,14 +1300,17 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x0600348F RID: 13455 RVA: 0x0015BF7C File Offset: 0x0015A17C
 	public void FinishReturn()
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		if (this.state == CreatureState.SUPPRESSED_RETURN)
 		{
 			this.state = CreatureState.WAIT;
 			this.script.OnReturn();
 			this.SetCurrentNode(this.roomNode);
-			Sefira sefira = SefiraManager.instance.GetSefira(this.roomNode.GetAttachedPassage().GetSefiraName());
-			this.sefira = sefira;
+			if (sefiraOrigin == null)
+			{
+				sefiraOrigin = SefiraManager.instance.GetSefira(this.roomNode.GetAttachedPassage().GetSefiraName());
+			}
+			this.sefira = sefiraOrigin;
 			this.sefiraNum = this.sefira.indexString;
 			CreatureLayer.currentLayer.GetCreature(this.instanceId).room.OnReturn();
 			this.Unit.animTarget.ResetAnimator();
@@ -1248,17 +1411,22 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x06003498 RID: 13464 RVA: 0x0015C180 File Offset: 0x0015A380
 	public void AddCreatureSuccessCube(int count)
-	{
+	{ // <Mod> increased max cube number to 9999
 		int num = count;
-		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.YESOD))
+		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.YESOD))
+		{
+			int num2 = (int)Mathf.Max(1f, (float)num * (1f / 3f) + 0.5f);
+			num += num2;
+		}
+		else if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.YESOD))
 		{
 			int num2 = (int)Mathf.Max(1f, (float)num * 0.25f + 0.5f);
 			num += num2;
 		}
 		this.observeInfo.cubeNum += num;
-		if (this.observeInfo.cubeNum > 999)
+		if (this.observeInfo.cubeNum > 9999)
 		{
-			this.observeInfo.cubeNum = 999;
+			this.observeInfo.cubeNum = 9999;
 		}
 	}
 
@@ -1570,7 +1738,25 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x060034BB RID: 13499 RVA: 0x0003006C File Offset: 0x0002E26C
 	public void SubQliphothCounter()
-	{
+	{ // <Mod>
+		if (isTranquilized)
+		{
+			if (tranqQliphoth == -1) tranqQliphoth = _qliphothCounter;
+			if (tranqQliphoth <= 0)
+			{
+				return;
+			}
+			tranqQliphoth--;
+			if (tranqQliphoth < 0)
+			{
+				tranqQliphoth = 0;
+			}
+			if (script.SendWhileTranqed)
+			{
+				this.script.AddedQliphothCounter();
+			}
+			return;
+		}
 		if (this._qliphothCounter <= 0)
 		{
 			return;
@@ -1586,7 +1772,25 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x060034BC RID: 13500 RVA: 0x0015C558 File Offset: 0x0015A758
 	public void AddQliphothCounter()
-	{
+	{ // <Mod>
+		if (isTranquilized)
+		{
+			if (tranqQliphoth == -1) tranqQliphoth = _qliphothCounter;
+			if (tranqQliphoth >= this.script.GetQliphothCounterMax())
+			{
+				return;
+			}
+			tranqQliphoth++;
+			if (tranqQliphoth > this.script.GetQliphothCounterMax())
+			{
+				tranqQliphoth = this.script.GetQliphothCounterMax();
+			}
+			if (script.SendWhileTranqed)
+			{
+				this.script.AddedQliphothCounter();
+			}
+			return;
+		}
 		if (this._qliphothCounter >= this.script.GetQliphothCounterMax())
 		{
 			return;
@@ -1602,7 +1806,7 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x060034BD RID: 13501 RVA: 0x0015C5BC File Offset: 0x0015A7BC
 	public void SetQliphothCounter(int value)
-	{
+	{ // <Mod>
 		if (this.script.GetQliphothCounterMax() <= 0)
 		{
 			return;
@@ -1615,30 +1819,63 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		{
 			value = this.script.GetQliphothCounterMax();
 		}
-		int num = Math.Abs(this._qliphothCounter - value);
-		if (this._qliphothCounter > value)
+		if (isTranquilized)
 		{
-			for (int i = 0; i < num; i++)
+			if (tranqQliphoth == -1) tranqQliphoth = _qliphothCounter;
+			int num = Math.Abs(tranqQliphoth - value);
+			if (tranqQliphoth > value)
 			{
-				if (this._qliphothCounter <= 0)
+				for (int i = 0; i < num; i++)
 				{
-					this._qliphothCounter = 0;
-					return;
+					if (tranqQliphoth <= 0)
+					{
+						tranqQliphoth = 0;
+						return;
+					}
+					this.SubQliphothCounter();
 				}
-				this.SubQliphothCounter();
+				return;
 			}
-			return;
-		}
-		if (this._qliphothCounter < value)
-		{
-			for (int j = 0; j < num; j++)
+			if (tranqQliphoth < value)
 			{
-				if (this._qliphothCounter >= this.script.GetQliphothCounterMax())
+				for (int j = 0; j < num; j++)
 				{
-					this._qliphothCounter = this.script.GetQliphothCounterMax();
-					return;
+					if (tranqQliphoth >= this.script.GetQliphothCounterMax())
+					{
+						tranqQliphoth = this.script.GetQliphothCounterMax();
+						return;
+					}
+					this.AddQliphothCounter();
 				}
-				this.AddQliphothCounter();
+			}
+		}
+		else
+		{
+			int num = Math.Abs(this._qliphothCounter - value);
+			if (this._qliphothCounter > value)
+			{
+				for (int i = 0; i < num; i++)
+				{
+					if (this._qliphothCounter <= 0)
+					{
+						this._qliphothCounter = 0;
+						return;
+					}
+					this.SubQliphothCounter();
+				}
+				return;
+			}
+			if (this._qliphothCounter < value)
+			{
+				for (int j = 0; j < num; j++)
+				{
+					if (this._qliphothCounter >= this.script.GetQliphothCounterMax())
+					{
+						this._qliphothCounter = this.script.GetQliphothCounterMax();
+						return;
+					}
+					this.AddQliphothCounter();
+				}
 			}
 		}
 	}
@@ -1725,6 +1962,76 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		return this.metaInfo.observeBonus.GetSpeedBonus(this.GetObservationLevel());
 	}
 
+	//> <Mod>
+	public void RecoverHP(float amount)
+	{
+		this.hp += amount;
+		this.hp = ((this.hp <= (float)this.maxHp) ? this.hp : ((float)this.maxHp));
+	}
+
+	public bool isTranquilized
+	{
+		get
+		{
+			return _isTranquilized;
+		}
+	}
+
+	public float tranqilzeTime
+	{
+		get
+		{
+			return tranqRemainTime;
+		}
+	}
+
+	public bool TryTranquilize(float _time)
+	{
+		if (Unit.room == null || !script.IsTranqable()) return false;
+		if (isTranquilized)
+		{
+			tranqRemainTime += _time;
+			Unit.room.OnTranquilizeExtend();
+			return true;
+		}
+		_isTranquilized = true;
+		tranqRemainTime = _time;
+		OnTranquilized();
+		return true;
+	}
+
+	public void OnTranquilized()
+	{
+		script.isTranq = true;
+		script.OnTranquilized();
+		Unit.room.OnTranquilizeStart();
+	}
+
+	public void EndTranq()
+	{
+		_isTranquilized = false;
+		script.isTranq = false;
+		script.OnTranqEnd();
+		Unit.room.OnTranquilizeEnd();
+		if (tranqQliphoth != -1)
+		{
+			SetQliphothCounter(tranqQliphoth);
+			tranqQliphoth = -1;
+		}
+	}
+
+	public float GetTranqEffectiveness()
+	{
+		return (float)tranqEffectiveness;
+	}
+
+	public void ReduceTranqEffectiveness()
+	{
+		tranqEffectiveness -= tranqDim;
+		if (tranqEffectiveness < 0) tranqEffectiveness = 0;
+	}
+	//<
+
 	// Token: 0x060034C6 RID: 13510 RVA: 0x0015C754 File Offset: 0x0015A954
 	static CreatureModel()
 	{
@@ -1743,14 +2050,107 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x040030ED RID: 12525
 	public static string[] careTakingRegion = new string[]
-	{
+	{ // <Mod> Extended to 100
 		"care_0",
 		"care_1",
 		"care_2",
 		"care_3",
 		"care_4",
 		"care_5",
-		"care_6"
+		"care_6",
+		"care_7",
+		"care_8",
+		"care_9",
+		"care_10",
+		"care_11",
+		"care_12",
+		"care_13",
+		"care_14",
+		"care_15",
+		"care_16",
+		"care_17",
+		"care_18",
+		"care_19",
+		"care_20",
+		"care_21",
+		"care_22",
+		"care_23",
+		"care_24",
+		"care_25",
+		"care_26",
+		"care_27",
+		"care_28",
+		"care_29",
+		"care_30",
+		"care_31",
+		"care_32",
+		"care_33",
+		"care_34",
+		"care_35",
+		"care_36",
+		"care_37",
+		"care_38",
+		"care_39",
+		"care_40",
+		"care_41",
+		"care_42",
+		"care_43",
+		"care_44",
+		"care_45",
+		"care_46",
+		"care_47",
+		"care_48",
+		"care_49",
+		"care_50",
+		"care_51",
+		"care_52",
+		"care_53",
+		"care_54",
+		"care_55",
+		"care_56",
+		"care_57",
+		"care_58",
+		"care_59",
+		"care_60",
+		"care_61",
+		"care_62",
+		"care_63",
+		"care_64",
+		"care_65",
+		"care_66",
+		"care_67",
+		"care_68",
+		"care_69",
+		"care_70",
+		"care_71",
+		"care_72",
+		"care_73",
+		"care_74",
+		"care_75",
+		"care_76",
+		"care_77",
+		"care_78",
+		"care_79",
+		"care_80",
+		"care_81",
+		"care_82",
+		"care_83",
+		"care_84",
+		"care_85",
+		"care_86",
+		"care_87",
+		"care_88",
+		"care_89",
+		"care_90",
+		"care_91",
+		"care_92",
+		"care_93",
+		"care_94",
+		"care_95",
+		"care_96",
+		"care_97",
+		"care_98",
+		"care_99"
 	};
 
 	// Token: 0x040030EE RID: 12526
@@ -1876,4 +2276,50 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 
 	// Token: 0x04003117 RID: 12567
 	private static int counter = 0;
+
+	//> <Mod>
+	public int overloadReduction
+	{
+		get
+		{
+			return _overloadReduction;
+		}
+		set
+		{
+			_overloadReduction = value;
+			this.OnChangeProbReduectionCounter();
+		}
+	}
+
+	private int _overloadReduction;
+
+
+	public bool isNaturalOverload
+	{
+		get
+		{
+			return _isNaturalOverload;
+		}
+		set
+		{
+			_isNaturalOverload = value;
+		}
+	}
+
+	private bool _isNaturalOverload;
+
+	private bool _isTranquilized;
+
+	private float tranqRemainTime;
+
+	private float tranqCap;
+
+	private float tranqDim;
+
+	private float tranqRejuv;
+
+	private float tranqEffectiveness;
+
+	[NonSerialized]
+	public int tranqQliphoth;
 }

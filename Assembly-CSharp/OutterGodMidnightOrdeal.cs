@@ -1,3 +1,8 @@
+/*
+private void MakeMidnight() // Generate even if there aren't enough departments
+private OutterGodOrdealCreature MakeTombStones(RwbpType type, MapNode node) // 
+private static int[] ids // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,7 +28,7 @@ public class OutterGodMidnightOrdeal : OutterGodOrdeal
 
 	// Token: 0x06003CD9 RID: 15577 RVA: 0x0017B75C File Offset: 0x0017995C
 	private void MakeMidnight()
-	{
+	{ // <Mod>
 		List<Sefira> list = new List<Sefira>(SefiraManager.instance.GetOpendSefiraList());
 		List<MapNode> list2 = new List<MapNode>();
 		for (int i = 0; i < 4; i++)
@@ -52,14 +57,25 @@ public class OutterGodMidnightOrdeal : OutterGodOrdeal
 				}
 			}
 		}
-		if (list2.Count < 4)
+		if (list2.Count < 1)
 		{
-			Debug.Log("cannot generate outtergod_midnight");
-			this.OrdealEnd();
+			return;
 		}
 		this.MakeTombStones(RwbpType.R, list2[0]);
+		if (list2.Count < 2)
+		{
+			return;
+		}
 		this.MakeTombStones(RwbpType.W, list2[1]);
+		if (list2.Count < 3)
+		{
+			return;
+		}
 		this.MakeTombStones(RwbpType.B, list2[2]);
+		if (list2.Count < 4)
+		{
+            return;
+		}
 		this.MakeTombStones(RwbpType.P, list2[3]);
 	}
 
@@ -112,8 +128,9 @@ public class OutterGodMidnightOrdeal : OutterGodOrdeal
 
 	// Token: 0x06003CDD RID: 15581 RVA: 0x0017B854 File Offset: 0x00179A54
 	private OutterGodOrdealCreature MakeTombStones(RwbpType type, MapNode node)
-	{
-		OrdealCreatureModel ordealCreatureModel = OrdealManager.instance.AddCreature((long)OutterGodMidnightOrdeal.ids[(int)type], node, this);
+	{ // <Mod>
+        int num = (int)type - 1;
+		OrdealCreatureModel ordealCreatureModel = OrdealManager.instance.AddCreature((long)OutterGodMidnightOrdeal.ids[num], node, this);
 		(ordealCreatureModel.script as OutterGodOrdealCreature).SetOrdeal(this, this.level);
 		this._curOrdealCreatureList.Add(ordealCreatureModel);
 		return ordealCreatureModel.script as OutterGodOrdealCreature;
@@ -127,8 +144,11 @@ public class OutterGodMidnightOrdeal : OutterGodOrdeal
 
 	// Token: 0x0400377D RID: 14205
 	private static int[] ids = new int[]
-	{
-		100000,
+	{ // <Mod>
+		2000121,
+		2000122,
+		2000123,
+		2000124,
 		2000121,
 		2000122,
 		2000123,

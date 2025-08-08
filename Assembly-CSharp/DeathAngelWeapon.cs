@@ -1,3 +1,7 @@
+/*
+public override void OnStageStart() // 
++public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg) // Gives debufs that multiply Pale damage taken
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,10 +66,10 @@ public class DeathAngelWeapon : EquipmentScriptBase
 
 	// Token: 0x06003607 RID: 13831 RVA: 0x00160608 File Offset: 0x0015E808
 	public override void OnStageStart()
-	{
+	{ // <Mod> Keep Ability Mode
 		base.OnStageStart();
 		this.worker = (base.model.owner as WorkerModel);
-		if (CreatureManager.instance.FindCreature(100015L) == null)
+		if (CreatureManager.instance.FindCreature(100015L) == null && !SpecialModeConfig.instance.GetValue<bool>("PLKeepAbilityWhenWNAbsent"))
 		{
 			this._whiteNight = false;
 		}
@@ -208,7 +212,8 @@ public class DeathAngelWeapon : EquipmentScriptBase
 	{
 		if (this.isSpecial)
 		{
-			return base.OnGiveDamage(actor, target, ref dmg);
+            bool output = base.OnGiveDamage(actor, target, ref dmg);
+			return output;
 		}
 		if (this.atkInit)
 		{
@@ -245,8 +250,23 @@ public class DeathAngelWeapon : EquipmentScriptBase
 		return false;
 	}
 
-	// Token: 0x06003614 RID: 13844 RVA: 0x00160970 File Offset: 0x0015EB70
-	private List<UnitModel> GetTargets()
+    // <Mod> gives debufs that multiply Pale damage taken, normal attack x1.2, special attack x2.0
+    public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
+    {
+		if (isSpecial)
+		{
+			if (target.hp > 0f)
+			{
+				target.AddUnitBuf(new DeathAngelWeaponSpecialDebuf());
+			}
+			return;
+		}
+        target.AddUnitBuf(new DeathAngelWeaponNormalDebuf());
+    }
+
+
+    // Token: 0x06003614 RID: 13844 RVA: 0x00160970 File Offset: 0x0015EB70
+    private List<UnitModel> GetTargets()
 	{
 		List<UnitModel> list = new List<UnitModel>();
 		PassageObjectModel currentPassage = base.model.owner.GetMovableNode().currentPassage;

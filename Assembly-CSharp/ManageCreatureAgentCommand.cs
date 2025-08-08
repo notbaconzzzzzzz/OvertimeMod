@@ -107,20 +107,20 @@ public class ManageCreatureAgentCommand : WorkerCommand
 	}
 
 	// Token: 0x04005229 RID: 21033
-	private AgentModel[] coopAgents;
+	public AgentModel[] coopAgents; // <Mod> changed from private to public
 
 	// Token: 0x0400522A RID: 21034
-	private SkillTypeInfo skill;
+	public SkillTypeInfo skill; // <Mod> changed from private to public
 
 	// Token: 0x0400522B RID: 21035
-	private UseSkill useSkill;
+	public UseSkill useSkill; // <Mod> changed from private to public
 
 	// Token: 0x0400522C RID: 21036
-	private Sprite skillSprite;
+	public Sprite skillSprite; // <Mod> changed from private to public
 
 	// Token: 0x0400522D RID: 21037
-	private bool waiting = true;
+	public bool waiting = true; // <Mod> changed from private to public
 
 	// Token: 0x0400522E RID: 21038
-	private CreatureModel targetCreature;
+	public CreatureModel targetCreature; // <Mod> changed from private to public
 }

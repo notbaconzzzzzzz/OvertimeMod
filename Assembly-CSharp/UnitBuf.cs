@@ -1,3 +1,6 @@
+/*
++Various new overridable functions // 
+*/
 using System;
 using UnityEngine;
 
@@ -95,6 +98,22 @@ public class UnitBuf
 	// Token: 0x06005973 RID: 22899 RVA: 0x000043AD File Offset: 0x000025AD
 	public virtual void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
 	{
+	}
+
+    // <Mod>
+	public virtual void OnTakeDamage_After(UnitModel actor, DamageInfo dmg)
+	{
+	}
+
+	// <Mod>
+	public virtual void OwnerHeal(bool isMental, ref float amount)
+	{
+	}
+
+	// <Mod>
+	public virtual float RecoveryMultiplier(bool isMental, float amount)
+	{
+		return 1f;
 	}
 
 	// Token: 0x04005282 RID: 21122

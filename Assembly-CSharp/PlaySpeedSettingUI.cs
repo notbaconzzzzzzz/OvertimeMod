@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+private void Start() // 
+private void Update() // Implemting speed x3
+public void OnClickSpeed3() // Implemting speed x3
+public void UpdateButton() // Implemting speed x3
++private int tryPauseCount // 
+*/
+using System;
 using System.Collections.Generic;
 using GameStatusUI;
 using GlobalBullet;
@@ -193,12 +200,13 @@ public class PlaySpeedSettingUI : MonoBehaviour
 
     // Token: 0x06004E43 RID: 20035 RVA: 0x000401BF File Offset: 0x0003E3BF
     private void Start()
-    {
+    { // <Mod>
         this._available = true;
         this.observeFilter.gameObject.SetActive(false);
         this.pauseFilter.gameObject.SetActive(false);
         this.UpdateButton();
         this.timeMultiplierEnabled = true;
+        tryPauseCount = 0;
     }
 
     // Token: 0x06004E44 RID: 20036 RVA: 0x000401F7 File Offset: 0x0003E3F7
@@ -209,7 +217,7 @@ public class PlaySpeedSettingUI : MonoBehaviour
 
     // Token: 0x06004E45 RID: 20037 RVA: 0x001CAE50 File Offset: 0x001C9050
     private void Update()
-    {
+    { // <Mod> Allow the E key to set the speed to x3
         if (GlobalGameManager.instance.gameMode == GameMode.TUTORIAL)
         {
             return;
@@ -254,14 +262,43 @@ public class PlaySpeedSettingUI : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!this._available)
+            bool ingnoreBlock = false;
+            if (!this._available && !EscapeUI.instance.IsOpened)
             {
-                this.CallBlockEvent(0);
-                return;
+                tryPauseCount++;
+                if (tryPauseCount >= 3)
+                {
+                    tryPauseCount = 0;
+                    ingnoreBlock = true;
+                    AudioClip audioClip = Resources.Load<AudioClip>(string.Format("Sounds/{0}", "SefiraBoss/Chokhmah/Chokma_Space"));
+                    if (audioClip != null)
+                    {
+                        GlobalAudioManager.instance.PlayLocalClip(audioClip);
+                    }
+                }
+                if (!ingnoreBlock)
+                {
+                    this.CallBlockEvent(0);
+                    return;
+                }
             }
-            if (this.CheckEscapeBlocked())
+            if (this.CheckEscapeBlocked() && !ingnoreBlock && !EscapeUI.instance.IsOpened)
             {
-                return;
+                tryPauseCount++;
+                if (tryPauseCount >= 3)
+                {
+                    tryPauseCount = 0;
+                    ingnoreBlock = true;
+                    AudioClip audioClip = Resources.Load<AudioClip>(string.Format("Sounds/{0}", "SefiraBoss/Chokhmah/Chokma_Space"));
+                    if (audioClip != null)
+                    {
+                        GlobalAudioManager.instance.PlayLocalClip(audioClip);
+                    }
+                }
+                if (!ingnoreBlock)
+                {
+                    return;
+                }
             }
             if (GameManager.currentGameManager.state != GameState.STOP)
             {
@@ -275,7 +312,10 @@ public class PlaySpeedSettingUI : MonoBehaviour
                     {
                         EscapeUI.OpenWindow();
                         CameraMover.instance.StopMove();
-                        this.OnPause(PAUSECALL.ESCAPE);
+                        if (!ingnoreBlock)
+                        {
+                            this.OnPause(PAUSECALL.ESCAPE);
+                        }
                     }
                 }
                 else
@@ -321,12 +361,16 @@ public class PlaySpeedSettingUI : MonoBehaviour
             if (!ConsoleScript.instance.ConsoleWnd.activeInHierarchy)
             {
                 int gameSpeedLevel = GameManager.currentGameManager.gameSpeedLevel;
-                if (gameSpeedLevel >= 1 && gameSpeedLevel < 3)
+                if (gameSpeedLevel >= 1 && gameSpeedLevel < 4)
                 {
                     GameManager.currentGameManager.SetPlaySpeed(GameManager.currentGameManager.gameSpeedLevel + 1);
                     this.UpdateButton();
                 }
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            CreatureOverloadManager.instance.ToggleWorkCompression();
         }
         if (Input.GetKeyDown(KeyCode.F1))
         {
@@ -579,7 +623,7 @@ public class PlaySpeedSettingUI : MonoBehaviour
 
     // Token: 0x06004E56 RID: 20054 RVA: 0x001CB5A0 File Offset: 0x001C97A0
     public void OnClickSpeed3()
-    {
+    { // <Mod> double clicking the speed x2 button sets it to speed x3
         if (ResearchDataModel.instance.GetSephiraAbility(SefiraManager.instance.GetSefira(SefiraEnum.MALKUT)) < 1)
         {
             return;
@@ -597,13 +641,20 @@ public class PlaySpeedSettingUI : MonoBehaviour
             this.CallBlockEvent(1);
             return;
         }
-        GameManager.currentGameManager.SetPlaySpeed(3);
+		if (GameManager.currentGameManager.gameSpeedLevel == 3)
+		{
+			GameManager.currentGameManager.SetPlaySpeed(4);
+		}
+		else
+		{
+			GameManager.currentGameManager.SetPlaySpeed(3);
+		}
         this.UpdateButton();
     }
 
     // Token: 0x06004E57 RID: 20055 RVA: 0x001CB608 File Offset: 0x001C9808
     public void UpdateButton()
-    {
+    { // <Mod> when speed is x2 it's button is still pressable *fake news :(
         if (GameManager.currentGameManager.state == GameState.PAUSE)
         {
             this.PauseButton.interactable = false;
@@ -625,33 +676,33 @@ public class PlaySpeedSettingUI : MonoBehaviour
         else
         {
             int gameSpeedLevel = GameManager.currentGameManager.gameSpeedLevel;
-            if (gameSpeedLevel != 1)
-            {
-                if (gameSpeedLevel != 2)
-                {
-                    if (gameSpeedLevel == 3)
-                    {
-                        this.PauseButton.interactable = true;
-                        this.NormalSpeed.interactable = true;
-                        this.OneHalfSpeed.interactable = true;
-                        this.TwiceSpeed.interactable = false;
-                    }
-                }
-                else
-                {
+			switch (gameSpeedLevel)
+			{
+				case 1:
+					this.PauseButton.interactable = true;
+					this.NormalSpeed.interactable = false;
+					this.OneHalfSpeed.interactable = true;
+					this.TwiceSpeed.interactable = true;
+					break;
+				case 2:
                     this.PauseButton.interactable = true;
                     this.NormalSpeed.interactable = true;
                     this.OneHalfSpeed.interactable = false;
                     this.TwiceSpeed.interactable = true;
-                }
-            }
-            else
-            {
-                this.PauseButton.interactable = true;
-                this.NormalSpeed.interactable = false;
-                this.OneHalfSpeed.interactable = true;
-                this.TwiceSpeed.interactable = true;
-            }
+					break;
+				case 3:
+					this.PauseButton.interactable = true;
+					this.NormalSpeed.interactable = true;
+					this.OneHalfSpeed.interactable = true;
+					this.TwiceSpeed.interactable = false;
+					break;
+				case 4:
+					this.PauseButton.interactable = true;
+					this.NormalSpeed.interactable = true;
+					this.OneHalfSpeed.interactable = true;
+					this.TwiceSpeed.interactable = true;
+					break;
+			}
             this.PauseButton.OnPointerExit(null);
             this.NormalSpeed.OnPointerExit(null);
             this.OneHalfSpeed.OnPointerExit(null);
@@ -805,4 +856,7 @@ public class PlaySpeedSettingUI : MonoBehaviour
     // Token: 0x02000A2D RID: 2605
     // (Invoke) Token: 0x06004E62 RID: 20066
     public delegate void BlockedUIEvent(int index);
+
+    // <Mod>
+    private int tryPauseCount;
 }

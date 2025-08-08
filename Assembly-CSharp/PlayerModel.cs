@@ -1,5 +1,16 @@
+/*
+public void Init() // 
+public bool IsWaitingCreatureExist() // (!) 
+public void SetDay(int day) // 
+public void Nextday() // 
+public Dictionary<string, object> GetSaveData() // 
+public void LoadData(Dictionary<string, object> dic) // 
++many functions
+*/
 using System;
+using System.Linq; //
 using System.Collections.Generic;
+using LobotomyBaseMod; // 
 using GameStatusUI;
 using UnityEngine;
 
@@ -48,23 +59,28 @@ public class PlayerModel
 
 	// Token: 0x0600384F RID: 14415 RVA: 0x000324F5 File Offset: 0x000306F5
 	public void Init()
-	{
+	{ // <Mod>
 		this._ketherGameOver = false;
 		this._memoryInit = false;
 		this.day = 0;
 		this.addedCreature.Clear();
+		this._overtimeMode = true;
+		this._extraOvertimeMode = true;
+		this.CheckOvertimeMode();
 	}
 
 	// Token: 0x06003850 RID: 14416 RVA: 0x00032517 File Offset: 0x00030717
 	public void InitAddingCreatures()
-	{
-		this.addedCreature.Clear();
+	{ // <Patch>
+		InitAddingCreatures_Mod();
+		//this.addedCreature.Clear();
 	}
 
 	// Token: 0x06003851 RID: 14417 RVA: 0x00032524 File Offset: 0x00030724
 	public void AddWaitingCreature(long id)
-	{
-		this.addedCreature.Enqueue(id);
+	{ // <Patch>
+		AddWaitingCreature_Mod(new LobotomyBaseMod.LcIdLong(id));
+		//this.addedCreature.Enqueue(id);
 	}
 
 	// Token: 0x06003852 RID: 14418 RVA: 0x00032532 File Offset: 0x00030732
@@ -96,22 +112,35 @@ public class PlayerModel
 
 	// Token: 0x06003854 RID: 14420 RVA: 0x0016B870 File Offset: 0x00169A70
 	public bool IsWaitingCreatureExist()
-	{
+	{ // <Patch> <Mod>
+		if (SpecialModeConfig.instance.GetValue<bool>("DoubleAbno"))
+		{
+			if (this.day >= 20 && this.day < 25)
+			{
+				return this.addedCreatureMod.Count >= 4;
+			}
+			if (this.day >= 45 && this.day < 50)
+			{
+				return this.addedCreatureMod.Count >= 4;
+			}
+			return this.addedCreatureMod.Count >= 2;
+		}
 		if (this.day >= 20 && this.day < 25)
 		{
-			return this.addedCreature.Count >= 2;
+			return this.addedCreatureMod.Count >= 2;
 		}
 		if (this.day >= 45 && this.day < 50)
 		{
-			return this.addedCreature.Count >= 2;
+			return this.addedCreatureMod.Count >= 2;
 		}
-		return this.addedCreature.Count >= 1;
+		return this.addedCreatureMod.Count >= 1;
 	}
 
 	// Token: 0x06003855 RID: 14421 RVA: 0x00032571 File Offset: 0x00030771
 	public bool IsWaitingCreature(long id)
-	{
-		return this.addedCreature.Contains(id);
+	{ // <Patch>
+		return IsWaitingCreature_Mod(new LobotomyBaseMod.LcIdLong(id));
+		//return this.addedCreature.Contains(id);
 	}
 
 	// Token: 0x06003856 RID: 14422 RVA: 0x0003257F File Offset: 0x0003077F
@@ -134,17 +163,19 @@ public class PlayerModel
 
 	// Token: 0x06003859 RID: 14425 RVA: 0x0003259F File Offset: 0x0003079F
 	public void SetDay(int day)
-	{
+	{ // <Mod>
 		this.day = day;
 		Notice.instance.Send(NoticeName.UpdateDay, new object[0]);
+		CheckOvertimeMode();
 	}
 
 	// Token: 0x0600385A RID: 14426 RVA: 0x000325BD File Offset: 0x000307BD
 	public void Nextday()
-	{
+	{ // <Mod>
 		this.day++;
 		GlobalGameManager.instance.lastLoaded = false;
 		Notice.instance.Send(NoticeName.UpdateDay, new object[0]);
+		CheckOvertimeMode();
 	}
 
 	// Token: 0x0600385B RID: 14427 RVA: 0x0016B8E8 File Offset: 0x00169AE8
@@ -239,23 +270,290 @@ public class PlayerModel
 
 	// Token: 0x0600385F RID: 14431 RVA: 0x0016BAF8 File Offset: 0x00169CF8
 	public Dictionary<string, object> GetSaveData()
-	{
+	{ // <Mod>
 		return new Dictionary<string, object>
 		{
 			{
 				"day",
 				this.day
+			},
+			{
+				"overtimeMode",
+				_overtimeMode
+			},
+			{
+				"extraOvertimeMode",
+				_extraOvertimeMode
 			}
 		};
 	}
 
 	// Token: 0x06003860 RID: 14432 RVA: 0x0016BB24 File Offset: 0x00169D24
 	public void LoadData(Dictionary<string, object> dic)
-	{
+	{ // <Mod>
 		Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>();
 		this._memoryInit = false;
 		this._ketherGameOver = false;
 		GameUtil.TryGetValue<int>(dic, "day", ref this.day);
+        if (!GameUtil.TryGetValue<bool>(dic, "overtimeMode", ref _overtimeMode))
+        {
+            _overtimeMode = true;
+        }
+        if (!GameUtil.TryGetValue<bool>(dic, "extraOvertimeMode", ref _extraOvertimeMode))
+        {
+            _extraOvertimeMode = _overtimeMode;
+        }
+	}
+
+    //> <Mod>
+    public bool IsOvertimeMode()
+    {
+        return _overtimeMode;
+    }
+
+    public bool IsExtraOvertimeMode()
+    {
+        return _extraOvertimeMode;
+    }
+
+    public bool CheckOvertimeMode()
+    {
+		CheckExtraOvertimeMode();
+        if (!_overtimeMode) return false;
+		if (day >= 45) // || day + 1 >= GlobalEtcDataModel.instance.unlockedMaxDay)
+		{
+			_debug = "Day Number";
+			DisableOvertimeMode();
+			return false;
+		}
+		if (day >= 40)
+		{
+			if (!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.BINAH) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHOKHMAH))
+			{
+				_debug = "Core Suppression (Atziluth)";
+				DisableOvertimeMode();
+				return false;
+			}
+		}
+		if (day >= 35)
+		{
+			if (!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.TIPERERTH1) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.GEBURAH) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
+			{
+				_debug = "Core Suppression (Briah)";
+				DisableOvertimeMode();
+				return false;
+			}
+		}
+		if (day >= 20)
+		{
+			if (!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.MALKUT) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.YESOD) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.HOD) ||
+				!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.NETZACH))
+			{
+				_debug = "Core Suppression (Assiah)";
+				DisableOvertimeMode();
+				return false;
+			}
+		}
+		Sefira[] sefiras = SefiraManager.instance.GetOpendSefiraList();
+		List<SefiraEnum> opened = new List<SefiraEnum>();
+		foreach (Sefira sefira in sefiras)
+		{
+			if (sefira.sefiraEnum != SefiraEnum.TIPERERTH2)
+			{
+				opened.Add(sefira.sefiraEnum);
+			}
+		}
+		IfOneAddOther(opened, SefiraEnum.HOD, SefiraEnum.NETZACH);
+		IfOneAddOther(opened, SefiraEnum.GEBURAH, SefiraEnum.CHESED);
+		IfOneAddOther(opened, SefiraEnum.BINAH, SefiraEnum.CHOKHMAH);
+		List<Mission> allClearedMissions = MissionManager.instance.GetClearedMissions();
+		foreach (SefiraEnum sefira in opened)
+		{
+			int missions = MissionManager.instance.GetClearedOrClosedMissionNum(sefira);
+			int cond = 4;
+			if (sefira == SefiraEnum.MALKUT && day < 20)
+			{
+				cond = 3;
+			}
+			if (missions < cond)
+			{
+				_debug = "Mission : " + sefira.ToString();
+				DisableOvertimeMode();
+				return false;
+			}
+		}
+		return true;
+    }
+
+    public bool CheckExtraOvertimeMode()
+    {
+        if (!_extraOvertimeMode) return false;
+		if (day >= 45 || day + 1 >= GlobalEtcDataModel.instance.unlockedMaxDay)
+		{
+			_debug = "Day Number";
+			DisableExtraOvertimeMode();
+			return false;
+		}
+		if (day >= 40)
+		{
+			if (!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.BINAH) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHOKHMAH))
+			{
+				_debug = "Core Suppression (Atziluth)";
+				DisableExtraOvertimeMode();
+				return false;
+			}
+		}
+		if (day >= 35)
+		{
+			if (!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.GEBURAH) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
+			{
+				_debug = "Core Suppression (Briah)";
+				DisableExtraOvertimeMode();
+				return false;
+			}
+		}
+		if (day >= 20)
+		{
+			if (!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.YESOD) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.HOD) ||
+				!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
+			{
+				_debug = "Core Suppression (Assiah)";
+				DisableExtraOvertimeMode();
+				return false;
+			}
+		}
+		Sefira[] sefiras = SefiraManager.instance.GetOpendSefiraList();
+		List<SefiraEnum> opened = new List<SefiraEnum>();
+		foreach (Sefira sefira in sefiras)
+		{
+			if (sefira.sefiraEnum != SefiraEnum.TIPERERTH2)
+			{
+				opened.Add(sefira.sefiraEnum);
+			}
+		}
+		IfOneAddOther(opened, SefiraEnum.HOD, SefiraEnum.NETZACH);
+		IfOneAddOther(opened, SefiraEnum.GEBURAH, SefiraEnum.CHESED);
+		IfOneAddOther(opened, SefiraEnum.BINAH, SefiraEnum.CHOKHMAH);
+		List<Mission> allClearedMissions = MissionManager.instance.GetClearedMissions();
+		foreach (SefiraEnum sefira in opened)
+		{
+			int missions = MissionManager.instance.GetClearedOrClosedMissionNum(sefira);
+			int cond = 9;
+			if (sefira == SefiraEnum.MALKUT && day < 20)
+			{
+				cond = 8;
+			}
+			if (missions < cond)
+			{
+				_debug = "Mission : " + sefira.ToString();
+				DisableExtraOvertimeMode();
+				return false;
+			}
+		}
+		return true;
+    }
+
+    public void DisableOvertimeMode()
+    {
+        _overtimeMode = false;
+		DisableExtraOvertimeMode();
+    }
+
+    public void DisableExtraOvertimeMode()
+    {
+        _extraOvertimeMode = false;
+    }
+
+	private void IfOneAddOther(List<SefiraEnum> list, SefiraEnum sefira1, SefiraEnum sefira2)
+	{
+		bool flag1 = list.Contains(sefira1);
+		bool flag2 = list.Contains(sefira2);
+		if (flag1 && !flag2)
+		{
+			list.Add(sefira2);
+		}
+		if (!flag1 && flag2)
+		{
+			list.Add(sefira1);
+		}
+	}
+
+    public void ForcelyEnterOvertimeMode()
+    {
+        _overtimeMode = true;
+    }
+
+	public string DebugString
+	{
+		get
+		{
+			return _debug;
+		}
+	}
+
+	private string _debug = "";
+	//< <Mod>
+
+	// <Patch>
+	public List<LobotomyBaseMod.LcIdLong> CopyWaitingCreatures_Mod()
+	{
+		List<LobotomyBaseMod.LcIdLong> list = new List<LobotomyBaseMod.LcIdLong>();
+		foreach (LobotomyBaseMod.LcIdLong item in this.addedCreatureMod)
+		{
+			list.Add(item);
+		}
+		return list;
+	}
+
+	// <Patch>
+	public bool GetWaitingCreature_Mod(out LobotomyBaseMod.LcIdLong id)
+	{
+		id = new LobotomyBaseMod.LcIdLong(-1L);
+		bool flag = this.addedCreatureMod.Count == 0;
+		bool result;
+		if (flag)
+		{
+			result = false;
+		}
+		else
+		{
+			id = this.addedCreatureMod.Dequeue();
+			bool flag2 = GlobalGameManager.instance.ExistEtcData();
+			if (flag2)
+			{
+				GlobalGameManager.instance.SaveEtcData();
+			}
+			result = true;
+		}
+		return result;
+	}
+
+	// <Patch>
+	public bool IsWaitingCreature_Mod(LobotomyBaseMod.LcIdLong id)
+	{
+		return this.addedCreatureMod.Contains(id);
+	}
+
+	// <Patch>
+	public void InitAddingCreatures_Mod()
+	{
+		this.addedCreatureMod.Clear();
+	}
+
+	// <Patch>
+	public void AddWaitingCreature_Mod(LobotomyBaseMod.LcIdLong id)
+	{
+		this.addedCreatureMod.Enqueue(id);
 	}
 
 	// Token: 0x06003861 RID: 14433 RVA: 0x00032601 File Offset: 0x00030801
@@ -294,6 +592,12 @@ public class PlayerModel
 	// Token: 0x0400338A RID: 13194
 	private bool _ketherGameOver;
 
+    // <Mod>
+	private bool _overtimeMode;
+
+    // <Mod>
+	private bool _extraOvertimeMode;
+
 	// Token: 0x0400338B RID: 13195
 	private static PlayerModel _instance;
 
@@ -302,6 +606,9 @@ public class PlayerModel
 
 	// Token: 0x0400338D RID: 13197
 	public Queue<long> addedCreature = new Queue<long>();
+	
+	// <Patch>
+	public Queue<LobotomyBaseMod.LcIdLong> addedCreatureMod = new Queue<LobotomyBaseMod.LcIdLong>();
 
 	// Token: 0x020006D5 RID: 1749
 	public class EmergencyController

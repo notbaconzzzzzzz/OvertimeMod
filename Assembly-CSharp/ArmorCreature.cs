@@ -54,9 +54,10 @@ public class ArmorCreature : CreatureBase, IObserver
 
 	// Token: 0x06001C7E RID: 7294 RVA: 0x000ED158 File Offset: 0x000EB358
 	public override void OnStageStart()
-	{
+	{ // <Mod>
 		foreach (ArmorCreature.StackAgent stackAgent in this._specialAgentList)
 		{
+            stackAgent.attachmentCount = 0;
 			switch (stackAgent.state)
 			{
 			case ArmorCreature.GiftState.BLUE_ONE:
@@ -84,17 +85,40 @@ public class ArmorCreature : CreatureBase, IObserver
 
 	// Token: 0x06001C80 RID: 7296 RVA: 0x0001EFD7 File Offset: 0x0001D1D7
 	public override void OnEnterRoom(UseSkill skill)
-	{
+	{ // <Mod>
 		base.OnEnterRoom(skill);
+		this._isGiveGift = false;
 		if (skill.skillTypeInfo.id == 4L)
 		{
 			this._isGiveGift = true;
+		}
+		_isReduceGift = false;
+		if (skill.skillTypeInfo.id == 3L && SpecialModeConfig.instance.GetValue<bool>("CrumblingArmorGift"))
+		{
+			_isReduceGift = true;
+            AgentModel agent = skill.agent;
+			ArmorCreature.StackAgent stackAgent = this._specialAgentList.Find((ArmorCreature.StackAgent x) => x.agent == agent);
+			if (stackAgent != null)
+			{
+                float amt = 30f;
+                for (int i = 0; i < stackAgent.attachmentCount; i++)
+                {
+                    amt *= 2f;
+                }
+                agent.SetSpecialDeadScene(WorkerSpine.AnimatorName.ArmorCreatureDead);
+                agent.TakeDamage(new DamageInfo(RwbpType.P, amt));
+                if (!agent.IsDead())
+                {
+                    agent.ResetSpecialDeadScene();
+                }
+                stackAgent.attachmentCount++;
+            }
 		}
 	}
 
 	// Token: 0x06001C81 RID: 7297 RVA: 0x000ED258 File Offset: 0x000EB458
 	public override void OnFinishWork(UseSkill skill)
-	{
+	{ // <Mod>
 		base.OnFinishWork(skill);
 		if (skill.agent.fortitudeLevel < 2 && !skill.agent.invincible)
 		{
@@ -123,6 +147,15 @@ public class ArmorCreature : CreatureBase, IObserver
 				this.ChangeGift(stackAgent);
 			}
 			this._isGiveGift = false;
+		}
+		if (_isReduceGift)
+		{
+			ArmorCreature.StackAgent stackAgent = _specialAgentList.Find((ArmorCreature.StackAgent x) => x.agent == skill.agent);
+			if (stackAgent != null)
+			{
+				ReduceGift(stackAgent);
+			}
+			_isReduceGift = false;
 		}
 	}
 
@@ -157,9 +190,30 @@ public class ArmorCreature : CreatureBase, IObserver
 		}
 	}
 
+    // <Mod>
+	private void ReduceGift(ArmorCreature.StackAgent specialAgent)
+	{
+		switch (specialAgent.state)
+		{
+		case ArmorCreature.GiftState.BLUE_ONE:
+			specialAgent.agent.ReleaseEGOgift(specialAgent.gift);
+			_specialAgentList.Remove(specialAgent);
+			break;
+		case ArmorCreature.GiftState.BLUE_TWO:
+			specialAgent.SetFire(EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(4000371)), ArmorCreature.GiftState.BLUE_ONE);
+			break;
+		case ArmorCreature.GiftState.ORANGE:
+			specialAgent.SetFire(EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(4000372)), ArmorCreature.GiftState.BLUE_TWO);
+			break;
+		case ArmorCreature.GiftState.RED:
+			specialAgent.SetFire(EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(4000373)), ArmorCreature.GiftState.ORANGE);
+			break;
+		}
+	}
+
 	// Token: 0x06001C85 RID: 7301 RVA: 0x000ED420 File Offset: 0x000EB620
 	public void OnNotice(string notice, params object[] param)
-	{
+	{ // <Mod>
 		if (notice == NoticeName.OnWorkStart)
 		{
 			CreatureModel creatureModel = param[0] as CreatureModel;
@@ -180,11 +234,29 @@ public class ArmorCreature : CreatureBase, IObserver
 			ArmorCreature.StackAgent stackAgent = this._specialAgentList.Find((ArmorCreature.StackAgent x) => x.agent == agent);
 			if (stackAgent != null)
 			{
-				AgentUnit unit = stackAgent.agent.GetUnit();
-				unit.animChanger.ChangeAnimator(WorkerSpine.AnimatorName.ArmorCreatureDead);
-				unit.animEventHandler.SetAnimEvent(new AnimatorEventHandler.AnimEventDelegate(this.OnAgentDeadAnimEvent));
-				stackAgent.agent.Die();
-				this._specialAgentList.Remove(stackAgent);
+				if (SpecialModeConfig.instance.GetValue<bool>("CrumblingArmorGift"))
+				{
+					float amt = 30f;
+					for (int i = 0; i < stackAgent.attachmentCount; i++)
+					{
+						amt *= 2f;
+					}
+					agent.SetSpecialDeadScene(WorkerSpine.AnimatorName.ArmorCreatureDead);
+                    agent.TakeDamage(new DamageInfo(RwbpType.P, amt));
+                    if (!agent.IsDead())
+                    {
+                        agent.ResetSpecialDeadScene();
+                    }
+					stackAgent.attachmentCount++;
+				}
+				else
+				{
+					AgentUnit unit = stackAgent.agent.GetUnit();
+					unit.animChanger.ChangeAnimator(WorkerSpine.AnimatorName.ArmorCreatureDead);
+					unit.animEventHandler.SetAnimEvent(new AnimatorEventHandler.AnimEventDelegate(this.OnAgentDeadAnimEvent));
+					stackAgent.agent.Die();
+					this._specialAgentList.Remove(stackAgent);
+				}
 			}
 		}
 		else if (notice == NoticeName.OnReleaseWork)
@@ -219,7 +291,10 @@ public class ArmorCreature : CreatureBase, IObserver
 			ArmorCreature.StackAgent stackAgent3 = this._specialAgentList.Find((ArmorCreature.StackAgent x) => x.agent == agent);
 			if (stackAgent3 != null)
 			{
-				this._specialAgentList.Remove(stackAgent3);
+				if (!agent.HasEquipment(4000371) && !agent.HasEquipment(4000372) && !agent.HasEquipment(4000373) && !agent.HasEquipment(4000374))
+				{
+					this._specialAgentList.Remove(stackAgent3);
+				}
 			}
 		}
 	}
@@ -246,6 +321,9 @@ public class ArmorCreature : CreatureBase, IObserver
 
 	// Token: 0x04001D3F RID: 7487
 	private bool _isGiveGift;
+
+    // <Mod>
+	private bool _isReduceGift;
 
 	// Token: 0x04001D40 RID: 7488
 	private ArmorCreatureAnim _anim;
@@ -287,6 +365,9 @@ public class ArmorCreature : CreatureBase, IObserver
 		// (get) Token: 0x06001C8C RID: 7308 RVA: 0x0001F02C File Offset: 0x0001D22C
 		// (set) Token: 0x06001C8D RID: 7309 RVA: 0x0001F034 File Offset: 0x0001D234
 		public EGOgiftModel gift { get; set; }
+
+        // <Mod>
+		public int attachmentCount { get; set; }
 
 		// Token: 0x06001C8E RID: 7310 RVA: 0x0001F03D File Offset: 0x0001D23D
 		public void SetFire(EGOgiftModel g, ArmorCreature.GiftState s)

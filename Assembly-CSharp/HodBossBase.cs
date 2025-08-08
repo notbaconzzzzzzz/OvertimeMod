@@ -1,3 +1,6 @@
+/*
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -150,6 +153,15 @@ public class HodBossBase : SefiraBossBase
 			this.MakeSoundAttachCamera("SefiraBoss/Boss_Nezach");
 		}
 	}
+
+    // <Mod>
+    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+    {
+        if (_ordealSpawnTime[1] >= 5)
+		{
+			_ordealSpawnTime[1] = UnityEngine.Random.Range(3, 5);
+		}
+    }
 
 	// Token: 0x06003FD9 RID: 16345 RVA: 0x000374B4 File Offset: 0x000356B4
 	// Note: this type is marked as 'beforefieldinit'.

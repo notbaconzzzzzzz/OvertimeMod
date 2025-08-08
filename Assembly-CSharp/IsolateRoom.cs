@@ -1,3 +1,28 @@
+/*
+private bool CheckOverlayState() // Tranquilizer Bullets
+public void SetOverloadAlarmColor(OverloadType type) // Fixed special overload types crashing when it isn't Binah's core suppression
+public void SetCounterEnable(bool state) // 
+private bool IsWorkAllocated > public bool IsWorkAllocated // 
+private bool IsWorking > public bool IsWorking // 
+private void FixedUpdate() // Made cooltime round up instead of down; Work order queue
+private void Update() // Ego Gift Helper
+private void CheckOverlay() // Tranquilizer Bullets
+public void OnChangeProbReduction() // Overtime Meltdowns
++public void UpdateGiftHealper() // Ego Gift Helper
++private string _giftHealperPrefix // Ego Gift Helper
++public void EnqueueWorkOrder(QueuedWorkOrder order) // 
++public void DequeueWorkOrder() // 
++public void DequeueWorkOrder(QueuedWorkOrder order) // 
++public bool CanQueueWorkOrder() // 
++public void ClearWorkOrderQueue() // 
++public List<QueuedWorkOrder> GetWorkOrderQueue() // 
++private List<QueuedWorkOrder> _workOrderQueue // 
+public void SetOvertimeYesodBoss() // 
+public void DisableOvertimeYesodBoss() // 
++Plenty // of things for Overtime Yesod Suppression
+WorkProgress public void Init(CreatureModel creature, GameObject success, GameObject fail) // 
+WorkProgress public void AddBar(bool isSuccess) // 
+*/
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.UI.Isolate;
@@ -98,14 +123,18 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x06005578 RID: 21880 RVA: 0x001E9488 File Offset: 0x001E7688
 	private bool CheckOverlayState()
-	{
+	{ // <Mod>
 		CreatureState state = this.TargetUnit.model.state;
 		return (state != CreatureState.WORKING || this.TargetUnit.model.metaInfo.creatureKitType == CreatureKitType.CHANNEL) && state != CreatureState.SUPPRESSED && state != CreatureState.SUPPRESSED_RETURN && (this.IsWorkAllocated || this.pointerEntered);
 	}
 
 	// Token: 0x06005579 RID: 21881 RVA: 0x001E94F0 File Offset: 0x001E76F0
 	public void SetOverloadAlarmColor(OverloadType type)
-	{
+	{ // <Mod> 
+        if (this.binahOverloadUI == null)
+		{
+			this.SetBinahBoss();
+		}
 		Color overloadColor = UIColorManager.instance.GetOverloadColor(type);
 		this.binahOverloadUI.SetColor(overloadColor);
 	}
@@ -174,10 +203,10 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x0600557E RID: 21886 RVA: 0x001E96E4 File Offset: 0x001E78E4
 	public void SetCounterEnable(bool state)
-	{
+	{ // <Mod>
 		this.CounterActiveControl.SetActive(true);
 		this.CounterOutline.SetActive(true);
-		if (!this.TargetUnit.model.observeInfo.GetObserveState("stat"))
+		if (isOvertimeYesodBoss ? GetOvertimeYesodHint(1) : !this.TargetUnit.model.observeInfo.GetObserveState("stat"))
 		{
 			this.CounterInnerImage.gameObject.SetActive(true);
 			this.CounterText.gameObject.SetActive(false);
@@ -297,8 +326,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 	// Token: 0x170007F8 RID: 2040
 	// (get) Token: 0x06005583 RID: 21891 RVA: 0x00044E0D File Offset: 0x0004300D
 	// (set) Token: 0x06005584 RID: 21892 RVA: 0x00044E15 File Offset: 0x00043015
-	private bool IsWorkAllocated
-	{
+	public bool IsWorkAllocated
+	{ // <Mod> changed from private to public
 		get
 		{
 			return this._isWorkAllocated;
@@ -312,8 +341,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 	// Token: 0x170007F9 RID: 2041
 	// (get) Token: 0x06005585 RID: 21893 RVA: 0x00044E1E File Offset: 0x0004301E
 	// (set) Token: 0x06005586 RID: 21894 RVA: 0x00044E26 File Offset: 0x00043026
-	private bool IsWorking
-	{
+	public bool IsWorking
+	{ // <Mod> changed from private to public
 		get
 		{
 			return this._isWorking;
@@ -466,7 +495,7 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x0600558E RID: 21902 RVA: 0x001EA160 File Offset: 0x001E8360
 	public void SetRiskLevel()
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		CreatureModel model = this.TargetUnit.model;
 		RiskLevel riskLevelStringToEnum = CreatureTypeInfo.GetRiskLevelStringToEnum(model.metaInfo.riskLevelForce);
 		if (model.metaInfo.creatureWorkType == CreatureWorkType.KIT)
@@ -486,7 +515,7 @@ public class IsolateRoom : MonoBehaviour, IObserver
 				return;
 			}
 		}
-		else if (model.observeInfo.GetObserveState(CreatureModel.regionName[0]))
+		else if (!isOvertimeYesodBoss && model.observeInfo.GetObserveState(CreatureModel.regionName[0]))
 		{
 			this.RiskLevelImage.sprite = CreatureLayer.IsolateRoomUIData.RiskLevel[(int)riskLevelStringToEnum];
 			return;
@@ -535,11 +564,45 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x06005593 RID: 21907 RVA: 0x001EA384 File Offset: 0x001E8584
 	public void OnClick(BaseEventData eventData)
-	{
+	{ // <Mod>
 		PointerEventData pointerEventData = eventData as PointerEventData;
 		if (pointerEventData.button == PointerEventData.InputButton.Left)
 		{
 			UnitMouseEventManager.instance.UnselectAll();
+			if (GlobalBulletWindow.CurrentWindow != null && GlobalBulletWindow.CurrentWindow.CurrentSelectedBullet == GlobalBulletType.TRANQ && !(TargetUnit.model.script.isWorkAllocated && TargetUnit.model.state == CreatureState.WAIT) && !_isEscaped && !IsWorking)
+			{
+				if (TargetUnit.model.GetTranqEffectiveness() > 0f)
+				{
+					List<UnitModel> list = new List<UnitModel>();
+					list.Add(TargetUnit.model);
+					if (GlobalBulletManager.instance.ActivateBullet(GlobalBulletType.TRANQ, list))
+					{
+						GlobalBulletWindow.CurrentWindow.OnShoot();
+					}
+				}
+				else
+				{
+					CursorManager.instance.CannotAnim();
+					SoundEffectPlayer soundEffectPlayer = SoundEffectPlayer.PlayOnce("Bullet/Bullet_Empty", Vector2.zero);
+					if (soundEffectPlayer != null)
+					{
+						soundEffectPlayer.AttachToCamera();
+					}
+				}
+				return;
+			}
+		}
+		if (CommandWindow.CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && TargetUnit.model.metaInfo.creatureWorkType == CreatureWorkType.NORMAL)
+		{
+			CommandWindow.CommandWindow.CreateWindow(CommandType.Management, TargetUnit.model, true);
+			audioClipPlayer.OnPlayInList(2);
+			return;
+		}
+		if (CommandWindow.CommandWindow.isWorkOrderQueueEnabled && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && TargetUnit.model.metaInfo.creatureWorkType == CreatureWorkType.NORMAL)
+		{
+			ClearWorkOrderQueue();
+			audioClipPlayer.OnPlayInList(2);
+			return;
 		}
 		if (RabbitManager.instance.ExistsSquad(this.TargetUnit.model.sefira.sefiraEnum))
 		{
@@ -560,6 +623,10 @@ public class IsolateRoom : MonoBehaviour, IObserver
 						this.TargetUnit.model.currentSkill.CancelWork();
 					}
 				}
+			}
+			else if (TargetUnit.model.isTranquilized)
+			{
+				
 			}
 			else if (this.TargetUnit.model.metaInfo.creatureKitType == CreatureKitType.EQUIP)
 			{
@@ -597,14 +664,52 @@ public class IsolateRoom : MonoBehaviour, IObserver
 		}
 		else
 		{
+			/*
 			if (pointerEventData.button != PointerEventData.InputButton.Left)
 			{
 				return;
-			}
+			}*/
 			if (this.TargetUnit.model.script is RedShoes)
 			{
 				WorkerModel attractTargetAgent = (this.TargetUnit.model.script.skill as RedShoesSkill).attractTargetAgent;
-				CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, attractTargetAgent);
+				if (pointerEventData.button == PointerEventData.InputButton.Left)
+				{
+					CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, attractTargetAgent);
+				}
+				else
+				{
+					if (RabbitManager.instance.CheckUnitRabbitExecution(attractTargetAgent))
+					{
+						return;
+					}
+					List<UnitMouseEventTarget> list = UnitMouseEventManager.instance.seletedtargets;
+					if (list.Count <= 0) return;
+					LocalAudioManager.instance.PlayClip(19);
+					using (List<UnitMouseEventTarget>.Enumerator enumerator3 = list.GetEnumerator())
+					{
+						while (enumerator3.MoveNext())
+						{
+							UnitMouseEventTarget unitMouseEventTarget4 = enumerator3.Current;
+							IMouseCommandTargetModel commandTargetModel4 = unitMouseEventTarget4.GetCommandTargetModel();
+							if (commandTargetModel4 is AgentModel)
+							{
+								AgentModel agentModel3 = (AgentModel)commandTargetModel4;
+								if (!agentModel3.IsDead() && !agentModel3.IsCrazy() && agentModel3.currentSkill == null && agentModel3.CheckSuppressCommand())
+								{
+									agentModel3.Suppress(attractTargetAgent, false);
+								}
+							}
+							if (commandTargetModel4 is OfficerModel)
+							{
+								OfficerModel officerModel = (OfficerModel)commandTargetModel4;
+								if (!officerModel.IsDead() && !officerModel.IsCrazy())
+								{
+									officerModel.SetAgentCommand(new AttackOfficerCommand(attractTargetAgent));
+								}
+							}
+						}
+					}
+				}
 				return;
 			}
 			if (this.TargetUnit.model.script is SingingMachine)
@@ -614,7 +719,44 @@ public class IsolateRoom : MonoBehaviour, IObserver
 			if (this.TargetUnit.model.script is BlackSwan)
 			{
 				ChildCreatureModel sister = (this.TargetUnit.model.script as BlackSwan).sister;
-				CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, sister);
+				if (pointerEventData.button == PointerEventData.InputButton.Left)
+				{
+					CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, sister);
+				}
+				else
+				{
+					if (RabbitManager.instance.CheckUnitRabbitExecution(sister))
+					{
+						return;
+					}
+					List<UnitMouseEventTarget> list = UnitMouseEventManager.instance.seletedtargets;
+					if (list.Count <= 0) return;
+					LocalAudioManager.instance.PlayClip(19);
+					using (List<UnitMouseEventTarget>.Enumerator enumerator3 = list.GetEnumerator())
+					{
+						while (enumerator3.MoveNext())
+						{
+							UnitMouseEventTarget unitMouseEventTarget4 = enumerator3.Current;
+							IMouseCommandTargetModel commandTargetModel4 = unitMouseEventTarget4.GetCommandTargetModel();
+							if (commandTargetModel4 is AgentModel)
+							{
+								AgentModel agentModel3 = (AgentModel)commandTargetModel4;
+								if (!agentModel3.IsDead() && !agentModel3.IsCrazy() && agentModel3.currentSkill == null && agentModel3.CheckSuppressCommand())
+								{
+									agentModel3.Suppress(sister, false);
+								}
+							}
+							if (commandTargetModel4 is OfficerModel)
+							{
+								OfficerModel officerModel = (OfficerModel)commandTargetModel4;
+								if (!officerModel.IsDead() && !officerModel.IsCrazy())
+								{
+									officerModel.SetAgentCommand(new AttackOfficerCommand(sister));
+								}
+							}
+						}
+					}
+				}
 				return;
 			}
 			if (this.TargetUnit.model.script is SmallBird)
@@ -665,7 +807,44 @@ public class IsolateRoom : MonoBehaviour, IObserver
 				{
 					return;
 				}
-				CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, this.TargetUnit.model);
+				if (pointerEventData.button == PointerEventData.InputButton.Left)
+				{
+					CommandWindow.CommandWindow.CreateWindow(CommandType.Suppress, this.TargetUnit.model);
+				}
+				else
+				{
+					if (RabbitManager.instance.CheckUnitRabbitExecution(TargetUnit.model))
+					{
+						return;
+					}
+					List<UnitMouseEventTarget> list = UnitMouseEventManager.instance.seletedtargets;
+					if (list.Count <= 0) return;
+					LocalAudioManager.instance.PlayClip(19);
+					using (List<UnitMouseEventTarget>.Enumerator enumerator3 = list.GetEnumerator())
+					{
+						while (enumerator3.MoveNext())
+						{
+							UnitMouseEventTarget unitMouseEventTarget4 = enumerator3.Current;
+							IMouseCommandTargetModel commandTargetModel4 = unitMouseEventTarget4.GetCommandTargetModel();
+							if (commandTargetModel4 is AgentModel)
+							{
+								AgentModel agentModel3 = (AgentModel)commandTargetModel4;
+								if (!agentModel3.IsDead() && !agentModel3.IsCrazy() && agentModel3.currentSkill == null && agentModel3.CheckSuppressCommand())
+								{
+									agentModel3.Suppress(TargetUnit.model, false);
+								}
+							}
+							if (commandTargetModel4 is OfficerModel)
+							{
+								OfficerModel officerModel = (OfficerModel)commandTargetModel4;
+								if (!officerModel.IsDead() && !officerModel.IsCrazy())
+								{
+									officerModel.SetAgentCommand(new AttackOfficerCommand(TargetUnit.model));
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -683,8 +862,11 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x06005595 RID: 21909 RVA: 0x00044EA2 File Offset: 0x000430A2
 	public void OnDamageInvoked(DamageInfo damage)
-	{
-		this.DamageUIController.Show();
+	{ // <Mod>
+		if (!GetOvertimeYesodHint(4))
+		{
+			this.DamageUIController.Show();
+		}
 	}
 
 	// Token: 0x06005596 RID: 21910 RVA: 0x00044EAF File Offset: 0x000430AF
@@ -700,14 +882,22 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x06005598 RID: 21912 RVA: 0x001EA7FC File Offset: 0x001E89FC
 	private void SetResult(CreatureFeelingState state)
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		Sprite sprite = null;
 		Color white = Color.white;
-		CreatureLayer.IsolateRoomUIData.GetFeelingStateData(state, out sprite, out white);
+		float value = 0.25f * (float)state + 0.25f;
+		if (GetOvertimeYesodHint(5))
+		{
+			CreatureLayer.IsolateRoomUIData.GetFeelingStateData(CreatureFeelingState.NONE, out sprite, out white);
+			value = 0.25f * 1.5f + 0.25f;
+		}
+		else
+		{
+			CreatureLayer.IsolateRoomUIData.GetFeelingStateData(state, out sprite, out white);
+		}
 		this.CurrentResultRoot.SetActive(true);
 		this.CurrentResultIcon.sprite = sprite;
 		this.CurrentResultFilter.color = white;
-		float value = 0.25f * (float)state + 0.25f;
 		this.WorkResultUIController.animator.SetFloat("Speed", value);
 		this.WorkResultUIController.Show();
 		this._isResultDisplaying = true;
@@ -720,18 +910,105 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x06005599 RID: 21913 RVA: 0x001EA8A0 File Offset: 0x001E8AA0
 	private void FixedUpdate()
-	{
+	{ // <Mod>
 		if (this._isResultDisplaying)
 		{
-			this.CurrentResultCooltime.text = ((int)this.TargetUnit.model.feelingStateRemainTime).ToString();
+			if (this._isTranqDisplaying)
+			{
+				this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.feelingStateRemainTime + TargetUnit.model.tranqilzeTime).ToString();
+			}
+			else
+			{
+				this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.feelingStateRemainTime).ToString();
+			}
+			_queueWaitedTime = 0f;
+		}
+		else if (this._isTranqDisplaying)
+		{
+			this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.tranqilzeTime).ToString();
+			_queueWaitedTime = 0f;
 		}
 		this.CheckWorkProcessText();
 		this.CheckQliphothCounter();
+		if (IsWorking)
+		{
+			return;
+		}
+		if (IsWorkAllocated)
+		{
+			return;
+		}
+		if (TargetUnit.model.IsEscaped())
+		{
+			return;
+		}
+		if (!TargetUnit.model.script.IsWorkable())
+		{
+			return;
+		}
+		if (!TargetUnit.model.script.CanEnterRoom())
+		{
+			return;
+		}
+		_queueWaitedTime += Time.deltaTime;
+		bool yielded = true;
+		for (int i = 0; i < _workOrderQueue.Count; i++)
+		{
+			QueuedWorkOrder work = _workOrderQueue[i];
+			if (work.agent.IsDead())
+			{
+				work.Remove();
+				i--;
+				continue;
+			}
+			if (work.isAgentFront || work.CheckAgentQueue())
+			{
+				if ((yielded || work.conditional.asapCreature) && work.TryAllocate())
+				{
+					break;
+				}
+			}
+			if (work.conditional.impassableCreature)
+			{
+				break;
+			}
+			if (yielded && work.conditional.yieldCreature)
+			{
+				yielded = true;
+			}
+			else
+			{
+				yielded = false;
+			}
+		}
 	}
 
 	// Token: 0x0600559A RID: 21914 RVA: 0x001EA8F0 File Offset: 0x001E8AF0
 	public void CheckWorkProcessText()
-	{
+	{ // <Mod> Overtime Yesod Suppression
+		if (isOvertimeYesodBoss && overtimeYesodOptions != null && overtimeYesodOptions.Count > 0)
+		{
+			if (_workDescTimer.started)
+			{
+				if (_workDescTimer.RunTimer())
+				{
+					yesodOptionsIndex++;
+					if (yesodOptionsIndex >= overtimeYesodOptions.Count)
+					{
+						yesodOptionsIndex = 0;
+					}
+					int ind = yesodOptionsIndex;
+					string desc = overtimeYesodOptions[ind].collectionName;
+					DescController.Display(desc, -1);
+					_workDescTimer.StartTimer(2f);
+				}
+			}
+			else
+			{
+				_workDescTimer.StartTimer(2f);
+			}
+			return;
+		}
 		if (this._workDescTimer.started && this._workDescTimer.RunTimer())
 		{
 			this._workDescTimer.StartTimer(this.WorkDescFreq);
@@ -762,11 +1039,20 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x0600559B RID: 21915 RVA: 0x001EAA00 File Offset: 0x001E8C00
 	public void CheckQliphothCounter()
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		if (this._counterObserved && this._counterEnabled)
 		{
-			this.CounterText.text = this.TargetUnit.model.qliphothCounter.ToString();
-			if (this.TargetUnit.model.qliphothCounter == 0)
+			int qliphothCounter;
+			if (_isTranqDisplaying && TargetUnit.model.tranqQliphoth != -1)
+			{
+				qliphothCounter = TargetUnit.model.tranqQliphoth;
+			}
+			else
+			{
+				qliphothCounter = this.TargetUnit.model.qliphothCounter;
+			}
+			this.CounterText.text = qliphothCounter.ToString();
+			if (qliphothCounter == 0)
 			{
 				this.CounterText.color = this.CounterColor_White;
 				this.CounterColor.color = this.CounterColor_Red;
@@ -807,7 +1093,7 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x0600559D RID: 21917 RVA: 0x001EAB30 File Offset: 0x001E8D30
 	private void Update()
-	{
+	{ // <Mod> Ego Gift Healper; Overtime Yesod Suppression
 		if (this.TargetUnit == null)
 		{
 			return;
@@ -834,7 +1120,14 @@ public class IsolateRoom : MonoBehaviour, IObserver
 		}
 		if (this._checkCumlatvieCubeCount)
 		{
-			this.CumlativeCubeCount.text = this.TargetUnit.model.GetCurrentCumlatvieCube().ToString();
+			if (isOvertimeYesodBoss)
+			{
+				CumlativeCubeCount.text = "?";
+			}
+			else
+			{
+				this.CumlativeCubeCount.text = _giftHealperPrefix + this.TargetUnit.model.GetCurrentCumlatvieCube().ToString();
+			}
 		}
 		this.CheckMaxworkCount();
 		if (!this.nameEntered && !this.IsWorking)
@@ -973,8 +1266,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055A1 RID: 21921 RVA: 0x00021C5C File Offset: 0x0001FE5C
 	public float GetCurrentWorkSpeed()
-	{
-		return 1f;
+	{ // <Mod> Overtime Yesod Suppression
+		return WorkDescFreq;
 	}
 
 	// Token: 0x060055A2 RID: 21922 RVA: 0x00044EED File Offset: 0x000430ED
@@ -1002,18 +1295,25 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055A5 RID: 21925 RVA: 0x001EB0F4 File Offset: 0x001E92F4
 	public void OnEnterRoom(AgentModel worker, UseSkill skill)
-	{
+	{ // <Mod> Overtime Yesod Suppression
 		this.IsWorkAllocated = false;
 		this.IsWorking = true;
 		if (skill.skillTypeInfo.id != 5L)
 		{
 			this.CurrentWorkRoot.SetActive(true);
 			this.CurrentWorkAnim.SetTrigger("Run");
-			this.DescController.Display(this.GetDesc("start_0"), -1);
-			this.StartWorkDesc();
+			if (!isOvertimeYesodBoss)
+			{
+				this.DescController.Display(this.GetDesc("start_0"), -1);
+				this.StartWorkDesc();
+			}
 		}
 		this.InitProcessText(skill.skillTypeInfo.rwbpType);
 		this.TurnOnRoomLight();
+		if (GetOvertimeYesodHint(4))
+		{
+			worker.ForceHideUI = true;
+		}
 	}
 
 	// Token: 0x060055A6 RID: 21926 RVA: 0x00044F3E File Offset: 0x0004313E
@@ -1051,7 +1351,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055AB RID: 21931 RVA: 0x00044FD2 File Offset: 0x000431D2
 	public void StopWorkDesc()
-	{
+	{ // <Mod> Overtime Yesod Suppression
+		if (isOvertimeYesodBoss) return;
 		this._workDescTimer.StopTimer();
 		this.DescController.Teriminate();
 	}
@@ -1120,7 +1421,7 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055AF RID: 21935 RVA: 0x001EB314 File Offset: 0x001E9514
 	private void CheckOverlay()
-	{
+	{ // <Mod>
 		if (this.IsWorkAllocated)
 		{
 			if (this.pointerEntered)
@@ -1158,6 +1459,10 @@ public class IsolateRoom : MonoBehaviour, IObserver
 						this.OverlayText.text = this.GetStateText("returnCancel");
 					}
 					return;
+				}
+				if (TargetUnit.model.isTranquilized)
+				{
+
 				}
 				this.OverlayImage.color = this.OrderColor;
 				if (this.TargetUnit.model.metaInfo.creatureWorkType == CreatureWorkType.KIT)
@@ -1205,15 +1510,23 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055B1 RID: 21937 RVA: 0x00044FF8 File Offset: 0x000431F8
 	public void OnObservationLevelChanged()
-	{
-		this.CreatureName.text = this.TargetUnit.model.GetUnitName();
+	{ // <Mod> Overtime Yesod Suppression
+		if (isOvertimeYesodBoss)
+		{
+			CreatureName.text = "????????";
+		}
+		else
+		{
+			this.CreatureName.text = this.TargetUnit.model.GetUnitName();
+		}
 		this.SetRiskLevel();
 		this.SetKitObserveLevel();
 	}
 
 	// Token: 0x060055B2 RID: 21938 RVA: 0x00045021 File Offset: 0x00043221
 	public void ProcessNarration(string desc)
-	{
+	{ // <Mod> Overtime Yesod Suppression
+		if (isOvertimeYesodBoss) return;
 		this.WorkNarration.text = desc;
 		if (this.NarrationFadeEffect.isDisplayed)
 		{
@@ -1259,7 +1572,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055B7 RID: 21943 RVA: 0x001EB614 File Offset: 0x001E9814
 	private void StartCubeAnim()
-	{
+	{ // <Mod> Overtime Yesod Suppression
+		if (isOvertimeYesodBoss) return;
 		this._checkCumlatvieCubeCount = false;
 		this._cubeTimer.StartTimer(0.5f);
 		this.CumlativeCubeImage.GetComponent<Animator>().SetTrigger("Add");
@@ -1284,12 +1598,18 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x060055B9 RID: 21945 RVA: 0x001EB690 File Offset: 0x001E9890
 	public void OnChangeProbReduction()
-	{
+	{ // <Mod>
 		if (this.TargetUnit != null)
 		{
-			if (this.TargetUnit.model.probReductionCounter > 0 || (float)this.TargetUnit.model.ProbReductionValue > 0f || this.TargetUnit.model.sefira.agentDeadPenaltyActivated)
+			if (GetOvertimeYesodHint(6) || this.TargetUnit.model.probReductionCounter > 0 || (float)this.TargetUnit.model.ProbReductionValue > 0f || this.TargetUnit.model.sefira.agentDeadPenaltyActivated || this.TargetUnit.model.overloadReduction > 0)
 			{
 				float num = 0f;
+				string text3 = string.Empty;
+				int num2 = this.TargetUnit.model.overloadReduction;
+				if (num2 > 0)
+				{
+					text3 = "\n" + string.Format("Meltdown Timer reduced by {0} seconds", num2);
+				}
 				this.probReductionUI.SetBool("Enable", true);
 				this.TooltipReduceProb.gameObject.SetActive(true);
 				string text = string.Empty;
@@ -1302,20 +1622,65 @@ public class IsolateRoom : MonoBehaviour, IObserver
 				if ((float)this.TargetUnit.model.ProbReductionValue > 0f)
 				{
 					num += (float)this.TargetUnit.model.ProbReductionValue;
-					this.probReductionText.text = string.Format("-{0}%", num);
+					if (num2 > 0)
+					{
+						if (num > 0f)
+						{
+							this.probReductionText.text = string.Format("-{0}%\n-{1}sec", num, num2);
+						}
+						else
+						{
+							this.probReductionText.text = string.Format("-{0}sec", num2);
+						}
+					}
+					else
+					{
+						this.probReductionText.text = string.Format("-{0}%", num);
+					}
 					text = text + "\n" + LocalizeTextDataModel.instance.GetText(this.TooltipOverload.ID);
 					text2 = string.Format(LocalizeTextDataModel.instance.GetText(this.TooltipReduceProb.ID), num);
-					this.TooltipReduceProb.SetDynamicTooltip(text + text2);
+					this.TooltipReduceProb.SetDynamicTooltip(text + text2 + text3);
 					return;
 				}
-				num += (float)this.TargetUnit.model.GetRedusedWorkProbByCounter();
-				if (this.TargetUnit.model.GetRedusedWorkProbByCounter() > 0)
+				if (GetOvertimeYesodHint(6))
 				{
-					text = text + "\n" + LocalizeTextDataModel.instance.GetText(this.TooltipOverload.ID);
+					if (num2 > 0)
+					{
+						this.probReductionText.text = string.Format("-?%\n-{0}sec", num2);
+					}
+					else
+					{
+						this.probReductionText.text = "-?%";
+					}
 				}
-				this.probReductionText.text = string.Format("-{0}%", num);
-				text2 = string.Format(LocalizeTextDataModel.instance.GetText(this.TooltipReduceProb.ID), num);
-				this.TooltipReduceProb.SetDynamicTooltip(text2 + text);
+				else
+				{
+					num += (float)this.TargetUnit.model.GetRedusedWorkProbByCounter();
+					if (this.TargetUnit.model.GetRedusedWorkProbByCounter() > 0)
+					{
+						text = text + "\n" + LocalizeTextDataModel.instance.GetText(this.TooltipOverload.ID);
+					}
+					if (num2 > 0)
+					{
+						if (num > 0f)
+						{
+							this.probReductionText.text = string.Format("-{0}%\n-{1}sec", num, num2);
+						}
+						else
+						{
+							this.probReductionText.text = string.Format("-{0}sec", num2);
+						}
+					}
+					else
+					{
+						this.probReductionText.text = string.Format("-{0}%", num);
+					}
+				}
+				if (num > 0f)
+				{
+					text2 = string.Format(LocalizeTextDataModel.instance.GetText(this.TooltipReduceProb.ID), num);
+				}
+				this.TooltipReduceProb.SetDynamicTooltip(text2 + text + text3);
 			}
 			else
 			{
@@ -1325,6 +1690,340 @@ public class IsolateRoom : MonoBehaviour, IObserver
 			}
 		}
 	}
+
+	// <Mod>
+	public void UpdateGiftHealper()
+	{
+		if (!isOvertimeYesodBoss && SpecialModeConfig.instance.GetValue<bool>("EgoGiftHelper"))
+		{
+			CreatureTypeInfo metaInfo = TargetUnit.model.metaInfo;
+			if (metaInfo.creatureWorkType != CreatureWorkType.NORMAL)
+			{
+				return;
+			}
+			LobotomyBaseMod.LcIdLong id = metaInfo.LcId;
+            string Prefix = "";
+            bool hasGift = false;
+			AgentInfoWindow infoWindow = AgentInfoWindow.currentWindow;
+			if (infoWindow != null)
+			{
+				AgentModel agent = infoWindow.CurrentAgent;
+				if (agent != null)
+				{
+					LobotomyBaseMod.LcId gift = null;
+					if (id.packageId == "")
+					{
+						switch (id.id)
+						{
+							case 100037L:
+								if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000371)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000372)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000373)) || agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(4000374)))
+								{
+									hasGift = true;
+								}
+								break;
+							case 100102L:
+								gift = new LobotomyBaseMod.LcId(1023);
+								break;
+							default:
+								switch (id.id)
+								{
+									case 100032L:
+									case 100033L:
+										if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(1033)))
+										{
+											Prefix += "(**) ";
+										}
+										break;
+									case 100008L:
+									case 100020L:
+									case 100035L:
+										if (agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(400038)))
+										{
+											Prefix += "(**) ";
+										}
+										break;
+								}
+								CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
+								if (creatureEquipmentMakeInfo != null)
+								{
+									gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
+								}
+								break;
+						}
+					}
+					else if (id.packageId == "NotbaconOvertimeMod")
+					{
+						CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
+						if (creatureEquipmentMakeInfo != null)
+						{
+							gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
+						}
+					}
+					else
+					{
+						CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
+						if (creatureEquipmentMakeInfo != null)
+						{
+							gift = creatureEquipmentMakeInfo.equipTypeInfo.LcId;
+						}
+					}
+					if (gift != null && agent.HasEquipment_Mod(gift))
+					{
+						hasGift = true;
+					}
+				}
+            }
+            if (hasGift)
+            {
+                Prefix += "(*) ";
+            }
+			CreatureName.text = Prefix + TargetUnit.model.GetUnitName();
+		}
+		/*
+		_giftHealperPrefix = "";
+		bool hasGift = false;
+		CreatureTypeInfo metaInfo = TargetUnit.model.metaInfo;
+		if (metaInfo.creatureWorkType != CreatureWorkType.NORMAL)
+		{
+			return;
+		}
+		long id = metaInfo.id;
+		if (SpecialModeConfig.instance.EgoGiftHelper)
+		{
+			AgentInfoWindow infoWindow = AgentInfoWindow.currentWindow;
+			if (infoWindow != null)
+			{
+				if (infoWindow.PinnedAgent != null)
+				{
+					int gift = -1;
+					switch (id)
+					{
+						case 100037L:
+							if (infoWindow.PinnedAgent.HasEquipment(4000371) || infoWindow.PinnedAgent.HasEquipment(4000372) || infoWindow.PinnedAgent.HasEquipment(4000373) || infoWindow.PinnedAgent.HasEquipment(4000374))
+							{
+								hasGift = true;
+							}
+							break;
+						case 100102L:
+							gift = 1023;
+							break;
+						default:
+							if (id == 100032L || id == 100033L)
+							{
+								if (infoWindow.PinnedAgent.HasEquipment(1033))
+								{
+									_giftHealperPrefix += "*";
+								}
+							}
+							CreatureEquipmentMakeInfo creatureEquipmentMakeInfo = metaInfo.equipMakeInfos.Find((CreatureEquipmentMakeInfo x) => x.equipTypeInfo.type == EquipmentTypeInfo.EquipmentType.SPECIAL);
+							if (creatureEquipmentMakeInfo != null)
+							{
+								gift = creatureEquipmentMakeInfo.equipTypeInfo.id;
+							}
+							break;
+					}
+					if (gift != -1 && infoWindow.PinnedAgent.HasEquipment(gift))
+					{
+						hasGift = true;
+					}
+				}
+			}
+		}
+		if (hasGift)
+		{
+			_giftHealperPrefix += "*";
+		}
+		this.CumlativeCubeCount.text = _giftHealperPrefix + this.TargetUnit.model.GetCurrentCumlatvieCube().ToString();*/
+	}
+
+	// <Mod>
+	private string _giftHealperPrefix = "";
+
+	//> <Mod>
+	public void OnTranquilizeStart()
+	{
+		Sprite sprite = null;
+		Color white = Color.white;
+		CreatureLayer.IsolateRoomUIData.GetFeelingStateData(CreatureFeelingState.TRANQ, out sprite, out white);
+		this.CurrentResultRoot.SetActive(true);
+		this.CurrentResultIcon.sprite = sprite;
+		this.CurrentResultFilter.color = white;
+		float value = 0.25f * 0.5f + 0.25f;
+		this.WorkResultUIController.animator.SetFloat("Speed", value);
+		this.WorkResultUIController.Show();
+		this._isTranqDisplaying = true;
+		if (this._isResultDisplaying)
+		{
+			this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.feelingStateRemainTime + TargetUnit.model.tranqilzeTime).ToString();
+		}
+		else
+		{
+			this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.tranqilzeTime).ToString();
+		}
+	}
+
+	public void OnTranquilizeExtend()
+	{
+		if (this._isResultDisplaying)
+		{
+			this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.feelingStateRemainTime + TargetUnit.model.tranqilzeTime).ToString();
+		}
+		else
+		{
+			this.CurrentResultCooltime.text = Mathf.CeilToInt(TargetUnit.model.tranqilzeTime).ToString();
+		}
+	}
+
+	public void OnTranquilizeEnd()
+	{
+		this._isTranqDisplaying = false;
+		if (_isResultDisplaying)
+		{
+			float value = 0.25f * 2.5f + 0.25f;
+			this.WorkResultUIController.animator.SetFloat("Speed", value);
+		}
+		else
+		{
+			this.CurrentResultRoot.SetActive(false);
+			this.WorkResultUIController.Hide();
+		}
+	}
+
+	public void EnqueueWorkOrder(QueuedWorkOrder order)
+	{
+		_workOrderQueue.Add(order);
+		if (_workOrderQueue.Count == 1)
+		{
+			order.isCreatureFront = true;
+		}
+	}
+	
+	public void DequeueWorkOrder()
+	{
+		if (_workOrderQueue.Count > 0)
+		{
+			_workOrderQueue.RemoveAt(0);
+			if (_workOrderQueue.Count > 0)
+			{
+				_workOrderQueue[0].isCreatureFront = true;
+			}
+		}
+	}
+	
+	public void DequeueWorkOrder(QueuedWorkOrder order)
+	{
+		_workOrderQueue.Remove(order);
+		if (_workOrderQueue.Count > 0)
+		{
+			_workOrderQueue[0].isCreatureFront = true;
+		}
+	}
+	
+	public bool CanQueueWorkOrder()
+	{
+		int maxWorkCount = 5;
+		if (!SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") || MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.MALKUT))
+		{
+			maxWorkCount = 10;
+		}
+		if (maxWorkCount == -1)
+		{
+			return true;
+		}
+		int num = _workOrderQueue.Count;
+		if (IsWorkAllocated || IsWorking)
+		{
+			num++;
+		}
+		return num < maxWorkCount;
+	}
+	
+	public void ClearWorkOrderQueue()
+	{
+		foreach (QueuedWorkOrder order in _workOrderQueue)
+		{
+			order.agent.DequeueWorkOrder(order);
+		}
+		_workOrderQueue.Clear();
+	}
+
+	public List<QueuedWorkOrder> GetWorkOrderQueue()
+	{
+		return _workOrderQueue;
+	}
+
+	private List<QueuedWorkOrder> _workOrderQueue = new List<QueuedWorkOrder>();
+	//<
+
+	//> <Mod>
+	public void SetOvertimeYesodBoss()
+	{
+		isOvertimeYesodBoss = true;
+		if (overtimeYesodFilter != null) return;
+		Sprite renderSprite = Resources.Load<Sprite>("Sprites/CreatureSprite/Isolate/skill/100046");
+		overtimeYesodFilter = AddFilter(EscapeFilter);
+		overtimeYesodFilter.renderSprite = renderSprite;
+		overtimeYesodFilter.hasSpecialAnimKey = true;
+		overtimeYesodFilter.specialAnimKey = "Display";
+		overtimeYesodFilter.Activated = true;
+	}
+
+	public void DisableOvertimeYesodBoss()
+	{
+		isOvertimeYesodBoss = false;
+		if (overtimeYesodFilter == null) return;
+		addedFilter.Remove(overtimeYesodFilter);
+		overtimeYesodFilter.Activated = false;
+		overtimeYesodFilter.enabled = false;
+	}
+
+	public void SetOvertimeYesodOptions(List<CreatureTypeInfo> metaInfos)
+	{
+		overtimeYesodOptions = metaInfos;
+		yesodOptionsIndex = -1;
+	}
+
+	public List<CreatureTypeInfo> GetOvertimeYesodOptions()
+	{
+		return overtimeYesodOptions;
+	}
+
+	public void SetOvertimeYesodHints(bool[] a)
+	{
+		overtimeYesodHints = a;
+		SetCounterEnable(_counterEnabled);
+		OnChangeProbReduction();
+	}
+
+	public bool GetOvertimeYesodHint(int a)
+	{
+		if (!isOvertimeYesodBoss)
+		{
+			return false;
+		}
+		return overtimeYesodHints[a];
+	}
+
+	public float QueueWaitedTime
+	{
+		get
+		{
+			return _queueWaitedTime;
+		}
+	}
+
+	private IsolateFilter overtimeYesodFilter;
+
+	private bool isOvertimeYesodBoss;
+
+	private List<CreatureTypeInfo> overtimeYesodOptions;
+
+	private int yesodOptionsIndex;
+
+	private bool[] overtimeYesodHints = new bool[7];
+
+	private float _queueWaitedTime;
+	//<
 
 	// Token: 0x04004ECA RID: 20170
 	private const float _roomPosyFix = 4.4f;
@@ -1370,6 +2069,9 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 	// Token: 0x04004ED8 RID: 20184
 	private bool _isResultDisplaying;
+
+	// <Mod>
+	private bool _isTranqDisplaying;
 
 	// Token: 0x04004ED9 RID: 20185
 	private int _currentCumlatvieCubeCount;
@@ -1729,7 +2431,8 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 		// Token: 0x060055BC RID: 21948 RVA: 0x001EB930 File Offset: 0x001E9B30
 		public void Init(CreatureModel creature, GameObject success, GameObject fail)
-		{
+		{ // <Mod>
+			owner = creature;
 			int lastBound = creature.metaInfo.feelingStateCubeBounds.GetLastBound();
 			this._max = lastBound;
 			float x = this.SuccessParent.sizeDelta.x;
@@ -1774,7 +2477,14 @@ public class IsolateRoom : MonoBehaviour, IObserver
 				this.SuccessObject[i].SetActive(false);
 				this.FailObject[i].SetActive(false);
 			}
-			this.CurrentTotalCube.text = "0";
+			if (owner.Unit.room.GetOvertimeYesodHint(3))
+			{
+				this.CurrentTotalCube.text = "+?";
+			}
+			else
+			{
+				this.CurrentTotalCube.text = "0";
+			}
 			Color white = Color.white;
 			Color white2 = Color.white;
 			CreatureLayer.IsolateRoomUIData.GetGeneratedEnergyColor(0, out white, out white2);
@@ -1784,22 +2494,51 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 		// Token: 0x060055BF RID: 21951 RVA: 0x001EBB08 File Offset: 0x001E9D08
 		public void AddBar(bool isSuccess)
-		{
+		{ // <Mod> Overtime Meltdowns
 			if (this._index >= this._max)
 			{
 				return;
 			}
 			this._index++;
-			if (isSuccess)
+			IsolateRoom room = owner.Unit.room;
+			if (room.isOvertimeYesodBoss && room.GetOvertimeYesodHint(0))
 			{
-				this.SuccessObject[this._successIndex++].SetActive(true);
+				if (isSuccess)
+				{
+					_successIndex++;
+				}
+				else
+				{
+					_failIndex++;
+				}
 			}
 			else
 			{
-				this.FailObject[this._failIndex++].SetActive(true);
+				if (isSuccess)
+				{
+					this.SuccessObject[this._successIndex++].SetActive(true);
+				}
+				else
+				{
+					this.FailObject[this._failIndex++].SetActive(true);
+				}
 			}
 			int successIndex = this._successIndex;
-			this.CurrentTotalCube.text = this.GenerateText(successIndex);
+			if (room.GetOvertimeYesodHint(3))
+			{
+				this.CurrentTotalCube.text = "+?";
+			}
+			else
+			{
+				if (owner.currentSkill != null && owner.currentSkill._isOverloadedCreature && owner.currentSkill._overloadType == OverloadType.RUIN)
+				{
+					this.CurrentTotalCube.text = this.GenerateText(this._failIndex * -2);
+				}
+				else
+				{
+					this.CurrentTotalCube.text = this.GenerateText(successIndex);
+				}
+			}
 			Color white = Color.white;
 			Color white2 = Color.white;
 			CreatureLayer.IsolateRoomUIData.GetGeneratedEnergyColor(successIndex, out white, out white2);
@@ -1886,5 +2625,7 @@ public class IsolateRoom : MonoBehaviour, IObserver
 
 		// Token: 0x04004F55 RID: 20309
 		private int _index;
+
+		private CreatureModel owner;
 	}
 }

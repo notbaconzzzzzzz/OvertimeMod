@@ -1,3 +1,6 @@
+/*
+private void MakeBugs() // Daat null Hallway Fix
+*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -23,7 +26,7 @@ public class BugDuskOrdeal : BugOrdeal
 
 	// Token: 0x06003C1D RID: 15389 RVA: 0x00178258 File Offset: 0x00176458
 	private void MakeBugs()
-	{
+	{ // <Mod>
 		Sefira[] openedAreaList = PlayerModel.instance.GetOpenedAreaList();
 		Sefira[] array = openedAreaList;
 		int i = 0;
@@ -54,6 +57,10 @@ public class BugDuskOrdeal : BugOrdeal
 						}
 					}
 				}
+			}
+			if (list.Count <= 0)
+			{
+				continue;
 			}
 			do
 			{

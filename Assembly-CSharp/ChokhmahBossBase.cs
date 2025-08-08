@@ -1,3 +1,8 @@
+/*
+public override void OnOverloadActivated(int currentLevel) // 
+public override bool IsCleared() // 
++public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime) // 
+*/
 using System;
 using System.Collections.Generic;
 using GameStatusUI;
@@ -213,7 +218,7 @@ public class ChokhmahBossBase : SefiraBossBase
 
 	// Token: 0x06003F70 RID: 16240 RVA: 0x00188EF8 File Offset: 0x001870F8
 	public override void OnOverloadActivated(int currentLevel)
-	{
+	{ // <Mod>
 		Debug.Log("Qliphoth : " + currentLevel);
 		if (currentLevel == 3)
 		{
@@ -221,6 +226,10 @@ public class ChokhmahBossBase : SefiraBossBase
 			return;
 		}
 		int num = this.QliphothOverloadLevel - 6;
+        if (num >= timeValue.Length)
+        {
+            num = timeValue.Length - 1;
+        }
 		if (currentLevel == 6)
 		{
 			this.OnChangePhase();
@@ -237,10 +246,6 @@ public class ChokhmahBossBase : SefiraBossBase
 			}
 			this._vhsLevel = currentLevel;
 			this.StartVhsEffect();
-		}
-		if (currentLevel >= 10 && !this._qliphothClear)
-		{
-			this._qliphothClear = true;
 		}
 	}
 
@@ -288,9 +293,9 @@ public class ChokhmahBossBase : SefiraBossBase
 
 	// Token: 0x06003F74 RID: 16244 RVA: 0x001890D4 File Offset: 0x001872D4
 	public override bool IsCleared()
-	{
+	{ // <Mod>
 		float energy = EnergyModel.instance.GetEnergy();
-		return energy >= this.totalEnergy && this._qliphothClear;
+		return energy >= this.totalEnergy && this.QliphothOverloadLevel >= 11;
 	}
 
 	// Token: 0x06003F75 RID: 16245 RVA: 0x00189104 File Offset: 0x00187304
@@ -440,6 +445,15 @@ public class ChokhmahBossBase : SefiraBossBase
 		return 0.175f * (float)level - 0.75f;
 	}
 
+    // <Mod>
+    public override void AdjustOrdealSpawnTime(int[] _ordealSpawnTime)
+    {
+        if (_ordealSpawnTime[2] >= 7)
+		{
+			_ordealSpawnTime[2] = 6;
+		}
+    }
+
 	// Token: 0x06003F7F RID: 16255 RVA: 0x00189404 File Offset: 0x00187604
 	// Note: this type is marked as 'beforefieldinit'.
 	static ChokhmahBossBase()
@@ -523,12 +537,6 @@ public class ChokhmahBossBase : SefiraBossBase
 
 	// Token: 0x04003A21 RID: 14881
 	private float totalEnergy;
-
-	// Token: 0x04003A22 RID: 14882
-	private bool _qliphothAquired;
-
-	// Token: 0x04003A23 RID: 14883
-	private bool _qliphothClear;
 
 	// Token: 0x04003A24 RID: 14884
 	private Timer _startDelayTimer = new Timer();
