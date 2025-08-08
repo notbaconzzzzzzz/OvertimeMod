@@ -4,7 +4,7 @@
     <node id="left-upper-way5" x="-25.75" y="-5" pos="UP" index="0">
       <exclusive>100001,100004</exclusive>
     </node>
-    <node id="right-upper-way5" x="25.75" y="-5" pos="UP" index="1" oldId="right-upper-way4">
+    <node id="right-upper-way4" x="25.75" y="-5" pos="UP" index="1" oldId="right-upper-way5">
       <exclusive>100001,100004</exclusive>
     </node>
     
@@ -91,12 +91,12 @@
   </sefira>
   
   <sefira name="Yesod">
-    <node id="T-left-way5" x="-22" y="-25" pos="DOWN" index="0" oldId="T-left-way4">
+    <node id="T-left-way4" x="-22" y="-25" pos="DOWN" index="0" oldId="T-left-way5">
       <exclusive>100001,100004</exclusive>
       <bumped x="-23.5" y="-25">Malkut.left-down-way3</bumped>
     </node>
 
-    <node id="T-right-way5" x="22" y="-25" pos="DOWN" index="1" oldId="T-right-way4">
+    <node id="T-right-way4" x="22" y="-25" pos="DOWN" index="1" oldId="T-right-way5">
       <exclusive>100001,100004</exclusive>
       <bumped x="23.5" y="-25">Malkut.right-down-way3</bumped>
     </node>
@@ -238,7 +238,7 @@
     </node>
     <node id="binah-way5-1" x="32.5" y="-131" pos="UP" index="6">
     </node>
-    <node id="binah-way6-1" x="22.5" y="-131" pos="UP" index="7">
+    <node id="binah-way7" x="22.5" y="-131" pos="UP" index="7">
     </node>
   </sefira>
 
@@ -251,7 +251,7 @@
     </node>
     <node id="chokhmah-way3" x="-25" y="-119" pos="DOWN" index="3">
     </node>
-    <node id="chokhmah-way5-1" x="-52.5" y="-131" pos="UP" index="4">
+    <node id="chokhmah-way7" x="-52.5" y="-131" pos="UP" index="4">
     </node>
     <node id="chokhmah-way4-1" x="-42.5" y="-131" pos="UP" index="5">
     </node>

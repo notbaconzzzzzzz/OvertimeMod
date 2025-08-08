@@ -50,8 +50,8 @@
         <node id="right-upper-way1" x="10.25" y="0.13" />
         <node id="right-upper-way2" x="11" y="0.13" />
         <node id="right-upper-way3" x="18.29" y="0.13" />
-        <node id="right-upper-way4" x="21" y="0.13" pos="center" />
-        <node id="right-upper-way5" x="25.58" y="0.13" />
+        <node id="right-upper-way5" x="21" y="0.13" /> <!-- changed id from right-upper-way4 -->
+        <node id="right-upper-way4" x="25.58" y="0.13" /> <!-- changed id from right-upper-way5 -->
         <node id="right-upper-way6" x="30.59" y="0.13" />
       </passage>
       <passage x="31.3" y="5.27" passageGroup="4" rabbitTeamGroup="M1" src="Map/Passage/Malkuth/PassageMalkuthShortestHallway2" passageType="horizontal" scale="0.5">
@@ -95,7 +95,7 @@
         <node id="left-upper-way1" x="-9.93" y="0.26" />
         <node id="left-upper-way2" x="-11" y="0.266" />
         <node id="left-upper-way3" x="-17.27" y="0.26" />
-        <node id="left-upper-way4" x="-21" y="0.26" pos="center" />
+        <node id="left-upper-way4" x="-21" y="0.26" />
         <node id="left-upper-way5" x="-24.78" y="0.26" />
         <node id="left-upper-way6" x="-30.27" y="0.26" />
       </passage>
@@ -152,10 +152,10 @@
         <node id="left-down-way1" x="-1.440001" y="-16.16">
           <door>MalkuthDoorRight</door>
         </node>
-        <node id="left-down-way1-1" x="-2.22" y="-16.16" pos="center" />
-        <node id="left-down-way2" x="-4.9" y="-16.16" pos="center" />
-        <node id="left-down-way3" x="-11.7" y="-16.16" pos="center" />
-        <node id="left-down-way4" x="-16.36" y="-16.16" pos="center" />
+        <node id="left-down-way1-1" x="-2.22" y="-16.16" />
+        <node id="left-down-way2" x="-4.9" y="-16.16" />
+        <node id="left-down-way3" x="-11.7" y="-16.16" />
+        <node id="left-down-way4" x="-16.36" y="-16.16" />
         <node id="left-down-way5" x="-17.33" y="-16.16">
           <door>MalkuthDoorLeft</door>
         </node>
@@ -166,10 +166,10 @@
         <node id="right-down-way1" x="1.61" y="-16.16">
           <door>MalkuthDoorLeft</door>
         </node>
-        <node id="right-down-way1-1" x="2.65" y="-16.16" pos="center" />
-        <node id="right-down-way2" x="5.84" y="-16.16" pos="center" />
-        <node id="right-down-way3" x="11.7" y="-16.16" pos="center" />
-        <node id="right-down-way4" x="16.81" y="-16.16" pos="center" />
+        <node id="right-down-way1-1" x="2.65" y="-16.16" />
+        <node id="right-down-way2" x="5.84" y="-16.16" />
+        <node id="right-down-way3" x="11.7" y="-16.16" />
+        <node id="right-down-way4" x="16.81" y="-16.16" />
         <node id="right-down-way5" x="17.46" y="-16.16">
           <door>MalkuthDoorRight</door>
         </node>
@@ -420,8 +420,8 @@
         </node>
         <node id="T-right-way2" x="10.14" y="-31.51" />
         <node id="T-right-way3" x="14.78" y="-31.51" />
-        <node id="T-right-way4" x="22" y="-31.51" pos="center" />
-        <node id="T-right-way5" x="26.75" y="-31.51" />
+        <node id="T-right-way5" x="22" y="-31.51" pos="center" /> <!-- changed id from T-right-way4 -->
+        <node id="T-right-way4" x="26.75" y="-31.51" /> <!-- changed id from T-right-way5 -->
         <node id="T-right-way6" x="30.46" y="-31.51" />
         <node id="T-right-way7" x="30.58" y="-31.51">
           <door>YesodDoorRight</door>
@@ -435,8 +435,8 @@
         </node>
         <node id="T-left-way2" x="-10.05" y="-31.51" />
         <node id="T-left-way3" x="-14.78" y="-31.51" />
-        <node id="T-left-way4" x="-21.75" y="-31.51" pos="center" />
-        <node id="T-left-way5" x="-25.89" y="-31.51" />
+        <node id="T-left-way5" x="-21.75" y="-31.51" pos="center" /> <!-- changed id from T-left-way4 -->
+        <node id="T-left-way4" x="-25.89" y="-31.51" /> <!-- changed id from T-left-way5 -->
         <node id="T-left-way6" x="-30.5" y="-31.51" />
         <node id="T-left-way7" x="-30.51" y="-31.51">
           <door>YesodDoorLeft</door>

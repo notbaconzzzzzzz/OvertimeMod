@@ -35,7 +35,7 @@
     <qliphoth>4</qliphoth>
     <workCooltime>15</workCooltime>
     <feelingStateCubeBounds>
-      <cube>1</cube>
+      <cube>2</cube>
       <cube>8</cube>
       <cube>14</cube>
     </feelingStateCubeBounds>
@@ -88,7 +88,7 @@
     </defense>
     <escapeable>true</escapeable>
     <hp>300</hp>
-    <speed>2</speed>
+    <speed>3</speed>
     <observeInfo total="58">
       <observeElement name="stat" cost="12" />
       <observeElement name="defense" cost="12" />
