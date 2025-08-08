@@ -1,0 +1,36 @@
+Version 0.3.0
+
+ - LMM integration (god fucking damn, this took a while)
+ - A few EGO weapon rebalance changes
+ - Small Theresia change/fix
+ - Greatly improved the Work Order Queue feature
+ - Made it so that the game will give you Binah's or Homka's missions a little early in very specific scenarios
+
+ - Made it so that if an employee finishes a work while their info window is open, it will update with the new EXP values
+ - You can hold Shift when firing Bullets to keep the current Bullet selected
+ - You can now right click with employees selected on a containment unit of a breaching abnormality to suppress it
+ - Added new meltdown gauge icons for Dusk and Midnight
+ - Made the Tiphereth Elevators properly togglable
+ - Made it so that there can be 2 Central Command Team captains, for the upper half, and the lower half
+
+ - Improved the UI on the deployment screen for DoubleAbno mode
+ - Completely overhauled my Secondary Qliphoth Meltdown feature
+ - Improved the UI on the meltdown gauge for Overtime Meltdowns
+ - Finished all upper layer Overtime Core Suppressions
+ - Finished Overtime Green Noon
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [8~9 / 9]
+	Overtime Ordeals [6~9 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [4 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [5 / 14~18]
+	Overtime Day 46-50

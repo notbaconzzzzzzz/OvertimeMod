@@ -1,0 +1,26 @@
+Version 0.2.5
+
+ - Increased Green Midnight's hurtbox so that employees with 'Very Short' range don't stand inside the lasers
+ - Finished up a few EGO changes
+
+ - Fixed a massive bug when restarting from day 1, due to a feature I added
+ - Made a txt file that shows an overview of all basic, special, and overtime modes that are currently enabled
+
+ - Implemented/finished more of the remaining Researches
+ - Made Netzach mission 9 not so unbearably tedious
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [2~6 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [1~2 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [2 / 14~18]
+	Overtime Day 46-50

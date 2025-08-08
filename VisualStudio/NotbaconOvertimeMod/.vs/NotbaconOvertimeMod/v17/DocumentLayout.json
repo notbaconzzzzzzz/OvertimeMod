@@ -1,0 +1,119 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtime mod\\visualstudio\\notbaconovertimemod\\notbaconcoralreef.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconcoralreef.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtime mod\\visualstudio\\notbaconovertimemod\\notbaconballoon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconballoon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtime mod\\visualstudio\\notbaconovertimemod\\notbaconpalehorse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconpalehorse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\notbaconcoralreefanim.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconcoralreefanim.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\notbaconquietbirdanim.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconquietbirdanim.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\notbaconquietbird.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconquietbird.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NotbaconBalloon.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconBalloon.cs",
+              "RelativeDocumentMoniker": "NotbaconBalloon.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconBalloon.cs",
+              "RelativeToolTip": "NotbaconBalloon.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAAIwEwAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-03T09:53:39.861Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NotbaconPaleHorse.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorse.cs",
+              "RelativeDocumentMoniker": "NotbaconPaleHorse.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorse.cs",
+              "RelativeToolTip": "NotbaconPaleHorse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-03T06:21:19.73Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "NotbaconQuietBirdAnim.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconQuietBirdAnim.cs",
+              "RelativeDocumentMoniker": "NotbaconQuietBirdAnim.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconQuietBirdAnim.cs",
+              "RelativeToolTip": "NotbaconQuietBirdAnim.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-03T23:30:38.388Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "NotbaconQuietBird.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconQuietBird.cs",
+              "RelativeDocumentMoniker": "NotbaconQuietBird.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconQuietBird.cs",
+              "RelativeToolTip": "NotbaconQuietBird.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-03T22:57:59.185Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "NotbaconCoralReefAnim.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconCoralReefAnim.cs",
+              "RelativeDocumentMoniker": "NotbaconCoralReefAnim.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconCoralReefAnim.cs",
+              "RelativeToolTip": "NotbaconCoralReefAnim.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPYAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-27T18:34:20.572Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "NotbaconCoralReef.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconCoralReef.cs",
+              "RelativeDocumentMoniker": "NotbaconCoralReef.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\Overtime Mod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconCoralReef.cs",
+              "RelativeToolTip": "NotbaconCoralReef.cs",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAEwJkAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-27T18:34:19.506Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

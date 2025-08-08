@@ -1,0 +1,1268 @@
+This mod implements the same/simmilar fixes/quality of life changes as these other mods; remove them from the BaseMod mods folder to avoid redundancy
+	Yentis_DetailedInfo
+	HPBarStacking (can be turned off in Modes preferances)
+	Pcix_FreeChangeAppearance (can be turned off in Modes preferances)
+	abcdcode_ReCustomization
+	inority_TodayOrdeal
+	hutr2002_GameSpeedBoost (x3 is available but x5 and x10 are not)
+	hutr2002_ChesedFix
+	CC_GiftScriptFix / Pcix_GiftFix
+	BraceletFix
+	nonnonstop_FreezeWhiteNight (can be turned off in Modes preferances)
+	Paradise Lost Special Effects Stays MOD (must be turned on in Modes preferances)
+	2x Abnormalities (must be turned on in Modes preferances)
+
+Credit to these modders, whose mods I used as referances when implementing features for this mod
+	Yentis (DetailedInfo)
+	Infinilator (HPBarStacking)
+	Abcdcode (ReCustomization)
+	Inority (TodayOrdeal)
+	Kekesi (2x Abnormalities)
+	And of course, the team(s) behind LMM and BaseMod
+
+Fixed employee deselection
+	UnitMouseEventManager.cs
+
+Made it so that when you tell an employee to move while they're working, it updates their destination for after the work is done
+	(also works with employees that are panicking/uncontrolable)
+	UnitMouseEventManager.cs
+	Sefira.cs
+
+Employee selection add/subtract options
+	(Is also an Overtime Reseach)
+	Hold [shift] while selecting employees to add them to the current selection
+	Hold [shift]+[alt] while selecting employees to remove them from the current selection
+	Press [ctrl]+[+] to enter add selection mode
+	Press [ctrl]+[-] to enter subtract selection mode
+	Press [ctrl]+[0] to return to normal selection mode
+	UnitMouseEventManager.cs
+
+The ability to make control groups
+	(Is also an Overtime Reseach)
+	Press [ctrl]+[alt]+[1-9 or Z-M] to save the current selection
+	Press [ctrl]+[1-9 or Z-M] to reselect those employees
+		also works with [shift] or [shift]+[alt] to add/remove from the selection
+
+	Control groups 1-9 are temporary, and are forgotten when you close the game
+	Control groups Z-M are permanent, and save even when you close the game
+	
+	There are also a few static groups
+		[ctrl]+[A] to select all employees
+		[ctrl]+[W] to select all working employees
+		[ctrl]+[S] to select all suppressing employees
+		[ctrl]+[D] to select all idle employees
+
+The ability to queue work orders
+	(Is also an Overtime Reseach)
+	Hold [shift] when clicking a containment unit to open the work menu in a special state
+		always works, even when you couldn't normally open the work menu
+	Clicking employees in this menu will queue a work order for them
+		you can also hold [shift] to do it on a normal work menu
+		it'll make a different sound than normal
+
+	Holding [alt] when clicking a containment unit will cancel all work queued for them
+		it will not cancel the current work order
+	Holding [alt] when clicking an employee in the work menu will cancel all their queued works
+
+	Each employee can have up to 3 works queued at a time
+	Each abnormality can have up to 5 works queued at a time
+	
+	QueuedWorkOrder.cs
+	AgentModel.cs
+	IsolateRoom.cs
+	CommandWindow.CommandWindow.cs
+	WorkQueuePreferanceManager.cs
+
+Clicking on an employee's portrait in the work allocation window now selects them
+	UnitMouseEventManager.cs
+	CommandWindow.AgentSlot.cs
+
+Right clicking a containment unit of a breaching abnormality with employees selected will now suppress it
+	IsolateRoom.cs
+
+Added a x3 speed setting
+	You must use the "E" key to access
+	Double clicking the x2 speed button to access x3 speed no longer works due to the visual bug it caused :(
+	GameManager.cs
+	PlaySpeedSettingUI.cs
+
+Made success chances show up as percentages
+	Can be adjusted in SpecialModes
+	+SuccessRateDisplayMode.cs
+	UICommonTextConverter.cs
+	CreatureInfo.CreatureInfoWorkSlot.cs
+
+Exp is now displayed in the employee window
+	Also fixed stat tooltips
+	AgentInfoWindow.cs
+
+An abnormality's exact current Hp is now displayed on their health bar
+	Can be adjusted in SpecialModes
+	+AbnoHpDisplayMode.cs
+	CreatureUnit.cs
+	ChildCreatureUnit.cs
+
+Weapon that don't scale with attack speed instead scale damage
+	EquipmentModel.cs
+
+Customizing employee appearence is now free
+	Customizing.CustomizingWindow.cs
+
+Employees can now be recustomized
+	AgentInfoWindow.cs
+	Customizing.CustomizingWindow.cs
+	Customizing.AppearanceUI.cs
+
+Employee appearances can now be copied and pasted
+	Customizing.CustomizingWindow.cs
+
+You can now specify what title bonuses you want an employee to have when hiring them at the cost of 1 extra LOB [x]
+	(currently, can only be utilized using the copy and paste feature)
+	Customizing.AgentData
+	Customizing.CustomizingWindow.cs
+	AgentModel.cs
+	AgentManager.cs
+
+You can now go back to previous mem-repo days [~x]
+	GlobalGameManager.cs
+
+The qliphoth overload effect around the containment units never goes fully transparent anymore
+	IsolateOverload.cs
+
+Fixed issue where you could end up at the wrong level when bufing stats with LOB
+	Customizing.CustomizingWindow.cs
+
+Changed the EX thresheold for customizing
+	From 100 to 110
+	AgentModel.cs
+
+Fixed issue with EGO gifts that say +n% success chance
+	Used to divide the amount by 5
+	UseSkill.cs
+
+Fixed the Justice stat total calculation being incorrect
+	AgentModel.cs
+
+Work cooltimes now get rounded up instead of down when displaying
+	IsolateRoom.cs
+Fixed work selection window success rate to reflect observation bonuses
+	CommandWindow.WorkData.cs
+Group work selection fix
+	CommandWindow.CommandWindow.cs
+
+Added Hp bar stacking
+	AgentUnit.cs
+	CreatureUnit.cs
+	ChildCreatureUnit.cs
+	RabbitUnit.cs
+
+EGO gifts are now given after abnormality end of work checks
+	(Used to be that obtaining EGO gifts from an abnormality
+		that requires that en employee has less than a certain level in a stat
+		would cause them to get angry if the EGO gift was enough to boost that employee to that level)
+	UseSkill.cs
+
+EGO gifts can now be locked/hidden during the day and regardless of employee level
+	InGameUI.AgentGiftWindow.cs
+
+Shortened words that were too long, making some text too small thus making it almost unreadable
+	"Fortitude", "Prudence", "Temperance", and "Justice" shortened to 4 letters in the employee window and EGO requirements
+	AgentInfoWindow.cs
+	Inventory.InventoryRequireLayout.cs
+	Inventory.InventoryAgentController.cs
+
+Overhauled titles bonuses
+	Changed the stats that titles give so that each one is unique (see spreadsheet "Title Bonuses")
+	Also added "Enthusiast" III secondary title for the purposes of symmetry
+	AgentTitleList.txt
+	AgentTitle_en.xml
+	AgentModel.cs
+
+Title bonuses are only pseudo-random now
+	AgentTitleTypeList.cs
+	AgentModel.cs
+	Customizing.CustomizingWindow.cs
+	ResetMirror.cs
+
+Modified many EGO stats
+	(see spreadsheet "EGO Niche Map" and "EGO Gift Rebalance")
+	BaseEquipment.txt
+	Equipment_en.xml
+	SnowWhiteWeapon.cs
+	MagicalGirl_2Weapon.cs
+	BlueStarArmor.cs
+	YggdrasilArmor.cs
+	SlimeGirlWeapon.cs
+	SlimeGirlWeaponDebuf.cs
+	UseSkill.cs
+	DeathAngelArmor.cs
+	DeathAngelWeapon.cs
+	+DeathAngelWeaponNormalDebuf.cs
+	+DeathAngelWeaponSpecialDebuf.cs
+	BossBirdWeapon.cs
+	OrchestraArmor.cs
+	SingingMachineGift.cs
+	SingingMachineGiftBuf.cs
+	PinkCorpsWeapon.cs
+	SingingMachineGift.cs.cs
+	OneBadManyGoodGift.cs.cs
+	BakuWeapon.cs
+	MagicalGirlWeapon.cs
+	MagicalGirlWeaponProjectile.cs
+	ButterflyWeapon.cs
+	UnitBufType.cs
+
+Map Graph Fix
+	MapGraph.cs
+	SefiraIsolate.cs
+	SefiraIsolateManagement.cs
+	BaseMapGraph.txt
+	BaseIsolate.txt
+
+Added elevators to Tiphereth
+	SefiraManager.cs
+	BaseMapGraph.txt
+
+Fixed LOB grade penalty
+	GameManager.cs
+
+Fixed Chesed's bullet refine research
+	Also nerfed it from +15 to +10
+	BaseResearch.txt
+	GlobalBullet.GlobalBulletManager.cs
+
+Fixed Hod's employee hire research
+	AgentModel.cs
+
+Fixed damage multipliers rounding down
+	DamageInfo.cs
+
+Fixed non-piercing non-splash-damage weapons whiffing
+	If their main target moves out of range but there are other targets in range, will hit the closest one instead
+	WeaponModel.cs
+
+Fixed weapon various issues with slow debuffs
+	OrdealCreatureModel.cs
+	DangoCreatureWeaponSlow_Normal.cs
+	DangoCreatureWeaponSlow_Special.cs
+	DeathAngelWeaponSlow.cs
+	MagicalGirlLaser_VillainDebuf.cs
+	SnowQueenWeapon.cs
+	SnowQueenSlow.cs
+	Nothing.cs
+
+Fixed mission text being cutoff sometimes
+	MissionPopupUI.cs
+
+Made the game give you Hokma and Binah's missions a little bit sooner if the day number is too high
+	MissionManager.cs
+	StorySceneController.cs
+
+Made it so that if an employee finish a work while their info window is open, it will update with the new values, ie. EXP
+	UseSkill.cs
+
+Tiphereth Elevator Change [x]
+	MovableObjectNode.cs
+	BaseMapGraph.txt
+
+Fixed Ordeal Spawning Edgecases
+	Amber Dawn and Amber Dusk break if Daat is opened
+	White Ordeals might have a small chance of breaking if Daat is opened
+	Green Midnight breaks if Yesod is not opened
+	Violet Midnight will fail to spawn properly if less than 4 departments of opened
+	Amber Dusk will get stuck if there's only 1 valid hallway
+	BugDawnOrdeal.cs
+	BugDuskOrdeal.cs
+	FixerOrdeal.cs
+	MachineMidnightOrdeal.cs
+	OutterGodMidnightOrdeal.cs
+	BugDusk.cs
+
+Core Suppression Ordeal spawn time restraints
+	Makes it so that an ordeal never coinsides with the goal meltdown of a core suppression
+	CreatureOverloadManager.cs
+	SefiraBossManager.cs
+	SefiraBossBase.cs
+	MalkutBossBase.cs
+	YesodBossBase.cs
+	HodBossBase.cs
+	NetzachBossBase.cs
+	ChesedBossBase.cs
+	ChokhmahBossBase.cs
+	KetherUpperBossBase.cs
+	KetherMiddleBossBase.cs
+	KetherLowerBossBase.cs
+
+Modified how Chesed/Binah service bonueses work
+	Changed Defense Rate to be x(1 / (1 + dr)) instead of x(1 - dr)
+	AgentModel.cs
+
+Modified service bonus values
+	Changed Malkuth values from 3, 5, 7, 10 > 4, 7, 10, 15
+	Changed Netzach values from 3, 5, 7, 10 > 3, 4, 5, 7
+	Changed Gebura values from 3%, 6%, 10%, 20% > 5%, 10%, 15%, 25%
+	Changed Chesed values from 3%, 6%, 10%, 20% > 5%, 10%, 15%, 25%
+	Changed Binah values from 3%, 6%, 10%, 20% > 4%, 8%, 12%, 20%
+	Changed Kether values from 3, 4, 5, 7 > 3, 5, 7, 10
+	SefiraAbilityValueInfo.cs
+
+Modified how Hod service bonueses work
+	Instead of the captain getting +4 to all stats, they instead increase to EXP gained by all employees whose stats are lower than theirs
+	By 20% * (1 - TheirStat / CaptainStat)
+	SefiraAbilityValueInfo.cs
+	SefiraAbilityDesc_en.xml
+	AgentInfoWindow.cs
+	AgentModel.cs
+	UseSkill.cs
+
+Modified how Kether service bonueses work
+	In addition to plus stats, it also gives plus Offence and Defense rate by 5%, 10%, 15%, 25%
+	SefiraAbilityValueInfo.cs
+	SefiraAbilityDesc_en.xml
+	AgentInfoWindow.cs
+	AgentModel.cs
+
+Made it so that there can be 2 Central Command captains, 1 for the upper half, and 1 for the lower half
+	Sefira.cs
+	AgentModel.cs
+
+Modified how Temp and Just stat levels are calculated
+	They take the average instead of the top
+	AgentModel.cs
+
+Fixed Malkuth's suppression reward
+	Speed upgrade straight upo didn't work
+	Also modified it so that now it's applied before movement speed stat instead of after
+
+Resistances show 2 decimal places in certain scenarios
+	UIUtil.cs
+	AgentInfoWindow.cs
+	CommandWindow.WorkerSuppressRegion.cs
+	Inventory.InventoryAgentController.cs
+
+Fixed issue where employee damage values would not reflect damage bonuses before the day starts
+	AgentInfoWindow.cs
+	Inventory.InventoryAgentController.cs
+
+Display what ordeals you're going to get each day
+	(Is also an Overtime Reseach)
+	GameManager.cs
+	OrdealManager.cs
+	NoticeName.cs
+	LogCanvasScaler.cs
+	SystemLogScript.cs
+
+Various EGO equipment fixes
+	BaseEquipment.txt
+	+PpodaeWeapon.cs
+	PorccuWeapon.cs
+	PorccuWeaponDebuf.cs
+	SharkWeapon.cs
+	RedshoesGift.cs
+	OneBadManyGoodWeapon.cs
+	SlimeGirlWeaponDebuf.cs
+	BossBirdWeapon.cs
+
+Made Black Swan weapon's reflection not trigger against Punishing Bird
+	(unless Punishing Bird is already mad)
+	BlackSwanWeapon.cs
+
+Fixed Binah overloads becoming impossible to succeed if an abnormality escapes or otherwise cancels the meltdown
+	The overload will be transfered to another abnormality in that case
+	BinahBoss.BinahOverload.cs
+
+Fixed Binah being able to be stunned in between rooms
+	BinahBoss.GoldenOverload.cs
+
+Optimized the code that randomizes works for Malkuth Suppression
+	SefiraBossManager.cs
+
+Added mechanic to Fragment of the Universe - (Teir 1)
+	His black damage attacks now decrease the target's sp by the amount of damage taken
+	Effect lasts for 60 seconds after being the last time an employee was hit by it
+	CosmosInnerWeapon.cs
+	UnitBufType.cs
+
+Filter out small infection chances for Naked Nest
+	If chance of infection is less than 3%, it becomes 0%
+	ViscusSnake.cs
+
+Modified Fiery Bird to be more consistant
+	Used to return to containment after a random time (45-90 seconds).
+	Fiery Bird will now return to containment 60 seconds after first being attacked (only agents count),
+	or after 30-45 seconds if not attacked
+	Also, the weapon will not drop unless an agent attacked Fiery Bird at least once during the suppression
+	FireBird.cs
+
+Sound of a Star now also works to prevent Fiery Bird's blindness
+	FireBird.cs
+
+Spider Bud and Bloodbath extra energy rework - (Teir 2)
+	Energy is given over time instead of adding to each work
+	The max amount of energy they're allowed to make is based on the amount of Hands/Cocoons and the current qliphoth level
+		Bloodbath
+			1 Hand	10 * Qlevel
+			2 Hands	20 * Qlevel
+			3 Hands	40 * Qlevel
+		Spider Bud
+			1 Bud	8 * Qlevel
+			2 Buds	15 * Qlevel
+			3 Buds	21 * Qlevel
+			4 Buds	26 * Qlevel
+			5 Buds	30 * Qlevel
+			6 Buds	33 * Qlevel
+			7 Buds	35 * Qlevel
+			8+ Buds	36 * Qlevel
+	When losing energy from any source, their energy cap goes up (as long as their new cap doesn't exceed their base energy cap)
+	EnergyModel.cs
+	SpiderMom.cs
+	BloodBath.cs
+
+Luminous Bracelet and Yang rework - (Teir 1)
+	Luminous Bracelet wont kill you and Yang wont lower Yin's qliphoth counter while the employee is actively trying to return them
+	HealthBracelet.cs
+	Yang.cs
+
+Behavior Adjustment and Luminous Bracelet no longer kill you upon ending the day too soon
+	JusticeReceiver.cs
+	HealthBracelet.cs
+
+Fixed Luminous Bracelet
+	Employee used to only regenerate the first tick of regeneration
+	HealthBracelet.cs
+
+Fixed/Modified Theresia
+	Now the employee working on it will actually gradually lose SP between 20 to 30 seconds like the managerial tips say
+	Also made it so that it heals employees who are located in the department, as well as employees deployed in the department
+	Theresia.cs
+
+Today's Shy Look patch - (Teir 1)
+	The face no longer moves after an employee is given a work on Shy Look
+	ShyThing.cs
+
+When using Portrait of Another World using the same employee, reselect the damage target
+	OtherWorldPortrait.cs
+
+Fixed Dreaming Current
+	Employee used to not take damage or recover sp in the affected hallways
+	Shark.cs
+
+Fixed Army in Black
+	Used to be considered a ZAYIN for EXP calculation
+	UseSkill.cs
+
+Fixed Knight of Despair
+	Buf used to multiply pale damage by x1.5 instead of x2.0
+	KnightOfDespairBuf.cs
+
+Parasite Tree rework - (Teir 1)
+	There is now a 10 second grace period before the qliphoth counter lowers from its ability
+	In addition, after those 10 seconds are up, it wont lower if an employee is on their way to the work
+	Yggdrasil.cs
+
+Fixed Parasite Tree
+	Buf used to not give any stat bonuses, now it gives +10 sp and +20 work speed
+	YggdrasilBlessBuf.cs
+	UnitBufType.cs
+
+Crumbling Armor gift rework - (Teir 2)
+	Instead of just outright killing the employee when they do Attachment, instead they just take heavy Pale damage
+		Starts at 30 P, and then doubles each time (resets each day)
+	You can also reduce the gift by 1 level by doing Attachment on Crumbling Armor specifically
+		(if already at level 1, remove the gift)
+	ArmorCreature.cs
+
+Fixed Void Dream sleep bug
+	Uncontrollable_Baku.cs
+
+Fixed something with Snow Queen
+	(I'm pretty sure) I did not fix the softlocked employees glitch (but that can be avoided by just staying at max speed while the dual is ending)
+	I mainly just fixed an issue with the EGO gift reward not working sometimes
+	SnowQueen.cs
+
+Fixed Big and Will be Bad Wolf
+	It used to be that if Red Hood suppressed Wolf, and then passed by Wolf's hallway on her way back to her containment unit, Wolf would instantly escape again
+	BigBadWolf.cs
+	RedHood.cs
+
+Fixed Green Midnight bug where restarting the day might not disable the lasers properly
+	CreatureBase.cs
+	OrdealCreatureModel.cs
+	MachineMidnight.cs
+
+Green Midnight no longer hits employees who are working
+	MachineMidnightLaser.cs
+
+Increased Green Midnight's hurtbox so that employees with 'Very Short' range don't stand inside the lasers
+	MachineMidnight.cs
+
+Fixed Amber Midnights killing all of their children on death sometimes not working
+	If any of the children are already dead, it will not be able to work properly
+	BugMidnightOrdeal.cs
+
+Changed the way observation bonuses work with Alriune and Silent Orchestra
+	Will now try and maximize your chances of getting a neutral
+	Also changed Alriunes bonuses from +3 speed, +3% chance, +3 speed, +3% chance to +2 speed, +4% chance, +2 speed, +4% chance
+	UseSkill.cs
+
+Plague Doctor and White Night can no longer swap containmant units
+	WhiteNightSpace.PlagueDoctor.cs
+	WhiteNightSpace.DeathAngel.cs
+
+Plague Doctor gift fix
+	Plague Doctor gifts are no longer lost upon restarting the day
+	WhiteNightSpace.PlagueDoctor.cs
+	WhiteNightSpace.DeathAngel.cs
+
+Added Work Compression
+	Is enabled once you restart from day 1
+	Is disabled upon reaching certain conditions:
+		Once you reach a day that you haven't ever completed yet.
+		Once you open a department (if you open Hod/Netzach, Gebura/Chesed, or Binah/Hokmah, the other will be checked as well)
+			that you haven't completed all 4 missions for (Malkuth's "At Dusk" gets a pass until day 21).
+		Once you reach day 21 and haven't completed all core suppressions for the upper layer.
+		Once you reach day 36 and haven't completed all core suppressions for the middle layer.
+		Once you reach day 41 and haven't completed all core suppressions for the lower layer.
+		Once you reach day 46.
+	While enabled, all works initiated during the first 2 meltdown gauge phases result in:
+		Twice the meltdown guage progress.
+		Twice the energy.
+		Twice the EXP gain.
+		Twice the unique PE-Box gain.
+		Twice the EGO gift tries.
+	Press \ during the day to toggle it on and off
+	PlayerModel.cs
+	UseSkill.cs
+	SefiraManager.cs
+	CreatureOverloadManager.cs
+	GameStatusUI.EnergyController.cs
+	PlaySpeedSettingUI.cs
+
+Enabled the console
+	Press "~" to open it
+	ConsoleScript.cs
+	ConsoleCommand.cs
+
+Added new console commands/modified existing console commands
+	creature meltdown (int)id [(OverloadType)type]
+	standard ordeal (int)level [(char)color]
+	standard justgetonwithit
+	standard littlebabyman
+	standard forge (int)id [(int)count]
+	standard samuraijack (int)day
+	standard bossiscoming (int)sefira [(bool)isOvertime]
+	standard allmine
+	standard trainingarc
+	agent removeallgifts (int)id
+	agent titlebonus (int)id (int)prefix (int)suffix
+	creature replace (int)id (long)metadataId
+	creature swap (int)id (int)id
+	standard agentlist
+	standard creaturelist
+
+Multiple EGO gifts that occupy the same slot can co-exist
+	(Is also an Overtime Reseach)
+	You cannot have more than 1 of the exact same gift
+	Crumbling Armor's EGO gifts are not allowed to co-exist with each other
+	UnitEGOgiftSpace.cs
+	UnitModel.cs
+	UseSkill.cs
+
+EGO gift drop chance multiplied at the cost of PE
+	(Is also an Overtime Reseach)
+	Also increased unique PE maximum to 9999
+	Drop Chance	x2	x3	x5
+			    Zayin
+			100	140	200
+		(80)	40	53	64
+			    Teth
+			200	300	450
+		(120)	60	80	96
+			    He
+			350	525	900
+		(180)	90	120	144
+			    Waw
+			600	1000	1800
+		(270)	135	180	216
+			    Aleph
+			1000	2000	4000
+		(666)	333	444	532
+			    Boss (White Night)
+			3333	6666	9999
+		(1332)	666	888	1066
+	CreatureManager.cs
+	CreatureEquipmentMakeInfo.cs
+	CreatureDataLoader.cs
+	EquipmentTypeInfo.cs
+	UseSkill.cs
+	CreatureModel.cs
+
+Added config to turn certain preferences on and off
+	Use console commands to turn options on and off
+	Your preferences automatically saved to your file
+	The 'trans'ient version of each command saves it to your current save instead of your profile, so reseting your data will reset them too
+	The 'temp'orary version of each command does not save it at all, so it will be lost when you close the game
+	The 'quiet' version of each command changes the persistant value without wiping the transient value
+	For all of the changemode commands, you can also type the word 'reset' in the place of the value in order to reset it to its default state
+	
+	config changebasicmode [NameOfBasicMode] [value]
+	config changebasicmodetrans [NameOfBasicMode] [value]
+	config changebasicmodetemp [NameOfBasicMode] [value]
+	config changebasicmodequiet [NameOfBasicMode] [value]
+			List of Basic Modes:
+		ControlGroups
+		WorkOrderQueue
+		AddSubtractSelection
+		FreeCustomAppearance
+		RealTimeSuccessRate (3 modes: [percentage, 1, p, po], [percentageandtext, 2, pat, pt], [textonly, 3, to, t])
+		InfoWindowSuccessRate (3 modes: [percentage, 1, p, po], [percentageandtext, 2, pat, pt], [textonly, 3, to, t])
+		RevealEXP
+		RevealOrdeals
+		HpBarStackingAgent
+		HpBarStackingAbnormality
+		HpBarStackingRabbit
+		PseudoRandomTitles
+		WorkCompression (int; default is 2)
+		WorkCompressionOvertime (int; default is 0)
+		WorkCompressionAlways (int; default is 0)
+		SpendPEForEgoGiftChance
+		StackableEgoGifts
+		EgoGiftHelper (off by default)
+		WhiteNightImmobilize
+		PLKeepAbilityWhenWNAbsent (off by default)
+		DisplayAbnoHp (3 modes: [name, 1, n, no], [nameandhp, 2, nah, nh], [hponly, 3, ho, h])
+		MapGraphFix
+	
+	
+	
+	'Special' modes are various cheat or challange modes
+	
+	config changespecialmode [NameOfSpecialMode] [value]
+	config changespecialmodetrans [NameOfSpecialMode] [value]
+	config changespecialmodetemp [NameOfSpecialMode] [value]
+	config changespecialmodequiet [NameOfSpecialMode] [value]
+			List of Special Modes:
+		NoEXP
+		UnstableTT2
+		EarlyOvertimeOverloads
+		EarlyOvertimeOrdeals
+		JailbreakOvertimeMissions
+		DoubleAbno
+		AutoQliphoth
+	
+	
+	
+	'Overtime' modes are a package of optional modes that add more content to the game (THEY ARE OFF BY DEFAULT)
+	overtimetoggle determines whether all the modes are on of off by default; use changeovertimemode to override each mode individually
+	
+	config overtimetoggle [bool]
+	config overtimetoggletrans [bool]
+	config overtimetoggletemp [bool]
+	config overtimetogglequiet [bool]
+	
+	config changeovertimemode [NameOfOvertimeMode] [value]
+	config changeovertimemodetrans [NameOfOvertimeMode] [value]
+	config changeovertimemodetemp [NameOfOvertimeMode] [value]
+	config changeovertimemodequiet [NameOfOvertimeMode] [value]
+	
+			List of Overtime Modes:
+		OvertimeMissions
+		OvertimeOverloads
+		OvertimeOrdeals
+		SecondaryQliphothOverload
+	
+	
+	
+	'Rework' modes are specific abnormality reworks or adjustments
+	(Some of the less obtrusive abnormality adjustments do not have a mode to toggle; consider them Tier 0)
+	They are split into 3 Tiers based off of the extent of how much they change (Tier 2 and 1 modes are ON by default; Tier 3 modes are OFF by default)
+	Use reworktier to change the cutoff for which tiers are on, or use changereworkmode to override each one individually
+	
+	config reworktier [int]
+	config reworktiertrans [int]
+	config reworktiertemp [int]
+	config reworktierquiet [int]
+	
+	config changereworkmode [NameOfOvertimeMode] [value]
+	config changereworkmodetrans [NameOfOvertimeMode] [value]
+	config changereworkmodetemp [NameOfOvertimeMode] [value]
+	config changereworkmodequiet [NameOfOvertimeMode] [value]
+	
+			List of Rework Modes:
+			(Tier 1)
+		FragmentErosion
+		LuminousAndYangForgiveness
+		ShyLookFreeze
+		ParasiteTreeStall
+			(Tier 2)
+		SpiderBudAndBloodbathEnergy
+		CrumblingArmorGift
+			(Tier 3)
+		GreenMidnightRework
+	
+	
+	
+	These commands reset your mode preferances:
+	
+	standard resetmodestransient
+	standard resetmodesall
+	
+	+SpecialModeConfig.cs
+	GlobalGameManager.cs
+
+Ego Gift Helper
+	Off by defualt, must be turned on with "config changebasicmode EgoGiftHelper true"
+	Places a "(*)" next to the names of abnormalities if the agent in the current agent window has their gift
+	Places a "(*)" next to the names of employees on the managment window if they have their gift
+	Places a "(**)" for each of Red Hood/Wolf and Punishing Bird/Big Bird/Judgment Bird if they have their shared gifts
+	AgentInfoWindow.cs
+	CommandWindow.AgentSlot.cs
+	IsolateRoom.cs
+
+ -- (Tier 3 abnormality reworks are not on by default) -- 
+
+Green Midnight Rework - (Teir 3)
+	At 30% Hp remaining spawn 3 Meltdown of The Last Helix
+		Not quite polished, but it works properly
+	SefiraBossDesc_en.xml
+	OverloadType.cs
+	UIColorManager.cs
+	UnitBufType.cs
+	MachineMidnight.cs
+	+MachineMidnightOverload.cs
+	+MachineMidnightPlasmaArmorBuf.cs
+
+Funeral of Dead Butterflies rework - (Teir 3)
+	Butterfly.cs
+	Butterfly_stat.txt
+
+Fixed an issue that made the game not load modded EGO equipment scripts properly
+	WeaponModel.cs
+	ArmorModel.cs
+	EGOgiftModel.cs
+	AgentModel.cs
+	UnitEGOgiftSpace.cs
+
+Added support for Modded Fist weapons
+	WorkerSpriteManager.cs
+	Inventory.InventoryWeaponSlot.cs
+	WeaponSetter.cs
+	WorkerModel.cs
+	WorkerPortraitSetter.cs
+
+Fixed the way Modded Mouth 1 gifts appeared
+	WorkerSpriteManager.cs
+	WorkerPortraitSetter.cs
+
+Increased the Managerial tips limit from 7 to 100
+	CreatureModel.cs
+	CreatureInfo.CreatureInfoCaretakingRoot.cs
+	CreatureInfoWindow.cs
+
+ -- (the following changes are Overtime features that aren't on by default) -- 
+
+Added Overtime Meltdowns
+	Extended the maximum qliphoth overload level to XX
+	Special Overtime Meltdowns start spawning at meltdown X and beyond (the energy cost of a failed meltdown is capped at 50)
+	There are 4 types: Pain, Grief, Ruin, and Oblivion
+		refer to OvertimeMeltdowns.txt for the specifics of each type
+	CreatureOverloadManager.cs
+	GameStatusUI.EnergyController.cs
+	ChokhmahBossBase.cs
+	SefiraBossDesc_en.xml
+	OverloadType.cs
+	UIColorManager.cs
+	UseSkill.cs
+	IsolateRoom.cs
+	BinahBoss.BinahOverloadUI.cs
+	+Vestige (NameSpace)
+	UnitBufType.cs
+	ManageCreatureAgentCommand.cs
+
+Secondary Qliphoth Meltdown
+	CreatureModel.cs
+	CreatureOverloadManager.cs
+	GameStatusUI.EnergyController.cs
+	CreatureModel.cs
+	OrdealGenInfo.cs
+	OrdealManager.cs
+
+ -- (the following changes are Special Modes that aren't on by default) -- 
+
+Special Mode NoEXP
+	Self explainitory
+	Also removes random variation in the stat value from spending LOB to upgrade you stats
+	UseSkill.cs
+	Customizing.CustomizingWindow.cs
+
+Special Mode UnstableTT2
+	Game Speed is accelerated (does not scale linearly with normal Game Speed Accel: (NormlSpd + 3)*(ExtraSpd + 3) / 4 - 3)
+	Amount of time the player is allowed to pause limited (the energy bar has been highjacked to display the amount of pause time left)
+	Game Speed Acceleration and Pause Drain Rate increase each day
+		(days)		(speed accel)	(drain rate)
+		Day 1  to 20	x1.01 to x1.20	0.05 to 1.00
+		Day 21 to 35	x1.31 to x1.50	1.06 to 2.00
+		Day 36 to 45	x1.70 to x2.00	2.20 to 4.00
+		Day 46 to 49	x2.50 to x3.00	5.00 to 6.00
+		Day 49+		x3.00		6.00
+	+UnstableTT2Manager.cs
+	GameManager.cs
+	GameStatusUI.EnergyController.cs
+
+Special Mode EarlyOvertimeOverloads
+Special Mode EarlyOvertimeOrdeals
+Special Mode JailbreakOvertimeMissions
+
+Special Mode DoubleAbno
+	SefiraIsolate.cs
+	SefiraIsolateManagement.cs
+	GameStaticDataLoader.cs
+	CreatureSelectUI.cs
+	CreatureGenerate.CreatureGenerateInfoManager.cs
+	CreatureGenerate.CreatureGenerateDoor.cs
+	PlayerModel.cs
+	SefiraPanel.cs
+	BaseIsolate.txt
+	CreatureGenInfo.txt
+
+Special Mode AutoQliphoth
+	CreatureOverloadManager.cs
+
+ -- (the following are planned features/changes) -- 
+
+Grunge Fix
+	GameManager.cs
+	SoundInfo.cs
+
+Dynamic Neutral Music
+	GameManager.cs
+	BgmManager.cs
+
+Fixed Green Dusk being ALEPH
+	CreatureTypeInfo.cs
+	CreatureDataLoader.cs
+	MachineDusk_stat.txt
+	many localize files
+
+Made it so that Meat Lantern can't spawn right outside its containment unit
+	Bunny.cs
+
+Large CreatureBase pass
+	Tranquilizer Bullets
+	Suppress for Energy
+	Gebura Core Suppression
+	Pale Horse aggro
+
+Dont Touch Me quick fix
+	DontTouchMe.cs
+
+April Fools
+	+AprilFoolsManager.cs
+	GlobalGameManager.cs
+	OverloadType.cs
+	UIColorManager.cs
+	CommandWindow.CommandWindow.cs
+	UseSkill.cs
+	CreatureManager.cs
+	
+
+Fixed Silent Orchestra stealing energy on movement 4 instead of finale
+	SilentOrchestra.cs
+
+Alternative Reduction Text
+	CommandWindow.WorkData.cs
+
+Window Scale [x]
+	AgentInfoWindow.cs
+
+Console Command Overhaul
+Special Mode Menu
+
+Fix tokens being blocked by HP bar stacking
+EGO gift window improvement
+Farther Memory Repository [~?]
+?Corpse Object optimization
+Abno Dissolution helper
+Der Freischutz change fire direction
+Der Freischutz rework - 3
+?Singing Machine rework (make extra energy from playing music?) - ?
+Snow White vines can be burned away by Fiery Bird
+Old Belief and Promise rework - 3
+Schadenfreude gives info boxes when failed
+???Queen of Hatred make a little more reliable in Hero form - 2
+??HP and SP healing numbers
+
+Fix localize data being used for abno's risk level [~O]
+	CreatureTypeInfo.cs
+	CreatureDataLoader.cs
+	many MachineDusk xmls
+Make Meat Lantern not able to spawn in its own hallway [O]
+	Bunny.cs
+Fix Big and Will be Bad Wolf bugs[x/O]
+	BigBadWolf.cs
+Fix WhiteNight/Plague Doc messing up creature InstanceIDs
+Fix employees suppressing Rabbits getting stuck
+Fix odd clerk behaviour after being given orders using Malkuth Suppression Reward (like sometimes just standing around indefinately)
+Investigate re-customization bugs
+Improper Unscaled Range Fix
+
+Apoc Bird Rework
+Hardcore Mode
+Employee Crowding
+Increased Agent Limit
+
+Secondary Overload sound effects [~O]
+
+Scan for scripts still using old metaIDs (creatures, and EGO)
+	CreatureModel.metadataId
+	EquipmentTypeInfo.id
+	
+	AgentLyrics
+	AgentUnit.MakeEffectAttach
+	OfficerUnit.MakeEffectAttach
+	Overloads
+	CreatureGenerateInfoManager.CheckKitCreatureRemains
+	CreatureGenerateModel
+	CreatureManager.ReplaceAllDlcCreature
+	FactionTypeInfo
+	ReverseClock
+	
+	ConsoleCommand.CompleteInventory
+	UnitEGOgiftSpace.lockState
+
+DamageInfo rework
+	DamageInfo.cs
+	+DamageResult.cs
+	+RwbptiohgclmyednType.cs
+	WorkerModel.cs
+	RabbitModel.cs
+	CreatureModel.cs
+	EquipmentModel.cs
+	EquipmentScriptBase.cs
+	UnitEGOgiftSpace.cs
+	UnitBuf.cs
+	CreatureBase.cs
+	+NothingGift.cs
+	BaseEquipment.txt
+
+	BlackSwanWeapon
+	CensoredWeapon
+	YinGift
+
+Overtime Mode
+	PlayerModel.cs
+	CreatureOverloadManager.cs
+Overtime Missions
+	BaseMissionTable.txt
+	Mission_en.xml
+	MissionManager.cs
+	ConditionType.cs
+	MissionTypeList.cs
+	MissionConditionTypeInfo.cs
+	Mission.cs
+	NoticeName.cs
+	ResultScreen.cs
+	CreatureUnit.cs
+	WorkerModel.cs
+	AgentModel.cs
+	OfficerModel.cs
+	Sefira.cs
+	GlobalBullet.GlobalBulletManager.cs
+	EnergyModel.cs
+	BarrierBuf.cs
+	CreatureModel.cs
+	GameManager.cs
+	WorkerModel.cs
+	+MissionScript.cs
+	+MissionScript_TimedSuppression.cs
+	+MissionScript_BalanceWorkResults.cs
+	+MissionScript_BalanceWorkTypes.cs
+	+MissionScript_AbnormalityDrill.cs
+	+MissionScript_PanicDrill.cs
+	+MissionScript_OvertimeOverloads.cs
+	+MissionScript_DealDamageWeakest.cs
+	SefiraPanelMissionUI.cs
+Overtime Research
+	BaseResearch.txt
+	ResearchDesc.xml
+	SefiraBossDesc_en.xml
+	ResearchDataModel.cs
+	DeployUI.cs
+	Malkuth : 1st[O]/3rd[O]
+		UnitMouseEventManager.cs
+		+IMouseCommandTargetModelExt.cs
+		WorkerModel.cs
+		ControlGroupManager.cs
+		GlobalBullet.GlobalBulletWindow.cs
+		CameraMover.cs
+		DeployUI.cs
+	Malkuth : 2nd
+		+QueuedWorkOrder.cs
+		AgentModel.cs
+		IsolateRoom.cs
+		CommandWindow.CommandWindow.cs
+		AgentSlot.cs
+		CreatureUnit.cs
+	Malkuth : Suppression Reward [~O]
+		AgentModel.cs
+		OfficerManager.cs
+		UnitMouseEventManager.cs
+		OfficerUnit.cs
+	Yesod : 1st (hijacks prevous feature)
+	Yesod : 2nd (hijacks prevous feature)
+	Yesod : 3rd
+		Rabbit.RabbitProtocolWindow.cs
+		Freischutz.cs
+		RedHood.cs
+		PromiseAndFaith.cs
+	Yesod : Suppression Reward
+		CreatureModel.cs
+	Hod : 1st
+		SefiraAbilityValueInfo.cs
+		AgentModel.cs
+		WorkerSpriteManager.cs
+	Hod : 2nd
+		AgentModel.cs
+		AgentHistory.cs
+	Hod : 3rd
+		AgentModel.cs
+		Sefira.cs
+		UseSkill.cs
+		CreatureModel.cs
+		GlobalBullet.GlobalBulletManager.cs
+		CreatureEquipmentMakeInfo.cs
+		SefiraPanel.cs
+		SefiraRecoverGaugeUI.cs
+	Hod : Suppression Reward
+		AgentModel.cs
+	Netzach : 1st
+		PassageObjectModel.cs
+		Sefira.cs
+		WorkerModel.cs
+	Netzach : 2nd
+		CreatureModel.cs
+		Sefira.cs
+		SefiraManager.cs
+	Netzach : 3rd
+		OfficerManager.cs
+		OfficerModel.cs
+	Netzach : Suppression Reward
+		Sefira.cs
+	Tiphereth : 1st
+		BarrierBuf.cs
+	Tiphereth : 2nd/Suppression Reward
+		GlobalBullet.GlobalBulletManager.cs
+	Tiphereth : 3rd/Suppression Reward
+		UseSkill.cs
+	Gebura : 1st
+		EnergyModel.cs
+	Gebura : 3rd [x]
+		CreatureBase.cs
+		CreatureModel.cs
+	Gebura : 2nd / Chesed : 2nd
+		GlobalBullet.GlobalBulletType.cs
+		GlobalBullet.GlobalBulletManager.cs
+		GlobalBullet.GlobalBulletWindow.cs
+		GlobalBullet.GlobalBulletUISlot.cs
+	Gebura : 2nd
+		WeaponModel.cs
+		WorkerModel.cs
+		CreatureModel.cs
+		RabbitModel.cs
+		+StimBulletBuf.cs
+		+StimBulletBufCreature.cs
+	Chesed : 1st
+		GlobalBullet.GlobalBulletManager.cs
+		GlobalBullet.GlobalBulletWindow.cs
+	Chesed : 2nd [x]
+		CreatureBase.cs
+		CreatureModel.cs
+		GlobalBullet.GlobalBulletManager.cs
+		GlobalBullet.GlobalBulletWindow.cs
+		IsolateRoom.cs
+	Chesed : 3rd/Suppression Reward
+		WorkerModel.cs
+	Binah : 1st [x]
+		?OneBadManyGoodArmor.cs [x]
+			Uses AgentModel when could use WorkerModel
+	Hokma : 1st/2nd/3rd/Suppression Reward
+		WorkerPrimaryStat.cs
+Overtime Core Suppressions
+	SefiraBossManager.cs
+	DeployUI.cs
+	?StorySefiraInfoItemUI
+		.Init()
+	?CreatureOverloadManager
+		.ActivateOverload()
+	?GameManager
+		.BossEvent
+	?GameStatusUI.EnergyController
+		.SetOverloadUI()
+	?OverlayManager
+		.SetText()
+	?SefiraBossUI
+		.OnStageStart()
+	?WhiteNightSpace.DeathAngelPlaySpeedBlockUI
+		.IsFunctionEnabled()
+		.OnTryPause()
+	SefiraBossDesc_en.xml
+	SefiraPanel.cs
+	ResearchWindow.cs
+	Add_On.cs
+	BmgManager.cs
+	StageTypeInfo.cs
+	BugOrdeal.cs
+	CircusOrdeal.cs
+	FixerOrdeal.cs
+	MachineOrdeal.cs
+	OutterGodOrdeal.cs
+	ScavengerOrdeal.cs
+	Freischutz.cs
+	PromiseAndFaith.cs
+	Rabbit.RabbitProtocolWindow.cs
+	SilentOrchestra.cs
+	Cleanup :
+		AngelaConversation.cs
+		CommandWindow.AgentSlot.cs
+		CommandWindow.CommandWindow.cs
+		Sefira.cs
+		AgentUnit.cs
+		AgentUnitUI.cs
+		ChildCreatureUnit.cs
+		CreatureUnit.cs
+		InGameUI.AgentUI.cs
+		OfficerUnit.cs
+		RabbitUnitUI.cs
+		OverlayManager.cs
+		AgentModel.cs
+		SefiraBossUI.cs
+		CreatureOverloadManager.cs
+		GameManager.cs
+		GameStatusUI.EnergyController.cs
+		WhiteNightSpace.DeathAngelPlaySpeedBlockUI.cs
+	Malkuth :
+		+OvertimeMalkutBossBase.cs
+		MalkutCoreScript.cs
+		+OvertimeMalkuthCoreScript.cs
+		MalkutCoreAnim.cs
+		MapEdge.cs
+	Yesod :
+		+OvertimeYesodBossBase.cs
+		YesodCoreScript.cs
+		+OvertimeYesodCoreScript.cs
+		YesodCoreAnim.cs
+		CreatureUnit.cs
+		IsolateRoom.cs
+		Assets.Scripts.UI.Isolate.IsolateDescription.cs
+		SystemLogScript.cs
+		TextConverter.cs
+		AngelaConversation.cs
+		CommandWindow.WorkAllocateRegion.cs
+		CommandWindow.WorkData.cs
+		CreatureOverloadManager.cs
+		AgentModel.cs
+		AgentUI.cs
+		UnitModel.cs
+		UseSkill.cs
+		CommandWindow.AgentSlot.cs
+		CreatureLayer.cs
+		CreatureModel.cs
+		CommandWindow.CommandWindow.cs
+		SoundEffectPlayer.cs
+		GameManager.cs
+	Hod :
+		+OvertimeHodBossBase.cs
+		HodCoreScript.cs
+		+OvertimeHodCoreScript.cs
+		HodCoreAnim.cs
+		+OvertimeHodBossBuf.cs
+		UseSkill.cs
+		AgentInfoWindow.cs
+	Netzach :
+		+OvertimeNetzachBossBase.cs
+		NetzachCoreScript.cs
+		+OvertimeNetzachCoreScript.cs
+		NetzachCoreAnim.cs
+		+OvertimeNetzachBossBuf.cs
+		Sefira.cs
+		GlobalBullet.GlobalBulletManager.cs
+		WorkerModel.cs
+	Tiphereth :
+		+OvertimeTipherethBossBase.cs
+		+OvertimeTipherethCoreScript.cs
+		GameManager.cs
+		CreatureOverloadManager.cs
+	Gebura : [x]
+		CreatureBase.cs
+
+
+Overtime Ordeals
+	OrdealLevel.cs
+	OrdealManager.cs
+	OrdealBase.cs
+	OrdealGenInfo.cs
+	CreatureOverloadManager.cs
+	GameStatusUI.EnergyController.cs
+	IconManager.cs
+	ReverseClock.cs
+	BaseList.txt
+	MachineOrdeal.cs
+	BugOrdeal.cs
+	OutterGodOrdeal.cs
+	CircusOrdeal.cs
+	ScavengerOrdeal.cs
+	FixerOrdeal.cs
+	+Overtime[ordealName]_stat.txt
+	+Overtime[ordealName]_en.xml
+	+Overtime[ordealName]Ordeal.cs
+	[ordealType]Creature.cs
+	[ordealName].cs
+	+Overtime[ordealName].cs
+	UnitBufType.cs
+	+OvertimeBugDawnDebuf.cs
+	+OvertimeBugDawnProtectionBuf.cs
+	+OvertimeCircusDawnSlow.cs
+	+OvertimeMachineDawnInnerWeapon.cs
+	AgentModel.cs
+	OfficerModel.cs
+	+Uncontrollable_OvertimeMachineDawn.cs
+	+OvertimeMachineDawnDebuf.cs
+	+OvertimeMachineEnergized.cs
+	+OvertimeOutterGodDawnAnitrecovery.cs
+	UnitModel.cs
+	BarrierBuf.cs
+
+
+
+New Abnormalities and EGO
+	+Various Files
+	+ExternalDLL
+	UnitBufType.cs
+	CreatureGenerateInfo.cs
+	CreatureBase.cs
+
+
+
+ -- (features below here are ones that I don't believe to be feasable for me to implement as things stand) -- 
+
+EGO Realization
+	Complete an EGO Realization fight to improve all EGO of that teir
+	(I have not made the Realization fight, but I have programed the EGO upgrades)
+				ZAYIN	TETH	HE	WAW	ALEPH	BOSS
+	Weapons (Base Damage):	+60%	+40%	+30%	+25%	+22.5%	+20%
+	Armor (Base RWBP Res):	-0.2	-0.15	-0.12	-0.1	-0.0666	-0.05
+	Gifts (Base Drop %):	+1%	+1%	+1%	+1%	+1%	+1%
+		Paradise Lost Armor has a special exception
+			If WN in facility
+				-0.0333 (BOSS)
+			If WN not in facility
+				-0.0666 (ALEPH)
+	+EGOrealizationManager.cs
+	EquipmentModel.cs
+	AgentModel.cs
+	CreatureEquipmentMakeInfo.cs
+	Inventory.InventoryWeaponSlot.cs
+	Inventory.InventoryArmorSlot.cs
+	Inventory.InventoryAgentController.cs
+	CreatureInfo.WeaponSlot.cs
+	CreatureInfo.ArmorSlot.cs

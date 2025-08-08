@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<creature>
+  <script>NotbaconBalloonChild</script>
+
+  <stat>
+    <hp>250</hp>
+    <speed>2</speed>
+
+    <defense id="1">
+      <defenseElement type="R">1.5</defenseElement>
+      <defenseElement type="W">0.5</defenseElement>
+      <defenseElement type="B">1</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+  </stat>
+
+  <attackType openLevel="1">WHITE</attackType>
+  <riskLevel openLevel="1">TETH</riskLevel>
+
+  <anim prefab="Custom/NotbaconBalloonChildAnim" x="-1" y="-2" />
+</creature>

@@ -1,0 +1,25 @@
+Version 0.2.0
+
+ - Modified service bonus values
+ - Modified how Hod service bonueses work
+ - Modified how Kether service bonueses work
+
+ - Plague Doctor gift fix
+ - Spider Bud and Bloodbath extra energy rework
+ - Fixed weapon various issues with slow debuffs
+
+ - Overtime Meltdowns
+ - Overtime Ordeals (framework)
+ - Overtime Missions, Research, and Core Suppressions
+To Design:
+	Overtime Missions [36]
+	Overtime Research [27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [4~7 / 9]
+	Overtime Ordeals [0~1 / 14~18]
+To Implement:
+	Overtime Missions [31~33 / 36]
+	Overtime Research [5~13 / 27]
+	Overtime Core Suppression
+	Overtime Core Suppression Reward [1~4 / 9]
+	Overtime Ordeals [0 / 14~18]

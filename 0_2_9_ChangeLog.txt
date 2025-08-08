@@ -1,0 +1,32 @@
+Version 0.2.9
+
+ - Made it so that using the agent return button will also make employees who are working return after they finish
+
+ - Fixed WhiteNight's play speed blocking not working in my mod
+ - Fixed the Void Dream sleep softlock bug
+ - Fixed an issue with several EGO gifts' special abilities not working due to a missing referance to their script
+
+ - Reverted the Yesod-Tiphereth elevator to normal for now, cause it was causing an issue where some abnormalities would get stuck
+
+ - Funeral of the Dead Butterflies rework (off by default)
+
+ - Overtime Amber Dawn nerfed slightly
+ - Overtime Crimson Dawn nerfed
+
+ - Added 4 new abnormalities to the game (disabled by default)
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [8~9 / 9]
+	Overtime Ordeals [6~9 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [1~2 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [4~5 / 14~18]
+	Overtime Day 46-50

@@ -1,0 +1,30 @@
+Version 0.3.1
+
+ - Made a quick fix so that Dont Touch Me no longer can delete EGO (it also means you can't get the observe info; can be reverted using a mode preferance)
+ - Made it so that Meat Lantern can't spawn right outside its own containment unit
+ - Fixed bug where Green Dusk accidentally had ALEPH level defense and fear damage
+ - Finished implementing the core suppression ordeal spawning time restrictions for the middle and lower layers
+
+ - Added the Dynamic Neutral Music feature (must be turned on; is not on by default)
+ - Worked on the Tranquilizer Bullets
+
+ - Added Unknown Abno Mode, which removes all information on the abnormality selection screen
+ - Added Blind Mode, which makes it so that you literally cannot see during the day or on the deployment screen
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [8~9 / 9]
+	Overtime Ordeals [6~9 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+	EGO Realization [0~1~6 / 6]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [4 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [5 / 14~18]
+	Overtime Day 46-50
+	EGO Realization

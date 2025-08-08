@@ -1,0 +1,20 @@
+Version 0.2.2
+
+ - Fixed weapons whiffing
+	If their main target moves out of range but there are other targets in range, will hit the closest one instead
+
+ - Started work on Overtime Ordeals
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [1~3 / 14~18]
+		To Implement:
+	Overtime Missions [34~35 / 36]
+	Overtime Research [5~20 / 27]
+	Overtime Core Suppression
+	Overtime Core Suppression Reward [3~5 / 9]
+	Overtime Ordeals [0~1 / 14~18]

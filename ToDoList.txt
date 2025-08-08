@@ -1,0 +1,130 @@
+
+Reformat/clean up/consolidate internal documentation
+Create better user guides for the mod
+
+Set up a github
+Maybe set up a proper mod page
+
+Suggest/implement new bugs fixes (unless they're just funny)
+Suggest/implement new quality of life features
+
+Migrate any localize data changes to the BaseMods area instead of being direct file modifications
+
+Maybe migrate some Overtime Ordeal/Core Suppression/etc scripts to be in the external dll instead of living in Assembly-CSharp
+
+Create proper UI for Special Mode Preferances
+
+Create a framework for extending the UnitBufType Enum, and migrate all Overtime Mod buf types to use it
+
+Improve the feedback/FX for Overtime Meltdowns
+Improve the feedback/FX for the Secondary Overload Gauge
+
+Implement more Console Commands for manipulating the state of your facility and save file
+
+Fix Tokens being blocked by HP Bar Stacking
+
+Make the EGO Gift window work properly with multiple Gifts per slot
+
+Implement proper UI for the Farther Memory Repository system
+
+Implement proper UI for the EGO Loadout system
+
+Figure out why the WorkQueuePreferanceManager isn't working properly
+
+Add proper alternative managerial tips for the Funeral of the Dead Butterflies rework (and maybe some of the other reworks)
+
+Make it so that when an abnormality has multiple sets resistances, a specific one can be specified to be shown in the Escape Information instead of 'unspecified', and the Suppression Window can show the correct one instead of 'unspecified'
+Maybe add support for an abnormality's exact resistance values to be adjusted through the script
+
+Der Freischutz rework
+Apocalypse Bird rework
+Probably Old Belief and Promise rework?
+Maybe Singing Machine rework??
+Mayhaps Queen of Hatred rework???
+
+Insert Special Mode Preferances to control April Fools mode
+Maybe add some more April Fools events by next April
+
+Corpse Object optimization
+
+Abno Dissolution helper
+
+Snow White Vines optimization
+Add ways for Snow White Vines to be destroyed (ex. being burned away by Firebird)
+
+Fix the wierd bug that sometimes happens with Funeral's butterflies
+
+Fix employees suppressing Rabbits getting stuck
+
+Large CreatureBase pass (a collection of various features whose implementations will require functionality within all or a large subsection of abnormalties' CreatureBase scripts; features part of this will be labeled individually below)
+
+Investigate and fix improper unscaled ranges (part of the Large CreatureBase pass) (known offenders off the top of my head are Apoc Bird,  Nothing There, and Gebura)
+
+Implement Increased Agent Limit mode which would allow more than 5 Agents in a department (similar to DoubleAbno mode)
+
+Finish DamageInfo rework (including implementing the extra damage types)
+Consolidate 'recover % of damage dealt' like Mimicry Weapon, and 'recover % of damage taken' effects like CENSORED Weapon, Yin Gift, etc so that they use the DamageReport system instead
+Rework the way 'HP/SP Healing increased by %' Gift effects (only from Gifts; other types of bufs can remain as they are) stack with each other (I want it so that they are linear instead of multiplicative)
+Rework the way 'recover % of damage taken' effects stack with each other and with 'Healing increased by %' bonuses
+
+Figure out a better way to do Netzach mission 9
+
+Give all Overtime Researches proper names/descriptions/flavor texts and stuff
+Maybe give Overtime Missions more original titles, original flavor texts, and original cutscenes
+
+Finish the implementation of Malkuth Suppression reward
+Fix odd clerk behaviour after being given orders using Malkuth Suppression reward (like sometimes just standing around indefinately)
+
+Maybe make improvements to the Work Compression feature (related to Tiphereth's research/Suppression reward)
+
+Finish implementing the specific exceptions for Gebura's Suppression Energy research (part of the Large CreatureBase pass)
+
+Implement Gebura Suppression reward: Slow Bullet buff
+Implement Gebura Suppression reward: Execution Bullet quality of life feature
+Implement Gebura Suppression reward: Rabbit Team Captains (!!!WARNING!!! very ambitious)
+
+Finish implementing the specifics of Tranquilizer Bullets (part of the Large CreatureBase pass)
+Give the new Bullet types their own unique UI
+Implement the bonus Bullet types (HP/SP Lock, and RWBP Damage)
+
+Implement Chesed Suppression reward: Employee revival
+
+Implement Binah research that lets you move containment units around using LOB
+Implement Binah research/Suppression reward that lets Clerks equip EGO
+
+Design more of the Overtime Ordeals
+Implement more of the Overtime Ordeals (currently only: all 4 Dawns, and Green Noon)
+Implement the special suppression rewards for Overtime Ordeals
+
+Implement support for loading custom music in .mp3 format (and convert the Overtime Suppression tracks to it so that the file sizes are much nicer)
+
+Finish implementing Overtime Gebura Suppression (part of the Large CreatureBase pass)
+Implement Overtime Chesed Suppression
+Implement Overtime Binah Suppression
+Implement Overtime Hokma Suppression
+Implement Overtime Day 46-50
+
+Create the system for EGO Realization Fights (!!!WARNING!!! very ambitious)
+
+Maybe work on the designs (design as in mechanical/gameplay n stuff, not as in visual design) for some of the new Overtime Abnormalities
+Maybe implement more new Overtime Abnormalities (currently only 5 'fully' implemented: The Pale Horse, Gravity Defying Rock, Quiet Bird, Take One Please, Coral Reef(name pending)) (!warning! fairly ambitious)
+Finish the implementation for the in-progress new Overtime Abnormalities (Crazed Balloon Artist(name pending), Lonely Wraith, Dream Catcher, Angler Fish(name pending), Grandfather Clock, Shattered Mirror)
+Establish a workflow for creating custom EGO Weapon animations
+
+Maybe work on the designs (design as in visual, story, thematic) for some of the new Overtime Abnormalities
+Maybe maybe create more high quality visuals and animations n stuff for the new Overtime Abnormalities (!warning! fairly ambitious)
+
+Finish The Pale Horse's Mark for Death functionality (part of the Large CreatureBase pass)
+
+Make sure 'recover % of damage taken' effects play nice with Gravity Defying Rock's and EGOs' abilities and don't become super overpowered
+Maybe add support for EGO Gift additional visual offsets so that Gravity Defying Rock Gift can be higher up on the head
+
+Fix Quiet Bird's cage
+Create Quiet Bird's locks
+
+Make it possible to tell how full Please Take One's bowl is
+Create a way to choose which Candy you want from Please Take One
+Maybe seed Please Take One's candy generation in such a way so that you cannot retry day to reroll it? (unsure if this is nessesary or not)
+
+Replace the placeholder-placeholder art for Coral Reef's EGO Armor and Weapon with actual placeholder art
+Create Coral Reef's suppression reward Weapon

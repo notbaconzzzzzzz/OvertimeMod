@@ -1,0 +1,38 @@
+Version 0.2.7
+
+ - Added the EGO loadout system; You can save what EGO you currently have equipped on who, and load it back whenever
+
+ - Shy Look stops changing faces once an employee is ordered to work on her
+
+ - Increased the Work Queue limits: Per-employee 3 > 5, Per-abnormality 5 > 10
+ - Made the control group hotkeys compatible with the numpad
+ - Added a few useful console commands, most important being standard agentlist, so you no longer have to guess an employee's id
+ - Changed Pink weapon, it now deals more damage to targets that are farther away
+
+ - Whoopsie, appearanty I forgot to remove Feather of Honor from the list of EGO that Geb bonus can't give an extra one of, fixed now
+ - Fixed EgoGiftHelper doing weird things when combined with DisplayAbnoHp
+ - Made Amber Midnight no longer sometimes kill all of their children on death
+ - Made it so that all queued works are canceled each meltdown during Malkuth Suppression
+
+ - Fixed a couple of Overtime Amber Dawn's new abilities not working, causing it to be easy as hell
+ - More progress on the Overtime Ordeals
+	Overtime Green Dawn finished
+	Began work on Overtime Violet Dawn
+ - More progress on Overtime Core Suppressions
+	Yesod
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [4~7 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [1~2 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [3 / 14~18]
+	Overtime Day 46-50

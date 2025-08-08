@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<creature>
+  <script>NotbaconBalloon</script>
+  <stat>
+    <riskLevel>2</riskLevel>
+    <maxWorkCount>4</maxWorkCount>
+    <workProb type="R">
+      <prob level="1">0.45</prob>
+      <prob level="2">0.45</prob>
+      <prob level="3">0.45</prob>
+      <prob level="4">0.45</prob>
+      <prob level="5">0.45</prob>
+    </workProb>
+    <workProb type="W">
+      <prob level="1">0.4</prob>
+      <prob level="2">0.25</prob>
+      <prob level="3">0.1</prob>
+      <prob level="4">0</prob>
+      <prob level="5">0</prob>
+    </workProb>
+    <workProb type="B">
+      <prob level="1">0.65</prob>
+      <prob level="2">0.65</prob>
+      <prob level="3">0.6</prob>
+      <prob level="4">0.6</prob>
+      <prob level="5">0.6</prob>
+    </workProb>
+    <workProb type="P">
+      <prob level="1">0.5</prob>
+      <prob level="2">0.5</prob>
+      <prob level="3">0.5</prob>
+      <prob level="4">0.4</prob>
+      <prob level="5">0.4</prob>
+    </workProb>
+    <qliphoth>3</qliphoth>
+    <workCooltime>10</workCooltime>
+    <feelingStateCubeBounds>
+      <cube>3</cube>
+      <cube>7</cube>
+      <cube>12</cube>
+    </feelingStateCubeBounds>
+    <workDamage type="W" min="2" max="4" />
+    <workSpeed>0.33</workSpeed>
+    <specialDamage>
+      <damage id="1" type="R" min="4" max="5" />
+      <damage id="2" type="W" min="4" max="5" />
+      <damage id="3" type="B" min="4" max="5" />
+      <damage id="4" type="P" min="4" max="5" />
+    </specialDamage>
+    <defense id="1">
+      <defenseElement type="R">1.5</defenseElement>
+      <defenseElement type="W">0.5</defenseElement>
+      <defenseElement type="B">1</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+    <escapeable>true</escapeable>
+    <hp>250</hp>
+    <speed>2</speed>
+    <observeInfo total="56">
+      <observeElement name="stat" cost="12" />
+      <observeElement name="defense" cost="12" />
+      <observeElement name="work_r" cost="4" />
+      <observeElement name="work_w" cost="4" />
+      <observeElement name="work_b" cost="4" />
+      <observeElement name="work_p" cost="4" />
+      <observeElement name="care_0" cost="2" />
+      <observeElement name="care_1" cost="2" />
+      <observeElement name="care_2" cost="2" />
+      <observeElement name="care_3" cost="2" />
+      <observeElement name="care_4" cost="2" />
+      <observeElement name="care_5" cost="2" />
+      <observeElement name="care_6" cost="2" />
+      <observeElement name="care_7" cost="2" />
+    </observeInfo>
+    <observeBonus level="1" type="prob">5</observeBonus>
+    <observeBonus level="2" type="speed">5</observeBonus>
+    <observeBonus level="3" type="prob">5</observeBonus>
+    <observeBonus level="4" type="speed">5</observeBonus>
+    <equipment level="3" cost="20" equipId="230932" />
+    <equipment level="3" cost="30" equipId="330932" />
+    <equipment level="2" prob="0.05" equipId="430932" />
+
+  </stat>
+  <graph>
+    <node id="creature" x="-1.8" y="-1.8" type="creature" />
+    <node id="workspace" x="1.9" y="-1.8" type="workspace" />
+    <!--<node id="door"  x="2" y="-1" type="entry"/>-->
+    <node id="outter" x="0" y="0" type="outterDoor" />
+    <node id="inner" x="2" y="-1.8" type="innerDoor" />
+    <node id="teddy" x="-0.2" y="-1.8" type="custom" />
+    <!--<edge node1="workspace" node2="door" type="road" />-->
+    <edge node1="teddy" node2="inner" type="road" />
+    <edge node1="workspace" node2="inner" type="road" />
+    <edge node1="creature" node2="workspace" type="road" />
+  </graph>
+  <anim prefab="Custom/NotbaconBalloonAnim" x="-1" y="-2" />
+  <portrait src="Unit/creature/magicalGirl" />
+  <child>NotbaconBalloonChild_stat</child>
+</creature>

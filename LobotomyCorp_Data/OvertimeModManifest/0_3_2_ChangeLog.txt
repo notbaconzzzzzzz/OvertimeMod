@@ -1,0 +1,24 @@
+Version 0.3.1
+
+ - Fixed Silent Orchestra stealing energy on movement 4 instead of finale
+
+ - Big and Will be Bad Wolf no longer lowers his qliphoth counter at the start of the next day if you end the previous day with an employee still working on him
+ - Big and Will be Bad Wolf now actually properly kills the eaten employees if you don't save them
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [8~9 / 9]
+	Overtime Ordeals [6~9 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+	EGO Realization [0~1~6 / 6]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [4~5 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [5 / 14~18]
+	Overtime Day 46-50
+	EGO Realization

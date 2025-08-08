@@ -1,0 +1,23 @@
+Version 0.2.1
+
+ - Fixed mission text being cutoff sometimes
+ - Press ESC 3 times to be able to pause during White Night / Apoc Bird
+	The game will continue moving behind the pause screen however
+
+ - Employee Appearances can now be copy pasted
+ - Add Subtract Selection
+ - Control Groups (work in progress)
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [0~1 / 14~18]
+		To Implement:
+	Overtime Missions [34~35 / 36]
+	Overtime Research [5~20 / 27]
+	Overtime Core Suppression
+	Overtime Core Suppression Reward [3~5 / 9]
+	Overtime Ordeals [0 / 14~18]

@@ -1,0 +1,23 @@
+Version 0.2.6
+
+ - You can now see an abnormality's exact Hp on their health bar
+ - Made it so that when you tell an employee to move while they're working, it updates their destination for after the work is done
+
+ - Refixed the Binah meltdowns, because my inital fix didn't work properly
+ - Refixed my Silent Orchestra armor rework not working properly
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [2~6 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [1~2 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [2 / 14~18]
+	Overtime Day 46-50

@@ -1,0 +1,25 @@
+Version 0.2.3
+
+ - Various bug fixes
+
+ - All Overtime Missions are fully done
+ - Overtime Ordeals progress
+	Amber Dawn and Crimson Dawn are done
+ - Overtime Core Suppressions progress
+	Malkuth is done
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [1~4 / 14~18]
+	Overtime Day 46-50 [4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [19~20 / 27]
+	Overtime Core Suppression [1 / 9]
+	Overtime Core Suppression Reward [3~5 / 9]
+	Overtime Ordeals [2 / 14~18]
+	Overtime Day 46-50

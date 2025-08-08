@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<creature>
+  <script>NotbaconShatteredMirror</script>
+  <stat>
+    <riskLevel>5</riskLevel>
+    <maxWorkCount>4</maxWorkCount>
+    <workProb type="R">
+      <prob level="1">0</prob>
+      <prob level="2">0</prob>
+      <prob level="3">0</prob>
+      <prob level="4">0</prob>
+      <prob level="5">0</prob>
+    </workProb>
+    <workProb type="W">
+      <prob level="1">0.25</prob>
+      <prob level="2">0.3</prob>
+      <prob level="3">0.3</prob>
+      <prob level="4">0.35</prob>
+      <prob level="5">0.35</prob>
+    </workProb>
+    <workProb type="B">
+      <prob level="1">0</prob>
+      <prob level="2">0</prob>
+      <prob level="3">0</prob>
+      <prob level="4">0.4</prob>
+      <prob level="5">0.45</prob>
+    </workProb>
+    <workProb type="P">
+      <prob level="1">0.5</prob>
+      <prob level="2">0.5</prob>
+      <prob level="3">0.5</prob>
+      <prob level="4">0.5</prob>
+      <prob level="5">0.5</prob>
+    </workProb>
+    <qliphoth>2</qliphoth>
+    <workCooltime>15</workCooltime>
+    <feelingStateCubeBounds>
+      <cube>16</cube>
+      <cube>16</cube>
+      <cube>32</cube>
+    </feelingStateCubeBounds>
+    <workDamage type="W" min="6" max="8" />
+    <workSpeed>0.3</workSpeed>
+    <specialDamage>
+      <damage id="1" type="B" min="4" max="5" />
+      <damage id="2" type="W" min="4" max="5" />
+    </specialDamage>
+    <defense id="1">
+      <defenseElement type="R">1.3</defenseElement>
+      <defenseElement type="W">-1</defenseElement>
+      <defenseElement type="B">0.6</defenseElement>
+      <defenseElement type="P">0.9</defenseElement>
+    </defense>
+    <escapeable>true</escapeable>
+    <hp>1300</hp>
+    <speed>2</speed>
+    <observeInfo total="136">
+      <observeElement name="stat" cost="30" />
+      <observeElement name="defense" cost="30" />
+      <observeElement name="work_r" cost="10" />
+      <observeElement name="work_w" cost="10" />
+      <observeElement name="work_b" cost="10" />
+      <observeElement name="work_p" cost="10" />
+      <observeElement name="care_0" cost="12" />
+      <observeElement name="care_1" cost="12" />
+      <observeElement name="care_2" cost="12" />
+    </observeInfo>
+    <observeBonus level="1" type="speed">4</observeBonus>
+    <observeBonus level="2" type="prob">2</observeBonus>
+    <observeBonus level="3" type="speed">4</observeBonus>
+    <observeBonus level="4" type="prob">2</observeBonus>
+    <equipment level="4" cost="222" equipId="230901" />
+    <equipment level="4" cost="120" equipId="330901" />
+    <equipment level="4" prob="0.01" equipId="430901" />
+
+  </stat>
+  <graph>
+    <node id="creature" x="-1.8" y="-1.8" type="creature" />
+    <node id="workspace" x="1.9" y="-1.8" type="workspace" />
+    <!--<node id="door"  x="2" y="-1" type="entry"/>-->
+    <node id="outter" x="0" y="0" type="outterDoor" />
+    <node id="inner" x="2" y="-1.8" type="innerDoor" />
+    <node id="teddy" x="-0.2" y="-1.8" type="custom" />
+    <!--<edge node1="workspace" node2="door" type="road" />-->
+    <edge node1="teddy" node2="inner" type="road" />
+    <edge node1="workspace" node2="inner" type="road" />
+    <edge node1="creature" node2="workspace" type="road" />
+  </graph>
+  <anim prefab="Custom/NotbaconShatteredMirrorAnim" x="-1" y="-2" />
+  <portrait src="Unit/creature/magicalGirl" />
+</creature>

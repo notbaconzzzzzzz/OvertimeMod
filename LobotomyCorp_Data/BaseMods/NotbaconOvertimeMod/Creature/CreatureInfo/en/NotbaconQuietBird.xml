@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<creature>
+  <!--
+    info - 관찰 레벨과는 관련 없는 정보들 ex)데미지, id, 이미지 소스 등
+    
+    observe - 관찰 정도에 따라 제공되는 정보들
+              각 정보들에는 정보가 제공되는 레벨을 표기
+              ex) <desc id="1" openLevel="1">"openLevel이 1일 때 이 정보가 제공됨"</desc>
+              
+              observe 노드 안의 level 은 관찰 단계의 갯수를 나타냄
+  -->
+  <info id ="130938">
+
+
+
+    <narration action="move">
+      #0 enters $0's containment unit to begin work.
+    </narration>
+
+    <narration action="mid1">
+      [
+      {PlaceHolder},
+      ]
+    </narration>
+    <narration action="mid2">
+      [
+      {$0 PlaceHolder},
+      {PlaceHolder $0},
+      ]
+    </narration>
+    <narration action="mid3">
+      [
+      {PlaceHolder2},
+      ]
+    </narration>
+
+  </info>
+
+  <observe level ="1">
+    <collection>
+      <codeNo openLevel ="0">O-02-238</codeNo>
+      <portrait openLevel ="1">Custom/NotbaconQuietBird</portrait>
+
+      <name openLevel ="1">
+        Caged Bird
+      </name>
+
+      <name openLevel ="3">
+        Quiet Bird
+      </name>
+
+      <riskLevel openLevel ="1">
+        HE
+      </riskLevel>
+
+      <openText>Quiet Bird Test</openText>
+
+    </collection>
+
+    <desc id="1" openLevel="0">
+      [
+      {PlaceholderDesc}
+      ]
+    </desc>
+
+    <desc id="2" openLevel="1">
+      [
+      {PlaceholderDesc}
+      ]
+    </desc>
+
+    <desc id="3" openLevel="2">
+      [
+      {PlaceholderDesc}
+      ]
+    </desc>
+
+    <desc id="4" openLevel="3">
+      [
+      {PlaceholderDesc}
+      ]
+    </desc>
+
+    <desc id="5" openLevel="4">
+      [
+      {PlaceholderDesc}
+      ]
+    </desc>
+
+
+
+
+    <specialTipSize size="0">
+      <!--<specialTip openLevel="0" key="0">Hidden</specialTip>-->
+    </specialTipSize>
+  </observe>
+</creature>

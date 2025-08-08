@@ -1,0 +1,1 @@
+{"skeleton":{"width":98,"height":150,"fps":24,"hash":" ","name":"Armature"},"bones":[{"name":"root"}],"slots":[{"name":"bird","bone":"root","attachment":"bird"}],"skins":{"default":{"bird":{"bird":{"name":"bird","width":98,"height":150,"x":30,"y":221,"scaleX":0.75,"scaleY":0.75}}}}}

@@ -1,0 +1,62 @@
+Added a x3 speed setting
+	Press [E] 3 times to access
+
+Fixed employee deselection
+	Employees no longer get deselected when you give them an order
+
+Fixed employees receiveing orders while working
+	Now, if you tell an employee to move while they're working, they'll go there after they're done with the work
+
+Employee selection add/subtract options
+	Hold [shift] while selecting employees to add them to the current selection
+	Hold [shift]+[alt] while selecting employees to remove them from the current selection
+	Press [ctrl]+[+] to enter add selection mode
+	Press [ctrl]+[-] to enter subtract selection mode
+	Press [ctrl]+[0] to return to normal selection mode
+
+The ability to make control groups
+	Press [ctrl]+[alt]+[1-9 or Z-M] to save the current selection
+	Press [ctrl]+[1-9 or Z-M] to reselect those employees
+		also works with [shift] or [shift]+[alt] to add/remove from the selection
+
+	Control groups 1-9 are temporary, and are forgotten when you close the game
+	Control groups Z-M are permanent, and save even when you close the game
+	
+	There are also a few static groups
+		[ctrl]+[A] to select all employees
+		[ctrl]+[W] to select all working employees
+		[ctrl]+[S] to select all suppressing employees
+		[ctrl]+[D] to select all idle employees
+
+The ability to queue work orders
+	Hold [shift] when clicking a containment unit to open the work menu in a special state
+		always works, even when you couldn't normally open the work menu
+	Clicking employees in this menu will queue a work order for them
+		you can also hold [shift] to do it on a normal work menu
+		it'll make a different sound than normal
+
+	Holding [alt] when clicking a containment unit will cancel all work queued for them
+		it will not cancel the current work order
+	Holding [alt] when clicking an employee in the work menu will cancel all their queued works
+
+	Each employee can have up to 5 works queued at a time
+	Each abnormality can have up to 10 works queued at a time
+
+The ability to save and load EGO equipment loadouts
+	There is currently no hot-key or button, so just use the console command for now
+	Press [~] to open the console
+	standard loadoutsave #
+	standard loadoutload #
+	# can be any number from 0-6
+	If you use loadoutload while the EGO list is open, it probably wont update visualy
+
+Customizing an employee's appearence is now free
+
+Employees can now be recustomized
+	The option will pop up when reinforcing an agent
+
+Employee appearances can now be copied and pasted
+	With the employee customization window open
+		Press [ctrl]+[C] to copy a string of text representing the employee's appearance+name to the clipboard
+		Press [ctrl]+[V] to paste an employee's appearance+name from the clipboard
+	I recommend you store your employees' appearances in a .txt file somewhere

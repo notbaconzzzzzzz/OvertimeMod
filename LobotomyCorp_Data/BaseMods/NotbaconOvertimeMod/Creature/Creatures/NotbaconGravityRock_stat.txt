@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<creature>
+  <script>NotbaconGravityRock</script>
+  <stat>
+    <riskLevel>2</riskLevel>
+    <maxWorkCount>4</maxWorkCount>
+    <workProb type="R">
+      <prob level="1">0.55</prob>
+      <prob level="2">0.55</prob>
+      <prob level="3">0.5</prob>
+      <prob level="4">0.45</prob>
+      <prob level="5">0.45</prob>
+    </workProb>
+    <workProb type="W">
+      <prob level="1">0.7</prob>
+      <prob level="2">0.6</prob>
+      <prob level="3">0.45</prob>
+      <prob level="4">0.1</prob>
+      <prob level="5">-1</prob>
+    </workProb>
+    <workProb type="B">
+      <prob level="1">0.55</prob>
+      <prob level="2">0.55</prob>
+      <prob level="3">0.5</prob>
+      <prob level="4">0.45</prob>
+      <prob level="5">0.45</prob>
+    </workProb>
+    <workProb type="P">
+      <prob level="1">0.35</prob>
+      <prob level="2">0.35</prob>
+      <prob level="3">0.35</prob>
+      <prob level="4">0.35</prob>
+      <prob level="5">0.35</prob>
+    </workProb>
+    <qliphoth>0</qliphoth>
+    <workCooltime>10</workCooltime>
+	<escapeable>false</escapeable>
+    <feelingStateCubeBounds>
+      <cube>4</cube>
+      <cube>8</cube>
+      <cube>12</cube>
+    </feelingStateCubeBounds>
+    <workDamage type="W" min="8" max="16" />
+    <workSpeed>0.25</workSpeed>
+    <observeInfo total="52">
+      <observeElement name="stat" cost="12" />
+      <observeElement name="defense" cost="12" />
+      <observeElement name="work_r" cost="4" />
+      <observeElement name="work_w" cost="4" />
+      <observeElement name="work_b" cost="4" />
+      <observeElement name="work_p" cost="4" />
+      <observeElement name="care_0" cost="12" />
+    </observeInfo>
+    <observeBonus level="1" type="prob">5</observeBonus>
+    <observeBonus level="2" type="speed">5</observeBonus>
+    <observeBonus level="3" type="prob">5</observeBonus>
+    <observeBonus level="4" type="speed">5</observeBonus>
+    <equipment level="4" cost="35" equipId="230905" />
+    <equipment level="3" cost="25" equipId="330905" />
+    <equipment level="1" prob="0.08" equipId="430905" />
+
+  </stat>
+  <graph>
+    <node id="creature" x="-1.8" y="-1.8" type="creature" />
+    <node id="workspace" x="1.9" y="-1.8" type="workspace" />
+    <!--<node id="door"  x="2" y="-1" type="entry"/>-->
+    <node id="outter" x="0" y="0" type="outterDoor" />
+    <node id="inner" x="2" y="-1.8" type="innerDoor" />
+    <node id="teddy" x="-0.2" y="-1.8" type="custom" />
+    <!--<edge node1="workspace" node2="door" type="road" />-->
+    <edge node1="teddy" node2="inner" type="road" />
+    <edge node1="workspace" node2="inner" type="road" />
+    <edge node1="creature" node2="workspace" type="road" />
+  </graph>
+  <anim prefab="Custom/NotbaconGravityRockAnim" x="-1" y="-2" />
+  <portrait src="Unit/creature/magicalGirl" />
+</creature>

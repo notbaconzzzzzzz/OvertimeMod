@@ -1,0 +1,123 @@
+	...
+Assign Control Groups
+Press [ctrl]+[alt]+[1-9 or Z-M] to save the current selection, and press [ctrl]+[1-9 or Z-M] to reselect those employees. Groups 1-9 are temporary, and are forgotten after the day or when you close the game, while Z-M are permanent, and are saved until overwritten. There are also a few static groups: A = all employees, W = working employees, S = suppressing employees, D = idle employees.
+
+	...
+Queue Work Orders
+Hold [shift] when clicking a containment unit to open the work allocation menu in queue mode at any time, or alternatively hold [shift] when clicking employees in the work window to queue works. Hold [alt] when clicking to cancel all queued works for the abnormality/employee instead. Each employee can only have 3 works queued at a time, and each abnormality can have 5.
+
+	...
+Add Subtract Selection
+Hold [shift] while selecting employees to add them to the current selection, and hold [shift]+[alt] to remove employees (also works when using control group hotkeys). Alternatively, press [ctrl]+[+] to enter add selection mode, [ctrl]+[-] for subtract selection mode, and [ctrl]+[0] to return to normal.
+
+
+
+	Compatibility Optimization Algorithm
+Spend PE for Gift Chance
+Multiply gift chance by x2, x3, or x5 at certain thresholds of unique PE-Boxes depending on the risk level of the abnormality. When an employee obtains a gift while multiplied a certain amount of PE is spent.
+
+	Qliphoth Disturbance Prediction
+Reveal All Ordeals at the Start of the Day
+Placeholder.
+
+	Negotiation Tactics
+Reduce the Energy Cost of Rabbits and Abnormality Abilities
+Reduces costs by 10%.
+
+
+
+	...
+Upgrade Service Bonuses
+Employees gain an improved service bonus for reaching 14 days of continuous service.
+
+	Cross Department Training Program
+Sooner Service Bonuses
+Employees who are moved into a department start with additional service days for every 5 days they've worked in the facility.
+
+	...
+Upgrade Clerk Bonuses
+Doubles the effectiveness of all Clerk bonuses.
+
+
+
+	Beer Vending Machine
+Healing Boost
+As long as the regenerator is free of hostile entities: all employees in the regenerator recover more HP/SP from all sources the lower their current HP/SP, up to +100%; this includes healing from sources other than the regenerator, such as healing bullets.
+
+	...
+Clerk Department Bonus
+Departments gain regenerator speed, meltdown starting timer, and passive energy income based on the clerk alive level.
+
+	...
+Upgrade Clerk Defense
+Drastically imporve HP/SP/B-res/Fear-resistance of Clerks.
+
+
+
+	...
+Upgrade Shield Bullets
+Slightly increase the durability of shield bullets. In addition, when a shield shatters, a portion of its durability can still be used to mitigate the incoming damage.
+
+	...
+Targeted Bullets
+The effectiveness of shield and healing bullets is boosted by up to +50%, spread out based on the amount of employees that are hit (clerks do not count).
+
+	...
+Work Compression
+Works initiated during first 2 qliphoth phases result in x2 the energy, EXP gain, unique PE-Box gain, EGO gift tries, and meltdown guage progress. Can be toggled off and on by presing [\] during the day.
+
+
+
+	...
+Re-use Rabbit Team
+Placeholder.
+
+	...
+Adrenaline Bullets
+Placeholder. (Not Implemented)
+
+	...
+Suppress For Energy
+Placeholder. (Not Implemented)
+
+
+
+	...
+Bullet Refill
+Placeholder.
+
+	...
+Tranquilizer Bullets
+Placeholder. (Not Implemented)
+
+	...
+Resist Death Panic
+Improve the chance for an employee to recover before they panic or die from 25% to 40%.
+
+
+
+	...
+Clerk Equip E.G.O
+Placeholder. (Not Implemented)
+
+	...
+Gift Stacking
+Placeholder.
+
+	...
+Swap Containment Units
+Placeholder. (Not Implemented)
+
+
+
+	Limit Break 2: The Virtue of Protection
+The limit on Fortitude is increased to 150
+The limit upon Fortitude will be heightened beyond current records.
+
+	Limit Break 2: The Virtue of Governance
+The limit on Prudence is increased to 150
+The limit upon Prudence will be heightened beyond current records.
+
+	Limit Break 2: The Virtue of Creation
+The limit on Temperance is increased to 150
+The limit upon Temperance will be heightened beyond current records.

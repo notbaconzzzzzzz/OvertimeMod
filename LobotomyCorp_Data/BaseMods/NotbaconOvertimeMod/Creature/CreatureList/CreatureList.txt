@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<creature_list>
+<creature name="NotbaconShatteredMirror" src="NotbaconShatteredMirror" id="130901">
+    <stat>NotbaconShatteredMirror_stat</stat>
+  </creature>
+<creature name="NotbaconGravityRock" src="NotbaconGravityRock" id="130905">
+    <stat>NotbaconGravityRock_stat</stat>
+  </creature>
+<creature name="NotbaconLonelyWraith" src="NotbaconLonelyWraith" id="130906">
+    <stat>NotbaconLonelyWraith_stat</stat>
+  </creature>
+<creature name="NotbaconAnglerFish" src="NotbaconAnglerFish" id="130910">
+    <stat>NotbaconAnglerFish_stat</stat>
+  </creature>
+<creature name="NotbaconCoralReef" src="NotbaconCoralReef" id="130917">
+    <stat>NotbaconCoralReef_stat</stat>
+  </creature>
+<creature name="NotbaconDreamCatcher" src="NotbaconDreamCatcher" id="130918">
+    <stat>NotbaconDreamCatcher_stat</stat>
+  </creature>
+<creature name="NotbaconGrandfatherClock" src="NotbaconGrandfatherClock" id="130919">
+    <stat>NotbaconGrandfatherClock_stat</stat>
+  </creature>
+<creature name="NotbaconPaleHorse" src="NotbaconPaleHorse" id="130923">
+    <stat>NotbaconPaleHorse_stat</stat>
+  </creature>
+<creature name="NotbaconBalloon" src="NotbaconBalloon" id="130932">
+    <stat>NotbaconBalloon_stat</stat>
+  </creature>
+<creature name="NotbaconQuietBird" src="NotbaconQuietBird" id="130938">
+    <stat>NotbaconQuietBird_stat</stat>
+  </creature>
+<creature name="NotbaconTakeOne" src="NotbaconTakeOne" id="330948">
+    <stat>NotbaconTakeOne_stat</stat>
+  </creature>
+</creature_list>

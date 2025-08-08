@@ -1,0 +1,58 @@
+Meltdown of Pain
+	-10% success rate
+	work damage x1.5 +2 (work damage is multiplied by x1.5, then +2 is added to that)
+
+	Up to 9 times, evenly spaced about 6 seconds apart (if meltdown timer is modified, interval adjusts accordingly)
+	deal damage based on the abnormality's work damage to all employees in a radius
+		Exact formulas:		Damage			Range
+				1st-3rd	33% * work_damage + 3	25
+				4th-6th	50% * work_damage + 4	33
+				7th-9th	100% * work_damage + 6	45
+				(if has no work damage, assume 2-6 P)
+	Whenever a negative PE-Box is produced, deal damage to all employees in a radius (not including the employee working)
+		The radius depends on the current work progress
+		Exact formulas:		Damage			Range
+				0-33%	16% * work_damage + 1	25
+				33-66%	16% * work_damage + 1	33
+				66-100%	16% * work_damage + 1	45
+
+	Upon failing to resolve the meltdown, deal 10 R damage to all employees
+		increase damage for each previously failed Overtime Meltdown that day
+			by 1.5 R for Meltdowns of Pain
+			by 0.5 R for every other type of Overtime Meltdown
+Meltdown of Grief
+	-25% success rate
+	work cooldown timer x0.5
+
+	As the meltdown timer decreases, gradually produce negative boxes, up to half of of the abnormality's PE maximum
+	The work will start with these negative boxes already produced, and then continue from there
+	The negative boxes produced this way will deal all their work damage when an employee when they start the work
+
+	Upon failing to resolve the meltdown, deal 10 W damage to all employees
+		increase damage for each previously failed Overtime Meltdown that day
+			by 1.5 W for Meltdowns of Grief
+			by 0.5 W for every other type of Overtime Meltdown
+Meltdown of Ruin
+	-15% success rate
+
+	Every 1sec that the meltdown timer counts down, permanently reduce the starting meltdown timer by 1sec;
+		Once the timer reduction on an abnormality reaches a total of 30sec, the rate gets halved to every 2sec.
+	Positive E-Boxes do not produce any energy, and Negative E-Boxes produce -2 energy each.
+
+	Upon failing to resolve the meltdown, deal 10 B damage to all employees
+		increase damage for each previously failed Overtime Meltdown that day
+			by 1.5 B for Meltdowns of Ruin
+			by 0.5 B for every other type of Overtime Meltdown
+Meltdown of Oblivion
+	-5% success rate
+	-40% work speed
+
+	While the game is paused, the meltdown timer continues to count down (at double rate; x2.0 speed)
+	If the abnormality is being worked on or is on work cooldown, but the game is paused,
+		meltdown timer counts down (at normal rate; x1.0 speed), even though it normally doesn't in that scenario
+	Employees who have been ordered to work on this abnormality have their movement speed reduced by -40%
+
+	Upon failing to resolve the meltdown, deal 10 P damage to all employees
+		increase damage for each previously failed Overtime Meltdown that day
+			by 1.5 P for Meltdowns of Oblivion
+			by 0.5 P for every other type of Overtime Meltdown

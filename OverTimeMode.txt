@@ -1,0 +1,1356 @@
+Buffed Hod Officer/Service Bonuses [~x]
+?Buffed Netzach Officer Bonus? [x]
+Nerfed Hod Suppression Reward
+	+15 instead of +30
+?All Suppression Qliphoth Imunity Rewards During Overtime [x (instead, they're just disabled entirely)]
+		1/2 for number of meltdown calculation
+		1/2 chance to be immune to next meltdown (visably denotated)
+		1/1 chance for each meltdown
+	Overtime Suppressions
+		qliphoth meltdowns scale at 50% speed for +1 meltdown
+		( l<=S Q=L*0.05, Q=L*0.1-S*0.05)
+Buffed Yesod Core Suppression [x]
+	Phase 1
+	Phase 2
+		observation bonuses for level III and IV disabled
+	Phase 3
+		all observation bonuses disabled
+Buffed Netzach Core Suppression? [x]
+Nurfed/Buffed Tiphereth Core Suppression [x]
+	?working on a containment unit under qliphoth meltdown still progresses the meltdown guage (100%?)
+Buffed Briah day 48? [x]
+	
+Overtime Malkuth Missions [O]
+	________
+		Pass the day with a Qliphoth Meltdown Level of 5 or higher.
+	________
+		Finish the day within the allotted time limit.
+	________
+		Suppress an Abnormality in under 10 seconds.
+	When Dawn Rises
+		Complete an Overtime Dawn Ordeal.
+Overtime Yesod Missions [O]
+	________
+		Complete 10 Repression works.
+	________
+		Complete 10 work processes with tools.
+	________
+		Finish the day without opening any Abnormality's encyclopedia.
+	________
+		End the work day with an equal amount of Good, Normal, and Bad work results.
+Overtime Hod Missions [O]
+	________
+		Use an equal amount of each of the 4 work types.
+	________
+		Finish the day with 4 or more Agents deployed in each department.
+	Training Regimen
+		Promote an Agent from Level 2 to Level 5.
+	Abnormality Suppression Drill
+		Suppress 3 different TETH or higher Abnormalities
+		without your agents taking more than 50 damage(ignoring armor and shields).
+		Suppress 2 different HE or higher Abnormalities
+		without your agents taking more than 100 damage(ignoring armor and shields).
+		Suppress 1 WAW or higher Abnormality
+		without your agents taking more than 200 damage(ignoring armor and shields).
+Overtime Netzach Missions [O]
+	________
+		Recover no more than 100 HP with regenerators
+	________
+		Recover no more than 100 SP with regenerators
+	________
+		Complete the day with 20% or less clerks dead
+	Panic Suppression Drill
+		Restore the sanity of 4 concurrently panicking employees, each with a different panic response type.
+		Each employee must satisfy minimum requirements
+			Employee level at least III
+			All stats at least II
+			Armor at least HE
+			W res x1.0 or better
+			(the one with the murder response must have Weapon at least HE)
+Overtime Tiphereth Missions [O]
+	________
+		Produce 200 PE-Boxes after reaching the Energy Quota
+	________
+		Produce 300 PE-Boxes after reaching the Energy Quota
+	________
+		Produce 400 PE-Boxes after reaching the Energy Quota
+	________
+		Resolve 4 different Overtime Qliphoth Meltdowns
+			Overtime Meltdowns show up at Meltdown X and beyond
+Overtime Gebura Missions [O]
+	________
+		Deal a total of 2000 damage to abnormalities of the type they're weakest to. (besides Pale)
+	________
+		Suppress 4 ALEPH Abnormalities.
+	________
+		Complete a Dusk Ordeal within the allotted time limit.
+	________
+		Suppress 75% of all escapable abnormalities in the facility of level HE or higher.
+Overtime Chesed Missions [O]
+	________
+		Recover 800 HP/SP with bullets.
+	________
+		Shield 500 damage with bullets.
+	________
+		Complete the day without using bullets.
+	________
+		Finish the day with only 1 Agent deployed in each department.
+Overtime Binah Missions [O]
+	________
+		Complete the day with 1 or more BOSS E.G.O in possession
+	________
+		Complete the day with at least two employees who have 6 or more E.G.O Gifts.
+	________
+		Complete the day without any ALEPH E.G.O weapons or armor equipped.
+	________
+		Complete an Overtime Noon Ordeal.
+Overtime Hokma Missions [O]
+	________
+		Clear the day with 2 or more employees with every stat at the maximum.
+	________
+		Clear the day with an employee with any stat at 170 or higher.
+	________
+		Finish the day without pausing.
+	________
+		Complete a Midnight Ordeal within the allotted time limit.
+Overtime Malkuth Research
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		doesn't automatically deselect workers when giving an order
+		Unlock x3 speed setting
+	Control Groups [O]
+		hold [ctrl]+[alt] and press [1-9,Z-M] to save a control group
+		hold [ctrl] and press [1-9,Z-M] to select a control group
+			click	ctrl1-9
+		none	slct	slct
+		shift	add	add
+		alt	clerk	save
+		sftalt	sub	sub
+		control groups 1 to 9 are remembered when you restart the day but forgoten when you close the game or move on to a new day
+		control groups Z to M are remembered between days and even after you close the game
+		[ctrl]+[A] to select all employees
+		[ctrl]+[W] for working employees
+		[ctrl]+[S] for suppressing employees
+		[ctrl]+[D] for idle employees
+	Queue Work Orders [O]
+		Can only queue a max of 3 work orders for each employee (including whatever order they have right now)
+		And a max of 5 work orders on each abnormality (including whatever order they have right now)
+		Hold [shift] when clicking on an abnormality's containment to open it to queue work orders
+			(works even when the abnormality already has a work order)
+			Hold [alt] to clear the work queue for the abnormality
+		Or alternatively hold [shift] when clicking on an employee's work slot to queue the work order
+			Hold [alt] to clear the work queue for the employee
+		Holding [shift] will also stop the work window from closing
+	Add Subtract Selection [O]
+		hold [shift] to add to employee selection
+		hold [shift] and [alt] to subtract from employee selection
+		press [ctrl]+[+] to enter add selection mode
+		press [ctrl]+[-] to enter subtract selection mode
+		press [ctrl]+[0] to return to normal selection mode
+		Also allows you to select employees by clicking their portrait in the work allocation window
+	Overtime Suppression Reward
+		Hold [alt] to select Clerks instead of Agents and give them orders [~O]
+		Further improve the movement speed of Agents 4.25 > 4.5 [O]
+		Improve the movement speed of Clerks [O]
+		Increase the Work Queue limits, Per Employee Limit 3 > 5, Per Abnormality Limit 5 > 10 [O]
+Overtime Yesod Research [O]
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		success rates are displayed as an accurate %
+	Compatibility Optimization Algorithm
+		Spend PE-Boxes on abnormalities to boost their EGO gift's chance by up to x5
+	Qliphoth Disturbance Prediction
+		Display what Ordeals you're going to get each day
+	Negotiation Tactics
+		Get a 10% discount when spending energy on rabbits or abnormality abilities
+	Overtime Suppression Reward
+		Lowered Qliphoth Reduction for each work
+		WAW -4% > -3%
+		ALEPH -6% > -5%
+		Extra PE-Boxes from 25% > 33%
+Overtime Hod Research [O]
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		exp is shown on the employee window
+	________
+		Add 2 extra service bonus levels for reaching 14 days (one for captain and one for everyone else)
+	________
+		employees start in a department with an extra amount of consectutive days equal to
+		total number of days spent in the facility x0.2 (round down, STILL one day upon deployment)
+			after 30 days spent in the facility automatically gain the 7 days needed for captain or level III
+			10 days for level II
+	________
+		Double Clerk bonuses
+	Overtime Suppression Reward
+		Newly hired employees start with an extra +15 to all stats for a total of +35
+Overtime Netzach Research [O]
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		?healing (both hp and sp, for both employees and abnormalities) displays as a number
+		(green heart for hp)
+		(cyan brain for sp)
+	Beer Vending Machine
+		If a regenerator is not being invaded by hostile entities, all employees in the regenerator:
+		Recover (100 - %Hp)% more HP from all sources
+		Recover (100 - %Sp)% more SP from all sources
+	________
+		Gain regenerator speed, meltdown timer, and energy production based on the clerk alive level of each department
+			Regen	Melt	Energy
+		III	-2.5sec	+10sec	3 PE
+		II	-1.5sec	+7sec	2 PE
+		I	-0.5sec	+3sec	1 PE
+		x	-0sec	+0sec	0 PE
+	________
+		Clerk Hp/Sp 15-20 > 25-30
+		Clerk B res x1.5 > x1.0
+		Clerk encounter without panicking HE > WAW
+	Overtime Suppression Reward
+		Hallway regeneration ratio /2 > /1.5
+		Invaded regenerator slow ratio /2 > /1.5
+Overtime Tiphereth Research [O]
+	0th Research
+		Department first time unlock reward (nonOvertime)
+	___ Shields ___
+		when an attack breaks a shield
+		that shield's remaining durability is used to reduce the incoming damage
+		less of the shield's remaining durability is able to reduce the damage
+		the higher the attack's damage is relative to the shield's remaining durability
+			damage -= remainingBlock * (remainingBlock / damage)
+		In addition, shield bullets' durability are increased from 50 > 60
+	Targeted Bullets
+		increases effectiveness of healing and shield bullets the less employees they hit
+		up to +50% for single employees
+			x(1+.5/agentsOnStack)
+			for clerks x(1+0.5/employeesOnStack) [x]
+		shield bullets increase block and time
+	Work Compression
+		Non-overloaded works initiated during first 2 qliphoth phases result in:
+			Twice the meltdown guage progress, energy, EXP gain, unique PE-Box gain, and EGO gift tries
+		Can be turned off by presing [\]
+	Overtime Suppression Reward
+		Extra bullets 30% > 50%
+		Targeted Bullets +50% > +100%
+		Work Compression qliphoth phases 2 > 3, and afterwards, every 5th work is also compressed up to meltdown 10
+Overtime Gebura Research
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		?weapon range and rate data shown in text and number form
+		???weapons show all attacks' damage data (only in ego list)
+		?Display Current HP of abnormalities
+	________ [O]
+		After using the Rabbit team, they become available again after reaching the energy quota, can be triggered any number of times
+	Stim Bullets [~O]
+		??Shares the same slot as slow bullets or use the [9] button??
+		Can only hit employees
+		For 10 seconds
+		Increase movement speed by x1.5
+		Increase damage dealt by x1.25
+		Increase damage taken by x1.5
+		(Targeted Bullets only affects the amount of time the buf lasts)
+		(Wears off when entering a containment unit just like shields, except does not wear off for tools)
+	Forceful Refinement
+		Gain energy for suppressing abnormalities (not including ordeals)
+		Abnormalities suppressed within the rabbit team's locked down area do not award energy
+			ZAYIN	TETH	HE	WAW	ALEPH
+		Energy	5	5	15	30	50
+		There are a handful of special exceptions, see spreadsheet "Lobotomy Info Archive, Suppression Energy" for a list
+	Overtime Suppression Reward
+		Improve Slow, Execution, and Adrenaline Bullets
+		Slow Bullets 50% > 66%
+		Execution Bullets shoot at [location] to automatically execute all clerks in that department (consumes 1 bullet per clerk)
+		Hold [alt] when shooting a Stim bullet in order to hit abnormalities
+			For 30 seconds
+			Increase movement speed by x1.5
+			Increase damage dealt by x1.5
+			Increase damage taken by x1.25
+			(Is not affected by Targeted Bullets)
+		Improve Rabbit team
+			Pay extra PE-Boxes to have a captain with a extra special abilities
+			Standard Rabbit - RWBP
+				HP 150 SP 150
+				RES 0.6 0.6 0.6 0.6 SPD 3.0~3.3
+
+			Maxim - Red
+				HP 500 SP 300
+				RES 0.5 0.6 0.7 0.6 SPD 2.4
+
+				Can choose 1 of the 4 RWBP types to make all nearby allies -0.2 Res to
+
+				Knows tanking tactics
+					Ex. Spending in Maxim to the other side of Nothing There P3
+
+			Rudolph - White
+				HP 300 SP 500
+				RES 0.7 0.5 0.6 0.6 SPD 3.0
+
+				HP/SP Recovery
+
+				Knows special ability tactics
+					Ex. Knowing when not to attack Black Swan or White Fixer; knowing how long until Nothing There changes phase
+
+			Myo - Black
+				HP 400 SP 400
+				RES 0.6 0.7 0.5 0.6 SPD 4.0
+
+				Can make all nearby allies move faster
+
+				Knows positional tactics
+					Ex. Setting an ambush against Mountain
+
+			Nikolai - Pale
+				HP 300 SP 300
+				RES 0.6 0.6 0.6 0.4 SPD 3.3
+
+				Can change the damage type of allies that deal an enemy's lowest res to that of the enemy's highest res (excluding P)
+
+				Knows attacking tactics
+					Threat prioritization, Ex. Killing Red Hood or Nothing There before Judgment Bird or Big Bird
+
+Overtime Chesed Research
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		?resistance shown with +1 decimal place
+		??more resistance text catagorys
+		???Display Current HP/SP of employees
+	________ [O]
+		After you run out of bullets, you can still fire lower powered bullets at the cost PE
+	Tranquilizer Bullets [almost O]
+		??Shares the same slot as execution bullets or use the [0] button??
+		PAUSES contained abnormality's effects, mood countdowns, and qliphoth meltdowns for
+			ZAYIN	TETH	HE	WAW	ALEPH
+		capSec	60	50	40	30	24
+		dimRtrn	5	5	5	6	6
+		rejuv	20	15	10	9	6
+
+		perMelt	4	3	2	1.5	1
+		burst	390	275	180	90	60
+		coolDwn	3	3.33	4	3.33	4
+		stnLock	210	135	75	40.5	24
+	________ [O]
+		Chance to resist death/panic 25% > 40%
+	Overtime Suppression Reward
+		?(some form of employees able to be revived after the day)
+		Chance to resist death/panic 40% > 100% [O]
+Overtime Binah Research
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		Gain the ability to save and load EGO loadouts
+		?Improved ego list sorting options
+		Can lock and hide ego gifts in the middle of the day
+	________
+		Clerks can equip spare ZAYIN and TETH level EGO
+		Each EGO you equip gets shared between 2 clerks
+		Each ZAYIN EGO you equip gets shared between the whole department
+		Cannot pick EGO with stat/level requirements (you can however, equip Bald)
+		?Will pick randomly if you don't choose
+	________ [O]
+		Employees can have up to 2 EGO gifts occupying the same slot
+		You cannot have more than 1 of the same EGO gift
+		Certain groups of EGO gifts are not allowed to co-exist; those being:
+			Each of Crumbling Armor's 4 with each other
+			Each of the 6 Garlands with each other
+			Pain, Grief, Ruin, and Oblivion with each other
+		Obtaining one of them while you also have another from the same group
+		will cause it to replace the other one (unless that gift has been locked).
+	________
+		Spend LOB to move the positions of containment units
+			Inter-departmental	Cost = 1
+			Extra-departmental	Cost = Risk [1, 2, 3, 4, 5]
+			Cross-layerial		Cost = Risk * (Risk + 1) / 2 [1, 3, 6, 10, 15]
+				(For Tools)
+			Inter-departmental	Cost = 0
+			Extra-departmental	Cost = 1
+			Cross-layerial		Cost = Risk [1, 2, 3, 4, 5]
+	Overtime Suppression Reward
+		Employees can have unlimited EGO gifts occupying the same slot instead of only 2 [O]
+		Clerks can equip up to HE level EGO
+		Clerks 1-2 in each department can equip EGO with stat requirements of up to level III
+		Clerks 3-6 in each department can equip EGO with stat requirements of up to level II
+			20 ZAYIN armors x5 = 100
+			15 ZAYIN weapons x5 = 75
+			45 TETH armors (8 II) > 37
+			44 TETH weapons
+			42 HE armors (6 III) > 36 (18 II) > 18
+			42 HE weapons (6 III) > 36 (23 II) > 13
+Overtime Hokma Research
+	0th Research
+		Department first time unlock reward (nonOvertime)
+		Older imprint days that meet certain criteria are available to memeroy reposit to
+		Day 1-20 only the most recent imprint day is available like normal
+		Day 21-35 the 1st and 2nd most recent imprint days are available
+		Day 36-50 the 1st, 2nd, and 3rd most recent imprint days are available
+		Returning to an imprint day will not allow you to then return
+		to an imprint day that wasn't available in the... future? (weird how time travel works)
+	________ [O]
+		Max Fort 130 > 150
+	________ [O]
+		Max Prud 130 > 150
+	________ [O]
+		Max Temp 130 > 150
+	Overtime Suppression Reward
+		Max Fort 150 > 160 [O]
+		Max Prud 150 > 160 [O]
+		Max Temp 150 > 160 [O]
+		Max Just 130 > 160 [O]
+		Day 1-15 only the most recent imprint day is available like normal
+		Day 16-25 the 1st and 2nd most recent imprint days are available
+		Day 26-35 the 1st, 2nd, and 3rd most recent imprint days are available
+		Day 36-45 the 1st, 2nd, 3rd, and 4th most recent imprint days are available
+		Day 46-50 the 1st, 2nd, 3rd, 4th, and 5th most recent imprint days are available
+Overtime Malkuth Core Suppression [O]
+	Randomize MapGraph
+	Phase 1 I-II 2
+		Start of phase shuffle 25% of Elevators
+		Start of phase shuffle 4% of Roads
+		Other meltdowns shuffle 10% of Elevators
+	Phase 2 III-V 3
+		Start of phase shuffle 50% of Elevators and Roads
+		Start of phase shuffle 10% of Isolate Doors
+		Other meltdowns shuffle 15% of Elevators and Roads
+	Phase 3 VI-VII 2
+		Start of phase shuffle 100% of Elevators, Roads, and Isolate Doors
+		Other meltdowns shuffle 30% of Elevators, Roads, and Isolate Doors
+	An error in the layout of the facility is detected
+	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
+	Meltdown VIII and energy refine
+Overtime Yesod Core Suppression [O]
+	?Snap sound played at start of day and every transition between phases
+	Tranquilizer bullets cannot be used? because they would allow you to determain the risk with no effort
+	Containment units are returned to their original positions at the end of the day
+	Phase 1 I-II 2
+		Start of phase all containment units change places randomly
+		abnormalities have 6 possibilities shown
+		
+		"See no evil"
+		The insides of containment units are not visible (only black&red static is shown)
+		Names of abnormalities are replaced with ????????
+		Info screen cannot be opened
+		Basic Info and estimated success chance not shown
+		?Special works are shown as normal works but still retain their special effects
+		(Tool abnormalities are excluded)
+
+		Between metdowns II and III when the meltdown guage reaches full
+			the meltdown wont immediatly trigger, instead waiting for all works in progress to finish;
+			during this time all en route works are canceled, work order queues are cleared, and no new works can be assigned
+	Phase 2 III-V 3
+		Start of phase all containment units change places randomly
+		abnormalities have 6 possibilities shown
+		
+		"Hear no evil"
+		In addition to the previous constraints
+		All (or most) sound except music inaudible
+		Work bar no longer visable
+		For each abnormality, randomly hide either: Qliphoth Counter, or Estimated Work Time
+
+		Between metdowns V and VI when the meltdown guage reaches full
+			the meltdown wont immediatly trigger, instead waiting for all works in progress to finish;
+			during this time all en route works are canceled, work order queues are cleared, and no new works can be assigned
+	Phase 3 VI-VII 2
+		Start of phase all containment units change places randomly
+		abnormalities have 6 possibilities shown
+		
+		"Speak no evil"
+		In addition to the previous constraints
+		Qliphoth Counter and Estimated Work Time are hidden for all abnormalities
+		For each abnormality, randomly hide 1 out of each of the groups:
+			Energy Output, or Work Damage (+Employee Status)
+			Mood Rating, or Qliphoth Reduction
+		
+	An error in the identification of abnormalities is detected
+	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
+	Meltdown VIII and energy refine
+Overtime Hod Core Suppression [O]
+	
+	Stat
+		decrease calculation uses the base stats and not ego gifts or title bonuses
+		?actual base stats decreased but exp is added so that they return to normal
+		actual exp works as normal because the stat loss is balanced by the exp gain
+		capped at 1
+		gain stat by x2 Exp
+		when above the employees original stats gain stat by x0.5 Exp instead
+		increase by Exp calculates what you would get with the lowered stats and no Exp previously
+		actual exp is taken away so that they return to normal
+		capped at the stat maximum
+	Phase 1 I-II 2
+		Start of phase lose 40% of (stat - 35)
+	Phase 2 III-V 3
+		Start of phase lose 50% of (stat - 25)
+	Phase 3 VI-VII 2
+		Start of phase lose 60% of (stat - 15)
+	?An Error is Detected in The Exp Employees Gain
+	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
+	Meltdown VIII and energy refine
+Overtime Netzach Core Suppression
+	___
+		?the healing bullets icons flash&glow to signify to use them
+		regenerator bars are a red/crimson instead of green
+		negative healing particles are red(hp) and black(sp) (even outside of boss incase negative healing accurs naturally somehow)
+	?if no healing bullets are used in the first two meltdowns
+		Chesed will have some dialog telling you that they heal
+	healing bullets are not allowed to hit more than 1 agent
+		will pick the employee with the least %hp
+		Targeted Bullets will always act as if hitting only 1 employee
+	gain extra bullets equal to half the number of alive Agents
+	Phase 1 I-II 2
+		regenerator healing *-20%
+		all other healing *-10%
+		negative healing reduced by 90% when below 5% Hp/Sp
+		?every meltdown regenerators pause for 10 seconds
+	Phase 2 III-V 3
+		regenerator healing *-60%
+		all other healing *-25%
+		negative healing reduced by 90% when below 5% Hp/Sp
+		?every meltdown regenerators pause for 10 seconds
+	Phase 3 VI-VII 2
+		regenerator healing *-100%
+		all other healing *-33%
+		negative healing reduced by 90% when below 5% Hp/Sp
+		?every meltdown regenerators pause for 10 seconds
+	An error is detected in the employees' healing; use of healing bullets recommended
+	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
+	Meltdown VIII and energy refine
+Overtime Tiphereth Core Suppression
+	overtimeDusk & ?automaticly progressing meltdowns?
+	Phase 1 I-VI 6
+		Instead of progressing when works are done, the meltdown gauge progresses by 1 every 5sec (20 ticks)
+		meltdown speed x2 (2.5sec) when energy is > (meltdownLvl*5 + 5)%
+	Phase 2 VII-XII 6
+		meltdown speed x2.5 (2sec) when energy is > (meltdownLvl*5 + 5)%
+	Phase 3 XIII-XVII 5
+		meltdown speed x3 (1.66sec) when energy is > (meltdownLvl*5 + 5)%
+	An Error is Detected in The Progress of The Meltdown Guage
+	Energy Quota x3, %age energy rewards and %age energy costs / 2 (flat costs unaffected)
+	Meltdown XVIII and Energy Refine
+Overtime Gebura Core Suppression
+	Combination abnormalities like Apoc Bird cannot spawn
+	Phase 1 I-II 2
+		spawn The Red Mist
+			66% mhp, only does 1 transition at half way instead of 2 at the thirds
+			The Red Mist won't proceed to phase 2 and will just be stunned
+			meltdown levels will stop progressing at II until killed
+		when The Red Mist is killed
+			release all TETHs from containment (escape, not qliphoth counter 0)
+			any that don't exist in the facility spawn in temporarily at a random location
+	Phase 2 III-VI 4
+		at meltdown level III The Red Mist can change to phase 2
+			The Red Mist won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at IV until killed
+		when The Red Mist is killed
+			release all HEs from containment (escape, not qliphoth counter 0)
+			or if they aren't in the facility spawn them in temporarily at a random location
+		at meltdown level V The Red Mist can change to phase 3
+			The Red Mist won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at VI until killed
+		when The Red Mist is killed
+			release all WAWs from containment (escape, not qliphoth counter 0)
+			or if they aren't in the facility spawn them in temporarily at a random location
+	Phase 3 VII-IX 3
+		at meltdown level VII The Red Mist can change to phase 4
+			meltdown levels will stop progressing at VIII until killed
+		as soon as The Red Mist is killed
+			release all ALEPHs from containment (escape, not qliphoth counter 0)
+			or if they aren't in the facility spawn them in temporarily in a random location
+			BOSS class abnormalities are not included even if they are in the facility
+	Energy Quota x2, %age energy rewards and %age energy costs / 1.5 (flat costs unaffected)
+	Suppress Red Mist + Complete Suppression + energy refine or Suppress Red Mist + Meltdown X
+Overtime Chesed Core Suppression
+	Farewell
+	random employees die at the end of each meltdown phase (amount killed rounded up)
+		acts as if they were killed by execution bullets
+		when changing phase pattern decided by the next phase after meltdown
+		employees who die this way are revived after the day (?or suppression reward can revive employees)
+	when all agents in a department are dead it does not recive a -50% success rate penalty
+	An employee's weight is equal to each of these factors multiplied together
+		Overall Level (1-5; Fort + Prud + (Sr+Ws)/2 + (As+Ms)/2 >=400 is worth 6)
+		Weapon Risk (1-5; BOSS class is worth 6)
+		Armor Risk (1-5; BOSS class is worth 6)
+	Phase 1 I-IV 4
+		5% by complete random (happens 3 times)
+	Phase 2 V-VIII 4
+		?"Since your employees are so disposable you wouldn't mind saying farewell, would you?"
+		20% by weighted chance (happens 4 times)
+	Phase 3 IX-X 2
+		?"How will you fare without your finest?"
+		50% by highest value first (random if tie) (happens ~2 times)
+		kill 100% as soon as the suppression conditions are met
+	Energy Quota x2, %age energy rewards and %age energy costs / 1.5 (flat costs unaffected)
+	Meltdown XI and ?Energy Refine
+Overtime Binah Core Suppression
+	___
+	all BOSS class abnormalities are tranquilized until clicked on
+		immune to meltdowns
+	Phase 1 I-III 3
+		lose all ALEPH and BOSS ego (unequiped, not destroyed)
+		at meltdown level IV spawn An Arbitor
+			An Arbitor won't proceed to phase 2 and will just be stunned
+			meltdown levels will stop progressing at V until killed
+			?75% hp (3000)
+			?Fairies 220-300 > 77-105 (35%)
+			?Pillar 70-84 > 35-42 (50%)
+			?Thorn 33-40 > 23-28 (70%)
+			?Wave 17-20 > 17-20 (100%)
+			
+		change to next phase when An Arbitor dies or meltdown progresses to V
+	Phase 2 IV-VII 4
+		lose all WAW ego (unequiped, not destroyed)
+		debuff rabbit team
+			armor risk WAW > HE
+			armor res 0.6 0.6 0.6 0.6 > 0.7 0.7 0.7 0.7
+			weapon risk WAW > HE
+			weapon damage 2-3 > 1-3, 5-7 > 4-5, 17-19 > 13-15
+		at meltdown level VIII An Arbitor can change to phase 2
+			?60% hp (2400)
+			An Arbitor won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at IX until killed
+		change to next phase when An Arbitor dies or meltdown progresses to IX
+	Phase 3 VIII-X 3
+		lose all HE ego (unequiped, not destroyed)
+		further debuff rabbit team
+			armor risk HE > TETH
+			armor res 0.7 0.7 0.7 0.7 > 0.8 0.8 0.8 0.8
+			weapon risk HE > TETH
+			weapon damage 1-3 > 1-2, 4-5 > 3-4, 13-15 > 9-12
+		at meltdown level XI An Arbitor can change to phase 3
+			?40% hp (1600)
+	ego replaced with random available equipable ego (prioitize higher ego)
+		(selection order random)
+		if the player has another ego equipment loadout saved
+		as long as it doesn't have any ego of too high a level
+		swap to said loadout instead of randomizing
+	Energy Quota x2.5, %age energy rewards and %age energy costs / 1.75 (flat costs unaffected)
+	Suppress An Arbitor and energy refine
+Overtime Hokma Core Suppression
+	To Turn Back The Clock?
+	Phase 1 I-V 5
+		lose all Alztuth research, suppression rewards, and qliphoth imunnities
+		Hokma : base stats above 100 set to 100 temperaraly
+		Binah : only the highest level gift in each slot stays (prioritizes ones that are locked)
+	Phase 2 VI-X 5
+		lose all Briah research, suppression rewards, and ?qliphoth imunnities
+		Gebura : extra ego is uneqiped (starting from rare, right most slot only, order random)
+			and a random available equipable ego is chosen (prioitize higher ego)
+			if the player has another ego equipment loadout saved
+			as long as it doesn't have too much of any ego
+			swap to said loadout instead of randomizing
+	Phase 3 XI-XV 5
+		lose all Asyiah research, suppression rewards, and ?qliphoth imunnities
+		Hod : base stats -35 temperaraly (calculates before Hokma)(recalculate level)
+		tranquilize all record team abnomalities until clicked on
+	Energy Quota x2.5, %age energy rewards and %age energy costs / 1.75 (flat costs unaffected)
+	Meltdown XVI and energy refine
+Overtime Keter Core Suppression
+all normal ordeals are white, overtime ordeals are normal
+day 46 Roland
+	
+	All Ordeals are rainbow(+W?)
+	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
+	Suppress the Midnight of Rainbow + Meet Energy Quota
+day 47 Asyiah
+	
+	Phase 1 I-II 2
+		Malkuth 1
+		Enable overtime Malkuth meltdown
+		
+		Start of phase shuffle 10% of Mapgraph
+		Every other meltdown shuffle 4%
+	Phase 2 III-IV V-VI 4
+		III-IV Yesod 2, V-VI Hod 2
+		Enable overtime Yesod meltdown
+		
+		Start of phase shuffle 30% of Mapgraph
+		Every other meltdown shuffle 15%
+		
+		Start of phase all containment units change places randomly
+		abnormalities have 6 possiblilities shown
+		The insides of containment units are not visable (only black&red static is shown)
+		Names of abnormalities are replaced with giberish
+		Info screen cannot be opened
+		Basic Info and estimated success chance and estimated work time not shown
+		All (or most) sound except music inaudible
+		
+		at meltdown V: enable overtime Hod meltdown; lose 50% of (stat - 15)
+		
+		Between metdowns VI and VII when the meltdown guage reaches full
+			the meltdown wont immediatly trigger, instead waiting for all works in progress to finish;
+			durring this time all en route works are canceled and no new works can be assigned
+	Phase 3 VII-VIII 2
+		Netzach 3
+		Enable overtime Netzach meltdown
+		
+		Start of phase shuffle 100% of Mapgraph
+		Every other meltdown shuffle 60%
+		
+		Start of phase all containment units change places randomly
+		abnormalities have 6 possiblilities shown
+		In addition to the previous canstraints
+		All qliphoth counters show "?"
+		Work bar isn't shown
+		Abnormality moods aren't shown (a purple/magenta "?" face is shown as the mood)
+		
+		Start of phase lose 67% of (stat - 0)
+		
+		Start of phase all employees recover to full Hp and Sp
+		regenerator healing *-100%
+		all other healing *-33%
+		negative healing reduced by 90% when below 5% Hp/Sp
+	Energy Quota x2, %age energy rewards and %age energy costs / 1.5 (flat costs unaffected)
+	Meltdown IX and energy refine
+day 48 Briah
+	Phase I-V 5
+		I Gebura 1, II(III until gebura&abnos are dead)-IV Tiphereth 1, V Chesed 1
+
+		whenever gebura isn't alive 1 progress on meltdown guage every 25sec
+
+		spawn The Red Mist
+			The Red Mist won't proceed to phase 2 and will just be stunned
+			meltdown levels will stop progressing at II until killed
+		when The Red Mist is killed
+			release all TETHs from containment
+			or if they aren't in the facility spawn them in temperaraly in a random location
+
+		at meltdown IV kill 5% by complete random
+
+	Phase VI-XIII 8
+		VI Gebura 2, VII(VIII until gebura&abnos are dead)-VIII Tiphereth 2, IX Chesed 2,
+		X Gebura 2, XI(XII until gebura&abnos are dead)-XII Tiphereth 2, XIII Chesed 2
+
+		whenever gebura isn't alive 1 progress on meltdown guage every 20sec
+
+		at meltdown level VI The Red Mist can change to phase 2
+			The Red Mist won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at VII until killed
+		when The Red Mist is killed
+			release all HEs from containment
+			or if they aren't in the facility spawn them in temperaraly in a random location
+
+		at meltdown VIII kill 20% by weighted chance
+
+		at meltdown level X The Red Mist can change to phase 3
+			The Red Mist won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at XI until killed
+		when The Red Mist is killed
+			release all WAWs from containment
+			or if they aren't in the facility spawn them in temperaraly in a random location
+
+		at meltdown XII kill 20% by weighted chance
+
+	Phase XIV-XVIII 5
+		XIV Gebura 3, XV(XVI until gebura&abnos are dead)-XVI Tiphereth 3, XVII-XVIII Chesed 3
+
+		whenever gebura isn't alive 1 progress on meltdown guage every 15sec
+
+		at meltdown level XIV The Red Mist can change to phase 4
+			meltdown levels will stop progressing at XV until killed
+		as soon as The Red Mist is killed
+			release all ALEPHs from containment
+			or if they aren't in the facility spawn them in temperaraly in a random location
+			boss class abnormalities are not included even if they are in the facility
+
+		at meltdown XVI kill 50% by highest value first (random if tie)
+
+	Energy Quota x2.5, %age energy rewards and %age energy costs / 1.75 (flat costs unaffected)
+	Meltdown XIX and energy refine
+day 49 Alztuth
+	
+	all boss class abnormalities are tranquilized until worked on
+		qliphoth counter don't move for any reason
+		all special abilities frozen
+		immune to meltdowns
+	Phase 1 I-VI 6
+		lose all Alztuth research/rewards and qliphoth imunnities
+		Hokma : base stats above 100 set to 100 temperaraly
+		lose all ALEPH ego
+		at meltdown level VII spawn An Arbitor
+			An Arbitor won't proceed to phase 2 and will just be stunned
+			meltdown levels will stop progressing at VIII until killed
+			(?)an Arbitor won't spawn spikes
+		change to next phase when An Arbitor dies or meltdown progresses to VIII
+	Phase 2 VII-XII 6
+		lose all Briah research/rewards and qliphoth imunnities
+		Gebura : extra ego is unequipped
+		lose all WAW ego
+		at meltdown level XIII An Arbitor can change to phase 2
+			An Arbitor won't proceed to phase 3 and will just be stunned
+			meltdown levels will stop progressing at XIV until killed
+		change to next phase when An Arbitor dies or meltdown progresses to XIV
+	Phase 3 XIII-XVII 5
+		lose all Asyiah research/rewards and qliphoth imunnities
+		Hod : base stats -35 temperaraly (calculates before Hokma)(recalculate level)
+		lose all HE ego
+		at meltdown level XVIII An Arbitor can change to phase 3
+	ego replaced with random available equipable ego (prioitize higher ego)
+		(starting from rare, selection order random)
+	Energy Quota x3, %age energy rewards and %age energy costs / 2 (flat costs unaffected)
+	Suppress An Arbitor ?and energy refine
+?day 50 Angela
+	
+	PlyLst
+		1	Dungeon - Psych Ward
+		2	Tilarids - Red Dots
+			randomize and lock orders
+		3	Tilarids - Faded
+		4	Tilarids - Blue Dots
+			no healing, full recovery meltdown 3>4
+		5	Theme - Retro Time ALT(Mix)
+			-50 all stats
+		6	Dark Fantasy Scene
+			100%+6o meltdown instead of 24%+3o, oDsk instead of oNon
+		7	Battle - Urgent Encounter
+			?(R+WBP) or ??(WBP)
+		8	Tilarids - Insignia Decay
+			(?mayhaps semi-skip phases 1-3)
+		9	Tilarids - Circle Rombed Oxygen
+			x1.5 speed
+		10	Haunted Streets
+		11	DFS - Trust me
+		12+	?Tilarids - KNZ		?+DFS - Transfiguration	?+DFS - After Dark	
+	Ordeal and meltdown placements and amount are overriden
+	each meltdown is 24 long
+	1			0% half way + 1 of each oMeltdown
+	2 - 5	12%+1o		RoDwn half way
+	6 - 8	24%+3o		RoNon half way
+	9 - 10	33%+4o+1o2	RoDsk half way
+	11	RoNon		0%+1o4 half way
+	12	IoNon		an RoMdn quarter, half, and three quarters ways (refill bullets)
+	each oDwn, each oNon, each oDsk, and each oMdn are different
+	Energy Quota x100, %age energy rewards / 3, and %age energy costs / 100 (flat costs unaffected)
+
+
+
+
+Overtime Ordeals start showing up past Meltdown X
+	Gain extra bonuses for the first time you suppress a specific Overtime Ordeal in a run
+	Overtime Dawn XII
+		15% Energy Quota
+		2 LOB (3 LOB for Unique Suppression)
+	Overtime Noon XIII-XV
+		20% Energy Quota
+		4 LOB (8 LOB for Unique Suppression)
+	Overtime Dusk XVI-XVII
+		25% Energy Quota
+		10 LOB (25 LOB for Unique Suppression)
+	Overtime Midnight XVIII
+		30% Energy Quota
+		50 LOB (500 LOB for Unique Suppression)
+		Overtime Midnights drop a Unique EGO gift on death
+	3x4 + 8x4 + 25x3 + 500x3 = 1619
+	1x4 + 4x4 + 15x3 + 450x3 = 1415
+
+Overtime Green Dawn [O]
+	Spawns 2 per department instead of 1
+
+	HP 150 > 350 Res 0.8 1.3 2.0 1.0 > 0.5 1.0 1.3 0.8
+	Attack Damage 3-5 > 5-8
+	Attack Range 2 > 4
+	Movement Speed 2 > 3
+	
+	Attack inflicts a debuff
+	Damage Dealt x0.5
+	For 5 sec (unstackable)
+	
+	On a cooldown of 25 seconds, knockdown the target after a hit at a 20% chance (increases by +20% every failed chance)
+	Repeatedly stab them 5 times, dealing 5-8 R damage, as well as 4 W damage to all employees in the room
+	The final stab deals 15-24 R damage instead, and 10 W damage to all employees in the room
+	At the end, become Lvl 1 Energized for 10 seconds
+	Target is knocked prone for a total of 5 seconds
+	While prone, the target is rendered uncontrollable and takes extra damage from melee attacks, up to x2
+		Dmg:	At Range:
+		x2.0	0-6.5
+		x1.5	6.5-15.5
+		x1.0	15.5+ (or if attacker is either in other room, or is null)
+	
+	Effects of being Energized:
+	Lvl 1:	Take less damage and heal slightly (x0.7, x0.6, x0.5, x0.4; 18 (72), 20 (100), 22 (154), 24 (240) every 3 seconds)
+	Lvl 2:	Reduce the cooldown of the knockdown ability (25 > 10 sec, 9 sec, 8 sec)
+	Lvl 3:	Boost Movement speed (x2, x2.5)
+	Lvl 4:	Attacks also deal B damage (also inflicts 'eroded')
+Overtime Green Noon [O]
+	Spawns 2 per department instead of 1
+	HP 300 > 550 Res 0.8 1.3 2.0 1.0 > 0.7 1.3 1.8 1.0
+	Saw Damage 1-2 (9-18 total) > 3-5 (27-45 total), Gun damage 1-1 > 1-2
+	Movement Speed 2 > 3
+	
+	Saw attack deals increased damage the lower the target's R res is [times x(1 + 0.2/Rres)]
+	Saw attack shreds any shields on target, they lose a flat -5 durability on each hit (even non-Red shields)
+	Saws inflict a 'hemorrhaging' debuf equal to x5 the amount of damage dealt
+		Which steals up to 80% of HP healing received, reducing the amount of 'hemorrhaging'
+		Lose 5% of current 'hemorrhaging' each second
+	
+	Bullets prioritize employees that are in an attack animation
+	Bullet attacks that hit employees that are in an attack animation get interrupted and are stunned for 0.25 sec
+	
+	While charging up, recover N HP every N seconds (for a total of ?250)
+	Afterward, this unit as well as other Green Dawns in the room become Lvl 2 Energized for 15 seconds
+	
+	Effects of being Energized:
+	Lvl 2:	Deal more damage, don't need to charge up (x1.4, x1.5, x1.6)
+	Lvl 3:	Boost Movement speed (x2, x2.5)
+	Lvl 4:	Attacks also deal B damage (also inflicts 'eroded')
+Overtime Green Dusk
+	Spawns 5 instead of 4
+	HP 1150 > 1750 Res 0.8 1.0 1.2 1.0 > 0.6 0.8 1.2 0.9
+	
+	Green Dawns and Noons tend to hang out near the Dusks
+	
+	While spawning minions, become Lvl 3 Energized
+	After spawning minions, this unit and all other Green Ordeals in the room become Lvl 3 Energized for ?20 seconds
+	
+	Upon reaching 50% HP, start spawning an extra large wave of Green Ordeals
+		Cannot lose more than 40% HP while spawning them
+	
+	Effects of being Energized:
+	Lvl 3:	Take less damage (x0.75, x0.6)
+	Lvl 4:	Boost the spawning timer, ?deal AoE B damage (also inflicts 'eroded')
+Overtime Green Midnight
+	Spawn 5 Overtime Green Dusks around the facility as well
+	
+	HP 22000 > 33000 Res 0.5 0.8 1.2 1.0 > 0.5 0.7 1.0 0.9
+	Laser Damage 12-20 > 18-30, Initial Plasma Damage 225 > 375, Continuous Plasma Damage 42-48 > 65-75
+
+	Damage inflicts an 'eroded' debuf equal to x5 the amount of damage dealt
+		Which steals up to 80% of SP healing received, reducing the amount of 'eroded'
+		Lose 5% of current 'eroded' each second
+	
+	When the laser touches a Green Ordeal, it gets Lvl 4 Energized for ?30 seconds
+	
+	At 70% and 30% HP, after 10 seconds become Lvl 4 Energized and create N Meltdowns of the Last Helix
+	While Lvl 4 Energized, all other Green Ordeals become Lvl 4 Energized as well
+	After resolving all Meltdowns of the Last Helix, stop being Energized
+		Spawn 3/4 new Overtime Green Dusks across the facility; they're Lvl 4 Energized for the first 30 seconds
+	
+	Unique EGO gift:
+		The Last Helix
+		+10 Sp; +10 Attack Speed; +10 Movement Speed; When reaching 30% HP or SP, become Energized
+Overtime Amber Dawn [O]
+	Spawns 8 per group instead of 5
+	
+	HP 35 > 70 Res 2.0 1.0 1.0 2.0 > 1.5 0.8 1.0 2.0
+	Attack Damage 1-2 > 3-5 Dig Out Damage 1-2 > 10-20
+	Attack Delay 1.5-2 > 1.25-1.5
+	
+	Attacks pierce additional targets for 30% damage
+	Heal on hit
+	
+	Attack inflicts a debuff
+	R res x1.25
+	Speed /1.5
+	Effect increases for each time hit by an Amber Dawn:
+	Res factor +0.05 (uncapped)
+	Speed factor +0.1 (decelerates at /3, capped at /5)
+	(the piercing part of the Amber Dawn's attack only increases them by 1/5 as much)
+	Gradually starts dissipating after a certain amount of time without getting hit by an Amber Dawn
+	
+	When an Amber Dawn is hit by an attack, all other Amber Dawns in the room take less damage for 0.5 seconds
+	
+	Amber Dawns can smell blood
+		The likelihood that a group of Amber Dawns teleports to a hallway increases based on the sum of each employee's:
+		Missing hp times their R resistance
+		Weight multiplied by an extra x2 if R res is > 1.0
+Overtime Amber Dusk
+	After reaching the end of a hallway, deal heavy R damage to the adjacent room
+Overtime Amber Midnight
+	
+	?After teleporting away, deal heavy R damage in all rooms belonging to the department
+	
+	Unique EGO gift:
+		Predation
+		+10 Hp; +10 Success Rate; +10 Work Speed; When recovering HP or SP while at max, store 50% of the healing for later (can store up to your Max HP/Max SP)
+Overtime Violet Dawn [O]
+	HP 190 > 990 Res 1.0 1.5 1.0 1.0 > 1.0 1.5 0.8 0.5
+	Attack Damage 1-3 > 4-8 Boom Damage 10-14 > 35-45
+	Attack Range 2 > 3
+	
+	Attack inflicts anti-recovery for 10 seconds
+	
+	When attackeed, the attacker takes back 50% of the damage too
+	
+	When HP drops to 66% and 33%, do the booming animation thing (does not reduce qliphoth counters)
+		To all employees in a 16 unit radius, deal 15-25 / 25-35 W Damage multiplied by current %SP, and they can no longer attack this unit
+		Then, reset the Boom Timer
+	
+	After Boom Time, suicide Boom
+		Reduce the counters of all abno in its department to 0
+		In each other department, reduce the counter of a random abno (whose counter is higher than 0) by 1
+		Deal Boom Damage to all employees in the facility
+Overtime Violet Noon
+	Spawns 1 each in all departments, instead of being capped at 5
+	HP 350 > 1660 Res 0.8 2.0 0.8 1.0 > 0.7 2.0 0.8 0.5
+	Attack Damage 1-1 > 4-8 Fall Damage 100 > 200
+	
+	Can actually attack units from other departments
+	Cannot be attacked by employees from the same department
+	
+	?Attack inflicts anti-recovery for 10 seconds
+	
+	When attacked, all employees belonging to the department in which it's located take the damage as well (At a (50 / number of employees)% rate)
+	
+	While using its ability, you must deal 660 total damage to cancel it
+	If successfully used ability
+		lower the counters of all abnormalities in the same department by max counter / 2 (rounded up)
+		lower the counters of all other abnormalities in the facility by 1 at a (20% * counter) chance
+Overtime Violet Midnight
+	Each of the 4 main pillars also have 2 smaller versions of themselves spread across the facility
+	
+	Extra Red spawn (Rushing Hands of Rest)
+		Spawns in Regenerators and other Large Rooms
+		Hands spawn from the floor (or ceiling), and grab employees in the room, they are uncontrollable while grabbed
+		Other employees must suppress the hands to free them
+	Extra White spawn
+		Spawns in Elevator Hubs
+		Selects employees remotely, they are unable to attack Violet Ordeal creatures (including this one)
+		Other employees must suppress to free the employees selected
+	Extra Black spawn
+		Spawns in Hallways
+		Traps the employees in the room on both sides
+		Must be suppressed from the rooms adjecent to the hallway
+		Other employees must suppress from outside
+	Extra Pale spawn
+		?Might rework to target containment units?
+		Spawns in the main room of a Department
+		Employees within the department cannot recover HP or SP
+	
+	Unique EGO gifts:
+		____
+		+20 Hp; Reduces R damage taken by 30%; Instinct work success rate increased by 9%
+		____
+		+20 Sp; Reduces W damage taken by 30%; Insight work success rate increased by 9%
+		____
+		+20 Success Rate; +20 Work Speed; Reduces B damage taken by 30%; Attachment work success rate increased by 9%
+		____
+		+20 Attack Speed; +20 Movement; Reduces P damage taken by 30%; Repression work success rate increased by 9%
+Overtime Crimson Dawn [O]
+	HP 80 > 135
+	
+	When spawning or after teleporting, any employees/hostiles in its destination are teleported to a random location
+	
+	When hit, slow the attacker down by x0.25 for 0.5 seconds
+	
+	Deals 13-17 of a random damage type every 2 seconds to all hostiles that have attacked this creature and are outside of its explosion range
+	Stops after dying or teleporting away
+	
+	When killed, spawn a random Overtime Meltdown on the abnormality it was draining
+	When killed, split into 2 of itself with 50% HP; they don't spawn an Overtime Meltdown on death
+Overtime Crimson Noon
+	Spawns 1 for every 4 departments open (rounded up; max 3)
+	
+	Can eat employees (similar to Big and Will be Bad Wolf)
+	
+	Spawns 4 Crimsons Dawns on death instead of 3 (each with a different Overtime Meltdown on death)
+Overtime Crimson Dusk
+	Spawns 1 for every 4 departments open (rounded up; max 3)
+	?King of Greed portals
+Overtime Indigo Noon
+Overtime White Dawn/Noon/Dusk
+Overtime White Midnight
+
+
+
+you are not allowed to use any ego that isn't
+	equal to or lower in class than the boss
+
+	in the ego list ego which is not allowed will be highlighted in red
+
+		ZAYIN	TETH	HE	WAW	ALEPH	BOSS	?Angela
+require	fulobsv	ZAYIN	TETH	HE	WAW	ALEPH	BOSS	BOSS
+spawn	day	5	10	20	25	35	45	50
+music	preSpwn	1stLobo	1stLobo	1stLobo	2ndLobo	2ndLobo	3rdLobo	PlyLst
+abno x2	dam?	Zayin	Teth	He	Waw	Aleph	Boss	Allx1.5
+abno /2	res?	Zayin	Teth	He	Waw	Aleph	Boss	All/1.5
+
+meltdwn	spawn	II	III	IV	V	VI	VII	VIII
+max	phase	1 - Z	2 - T	3 - H	4 - W	5 - A	6 - B	6 - B
+per day	dam	x2	x2.5	x3	x3.5	x4	x5	x6
+per day	hp	600	1000	1800	2800	4000	6000	9000
+
+per phs	music	1stRune	1stRune	1stRune	2ndRune	2ndRune	3rdRune
+
+per phs grade	ZAYIN	TETH	HE	WAW	ALEPH	ALEPH
+per phs	weapons	ZAYIN	TETH	HE	WAW	ALEPH	BOSS
+per phs	RWB res	1.0	0.8	0.7	0.6	0.4	0.3
+per phs	P res	1.5	1.2	1.0	0.8	0.5	0.3
+P:RWB	Ratio	+50%	+50%	+42%	+33%	+25%	+0%
+
+day 50	armor	-0.2	-0.15	-0.12	-0.1	-0.0666	-0.05
+Ability	dam/use	+60%	+40%	+30%	+25%	+22%	+20%
+
+base ability rate 30sec?
+
+frequency of ability usage by phase before max phase
+-0	100%
+-1	80%
+-2	50%
+-3	20%
+-4	0%
+-5	0%
+?day 50	100%
+
+frequency of ability usage by hp
+100-80%	0% (technically 40% but just stores 1 use until reaching 80% Hp)
+80-60%	60%
+60-40%	80%
+40-0%	100%
+
+Abilities are more likly to be chosen if they haven't benn used at all yet
+
+Zayin Abilities
+	80% - Opened Can of Wellcheers
+		? may overlap with another overtime zayin to much so might have to change ?
+		pulls out a soda can, red, blue, or purple, and then heals themselves 60 hp
+		and anyone else in the room for 30 hp, sp, or hp and sp,
+		there is a delay between pulling out the can and its effects taking place
+		if the soda was purple they will take 60 black damage after 10sec
+	80% - You're Bald...
+		for 20sec deal 4 black damage every 2sec unless they are bald, then they heal 2 hp and sp
+		at the end of the 20sec all employees in the room go bald
+	60% - Fairy Festival
+		give all employees in the room fairies for 20sec
+		employees with fairies heal over time 8%maxHp every 2sec
+		if an employee with fairies attacks them(boss) they take 160%ofMaxHp red damage
+	60% - One Sin and Hundreds of Good Deeds
+		all employees not in the room gets struck by lighning (if none not in room choose 1 random)
+		every 20sec they take 5 pale damage, doubling each time
+		until they complete a ?confesion work with OneSin (timer stops when they enter)
+		upon which the boss takes pale damage equal to the next tick they would have taken
+	40% - Don't Touch Me
+		for 40sec?
+		employee right click method causes all employees selected to either panic or die
+		opening the suppression menu causes random abnormalities' counters to reach 0
+		auto suppression from being in the same room does not produce any effects
+	40% - Plague Doctor
+		any employees with 66% or less hp in the room are "blessed" (Max 12)
+		then after 10 seconds they are healed to full hp and
+		go insane attacking any sane employees (doesn't attack other employees under the effect)
+		all damage they deal reduces sp regaurdless of what damage type it is
+		if they make someone go insane they come under this effect
+	20% - All
+		Uses all abilities once at x5 rate
+Teth Abilities
+	Scorched Girl
+		[EXPLOSION!!]
+	1.76 MHz
+		[spawn static]
+	40% - Beauty and the Beast
+		for 20sec or 5sec not being attacked
+		RWBP res 2.0, 10% mhp, full hp,
+		if killed transform attacker into it with 100% hp
+		afterward return to normal mhp and ?previous hp minus whatever damage it took
+	Punishing Bird
+		[retaliate if attacked for short period]
+	Fragment of the Universe
+		[decrease maxSp]
+	Crumbling Armor
+		[bad if someone leaves the room. ie. doesn't like cowards]
+	Today's Shy Look
+		[face]
+	Grave of Cherry Blossoms
+		[enchant random employees, if one gets got heal ?200hp and heal all other employees hp and sp]
+	Ppodae
+		[???become untargetable???]
+	Old Lady
+		[if alone build up solitude]
+	The Lady Facing the Wall
+		[something about the direction an employee is facing?]
+	Spider Bud
+		[spawn babies, if killed/hit (notably by splash or cleave damage) does BAD, get ANGY]
+	Bloodbath
+	Forsaken Murderer
+		[?next attack deals bonus damage?]
+	Meat Lantern
+	Void Dream
+		[put to sleep]
+	overtime- Gravity Rock
+		[deal increased damage, targets recover % of it]
+	overtime- Balloon
+		[spawns balloons]
+	overtime- Coral Reef
+		[spawns balloons]
+	20% - All
+		Uses all abilities once at x6 rate
+He Abilities
+	Happy Teddy Bear
+	Red Shoes
+	All-Around Helper
+	Child of the Gaxaxy
+	Laetitia
+	Funeral of the dead Butterflies
+	Der Freischutz
+		[shoot]
+	Nameless Fetus
+		[lower qliphoth counters]
+	Singing Machine
+	Warm-Hearted Woodsman
+	The Snow Queen
+	Rudolta of the Sleigh
+	Schadenfreude
+		[if look it bad]
+	Scarecrow Searching for Wisdom
+	Porccubus
+	Overtime- Calming Pool
+	Overtime- Lonely Wraith
+	Overtime- Dream Catcher
+	Overtime- Reaper
+	Overtime- Quiet Bird
+	Overtime- Movements
+	20% - All
+		Uses all abilities once at x7.5 rate
+Waw Abilities
+	Big Bird
+		[call]
+	Little Red Riding hooded Mercenary
+	The Dreaming Current
+		[zoooooom]
+	Yin
+	El Llanto de la Luna
+	The Queen of Hatred
+		[laser + ?teleport]
+	Snow White's Apple
+		[spawn vines]
+	Queen Bee
+		[bees?]
+	Alriune
+	Big and Will be Bad Wolf
+	The King of Greed
+	The Naked Nest
+		[infect employees low hp]
+	Dimensional Refraction Variant
+	Clouded Monk
+	Judgement Bird
+	The Little Prince
+	Dream of a Black Swan
+		[reflect attacks]
+	The Burrowing Heaven
+		[if no look it bad]
+	The Knight of Dispair
+		[RWB res x0.5, P res x2, and ...]
+	The Firebird
+		[burn?]
+	Parasite Tree
+	Overtime- revenge wraith
+		[employees gain vengence when dealing damage]
+	Overtime- angler fish
+	Overtime- matis shrimp
+	Overtime- grandfather clock
+	20% - All
+		Uses all abilities once at x10 rate
+Aleph Abilities
+	Army in Black
+		[spawn 3 army in blacks]
+	The Silent Orchestra
+	The Mountain of Smiling Bodies
+	CENSORED
+		[?cause hopeless fear responces]
+	Melting Love
+	Nothing There
+	Blue Star
+	overtime- Killing Machine
+	overtime- Masked Wraith
+	20% - All
+		Uses all abilities once at x15 rate
+Boss Abilities
+	80% - Apocalypse Bird
+		spawn 6 meltdowns
+		call 3 random employees
+		disable pausing for 30 sec
+	80% - overtime- Destablizer
+		[spawn rifts]
+	60% - overtime- Pain
+		employees R damage taken x(1+Rres) for 90 sec
+		employees -25% Fortitude for 90 sec
+		0.1 R res for 90 sec
+		spawn 4 Meltdowns of Pain
+	60% - overtime- Grief
+		employees W damage taken x(1+Rres) for 90 sec
+		employees -25% Prudence for 90 sec
+		0.1 W res for 90 sec
+		spawn 4 Meltdowns of Grief
+	60% - overtime- Ruin
+		employees B damage taken x(1+Rres) for 90 sec
+		employees -25% Temperance for 90 sec
+		0.1 B res for 90 sec
+		spawn 4 Meltdowns of Ruin
+	60% - overtime- Oblivion
+		employees P damage taken x(1+Rres) for 90 sec
+		employees -25% Justice for 90 sec
+		0.1 P res for 90 sec
+		spawn 4 Meltdowns of Oblivion
+	40% - overtime- Pollen
+		spawn flowers
+			1st cast Daisy
+			2nd cast Daffodil
+			3rd cast Lavender
+			4th cast Iris
+			5th cast Orchid
+			6th cast Rose
+			7th cast ALL
+			(repeat)
+		the damage reduction effects of the flowers effects the boss
+		(-% RWB res is -% RWBP res)
+	40% - WhiteNight
+		40 pale damage circle
+		?6-7, 7-8, 8-9 pale damage every (2or3)sec in room for 30sec
+		spawn apostles and recover 600hp after 90 sec if not engaged for (20)sec
+		?timer will freeze right before 90 sec while being engaged but will deal 12-14 pale damage every (2or3)sec in room
+		while being engaged, if all employees leave the room reduce spawn timer by 30 sec
+		(have effects based of how much time until spawning apostles
+		0-30sec blue 30-60sec purple 60-90sec red)
+		after being engaged for (20)sec recover hp based off it's color (B=150hp,P=60hp,R=15hp)
+		spawn time resumes from where it left off(rounded down by 30sec) when the ability is casted again
+		if apostles have already been spawned
+		40 pale damage circle, revive apostles, and recover 200hp
+	60% - overtime- Symphony for the Voiceless
+		
+	20% - All
+		Uses all abilities once at x30 rate
+
+Suppression Rewards
+Armor	resist	-0.2	-0.15	-0.12	-0.1	-0.0666	-0.05(-0.0333 Paradise Lost)
+Weapon	damage	+60%	+40%	+30%	+25%	+22%	+20%
+Gift	chance	+1%	+1%	+1%	+1%	+1%	+1%
+
+
+?Achivements
+Z - 1
+T - 2
+H - 3
+W - 5
+A - 8
+B - 15
+	? - 
+		Get a good work result on a work that normaly has 0% success rate
+	T/H - Not My First Rodeo
+		Complete a Core Suppression on day 22
+	H - 
+		Obtain 200+ Fortitude
+	H - 
+		Obtain 200+ Prudence
+	H - 
+		Obtain 200+ Temperance
+	H - 
+		Obtain 200+ Justice
+	T - Radical
+		Have an employee whose title bonuses grant +18 fortitude reach max fortitude.
+	T - Pessimist
+		Have an employee whose title bonuses grant +18 prudence reach max prudence.
+	T - Cold-Blooded
+		Have an employee whose title bonuses grant +18 temperance reach max temperance.
+	T - Selfless
+		Have an employee whose title bonuses grant +18 justice reach max justice.
+	A/B - 
+		Complete overtime netzach suppression with Train, WhiteNight, and Pollen in the facility
+	B - Weird Flex
+		Suppress an Aleph abnormality on day 11
+		Obsolete - Complete overtime malkuth mission 4 on day 11 (without utilizing the abnormality storage glitch)
+	W - 
+		Successfully complete Repression/Insight work with Nothing There without them dying or him escaping
+	W - 
+		Successfully complete Repression work with Slime Girl without the qliphoth counter lowering
+	T - 
+		Successfully complete Attachemnt work with Army in Pink
+	A - 
+		Successfully complete Reppression work with CENCORED without them dying or panicing
+	B - 
+		Suppress an Overtime Amber Midnight
+	B - 
+		Suppress an Overtime Green Midnight
+	B - 
+		Suppress an Overtime Violet Midnight

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<creature>
+  <script>NotbaconLonelyWraith</script>
+  <stat>
+    <riskLevel>3</riskLevel>
+    <maxWorkCount>4</maxWorkCount>
+    <workProb type="R">
+      <prob level="1">0.35</prob>
+      <prob level="2">0.35</prob>
+      <prob level="3">0.3</prob>
+      <prob level="4">0.25</prob>
+      <prob level="5">0.2</prob>
+    </workProb>
+    <workProb type="W">
+      <prob level="1">0.15</prob>
+      <prob level="2">0.25</prob>
+      <prob level="3">0.4</prob>
+      <prob level="4">0.45</prob>
+      <prob level="5">0.45</prob>
+    </workProb>
+    <workProb type="B">
+      <prob level="1">0.65</prob>
+      <prob level="2">0.55</prob>
+      <prob level="3">0.55</prob>
+      <prob level="4">0.6</prob>
+      <prob level="5">0.55</prob>
+    </workProb>
+    <workProb type="P">
+      <prob level="1">0.3</prob>
+      <prob level="2">0.2</prob>
+      <prob level="3">0.1</prob>
+      <prob level="4">0</prob>
+      <prob level="5">-0.1</prob>
+    </workProb>
+    <qliphoth>3</qliphoth>
+    <workCooltime>10</workCooltime>
+    <feelingStateCubeBounds>
+      <cube>10</cube>
+      <cube>14</cube>
+      <cube>18</cube>
+    </feelingStateCubeBounds>
+    <workDamage type="P" min="2" max="4" />
+    <workSpeed>0.3</workSpeed>
+    <specialDamage>
+      <damage id="1" type="P" min="4" max="5" />
+    </specialDamage>
+    <defense id="1">
+      <defenseElement type="R">0.5</defenseElement>
+      <defenseElement type="W">1</defenseElement>
+      <defenseElement type="B">1.5</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+    <escapeable>true</escapeable>
+    <hp>600</hp>
+    <speed>2</speed>
+    <observeInfo total="76">
+      <observeElement name="stat" cost="16" />
+      <observeElement name="defense" cost="16" />
+      <observeElement name="work_r" cost="5" />
+      <observeElement name="work_w" cost="5" />
+      <observeElement name="work_b" cost="5" />
+      <observeElement name="work_p" cost="5" />
+      <observeElement name="care_0" cost="4" />
+      <observeElement name="care_1" cost="4" />
+      <observeElement name="care_2" cost="4" />
+      <observeElement name="care_3" cost="4" />
+      <observeElement name="care_4" cost="4" />
+      <observeElement name="care_5" cost="4" />
+    </observeInfo>
+    <observeBonus level="1" type="speed">4</observeBonus>
+    <observeBonus level="2" type="prob">4</observeBonus>
+    <observeBonus level="3" type="speed">4</observeBonus>
+    <observeBonus level="4" type="prob">4</observeBonus>
+    <equipment level="3" cost="40" equipId="230906" />
+    <equipment level="3" cost="50" equipId="330906" />
+    <equipment level="2" prob="0.04" equipId="430906" />
+
+  </stat>
+  <graph>
+    <node id="creature" x="-1.8" y="-1.8" type="creature" />
+    <node id="workspace" x="1.9" y="-1.8" type="workspace" />
+    <!--<node id="door"  x="2" y="-1" type="entry"/>-->
+    <node id="outter" x="0" y="0" type="outterDoor" />
+    <node id="inner" x="2" y="-1.8" type="innerDoor" />
+    <node id="teddy" x="-0.2" y="-1.8" type="custom" />
+    <!--<edge node1="workspace" node2="door" type="road" />-->
+    <edge node1="teddy" node2="inner" type="road" />
+    <edge node1="workspace" node2="inner" type="road" />
+    <edge node1="creature" node2="workspace" type="road" />
+  </graph>
+  <anim prefab="Custom/NotbaconLonelyWraithAnim" x="-1" y="-2" />
+  <portrait src="Unit/creature/magicalGirl" />
+</creature>

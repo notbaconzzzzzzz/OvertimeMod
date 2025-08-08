@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<localize>
+
+<text id="NotbaconShatteredMirror_weapon_name">Shattered Dreams</text>
+<text id="NotbaconShatteredMirror_weapon_desc">Placeholder1</text>
+<text id="NotbaconShatteredMirror_armor_desc">Placeholder2</text>
+<text id="NotbaconShatteredMirror_gift_desc">HP -5; Success Rate +10; Work Speed +10; Attack Speed +10; Movement Speed +10</text>
+
+<text id="NotbaconGravityRock_weapon_name">Gullible</text>
+<text id="NotbaconGravityRock_weapon_desc">Placeholder1</text>
+<text id="NotbaconGravityRock_armor_desc">Placeholder2</text>
+<text id="NotbaconGravityRock_gift_desc">SP +20</text>
+
+<text id="NotbaconLonelyWraith_weapon_name">Wraith</text>
+<text id="NotbaconLonelyWraith_weapon_desc">Placeholder1</text>
+<text id="NotbaconLonelyWraith_armor_desc">Placeholder2</text>
+<text id="NotbaconLonelyWraith_gift_desc">HP -6; SP +10</text>
+
+<text id="NotbaconAnglerFish_weapon_name">Luminous</text>
+<text id="NotbaconAnglerFish_weapon_desc">Placeholder1</text>
+<text id="NotbaconAnglerFish_armor_desc">Placeholder2</text>
+<text id="NotbaconAnglerFish_gift_desc">Success Rate +6; Work Speed -4; Attack Speed +3; Movement Speed +3&#13;&#10;Attachment Work Success Rate +6%</text>
+
+<text id="NotbaconCoralReef_weapon_name">Seashell</text>
+<text id="NotbaconCoralReef_weapon_desc">Placeholder1</text>
+<text id="NotbaconCoralReef_armor_desc">Placeholder2</text>
+<text id="NotbaconCoralReef_gift_desc">HP +3; Attack Speed +2</text>
+
+<text id="NotbaconDreamCatcher_weapon_name">Dream Catcher</text>
+<text id="NotbaconDreamCatcher_weapon_desc">Placeholder1</text>
+<text id="NotbaconDreamCatcher_armor_desc">Placeholder2</text>
+<text id="NotbaconDreamCatcher_gift_desc">SP +2; Success Rate +1; Work Speed +1&#13;&#10;Reduces B damage by 10%</text>
+<text id="NotbaconDreamCatcher_weapon2_name">Lucid Dreamer</text>
+<text id="NotbaconDreamCatcher_armor2_desc">Placeholder3</text>
+<text id="NotbaconDreamCatcher_gift2_desc">Success Rate +6; Work Speed +6; Attack Speed +6; Movement Speed +6&#13;&#10;Remain controllable while panicking</text>
+
+<text id="NotbaconGrandfatherClock_weapon_name">Unceasing Clock, Forever Ticking</text>
+<text id="NotbaconGrandfatherClock_weapon_desc">Placeholder1</text>
+<text id="NotbaconGrandfatherClock_armor_desc">Placeholder2</text>
+<text id="NotbaconGrandfatherClock_gift_desc">Work Speed +4; Attack Speed +4; Movement Speed +4&#13;&#10;Resist death or panic once every 12 seconds</text>
+
+<text id="NotbaconPaleHorse_weapon_name">Pale Horse</text>
+<text id="NotbaconPaleHorse_weapon_desc">Placeholder1</text>
+<text id="NotbaconPaleHorse_armor_desc">Placeholder2</text>
+<text id="NotbaconPaleHorse_gift_desc">Success Rate +1; Work Speed +1; Attack Speed +1 Movement Speed +1&#13;&#10;Damage dealt +7%; Damage taken +7%</text>
+
+<text id="NotbaconBalloon_weapon_name">Fleeting Laughter</text>
+<text id="NotbaconBalloon_weapon_desc">Placeholder1</text>
+<text id="NotbaconBalloon_armor_desc">Placeholder2</text>
+<text id="NotbaconBalloon_gift_desc">SP -2; Attack Speed +5 Movement Speed +5</text>
+
+<text id="NotbaconQuietBird_weapon_name">Why &lt;i&gt;Should&lt;/i&gt;  the Caged Bird Sing?</text>
+<text id="NotbaconQuietBird_weapon_desc">Placeholder1</text>
+<text id="NotbaconQuietBird_armor_desc">Placeholder2</text>
+<text id="NotbaconQuietBird_gift_desc">Success Rate +8; Work Speed +8; Attack Speed -4 Movement Speed -4</text>
+
+</localize>

@@ -1,0 +1,167 @@
+
+LongBirdWeapon.png
+size: 308,1501
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Body
+  rotate: false
+  xy: 48, 491
+  size: 128, 256
+  orig: 256, 256
+  offset: 64, 0
+  index: -1
+CoatBack
+  rotate: false
+  xy: 178, 491
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+CoatLeft
+  rotate: false
+  xy: 48, 233
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+CoatRight
+  rotate: false
+  xy: 178, 233
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+Eye
+  rotate: false
+  xy: 156, 189
+  size: 139, 42
+  orig: 256, 128
+  offset: 58, 40
+  index: -1
+EyeBrow
+  rotate: true
+  xy: 277, 1381
+  size: 118, 6
+  orig: 256, 128
+  offset: 65, 61
+  index: -1
+HairBack
+  rotate: false
+  xy: 48, 1212
+  size: 227, 287
+  orig: 256, 512
+  offset: 14, 113
+  index: -1
+HairFront
+  rotate: true
+  xy: 48, 956
+  size: 254, 232
+  orig: 256, 256
+  offset: 2, 8
+  index: -1
+Head
+  rotate: false
+  xy: 48, 749
+  size: 191, 205
+  orig: 256, 256
+  offset: 35, 27
+  index: -1
+L arm 1
+  rotate: true
+  xy: 155, 25
+  size: 48, 88
+  orig: 128, 128
+  offset: 37, 20
+  index: -1
+L arm 2
+  rotate: true
+  xy: 142, 75
+  size: 59, 90
+  orig: 128, 128
+  offset: 32, 20
+  index: -1
+L hand
+  rotate: false
+  xy: 245, 2
+  size: 49, 43
+  orig: 64, 64
+  offset: 7, 11
+  index: -1
+L leg 1
+  rotate: false
+  xy: 241, 860
+  size: 51, 94
+  orig: 128, 128
+  offset: 40, 13
+  index: -1
+L leg 2
+  rotate: true
+  xy: 74, 17
+  size: 50, 79
+  orig: 128, 128
+  offset: 39, 29
+  index: -1
+Mouth
+  rotate: false
+  xy: 234, 127
+  size: 18, 7
+  orig: 128, 128
+  offset: 56, 59
+  index: -1
+Note
+  rotate: false
+  xy: 48, 140
+  size: 106, 91
+  orig: 256, 256
+  offset: 69, 76
+  index: -1
+R arm 1
+  rotate: false
+  xy: 254, 99
+  size: 48, 88
+  orig: 128, 128
+  offset: 40, 21
+  index: -1
+R arm 2
+  rotate: false
+  xy: 241, 768
+  size: 58, 90
+  orig: 128, 128
+  offset: 35, 19
+  index: -1
+R hand
+  rotate: false
+  xy: 245, 47
+  size: 44, 50
+  orig: 64, 64
+  offset: 10, 8
+  index: -1
+R leg 1
+  rotate: true
+  xy: 156, 136
+  size: 51, 96
+  orig: 128, 128
+  offset: 35, 8
+  index: -1
+R leg 2
+  rotate: true
+  xy: 2, 4
+  size: 56, 70
+  orig: 128, 128
+  offset: 35, 30
+  index: -1
+Weapon_Fist_Left
+  rotate: true
+  xy: 48, 69
+  size: 69, 92
+  orig: 256, 256
+  offset: 93, 135
+  index: -1
+대롱대롱EGO웨폰
+  rotate: true
+  xy: 2, 62
+  size: 1437, 44
+  orig: 1500, 500
+  offset: 30, 223
+  index: -1

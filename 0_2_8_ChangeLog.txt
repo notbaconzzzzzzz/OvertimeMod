@@ -1,0 +1,34 @@
+Version 0.2.8
+
+ - Tiphereth now has 6 elevators
+ - You can now select employees by clicking their portrait in the work allocation window
+
+ - MAP GRAPH FIX, YAY
+ - Various Abnormality adjustments
+ - Somewhat overhauled the Special Mode system (in addition, the console commands now use "config ___" instead of "standard ___")
+
+ - Fixed an issue with the Hod captain change that may have actually been reducing your EXP under certain circumstances
+ - Fixed several bugs with the Queue Work Orders feature
+ - Fixed the Justice stat total calculation being incorrect (EGO gifts would be counted x2)
+
+ - Created DoubleAbno mode
+
+ - All Overtime Dawns have been officially finished
+ - Secondary Qliphoth Meltdown feature in beta (it's an Overtime Mode; it must be turned on manually)
+ - Progress on Overtime Yesod Suppression
+
+ - Overtime Missions, Research, and Core Suppressions
+		To Design:
+	Overtime Missions [36 / 36]
+	Overtime Research [26~27 / 27]
+	Overtime Core Suppression [9 / 9]
+	Overtime Core Suppression Reward [7~9 / 9]
+	Overtime Ordeals [5~7 / 14~18]
+	Overtime Day 46-50 [1~4 / 5]
+		To Implement:
+	Overtime Missions [36 / 36]
+	Overtime Research [22 / 27]
+	Overtime Core Suppression [1~2 / 9]
+	Overtime Core Suppression Reward [4~8 / 9]
+	Overtime Ordeals [4~5 / 14~18]
+	Overtime Day 46-50

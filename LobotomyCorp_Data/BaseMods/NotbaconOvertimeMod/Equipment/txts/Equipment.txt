@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<equipment_list>
+
+  <equipment id="230901" type="weapon">
+    <name>NotbaconShatteredMirror_weapon_name</name>
+    <desc>NotbaconShatteredMirror_weapon_desc</desc>
+
+    <weaponClassType>cannon</weaponClassType> <!-- PLACE HOLDER ANIMATION -->
+    <sprite>NotbaconShatteredMirrorWeapon</sprite> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="B">5</require>
+    <require type="P">5</require>
+    <require type="level">5</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="12" max="16">
+    </damage>
+    <damage type="B" min="6" max="10">
+    </damage>
+    <damage type="W" min="4" max="5">
+    </damage>
+    <range>25</range>
+    <splash type="splash" range="4" />
+
+    <maxNum>1</maxNum>
+
+    <attackSpeed>4</attackSpeed>
+    <grade>5</grade>
+  </equipment>
+
+  <equipment id="330901" type="armor">
+    <name>NotbaconShatteredMirror_weapon_name</name>
+    <desc>NotbaconShatteredMirror_armor_desc</desc>
+
+    <armorId>309001</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="B">5</require>
+    <require type="level">5</require>
+
+    <defense>
+      <defenseElement type="R">0.8</defenseElement>
+      <defenseElement type="W">0.3</defenseElement>
+      <defenseElement type="B">0.2</defenseElement>
+      <defenseElement type="P">1</defenseElement>
+    </defense>
+
+    <grade>5</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430901" type="special">
+    <name>NotbaconShatteredMirror_weapon_name</name>
+    <desc>NotbaconShatteredMirror_gift_desc</desc>
+    <attachPos>body_up</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>-5</hp>
+      <workProb>10</workProb>
+      <cubeSpeed>10</cubeSpeed>
+      <attackSpeed>5</attackSpeed>
+      <movement>5</movement>
+    </bonus>
+    <sprite>NotbaconShatteredMirrorGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="230905" type="weapon">
+    <name>NotbaconGravityRock_weapon_name</name>
+    <desc>NotbaconGravityRock_weapon_desc</desc>
+
+    <weaponClassType>pistol</weaponClassType>
+    <sprite>NotbaconGravityRockWeapon</sprite>
+
+    <require type="W">6</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="W" min="6" max="8">
+      <soundInfo type="damage">Weapons/gun</soundInfo>
+    </damage>
+    <range>10</range>
+
+    <script>NotbaconGravityRockWeapon</script>
+
+    <maxNum>2</maxNum>
+
+    <attackSpeed>0.667</attackSpeed>
+    <grade>3</grade>
+  </equipment>
+
+  <equipment id="330905" type="armor">
+    <name>NotbaconGravityRock_weapon_name</name>
+    <desc>NotbaconGravityRock_armor_desc</desc>
+
+    <armorId>309005</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="W">6</require>
+
+    <defense>
+      <defenseElement type="R">0.9</defenseElement>
+      <defenseElement type="W">1.5</defenseElement>
+      <defenseElement type="B">0.9</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+
+    <script>NotbaconGravityRockArmor</script>
+
+    <grade>2</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430905" type="special">
+    <name>NotbaconGravityRock_weapon_name</name>
+    <desc>NotbaconGravityRock_gift_desc</desc>
+    <attachPos>head</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <mental>20</mental>
+    </bonus>
+    <sprite>NotbaconGravityRockGift</sprite>
+    <script>NotbaconGravityRockGift</script>
+  </equipment>
+
+  <equipment id="230906" type="weapon">
+    <name>NotbaconLonelyWraith_weapon_name</name>
+    <desc>NotbaconLonelyWraith_weapon_desc</desc>
+
+    <weaponClassType>bowgun</weaponClassType>
+    <sprite>NotbaconLonelyWraithWeapon</sprite> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="W">3</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="7" max="14">
+      <soundInfo type="damage">Weapons/bowgun</soundInfo>
+    </damage>
+    <damage type="P" min="10" max="20">
+      <soundInfo type="damage">Weapons/bowgun</soundInfo>
+    </damage>
+    <range>20</range>
+    <splash type="penetration" />
+
+    <script>NotbaconLonelyWraithWeapon</script>
+
+    <maxNum>2</maxNum>
+
+    <attackSpeed>2</attackSpeed>
+    <grade>3</grade>
+  </equipment>
+
+  <equipment id="330906" type="armor">
+    <name>NotbaconLonelyWraith_weapon_name</name>
+    <desc>NotbaconLonelyWraith_armor_desc</desc>
+
+    <armorId>309006</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="W">3</require>
+
+    <defense>
+      <defenseElement type="R">0.8</defenseElement>
+      <defenseElement type="W">1.2</defenseElement>
+      <defenseElement type="B">0.5</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+
+    <script>NotbaconLonelyWraithArmor</script>
+
+    <grade>3</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430906" type="special">
+    <name>NotbaconLonelyWraith_weapon_name</name>
+    <desc>NotbaconLonelyWraith_gift_desc</desc>
+    <attachPos>mouth</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>-6</hp>
+      <mental>10</mental>
+    </bonus>
+    <sprite>AltMouth.NotbaconLonelyWraithGift</sprite>
+  </equipment>
+
+  <equipment id="230910" type="weapon">
+    <name>NotbaconAnglerFish_weapon_name</name>
+    <desc>NotbaconAnglerFish_weapon_desc</desc>
+
+    <weaponClassType>fist</weaponClassType>
+    <sprite>NotbaconAnglerFishWeapon</sprite>
+
+    <require type="R">2</require>
+    <require type="B">3</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="8" max="10">
+      <soundInfo type="damage">Weapons/fist1</soundInfo>
+    </damage>
+    <range>2</range>
+
+    <script>NotbaconAnglerFishArmor</script>
+
+    <maxNum>2</maxNum>
+    <!--dummy For UI-->
+    <attackSpeed>2</attackSpeed>
+    <grade>4</grade>
+  </equipment>
+
+  <equipment id="330910" type="armor">
+    <name>NotbaconAnglerFish_weapon_name</name>
+    <desc>NotbaconAnglerFish_armor_desc</desc>
+
+    <armorId>309010</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="B">3</require>
+    <require type="level">3</require>
+
+    <defense>
+      <defenseElement type="R">1.3</defenseElement>
+      <defenseElement type="W">0.7</defenseElement>
+      <defenseElement type="B">0.5</defenseElement>
+      <defenseElement type="P">1.5</defenseElement>
+    </defense>
+
+    <grade>4</grade>
+    <maxNum>2</maxNum>
+  </equipment>
+
+  <equipment id="430910" type="special">
+    <name>NotbaconAnglerFish_weapon_name</name>
+    <desc>NotbaconAnglerFish_gift_desc</desc>
+    <attachPos>hair</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <workProb>6</workProb>
+      <cubeSpeed>-4</cubeSpeed>
+      <attackSpeed>3</attackSpeed>
+      <movement>3</movement>
+    </bonus>
+    <sprite>NotbaconAnglerFishGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="230917" type="weapon">
+    <name>NotbaconCoralReef_weapon_name</name>
+    <desc>NotbaconCoralReef_weapon_desc</desc>
+
+    <weaponClassType>bowgun</weaponClassType>
+    <sprite>NotbaconCoralReefWeapon</sprite> <!-- PLACE HOLDER SPRITE -->
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="7" max="14">
+      <soundInfo type="damage">Weapons/bowgun</soundInfo>
+    </damage>
+    <damage type="P" min="10" max="20">
+      <soundInfo type="damage">Weapons/bowgun</soundInfo>
+    </damage>
+    <range>20</range>
+    <splash type="penetration" />
+
+    <maxNum>2</maxNum>
+
+    <attackSpeed>2</attackSpeed>
+    <grade>3</grade>
+  </equipment>
+
+  <equipment id="330917" type="armor">
+    <name>NotbaconCoralReef_weapon_name</name>
+    <desc>NotbaconCoralReef_armor_desc</desc>
+
+    <armorId>309017</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="R">2</require>
+    <require type="P">2</require>
+
+    <defense>
+      <defenseElement type="R">0.6</defenseElement>
+      <defenseElement type="W">0.7</defenseElement>
+      <defenseElement type="B">1.5</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+
+    <grade>2</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430917" type="special">
+    <name>NotbaconCoralReef_weapon_name</name>
+    <desc>NotbaconCoralReef_gift_desc</desc>
+    <attachPos>body_up</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>2</hp>
+      <attackSpeed>3</attackSpeed>
+    </bonus>
+    <sprite>NotbaconCoralReefGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="230918" type="weapon">
+    <name>NotbaconDreamCatcher_weapon_name</name>
+    <desc>NotbaconDreamCatcher_weapon_desc</desc>
+
+    <weaponClassType>cannon</weaponClassType>
+    <sprite>NotbaconDreamCatcherWeapon</sprite> <!-- PLACE HOLDER SPRITE -->
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="25" max="40">
+      <soundInfo type="damage">Weapons/cannon</soundInfo>
+    </damage>
+    <range>15</range>
+    <splash type="splash" range="4" />
+
+    <maxNum>1</maxNum>
+
+    <attackSpeed>5</attackSpeed>
+    <grade>3</grade>
+  </equipment>
+
+  <equipment id="330918" type="armor">
+    <name>NotbaconDreamCatcher_weapon_name</name>
+    <desc>NotbaconDreamCatcher_armor_desc</desc>
+
+    <armorId>309018</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <defense>
+      <defenseElement type="R">1</defenseElement>
+      <defenseElement type="W">1</defenseElement>
+      <defenseElement type="B">0.8</defenseElement>
+      <defenseElement type="P">1.5</defenseElement>
+    </defense>
+
+    <grade>3</grade>
+    <maxNum>3</maxNum>
+  </equipment>
+
+  <equipment id="430918" type="special">
+    <name>NotbaconDreamCatcher_weapon_name</name>
+    <desc>NotbaconDreamCatcher_gift_desc</desc>
+    <attachPos>hair</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <mental>2</mental>
+      <workProb>1</workProb>
+      <cubeSpeed>1</cubeSpeed>
+    </bonus>
+    <sprite>NotbaconDreamCatcherGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="3309182" type="armor">
+    <name>NotbaconDreamCatcher_weapon2_name</name>
+    <desc>NotbaconDreamCatcher_armor2_desc</desc>
+
+    <armorId>3090182</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <defense>
+      <defenseElement type="R">1</defenseElement>
+      <defenseElement type="W">1</defenseElement>
+      <defenseElement type="B">0.3</defenseElement>
+      <defenseElement type="P">1.2</defenseElement>
+    </defense>
+
+    <grade>4</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="4309182" type="special">
+    <name>NotbaconDreamCatcher_weapon2_name</name>
+    <desc>NotbaconDreamCatcher_gift2_desc</desc>
+    <attachPos>hair</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <workProb>6</workProb>
+      <cubeSpeed>6</cubeSpeed>
+      <attackSpeed>6</attackSpeed>
+      <movement>6</movement>
+    </bonus>
+    <sprite>NotbaconDreamCatcherGift2</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="230919" type="weapon">
+    <name>NotbaconGrandfatherClock_weapon_name</name>
+    <desc>NotbaconGrandfatherClock_weapon_desc</desc>
+
+    <weaponClassType>cannon</weaponClassType>
+    <sprite>NotbaconGrandfatherClockWeapon</sprite> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="W">3</require>
+    <require type="B">3</require>
+    <require type="level">4</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="30" max="45">
+      <soundInfo type="damage">Weapons/cannon</soundInfo>
+    </damage>
+    <damage type="P" min="300" max="450">
+      <soundInfo type="damage">Weapons/cannon</soundInfo>
+    </damage>
+    <range>15</range>
+    <splash type="splash" range="4" />
+
+    <maxNum>1</maxNum>
+
+    <attackSpeed>5</attackSpeed>
+    <grade>4</grade>
+  </equipment>
+
+  <equipment id="330919" type="armor">
+    <name>NotbaconGrandfatherClock_weapon_name</name>
+    <desc>NotbaconGrandfatherClock_armor_desc</desc>
+
+    <armorId>309019</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="W">3</require>
+    <require type="P">4</require>
+    <require type="level">4</require>
+
+    <defense>
+      <defenseElement type="R">0.8</defenseElement>
+      <defenseElement type="W">0.7</defenseElement>
+      <defenseElement type="B">1.3</defenseElement>
+      <defenseElement type="P">0.5</defenseElement>
+    </defense>
+
+    <grade>4</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430919" type="special">
+    <name>NotbaconGrandfatherClock_weapon_name</name>
+    <desc>NotbaconGrandfatherClock_gift_desc</desc>
+    <attachPos>body_up</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <cubeSpeed>4</cubeSpeed>
+      <attackSpeed>4</attackSpeed>
+      <movement>4</movement>
+    </bonus>
+    <sprite>NotbaconGrandfatherClockGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="230923" type="weapon">
+    <name>NotbaconPaleHorse_weapon_name</name>
+    <desc>NotbaconPaleHorse_weapon_desc</desc>
+
+    <weaponClassType>mace</weaponClassType>
+    <sprite>NotbaconPaleHorseWeapon</sprite>
+
+    <require type="P">2</require>
+
+    <animation>Attack1</animation>
+
+    <damage type="P" min="5" max="7">
+      <soundInfo type="damage">Weapons/mace1</soundInfo>
+    </damage>
+    <range>3</range>
+    <maxNum>3</maxNum>
+    <!--dummy For UI-->
+    <attackSpeed>2</attackSpeed>
+    <grade>1</grade>
+  </equipment>
+
+  <equipment id="330923" type="armor">
+    <name>NotbaconPaleHorse_weapon_name</name>
+    <desc>NotbaconPaleHorse_armor_desc</desc>
+
+    <armorId>309023</armorId>
+    <defense>
+      <defenseElement type="R">1</defenseElement>
+      <defenseElement type="W">1</defenseElement>
+      <defenseElement type="B">1</defenseElement>
+      <defenseElement type="P">1</defenseElement>
+    </defense>
+    <grade>1</grade>
+    <maxNum>5</maxNum>
+  </equipment>
+
+  <equipment id="430923" type="special">
+    <name>NotbaconPaleHorse_weapon_name</name>
+    <desc>NotbaconPaleHorse_gift_desc</desc>
+    <attachPos>right_hand</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <workProb>1</workProb>
+      <cubeSpeed>1</cubeSpeed>
+      <attackSpeed>1</attackSpeed>
+      <movement>1</movement>
+    </bonus>
+    <sprite>NotbaconPaleHorseGift</sprite>
+    <script>NotbaconPaleHorseGift</script>
+  </equipment>
+
+  <equipment id="230932" type="weapon">
+    <name>NotbaconBalloon_weapon_name</name>
+    <desc>NotbaconBalloon_weapon_desc</desc>
+
+    <weaponClassType>mace</weaponClassType>
+    <sprite>NotbaconBalloonWeapon</sprite>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="8" max="11">
+      <soundInfo type="damage">Weapons/mace1</soundInfo>
+    </damage>
+    <range>3</range>
+
+    <maxNum>3</maxNum>
+
+    <attackSpeed>2</attackSpeed>
+    <grade>2</grade>
+  </equipment>
+
+  <equipment id="330932" type="armor">
+    <name>NotbaconBalloon_weapon_name</name>
+    <desc>NotbaconBalloon_armor_desc</desc>
+
+    <armorId>309032</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <defense>
+      <defenseElement type="R">0.7</defenseElement>
+      <defenseElement type="W">1.5</defenseElement>
+      <defenseElement type="B">0.6</defenseElement>
+      <defenseElement type="P">2</defenseElement>
+    </defense>
+
+    <grade>2</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430932" type="special">
+    <name>NotbaconBalloon_weapon_name</name>
+    <desc>NotbaconBalloon_gift_desc</desc>
+    <attachPos>mouth</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <mental>-2</mental>
+      <attackSpeed>5</attackSpeed>
+      <movement>5</movement>
+    </bonus>
+    <sprite>AltMouth.NotbaconBalloonGift</sprite>
+  </equipment>
+
+  <equipment id="230938" type="weapon">
+    <name>NotbaconQuietBird_weapon_name</name>
+    <desc>NotbaconQuietBird_weapon_desc</desc>
+
+    <weaponClassType>pistol</weaponClassType>
+    <sprite>NotbaconQuietBirdWeapon</sprite>
+
+    <animation>Attack1</animation>
+
+    <damage type="B" min="3" max="4">
+      <soundInfo type="damage">Weapons/gun</soundInfo>
+    </damage>
+    <range>10</range>
+
+    <maxNum>2</maxNum>
+
+    <attackSpeed>0.667</attackSpeed>
+    <grade>3</grade>
+  </equipment>
+
+  <equipment id="330938" type="armor">
+    <name>NotbaconQuietBird_weapon_name</name>
+    <desc>NotbaconQuietBird_armor_desc</desc>
+
+    <armorId>309038</armorId> <!-- PLACE HOLDER SPRITE -->
+
+    <require type="B">3</require>
+
+    <defense>
+      <defenseElement type="R">0.8</defenseElement>
+      <defenseElement type="W">0.5</defenseElement>
+      <defenseElement type="B">1.2</defenseElement>
+      <defenseElement type="P">1.5</defenseElement>
+    </defense>
+
+    <grade>3</grade>
+    <maxNum>1</maxNum>
+  </equipment>
+
+  <equipment id="430938" type="special">
+    <name>NotbaconQuietBird_weapon_name</name>
+    <desc>NotbaconQuietBird_gift_desc</desc>
+    <attachPos>mouth</attachPos>
+    <attachType>replace</attachType>
+    <bonus>
+      <workProb>8</workProb>
+      <cubeSpeed>8</cubeSpeed>
+      <attackSpeed>-4</attackSpeed>
+      <movement>-4</movement>
+    </bonus>
+    <sprite>NotbaconQuietBirdGift</sprite>
+  </equipment>
+</equipment_list>
