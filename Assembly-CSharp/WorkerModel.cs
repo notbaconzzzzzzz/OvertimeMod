@@ -443,14 +443,18 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 	{ // <Mod> Chesed research; Damage Result
 		if (dmg.result.activated)
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = false;
 			dmg = dmg.Copy();
 			dmg.result.activated = true;
+			temp.activated = true;
 		}
 		else
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = true;
 			dmg = dmg.Copy();
+			temp.activated = false;
 		}
 		DamageResult result = dmg.result;
 		result.ResetValues(dmg);
@@ -673,21 +677,62 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 				}
 			}
 		}
+		result.activated = false;
+		Vector2 hitRecovery = new Vector2(0f, 0f);
 		if (base.Equipment.armor != null)
 		{
 			base.Equipment.armor.OnTakeDamage_After(num, dmg.type);
 			base.Equipment.armor.OnTakeDamage_After(actor, dmg);
+			if (Equipment.armor.script != null) hitRecovery += Equipment.armor.script.PercentageRecoverOnHit(actor, dmg);
 		}
 		if (base.Equipment.weapon != null)
 		{
 			base.Equipment.weapon.OnTakeDamage_After(num, dmg.type);
 			base.Equipment.weapon.OnTakeDamage_After(actor, dmg);
+			if (Equipment.weapon.script != null) hitRecovery += Equipment.weapon.script.PercentageRecoverOnHit(actor, dmg);
 		}
 		base.Equipment.gifts.OnTakeDamage_After(num, dmg.type);
 		base.Equipment.gifts.OnTakeDamage_After(actor, dmg);
+		hitRecovery += Equipment.gifts.PercentageRecoverOnHit(actor, dmg);
 		foreach (UnitBuf unitBuf in _bufList)
 		{
 			unitBuf.OnTakeDamage_After(actor, dmg);
+			hitRecovery += unitBuf.PercentageRecoverOnHit(actor, dmg);
+		}
+		if (hitRecovery != Vector2.zero)
+		{
+			float percent = hitRecovery.x / 100f;
+			float hpRecover = result.hpDamage * percent;
+			if (hpRecover > 0f)
+			{
+				float recoverMult = GetHPRecoveryMult(hpRecover);
+				if (percent >= 1f)
+				{
+					percent = 1f + (percent - 1f) * recoverMult;
+				}
+				else
+				{
+					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
+				}
+				hpRecover = result.hpDamage * percent;
+				if (hpRecover != 0f) RecoverHPv2(hpRecover, false);
+			}
+			percent = hitRecovery.y / 100f;
+			float mentalRecover = result.spDamage * percent;
+			if (mentalRecover > 0f)
+			{
+				float recoverMult = GetMentalRecoveryMult(mentalRecover);
+				if (percent >= 1f)
+				{
+					percent = 1f + (percent - 1f) * recoverMult;
+				}
+				else
+				{
+					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
+				}
+				mentalRecover = result.spDamage * percent;
+				if (mentalRecover != 0f) RecoverMentalv2(mentalRecover, false);
+			}
 		}
 	}
 
@@ -696,14 +741,18 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 	{ // <Mod> Chesed research; send notice; Damage Result
 		if (dmg.result.activated)
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = false;
 			dmg = dmg.Copy();
 			dmg.result.activated = true;
+			temp.activated = true;
 		}
 		else
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = true;
 			dmg = dmg.Copy();
+			temp.activated = false;
 		}
 		if (actor is CreatureModel)
 		{
@@ -999,23 +1048,63 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 				this.Panic();
 			}
 		}
+		Vector2 hitRecovery = new Vector2(0f, 0f);
 		if (base.Equipment.armor != null)
 		{
 			base.Equipment.armor.OnTakeDamage_After(num2, dmg.type);
 			base.Equipment.armor.OnTakeDamage_After(actor, dmg);
+			if (Equipment.armor.script != null) hitRecovery += Equipment.armor.script.PercentageRecoverOnHit(actor, dmg);
 		}
 		if (base.Equipment.weapon != null)
 		{
 			base.Equipment.weapon.OnTakeDamage_After(num2, dmg.type);
 			base.Equipment.weapon.OnTakeDamage_After(actor, dmg);
+			if (Equipment.weapon.script != null) hitRecovery += Equipment.weapon.script.PercentageRecoverOnHit(actor, dmg);
 		}
 		base.Equipment.gifts.OnTakeDamage_After(num2, dmg.type);
 		base.Equipment.gifts.OnTakeDamage_After(actor, dmg);
+		hitRecovery += Equipment.gifts.PercentageRecoverOnHit(actor, dmg);
 		foreach (UnitBuf unitBuf in _bufList)
 		{
 			unitBuf.OnTakeDamage_After(actor, dmg);
+			hitRecovery += unitBuf.PercentageRecoverOnHit(actor, dmg);
 		}
 		result.activated = false;
+		if (hitRecovery != Vector2.zero)
+		{
+			float percent = hitRecovery.x / 100f;
+			float hpRecover = result.hpDamage * percent;
+			if (hpRecover > 0f)
+			{
+				float recoverMult = GetHPRecoveryMult(hpRecover);
+				if (percent >= 1f)
+				{
+					percent = 1f + (percent - 1f) * recoverMult;
+				}
+				else
+				{
+					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
+				}
+				hpRecover = result.hpDamage * percent;
+				if (hpRecover != 0f) RecoverHPv2(hpRecover, false);
+			}
+			percent = hitRecovery.y / 100f;
+			float mentalRecover = result.spDamage * percent;
+			if (mentalRecover > 0f)
+			{
+				float recoverMult = GetMentalRecoveryMult(mentalRecover);
+				if (percent >= 1f)
+				{
+					percent = 1f + (percent - 1f) * recoverMult;
+				}
+				else
+				{
+					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
+				}
+				mentalRecover = result.spDamage * percent;
+				if (mentalRecover != 0f) RecoverMentalv2(mentalRecover, false);
+			}
+		}
 	}
 
 	// Token: 0x06005BD1 RID: 23505 RVA: 0x00208C2C File Offset: 0x00206E2C
@@ -1144,7 +1233,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
     }
 
     // <Mod>
-	public virtual float RecoverHPv2(float amount)
+	public virtual float RecoverHPv2(float amount, bool canBeModified = true)
 	{
 		if (this.IsDead())
 		{
@@ -1154,38 +1243,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 		{
 			return 0f;
 		}
-		float num = 1f;
-		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
-		{
-			num *= base.Equipment.weapon.script.RecoveryMultiplier(false, amount);
-		}
-		if (base.Equipment.armor != null && base.Equipment.armor.script != null)
-		{
-			num *= base.Equipment.armor.script.RecoveryMultiplier(false, amount);
-		}
-		num *= base.Equipment.gifts.RecoveryMultiplier(false, amount);
-		foreach (UnitBuf unitBuf in _bufList)
-		{
-			num *= unitBuf.RecoveryMultiplier(false, amount);
-		}
-		if (ResearchDataModel.instance.IsUpgradedAbility("regenerator_healing_boost") && (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) || OvertimeNetzachBossBuf.IsBullet))
-		{
-			PassageObjectModel passage = movableNode.GetPassage();
-			if (passage != null && passage.isRegenerator && passage.GetSefira().isRecoverActivated)
-			{
-				float factor = 2f - hp / maxHp;
-				if (factor < 1f)
-				{
-					factor = 1f;
-				}
-				if (factor > 2f)
-				{
-					factor = 2f;
-				}
-				num *= factor;
-			}
-		}
-		amount *= num;
+		if (canBeModified) amount *= GetHPRecoveryMult(amount);
 		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
 		{
 			base.Equipment.weapon.script.OwnerHeal(false, ref amount);
@@ -1209,43 +1267,39 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
         return amount;
 	}
 
-	// Token: 0x06005BDA RID: 23514 RVA: 0x00208F6C File Offset: 0x0020716C
-	public virtual void RecoverMental(float amount)
-	{ // <Mod>
-        RecoverMentalv2(amount);
-    }
-
     // <Mod>
-	public virtual float RecoverMentalv2(float amount)
+	public virtual float GetHPRecoveryMult(float amount)
 	{
-		if (this.IsDead())
-		{
-			return 0f;
-		}
 		if (this.blockRecover)
 		{
 			return 0f;
 		}
 		float num = 1f;
+		float num2 = 100f;
 		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
 		{
-			num *= base.Equipment.weapon.script.RecoveryMultiplier(true, amount);
+			num *= base.Equipment.weapon.script.RecoveryMultiplier(false, amount);
+			num2 += base.Equipment.weapon.script.RecoveryAdditiveMultiplier(false, amount);
 		}
 		if (base.Equipment.armor != null && base.Equipment.armor.script != null)
 		{
-			num *= base.Equipment.armor.script.RecoveryMultiplier(true, amount);
+			num *= base.Equipment.armor.script.RecoveryMultiplier(false, amount);
+			num2 += base.Equipment.armor.script.RecoveryAdditiveMultiplier(false, amount);
 		}
-		num *= base.Equipment.gifts.RecoveryMultiplier(true, amount);
+		num *= base.Equipment.gifts.RecoveryMultiplier(false, amount);
+		num2 += base.Equipment.gifts.RecoveryAdditiveMultiplier(false, amount);
 		foreach (UnitBuf unitBuf in _bufList)
 		{
-			num *= unitBuf.RecoveryMultiplier(true, amount);
+			num *= unitBuf.RecoveryMultiplier(false, amount);
+			num2 += unitBuf.RecoveryAdditiveMultiplier(false, amount);
 		}
+		num *= num2 / 100f;
 		if (ResearchDataModel.instance.IsUpgradedAbility("regenerator_healing_boost") && (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) || OvertimeNetzachBossBuf.IsBullet))
 		{
 			PassageObjectModel passage = movableNode.GetPassage();
 			if (passage != null && passage.isRegenerator && passage.GetSefira().isRecoverActivated)
 			{
-				float factor = 2f - mental / maxMental;
+				float factor = 2f - hp / maxHp;
 				if (factor < 1f)
 				{
 					factor = 1f;
@@ -1257,7 +1311,27 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 				num *= factor;
 			}
 		}
-		amount *= num;
+        return num;
+	}
+
+	// Token: 0x06005BDA RID: 23514 RVA: 0x00208F6C File Offset: 0x0020716C
+	public virtual void RecoverMental(float amount)
+	{ // <Mod>
+        RecoverMentalv2(amount);
+    }
+
+    // <Mod>
+	public virtual float RecoverMentalv2(float amount, bool canBeModified = true)
+	{
+		if (this.IsDead())
+		{
+			return 0f;
+		}
+		if (this.blockRecover)
+		{
+			return 0f;
+		}
+		if (canBeModified) amount *= GetMentalRecoveryMult(amount);
 		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
 		{
 			base.Equipment.weapon.script.OwnerHeal(true, ref amount);
@@ -1279,6 +1353,53 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 			Panic();
 		}
         return amount;
+	}
+
+    // <Mod>
+	public virtual float GetMentalRecoveryMult(float amount)
+	{
+		if (this.blockRecover)
+		{
+			return 0f;
+		}
+		float num = 1f;
+		float num2 = 100f;
+		if (base.Equipment.weapon != null && base.Equipment.weapon.script != null)
+		{
+			num *= base.Equipment.weapon.script.RecoveryMultiplier(true, amount);
+			num2 += base.Equipment.weapon.script.RecoveryAdditiveMultiplier(true, amount);
+		}
+		if (base.Equipment.armor != null && base.Equipment.armor.script != null)
+		{
+			num *= base.Equipment.armor.script.RecoveryMultiplier(true, amount);
+			num2 += base.Equipment.armor.script.RecoveryAdditiveMultiplier(true, amount);
+		}
+		num *= base.Equipment.gifts.RecoveryMultiplier(true, amount);
+		num2 += base.Equipment.gifts.RecoveryAdditiveMultiplier(true, amount);
+		foreach (UnitBuf unitBuf in _bufList)
+		{
+			num *= unitBuf.RecoveryMultiplier(true, amount);
+			num2 += unitBuf.RecoveryAdditiveMultiplier(true, amount);
+		}
+		num *= num2 / 100f;
+		if (ResearchDataModel.instance.IsUpgradedAbility("regenerator_healing_boost") && (!SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true) || OvertimeNetzachBossBuf.IsBullet))
+		{
+			PassageObjectModel passage = movableNode.GetPassage();
+			if (passage != null && passage.isRegenerator && passage.GetSefira().isRecoverActivated)
+			{
+				float factor = 2f - mental / maxMental;
+				if (factor < 1f)
+				{
+					factor = 1f;
+				}
+				if (factor > 2f)
+				{
+					factor = 2f;
+				}
+				num *= factor;
+			}
+		}
+        return num;
 	}
 
 	// Token: 0x06005BDB RID: 23515 RVA: 0x00209060 File Offset: 0x00207260

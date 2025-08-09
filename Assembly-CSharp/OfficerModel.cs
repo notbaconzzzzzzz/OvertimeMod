@@ -521,13 +521,13 @@ public class OfficerModel : WorkerModel
 	}
 
 	// <Mod>
-	public override float RecoverMentalv2(float amount)
+	public override float RecoverMentalv2(float amount, bool canBeModified = true)
 	{
 		if (this.IsDead())
 		{
 			return 0f;
 		}
-		float num = base.RecoverMentalv2(amount);
+		float num = base.RecoverMentalv2(amount, canBeModified);
 		if (this.mental >= (float)this.mentalReturn && this.IsPanic())
 		{
 			this.StopPanic();

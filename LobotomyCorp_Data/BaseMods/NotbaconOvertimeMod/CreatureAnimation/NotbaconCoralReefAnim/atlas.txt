@@ -18,10 +18,108 @@ CoralReef_UndersideHole
   orig: 414, 99
   offset: 0, 0
   index: -1
+CoralReef_Leg4-1
+  rotate: false
+  xy: 203, 651
+  size: 46, 84
+  orig: 46, 84
+  offset: 0, 0
+  index: -1
+CoralReef_Leg4-2
+  rotate: false
+  xy: 154, 565
+  size: 47, 89
+  orig: 47, 89
+  offset: 0, 0
+  index: -1
+CoralReef_Leg4-3
+  rotate: false
+  xy: 423, 463
+  size: 70, 86
+  orig: 70, 86
+  offset: 0, 0
+  index: -1
+CoralReef_Leg3-1
+  rotate: false
+  xy: 251, 561
+  size: 60, 96
+  orig: 60, 96
+  offset: 0, 0
+  index: -1
+CoralReef_Leg3-2
+  rotate: false
+  xy: 447, 1
+  size: 62, 102
+  orig: 62, 102
+  offset: 0, 0
+  index: -1
+CoralReef_Leg3-3
+  rotate: false
+  xy: 417, 361
+  size: 94, 100
+  orig: 94, 100
+  offset: 0, 0
+  index: -1
+CoralReef_MouthUnder
+  rotate: false
+  xy: 251, 512
+  size: 170, 47
+  orig: 170, 47
+  offset: 0, 0
+  index: -1
+CoralReef_Mouth
+  rotate: false
+  xy: 251, 463
+  size: 170, 47
+  orig: 170, 47
+  offset: 0, 0
+  index: -1
 CoralReef_Head
   rotate: false
   xy: 1, 462
   size: 151, 105
   orig: 151, 105
+  offset: 0, 0
+  index: -1
+CoralReef_Leg2-1
+  rotate: false
+  xy: 447, 209
+  size: 60, 96
+  orig: 60, 96
+  offset: 0, 0
+  index: -1
+CoralReef_Leg2-2
+  rotate: false
+  xy: 447, 105
+  size: 62, 102
+  orig: 62, 102
+  offset: 0, 0
+  index: -1
+CoralReef_Leg2-3
+  rotate: false
+  xy: 154, 462
+  size: 95, 101
+  orig: 95, 101
+  offset: 0, 0
+  index: -1
+CoralReef_Leg1-1
+  rotate: false
+  xy: 203, 565
+  size: 46, 84
+  orig: 46, 84
+  offset: 0, 0
+  index: -1
+CoralReef_Leg1-2
+  rotate: false
+  xy: 313, 561
+  size: 47, 89
+  orig: 47, 89
+  offset: 0, 0
+  index: -1
+CoralReef_Leg1-3
+  rotate: false
+  xy: 423, 551
+  size: 70, 86
+  orig: 70, 86
   offset: 0, 0
   index: -1

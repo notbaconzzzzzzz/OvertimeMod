@@ -153,6 +153,7 @@ public class WeaponModel : EquipmentModel
 						{
 							actor.Equipment.armor.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 						}
+						actor.Equipment.gifts.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 						if (actor.GetUnitBufList().Count > 0)
 						{
 							foreach (UnitBuf unitBuf in actor.GetUnitBufList())
@@ -231,6 +232,7 @@ public class WeaponModel : EquipmentModel
 							{
 								actor.Equipment.armor.script.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 							}
+							actor.Equipment.gifts.OnGiveDamageAfter(actor, attackTarget, damageInfo2);
 							if (actor.GetUnitBufList().Count > 0)
 							{
 								foreach (UnitBuf unitBuf in actor.GetUnitBufList())
@@ -294,6 +296,7 @@ public class WeaponModel : EquipmentModel
 									unitModel.TakeDamage(actor, damageInfo3);
 									this.script.OnGiveDamageAfter(actor, unitModel, damageInfo3);
 									actor.Equipment.armor.script.OnGiveDamageAfter(actor, unitModel, damageInfo3);
+									actor.Equipment.gifts.OnGiveDamageAfter(actor, attackTarget, damageInfo3);
 									if (actor.GetUnitBufList().Count > 0)
 									{
 										foreach (UnitBuf unitBuf2 in actor.GetUnitBufList())
@@ -356,6 +359,7 @@ public class WeaponModel : EquipmentModel
 								unitModel2.TakeDamage(actor, damageInfo4);
 								this.script.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
 								actor.Equipment.armor.script.OnGiveDamageAfter(actor, unitModel2, damageInfo4);
+								actor.Equipment.gifts.OnGiveDamageAfter(actor, attackTarget, damageInfo4);
 								if (actor.GetUnitBufList().Count > 0)
 								{
 									foreach (UnitBuf unitBuf3 in actor.GetUnitBufList())

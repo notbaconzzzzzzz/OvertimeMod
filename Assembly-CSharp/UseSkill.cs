@@ -994,10 +994,7 @@ public class UseSkill
 			useSkill.workCount = 0;
 			useSkill.maxCubeCount = creature.metaInfo.feelingStateCubeBounds.GetLastBound();
 			useSkill.workSpeed = creature.GetCubeSpeed() * (1f + agent.workSpeed / 100f) * (1f + (float)creature.GetObserveBonusSpeed() / 100f);
-			if (creature.metaInfo.LcId == 100054L && agent.HasEquipment_Mod(new LobotomyBaseMod.LcId(400054)))
-			{
-				useSkill.workSpeed *= 0.9f;
-			}
+			useSkill.workSpeed *= agent.Equipment.gifts.WorkSpeedModifier(creature, skillInfo);
 			if (creature.isOverloaded && creature.overloadType == OverloadType.OBLIVION)
 			{
 				if (creature.metaInfo.LcId != 100055L && creature.metaInfo.LcId != 100058L)

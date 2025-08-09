@@ -2,6 +2,7 @@
 Pretty much everything //
 */
 using System;
+using UnityEngine; // 
 
 public class SingingMachineGift : EquipmentScriptBase
 {
@@ -9,6 +10,7 @@ public class SingingMachineGift : EquipmentScriptBase
 	{
 	}
 
+	/*
 	public override bool OnTakeDamage_After(float value, RwbpType type)
 	{
 		WorkerModel workerModel = model.owner as WorkerModel;
@@ -21,7 +23,21 @@ public class SingingMachineGift : EquipmentScriptBase
 		workerModel.AddUnitBuf(new SingingMachineGiftBuf());
         _cooldown.StartTimer(20f);
 		return true;
-	}
+	}*/
+
+    // <Mod>
+    public override Vector2 PercentageRecoverOnHit(UnitModel actor, DamageInfo dmg)
+    {
+		WorkerModel workerModel = model.owner as WorkerModel;
+		if (workerModel == null) base.PercentageRecoverOnHit(actor, dmg);
+		if (workerModel.IsDead()) base.PercentageRecoverOnHit(actor, dmg);
+		if (dmg.type != RwbpType.W) base.PercentageRecoverOnHit(actor, dmg);
+		if (_cooldown.started) base.PercentageRecoverOnHit(actor, dmg);
+		if (dmg.result.resultDamage < 6f) base.PercentageRecoverOnHit(actor, dmg);
+		workerModel.AddUnitBuf(new SingingMachineGiftBuf());
+        _cooldown.StartTimer(20f);
+        return new Vector2(100f / 3f, 100f / 3f);
+    }
 
     public override void OnFixedUpdate()
     {

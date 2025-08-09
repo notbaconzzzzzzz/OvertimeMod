@@ -949,11 +949,12 @@ DamageInfo rework
 	UnitBuf.cs
 	CreatureBase.cs
 	+NothingGift.cs
+	CensoredWeapon.cs
+	YinGift.cs
+	SingingMachineGift.cs
 	BaseEquipment.txt
 
 	BlackSwanWeapon
-	CensoredWeapon
-	YinGift
 
 Overtime Mode
 	PlayerModel.cs

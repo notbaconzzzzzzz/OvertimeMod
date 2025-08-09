@@ -32,6 +32,11 @@ public class DamageResult
         }
     }
 
+    public string Tostring()
+    {
+        return originDamage.ToString() + "," + byResist.ToString() + "," + beforeShield.ToString() + "," + resultDamage.ToString() + "," + resultNumber.ToString() + "," + scaling.ToString() + "," + hpDamage.ToString() + "," + spDamage.ToString() + "," + type.ToString() + "," + activated.ToString();
+    }
+
     public float originDamage = 0f;
 
     public float byResist = 0f;

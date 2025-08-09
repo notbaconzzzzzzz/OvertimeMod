@@ -1001,14 +1001,18 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 	{ // <Mod>
 		if (dmg.result.activated)
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = false;
 			dmg = dmg.Copy();
 			dmg.result.activated = true;
+			temp.activated = true;
 		}
 		else
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = true;
 			dmg = dmg.Copy();
+			temp.activated = false;
 		}
 		if (actor is CreatureModel)
 		{

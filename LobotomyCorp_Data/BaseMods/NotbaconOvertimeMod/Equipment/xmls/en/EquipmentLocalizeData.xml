@@ -21,6 +21,29 @@
 <text id="NotbaconAnglerFish_armor_desc">Placeholder2</text>
 <text id="NotbaconAnglerFish_gift_desc">Success Rate +6; Work Speed -4; Attack Speed +3; Movement Speed +3&#13;&#10;Attachment Work Success Rate +6%</text>
 
+<text id="NotbaconPollen_weapon_name">Green Thumb</text>
+<text id="NotbaconPollen_weapon_desc">Placeholder1</text>
+<text id="NotbaconPollen_armor_desc">Placeholder2</text>
+<text id="NotbaconPollen_gift_desc">HP +5; Success Rate +5; Work Speed +5</text>
+
+<text id="NotbaconGarland_gift1_name">Daisy Garland</text>
+<text id="NotbaconGarland_gift1_desc">Attack Speed +5; Movement Speed +5&#13;&#10;Healing received +4%; Regen 2 HP every 10 sec; Insight Work Speed +25%</text>
+<text id="NotbaconGarland_gift2_name">Daffodil Garland</text>
+<text id="NotbaconGarland_gift2_desc">Success Rate +6; Work Speed +6&#13;&#10;Healing received +6%; Regen 2 HP every 8 sec; Instinct Work Speed +25%</text>
+<text id="NotbaconGarland_gift3_name">Lavender Garland</text>
+<text id="NotbaconGarland_gift3_desc">HP +6; SP +3; Attack Speed -2; Movement Speed -2&#13;&#10;Healing received +10%; Regen 2 HP every 6 sec; Attachment Work Speed +25%</text>
+<text id="NotbaconGarland_gift4_name">Iris Garland</text>
+<text id="NotbaconGarland_gift4_desc">HP -4; SP +6; Success Rate +10; Work Speed +10&#13;&#10;Healing received +20%; Regen 2 HP every 4 sec; Grants healing bufs to nearby allies</text>
+<text id="NotbaconGarland_gift5_name">Orchid Garland</text>
+<text id="NotbaconGarland_gift5_desc">HP +8; SP -4; Movement Speed +16&#13;&#10;Healing received +25%; Regen 3 SP every 4 sec; When reaching low HP, leach HP from nearby healthy allies</text>
+<text id="NotbaconGarland_gift6_name">Rose Garland</text>
+<text id="NotbaconGarland_gift6_desc">HP +12; Attack Speed +10; Movement Speed -10&#13;&#10;Healing received +30%; Regen 4 HP every 4 sec; If at least 30% HP, deal +15% damage and take R damage equal to that amount</text>
+
+<text id="NotbaconPollen_weapon2_name">Placeholder</text>
+<text id="NotbaconPollen_weapon2_desc">Placeholder1</text>
+<text id="NotbaconPollen_armor2_desc">Placeholder2</text>
+<text id="NotbaconPollen_gift2_desc">HP +15; Success Rate +8; Work Speed +8; Attack Speed -5; Movement Speed -5&#13;&#10;Recover 15% of damage taken when hit; Constantly regen HP/SP, increasing the lower the HP you are</text>
+
 <text id="NotbaconCoralReef_weapon_name">Seashell</text>
 <text id="NotbaconCoralReef_weapon_desc">Placeholder1</text>
 <text id="NotbaconCoralReef_armor_desc">Placeholder2</text>

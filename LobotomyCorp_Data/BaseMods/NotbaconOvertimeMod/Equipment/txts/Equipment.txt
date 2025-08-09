@@ -241,6 +241,119 @@
     <sprite>NotbaconAnglerFishGift</sprite> <!-- PLACE HOLDER SPRITE -->
   </equipment>
 
+  <equipment id="430913" type="special">
+    <name>NotbaconPollen_weapon_name</name>
+    <desc>NotbaconPollen_gift_desc</desc>
+    <attachPos>right_hand</attachPos>
+    <attachType>replace</attachType>
+    <bonus>
+      <hp>5</hp>
+      <workProb>5</workProb>
+      <cubeSpeed>5</cubeSpeed>
+    </bonus>
+    <sprite>NotbaconPollenGift</sprite> <!-- PLACE HOLDER SPRITE -->
+  </equipment>
+
+  <equipment id="4309131" type="special">
+    <name>NotbaconGarland_gift1_name</name>
+    <desc>NotbaconGarland_gift1_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <attackSpeed>5</attackSpeed>
+      <movement>5</movement>
+    </bonus>
+    <sprite>NotbaconGarland1Daisy</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift1</script>
+  </equipment>
+
+  <equipment id="4309132" type="special">
+    <name>NotbaconGarland_gift2_name</name>
+    <desc>NotbaconGarland_gift2_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <workProb>6</workProb>
+      <cubeSpeed>6</cubeSpeed>
+    </bonus>
+    <sprite>NotbaconGarland2Daffodil</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift2</script>
+  </equipment>
+
+  <equipment id="4309133" type="special">
+    <name>NotbaconGarland_gift3_name</name>
+    <desc>NotbaconGarland_gift3_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>6</hp>
+      <mental>3</mental>
+      <attackSpeed>-2</attackSpeed>
+      <movement>-2</movement>
+    </bonus>
+    <sprite>NotbaconGarland3Lavender</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift3</script>
+  </equipment>
+
+  <equipment id="4309134" type="special">
+    <name>NotbaconGarland_gift4_name</name>
+    <desc>NotbaconGarland_gift4_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>-4</hp>
+      <mental>6</mental>
+      <workProb>10</workProb>
+      <cubeSpeed>10</cubeSpeed>
+    </bonus>
+    <sprite>NotbaconGarland4Iris</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift4</script>
+  </equipment>
+
+  <equipment id="4309135" type="special">
+    <name>NotbaconGarland_gift5_name</name>
+    <desc>NotbaconGarland_gift5_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>8</hp>
+      <mental>-4</mental>
+      <movement>16</movement>
+    </bonus>
+    <sprite>NotbaconGarland5Orchid</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift5</script>
+  </equipment>
+
+  <equipment id="4309136" type="special">
+    <name>NotbaconGarland_gift6_name</name>
+    <desc>NotbaconGarland_gift6_desc</desc>
+    <attachPos>ribborn</attachPos>
+    <attachType>add</attachType>
+    <bonus>
+      <hp>12</hp>
+      <attackSpeed>10</attackSpeed>
+      <movement>-10</movement>
+    </bonus>
+    <sprite>NotbaconGarland6Rose</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconGarlandGift6</script>
+  </equipment>
+
+  <equipment id="4309137" type="special">
+    <name>NotbaconPollen_weapon2_name</name>
+    <desc>NotbaconPollen_gift2_desc</desc>
+    <attachPos>right_hand</attachPos>
+    <attachType>replace</attachType>
+    <bonus>
+      <hp>15</hp>
+      <workProb>8</workProb>
+      <cubeSpeed>8</cubeSpeed>
+      <attackSpeed>-5</attackSpeed>
+      <movement>-5</movement>
+    </bonus>
+    <sprite>NotbaconPollenGift2</sprite> <!-- PLACE HOLDER SPRITE -->
+    <script>NotbaconPollenGift2</script>
+  </equipment>
+
   <equipment id="230917" type="weapon">
     <name>NotbaconCoralReef_weapon_name</name>
     <desc>NotbaconCoralReef_weapon_desc</desc>
@@ -250,10 +363,7 @@
 
     <animation>Attack1</animation>
 
-    <damage type="B" min="7" max="14">
-      <soundInfo type="damage">Weapons/bowgun</soundInfo>
-    </damage>
-    <damage type="P" min="10" max="20">
+    <damage type="B" min="4" max="10">
       <soundInfo type="damage">Weapons/bowgun</soundInfo>
     </damage>
     <range>20</range>
@@ -262,7 +372,7 @@
     <maxNum>2</maxNum>
 
     <attackSpeed>2</attackSpeed>
-    <grade>3</grade>
+    <grade>2</grade>
   </equipment>
 
   <equipment id="330917" type="armor">

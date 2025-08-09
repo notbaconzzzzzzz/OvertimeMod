@@ -116,6 +116,18 @@ public class UnitBuf
 		return 1f;
 	}
 
+	// <Mod>
+	public virtual float RecoveryAdditiveMultiplier(bool isMental, float amount)
+	{
+		return 0f;
+	}
+
+	// <Mod>
+	public virtual Vector2 PercentageRecoverOnHit(UnitModel actor, DamageInfo dmg)
+	{
+		return Vector2.zero;
+	}
+
 	// Token: 0x04005282 RID: 21122
 	public UnitBufType type;
 

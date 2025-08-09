@@ -137,14 +137,18 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 	{ // <Mod> Damage Result
 		if (dmg.result.activated)
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = false;
 			dmg = dmg.Copy();
 			dmg.result.activated = true;
+			temp.activated = true;
 		}
 		else
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = true;
 			dmg = dmg.Copy();
+			temp.activated = false;
 		}
 		DamageResult result = dmg.result;
 		result.ResetValues(dmg);
@@ -220,14 +224,18 @@ public class RabbitModel : UnitModel, IMouseCommandTargetModel
 	{ // <Mod> Damage Result
 		if (dmg.result.activated)
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = false;
 			dmg = dmg.Copy();
 			dmg.result.activated = true;
+			temp.activated = true;
 		}
 		else
 		{
+			DamageResult temp = dmg.result;
 			dmg.result.activated = true;
 			dmg = dmg.Copy();
+			temp.activated = false;
 		}
 		if (actor is CreatureModel)
 		{

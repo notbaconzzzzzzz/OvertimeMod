@@ -62,12 +62,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NotbaconOvertimeMod.cs" />
     <Compile Include="NotbaconAnglerFishWeapon.cs" />
     <Compile Include="NotbaconCoralReef.cs" />
     <Compile Include="NotbaconDreamCatcher.cs" />
     <Compile Include="NotbaconAnglerFish.cs" />
+    <Compile Include="NotbaconPollenGift2.cs" />
+    <Compile Include="NotbaconGarlandGift6.cs" />
+    <Compile Include="NotbaconGarlandGift5.cs" />
+    <Compile Include="NotbaconGarlandGift4.cs" />
+    <Compile Include="NotbaconGarlandGift3.cs" />
+    <Compile Include="NotbaconGarlandGift2.cs" />
     <Compile Include="NotbaconGrandfatherClock.cs" />
     <Compile Include="AprilFoolsOneBadManyGood.cs" />
+    <Compile Include="NotbaconGarlandGift1.cs" />
     <Compile Include="NotbaconShatteredMirror.cs" />
     <Compile Include="NotbaconBalloon.cs" />
     <Compile Include="NotbaconCoralReefAnim.cs" />

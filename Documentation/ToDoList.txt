@@ -9,8 +9,11 @@ Suggest/implement new bugs fixes (unless they're just funny)
 Suggest/implement new quality of life features
 
 Migrate any localize data changes to the BaseMods area instead of being direct file modifications
+Include languages other than english in any changes to localize data (a large quantity of which are EGO Gift descriptions)
 
 Maybe migrate some Overtime Ordeal/Core Suppression/etc scripts to be in the external dll instead of living in Assembly-CSharp
+
+Maybe find and squash any mistakes I made early on in development with changing the return values or parameters of an important function that may be causing incompatibility with some mods (I swear there's at least 1, maybe more, but I can't for the life of me remember where I did it)
 
 Make a patch for LMM to make it not override the files
 
@@ -35,8 +38,8 @@ Figure out why the WorkQueuePreferanceManager isn't working properly
 
 Add proper alternative managerial tips for the Funeral of the Dead Butterflies rework (and maybe some of the other reworks)
 
-Make it so that when an abnormality has multiple sets resistances, a specific one can be specified to be shown in the Escape Information instead of 'unspecified', and the Suppression Window can show the correct one instead of 'unspecified'
-Maybe add support for an abnormality's exact resistance values to be adjusted through the script
+Make it so that when an abnormality has multiple sets of resistances, a specific one can be specified to be shown in the Escape Information instead of 'unspecified', and the Suppression Window can show the correct one instead of 'unspecified'
+Maybe add support for an abnormality's exact resistance values to be adjusted through the CreatureBase script, UnitBufs, and/or field modification in CreatureModel
 
 Der Freischutz rework
 Apocalypse Bird rework
@@ -62,14 +65,16 @@ Fix Rabbits deployed in Welfare or Disiplinary passing through Central command t
 
 Large CreatureBase pass (a collection of various features whose implementations will require functionality within all or a large subsection of abnormalties' CreatureBase scripts; features part of this will be labeled individually below)
 
-Investigate and fix improper unscaled ranges (part of the Large CreatureBase pass) (known offenders off the top of my head are Apoc Bird,  Nothing There, and Gebura)
+Investigate and fix improper unscaled ranges (part of the Large CreatureBase pass) (known offenders off the top of my head are Apoc Bird, Nothing There, and Gebura)
 
 Implement Increased Agent Limit mode which would allow more than 5 Agents in a department (similar to DoubleAbno mode)
 
 Finish DamageInfo rework (including implementing the extra damage types)
-Consolidate 'recover % of damage dealt' like Mimicry Weapon, and 'recover % of damage taken' effects like CENSORED Weapon, Yin Gift, etc so that they use the DamageReport system instead
-Rework the way 'HP/SP Healing increased by %' Gift effects (only from Gifts; other types of bufs can remain as they are) stack with each other (I want it so that they are linear instead of multiplicative)
-Rework the way 'recover % of damage taken' effects stack with each other and with 'Healing increased by %' bonuses
+Consolidate 'recover % of damage dealt' like Mimicry Weapon, and 'recover % of damage taken' effects like CENSORED Weapon, Yin Gift, etc so that they use the DamageReport system instead [x~O]
+Rework the way 'HP/SP Healing increased by %' Gift effects (only from Gifts; other types of bufs can remain as they are) stack with each other (I want it so that they are linear instead of multiplicative) [O]
+Rework the way 'recover % of damage taken' effects stack with each other and with 'Healing increased by %' bonuses [O]
+
+Add a system for EGO Weapons, Armor, and Gifts to be dropped on the floor after an abnormality is suppressed and able to be picked up and equiped by Agents
 
 Figure out a better way to do Netzach mission 9
 
@@ -130,5 +135,6 @@ Make it possible to tell how full Please Take One's bowl is
 Create a way to choose which Candy you want from Please Take One
 Maybe seed Please Take One's candy generation in such a way so that you cannot retry day to reroll it? (unsure if this is nessesary or not)
 
+Make it possible to tell what level Coral Reef is at
 Replace the placeholder-placeholder art for Coral Reef's EGO Armor and Weapon with actual placeholder art
 Create Coral Reef's suppression reward Weapon

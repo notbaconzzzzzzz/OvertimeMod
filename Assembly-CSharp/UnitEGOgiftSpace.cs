@@ -630,6 +630,19 @@ public class UnitEGOgiftSpace
 		return result;
 	}
 
+	// <Mod>
+	public void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
+	{
+		foreach (EGOgiftModel egogiftModel in this.addedGifts)
+		{
+			if (egogiftModel.script != null) egogiftModel.script.OnGiveDamageAfter(actor, target, dmg);
+		}
+		foreach (EGOgiftModel egogiftModel2 in this.replacedGifts)
+		{
+			if (egogiftModel2.script != null) egogiftModel2.script.OnGiveDamageAfter(actor, target, dmg);
+		}
+	}
+
 	// <Patch>
 	public bool HasEquipment_Mod(LobotomyBaseMod.LcId id)
 	{
@@ -666,6 +679,69 @@ public class UnitEGOgiftSpace
 			if (egogiftModel2.script != null)
 			{
 				num *= egogiftModel2.script.RecoveryMultiplier(isMental, amount);
+			}
+		}
+		return num;
+	}
+
+	// <Mod>
+	public float RecoveryAdditiveMultiplier(bool isMental, float amount)
+	{
+		float num = 0f;
+		foreach (EGOgiftModel egogiftModel in addedGifts)
+		{
+			if (egogiftModel.script != null)
+			{
+				num += egogiftModel.script.RecoveryAdditiveMultiplier(isMental, amount);
+			}
+		}
+		foreach (EGOgiftModel egogiftModel2 in replacedGifts)
+		{
+			if (egogiftModel2.script != null)
+			{
+				num += egogiftModel2.script.RecoveryAdditiveMultiplier(isMental, amount);
+			}
+		}
+		return num;
+	}
+
+	// <Mod>
+	public float WorkSpeedModifier(CreatureModel target, SkillTypeInfo skill)
+	{
+		float num = 1f;
+		foreach (EGOgiftModel egogiftModel in addedGifts)
+		{
+			if (egogiftModel.script != null)
+			{
+				num *= egogiftModel.script.WorkSpeedModifier(target, skill);
+			}
+		}
+		foreach (EGOgiftModel egogiftModel2 in replacedGifts)
+		{
+			if (egogiftModel2.script != null)
+			{
+				num *= egogiftModel2.script.WorkSpeedModifier(target, skill);
+			}
+		}
+		return num;
+	}
+
+	// <Mod>
+	public Vector2 PercentageRecoverOnHit(UnitModel actor, DamageInfo dmg)
+	{
+		Vector2 num = new Vector2(0f, 0f);
+		foreach (EGOgiftModel egogiftModel in addedGifts)
+		{
+			if (egogiftModel.script != null)
+			{
+				num += egogiftModel.script.PercentageRecoverOnHit(actor, dmg);
+			}
+		}
+		foreach (EGOgiftModel egogiftModel2 in replacedGifts)
+		{
+			if (egogiftModel2.script != null)
+			{
+				num += egogiftModel2.script.PercentageRecoverOnHit(actor, dmg);
 			}
 		}
 		return num;
@@ -722,7 +798,7 @@ public class UnitEGOgiftSpace
 	}
 
 	// Token: 0x040032BF RID: 12991
-	public static readonly long[] uniqueLock = new long[]
+	public static long[] uniqueLock = new long[] // <Mod> made not readonly
 	{
 		4000371L,
 		4000372L,
@@ -733,7 +809,7 @@ public class UnitEGOgiftSpace
 	};
 
     // <Mod> Groups of EGO gifts that aren't allowed to co-exist on the same employee
-	public static readonly LcId[][] exclusiveGifts = new LcId[][]
+	public static LcId[][] exclusiveGifts = new LcId[][]
 	{
 		new LcId[] {
             new LcId(4000371),

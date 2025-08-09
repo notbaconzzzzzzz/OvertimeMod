@@ -203,6 +203,24 @@ public class EquipmentScriptBase
 		return 1f;
 	}
 
+	// <Mod>
+	public virtual float RecoveryAdditiveMultiplier(bool isMental, float amount)
+	{
+		return 0f;
+	}
+
+	// <Mod>
+	public virtual float WorkSpeedModifier(CreatureModel target, SkillTypeInfo skill)
+	{
+		return 1f;
+	}
+
+    // <Mod>
+	public virtual Vector2 PercentageRecoverOnHit(UnitModel actor, DamageInfo dmg)
+	{
+		return Vector2.zero;
+	}
+
 	// Token: 0x040032E2 RID: 13026
 	private EquipmentModel _model;
 

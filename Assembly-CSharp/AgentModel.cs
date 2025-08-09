@@ -1505,7 +1505,7 @@ public class AgentModel : WorkerModel
 		this._unit.CancelWeapon();
 	}
 
-	public override float RecoverHPv2(float amount)
+	public override float RecoverHPv2(float amount, bool canBeModified = true)
 	{
 		if (this.IsDead())
 		{
@@ -1519,7 +1519,7 @@ public class AgentModel : WorkerModel
 		{
 			return 0f;
 		}
-		float num = base.RecoverHPv2(amount);
+		float num = base.RecoverHPv2(amount, canBeModified);
 		if (num > 0)
 		{
 			this.MakeRecoverEffect(true);
@@ -1527,7 +1527,7 @@ public class AgentModel : WorkerModel
 		return num;
 	}
 
-	public override float RecoverMentalv2(float amount)
+	public override float RecoverMentalv2(float amount, bool canBeModified = true)
 	{
 		if (this.IsDead())
 		{
@@ -1537,7 +1537,7 @@ public class AgentModel : WorkerModel
 		{
 			return 0f;
 		}
-		float num = base.RecoverMentalv2(amount);
+		float num = base.RecoverMentalv2(amount, canBeModified);
 		if (this.mental >= (float)this.maxMental && this.IsPanic())
 		{
 			this.StopPanic();

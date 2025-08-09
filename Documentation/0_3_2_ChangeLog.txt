@@ -7,6 +7,7 @@ Version 0.3.2
  - Big and Will be Bad Wolf no longer lowers his qliphoth counter at the start of the next day if you end the previous day with an employee still working on him
  - Big and Will be Bad Wolf now actually properly kills the eaten employees if you don't save them
 
+ - Changed the way 'Recover % of damage taken' effects stack with each other and with 'Healing received +%' effects
  - Fixed a bug with my feature that's supposed to give you lower layer missions early so that you can always complete all Core Suppressions
 
  - Overtime Missions, Research, and Core Suppressions
