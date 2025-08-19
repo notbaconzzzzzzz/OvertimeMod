@@ -288,7 +288,7 @@
   </research>
   <research id="705" sephira="7" maxLevel="1" icon="Malkut1">
     <upgrade>
-      <specialAbility>adrenaline_bullets</specialAbility>
+      <bulletAbility>stim</bulletAbility>
     </upgrade>
   </research>
   <research id="706" sephira="7" maxLevel="1" icon="Bullet_Execution" atlas="Icons_7">
@@ -304,7 +304,7 @@
   </research>
   <research id="805" sephira="8" maxLevel="1" icon="Binah1">
     <upgrade>
-      <specialAbility>tranquilizer_bullets</specialAbility>
+      <bulletAbility>tranq</bulletAbility>
     </upgrade>
   </research>
   <research id="806" sephira="8" maxLevel="1" icon="Chesed3">

@@ -1029,9 +1029,9 @@
     <edge node1="sefira-malkuth-7" node2="sefira-malkuth-8" type="road" />
     <edge node1="sefira-malkuth-8" node2="sefira-malkuth-9" type="road" />
     <edge node1="right-upper-way2" node2="right-upper-way3" type="road" />
-    <edge node1="right-upper-way3" node2="right-upper-way4" type="road" />
-    <edge node1="right-upper-way4" node2="right-upper-way5" type="road" />
-    <edge node1="right-upper-way6" node2="right-upper-way5" type="road" />
+    <edge node1="right-upper-way3" node2="right-upper-way5" type="road" /> <!-- swapped ids of right-upper-way4 and right-upper-way5 -->
+    <edge node1="right-upper-way5" node2="right-upper-way4" type="road" /> <!-- swapped ids of right-upper-way4 and right-upper-way5 -->
+    <edge node1="right-upper-way6" node2="right-upper-way4" type="road" /> <!-- swapped ids of right-upper-way4 and right-upper-way5 -->
     <edge node1="left-upper-way2" node2="left-upper-way3" type="road" />
     <edge node1="left-upper-way3" node2="left-upper-way4" type="road" />
     <edge node1="left-down-way1" node2="right-down-way1" type="door" />
@@ -1089,11 +1089,11 @@
     <edge node1="sefira-tessod-7" node2="sefira-tessod-8" type="road" />
     <edge node1="sefira-tessod-8" node2="sefira-tessod-9" type="road" />
     <edge node1="sefira-tessod-11" node2="T-right-way1" type="door" />
-    <edge node1="T-right-way3" node2="T-right-way4" type="road" />
-    <edge node1="T-right-way4" node2="T-right-way5" type="road" />
+    <edge node1="T-right-way3" node2="T-right-way5" type="road" /> <!-- swapped ids of T-right-way4 and T-right-way5 -->
+    <edge node1="T-right-way5" node2="T-right-way4" type="road" /> <!-- swapped ids of T-right-way4 and T-right-way5 -->
     <edge node1="sefira-tessod-1" node2="T-left-way1" type="door" />
-    <edge node1="T-left-way3" node2="T-left-way4" type="road" />
-    <edge node1="T-left-way4" node2="T-left-way5" type="road" />
+    <edge node1="T-left-way3" node2="T-left-way5" type="road" /> <!-- swapped ids of T-left-way4 and T-left-way5 -->
+    <edge node1="T-left-way5" node2="T-left-way4" type="road" /> <!-- swapped ids of T-left-way4 and T-left-way5 -->
     <edge node1="dept-tessod-4" node2="dept-tessod-3" type="road" />
     <edge node1="dept-tessod-4" node2="dept-tessod-5" type="road" />
     <edge node1="dept-tessod-5" node2="dept-tessod-6" type="road" />
@@ -1175,7 +1175,7 @@
     <edge node1="malkuth-2-11" node2="malkuth-2-10" type="door" />
     <edge node1="malkuth-2-9" node2="malkuth-2-10" type="road" />
     <edge node1="T-left-way6" node2="T-left-way7" type="road" />
-    <edge node1="T-left-way6" node2="T-left-way5" type="road" />
+    <edge node1="T-left-way6" node2="T-left-way4" type="road" /> <!-- swapped ids of T-left-way4 and T-left-way5 -->
     <edge node1="T-left-way1" node2="T-left-way2" type="road" />
     <edge node1="T-left-way3" node2="T-left-way2" type="road" />
     <edge node1="sefira-tessod-2" node2="sefira-tessod-1" type="road" />
@@ -1185,7 +1185,7 @@
     <edge node1="T-right-way2" node2="T-right-way3" type="road" />
     <edge node1="T-right-way1" node2="T-right-way2" type="road" />
     <edge node1="T-right-way7" node2="T-right-way6" type="road" />
-    <edge node1="T-right-way5" node2="T-right-way6" type="road" />
+    <edge node1="T-right-way4" node2="T-right-way6" type="road" /> <!-- swapped ids of T-right-way4 and T-right-way5 -->
     <edge node1="T-rightdown-way5" node2="T-rightdown-way4" type="road" />
     <edge node1="T-rightdown-way5" node2="T-rightdown-way6" type="road" />
     <edge node1="T-rightdown-way3" node2="T-rightdown-way2" type="road" />

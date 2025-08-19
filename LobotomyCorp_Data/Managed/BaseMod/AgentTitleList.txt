@@ -34,7 +34,7 @@
     <title id="3007" pos="suffix" hp="1" mental="3" cubeSpeed="5" workProb="5" movementSpeed="1" attackSpeed="1" rwbp="B">agent_title_3007</title>
     <title id="3008" pos="suffix" hp="1" mental="1" cubeSpeed="5" workProb="5" movementSpeed="3" attackSpeed="3" rwbp="B">agent_title_3008</title>
     <title id="3009" pos="suffix" hp="3" mental="1" cubeSpeed="1" workProb="1" movementSpeed="5" attackSpeed="5" rwbp="P">agent_title_3009</title>
-    <title id="3010" pos="suffix" hp="1" mental="5" cubeSpeed="1" workProb="1" movementSpeed="5" attackSpeed="5" rwbp="P">agent_title_3010</title>
+    <title id="3010" pos="suffix" hp="1" mental="3" cubeSpeed="1" workProb="1" movementSpeed="5" attackSpeed="5" rwbp="P">agent_title_3010</title>
     <title id="3011" pos="suffix" hp="1" mental="1" cubeSpeed="3" workProb="3" movementSpeed="5" attackSpeed="5" rwbp="P">agent_title_3011</title>
     
     <title id="3012" pos="suffix" hp="3" mental="3" cubeSpeed="3" workProb="3" movementSpeed="3" attackSpeed="3" rwbp="A">agent_title_3012</title>
