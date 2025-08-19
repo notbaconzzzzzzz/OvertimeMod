@@ -193,7 +193,7 @@ public class ConsoleCommand
 				this.SuppressAllCommand();
 				goto IL_206;
 			case 10:
-				if ((string)param[1].ToLower() == "reset")
+				if (((string)param[1]).ToLower() == "reset")
 				{
 					WorkQueuePreferanceManager.instance.SaveDefaultCondition(null);
 				}
@@ -338,7 +338,7 @@ public class ConsoleCommand
 				SwapAbnormalities(creature, creature2);
 				break;
 			case 10:
-				if ((string)param[1].ToLower() == "reset")
+				if (((string)param[1]).ToLower() == "reset")
 				{
 					WorkQueuePreferanceManager.instance.SaveDefaultCondition(null, creature);
 				}
@@ -2116,4 +2116,7 @@ public class ConsoleCommand
 
 	// Token: 0x04001C94 RID: 7316
 	private static ConsoleCommand _instance;
+
+	// <Mod>
+	public List<ConsoleCommandsBase> moddedCommands;
 }

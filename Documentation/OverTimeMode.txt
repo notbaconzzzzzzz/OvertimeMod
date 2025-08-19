@@ -414,7 +414,6 @@ Overtime Malkuth Core Suppression [O]
 	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
 	Meltdown VIII and energy refine
 Overtime Yesod Core Suppression [O]
-	?Snap sound played at start of day and every transition between phases
 	Tranquilizer bullets cannot be used? because they would allow you to determain the risk with no effort
 	Containment units are returned to their original positions at the end of the day
 	Phase 1 I-II 2

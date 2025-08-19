@@ -34,6 +34,10 @@ Implement proper UI for the Farther Memory Repository system
 
 Implement proper UI for the EGO Loadout system
 
+Add a system to add your own nugget appearances/names to the randomized pool, and to be able to force the game to only pick from your custom ones
+
+Add a feature to skip cutscenes instantly, and to choose to automatically skip certain types of cutscenes
+
 Figure out why the WorkQueuePreferanceManager isn't working properly
 
 Add proper alternative managerial tips for the Funeral of the Dead Butterflies rework (and maybe some of the other reworks)
@@ -70,9 +74,6 @@ Investigate and fix improper unscaled ranges (part of the Large CreatureBase pas
 Implement Increased Agent Limit mode which would allow more than 5 Agents in a department (similar to DoubleAbno mode)
 
 Finish DamageInfo rework (including implementing the extra damage types)
-Consolidate 'recover % of damage dealt' like Mimicry Weapon, and 'recover % of damage taken' effects like CENSORED Weapon, Yin Gift, etc so that they use the DamageReport system instead [x~O]
-Rework the way 'HP/SP Healing increased by %' Gift effects (only from Gifts; other types of bufs can remain as they are) stack with each other (I want it so that they are linear instead of multiplicative) [O]
-Rework the way 'recover % of damage taken' effects stack with each other and with 'Healing increased by %' bonuses [O]
 
 Add a system for EGO Weapons, Armor, and Gifts to be dropped on the floor after an abnormality is suppressed and able to be picked up and equiped by Agents
 
@@ -122,6 +123,8 @@ Establish a workflow for creating custom EGO Weapon animations
 
 Maybe work on the designs (design as in visual, story, thematic) for some of the new Overtime Abnormalities
 Maybe maybe create more high quality visuals and animations n stuff for the new Overtime Abnormalities (!warning! fairly ambitious)
+
+Maybe replace some of the new Abnormalities' placeholder flavor/story text
 
 Finish The Pale Horse's Mark for Death functionality (part of the Large CreatureBase pass)
 

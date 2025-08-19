@@ -47,10 +47,10 @@ namespace NotbaconOvertimeMod
             {
                 switch (level)
                 {
-                    case 0: return 0.8f;
-                    case 1: return 1.2f;
-                    case 2: return 1.8f;
-                    case 3: return 2f;
+                    case 0: return 1.8f;
+                    case 1: return 2f;
+                    case 2: return 2.4f;
+                    case 3: return 3f;
                 }
                 return 0.8f;
             }

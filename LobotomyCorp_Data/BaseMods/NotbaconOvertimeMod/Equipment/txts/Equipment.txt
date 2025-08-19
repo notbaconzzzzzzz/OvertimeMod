@@ -363,7 +363,7 @@
 
     <animation>Attack1</animation>
 
-    <damage type="B" min="4" max="10">
+    <damage type="B" min="5" max="10">
       <soundInfo type="damage">Weapons/bowgun</soundInfo>
     </damage>
     <range>20</range>

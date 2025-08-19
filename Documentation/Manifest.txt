@@ -881,6 +881,11 @@ Generalized Etc units like Funeral's butterflies, Snow White's vines, and Little
 	YoungPrinceFriend.cs
 	PassageObjectModel.cs
 
+Made a framework for mods to make their own console commands
+	ConsoleCommand.cs
+	ConsoleScript.cs
+	+ConsoleCommandsBase.cs
+
 Console Command Overhaul
 Special Mode Menu
 

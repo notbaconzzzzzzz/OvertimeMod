@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OvertimeModCommands.cs" />
     <Compile Include="NotbaconOvertimeMod.cs" />
     <Compile Include="NotbaconAnglerFishWeapon.cs" />
     <Compile Include="NotbaconCoralReef.cs" />

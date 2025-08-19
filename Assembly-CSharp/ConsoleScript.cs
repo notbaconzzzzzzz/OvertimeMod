@@ -122,6 +122,21 @@ public class ConsoleScript : MonoBehaviour
 						}
 						ConsoleCommand.instance.RootCommandOperation(num, para);
 					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.rootCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.RootCommandOperation(ind, para);
+							break;
+						}
+					}
 				}
 				else if (a == ConsoleCommand.StandardCommand)
 				{
@@ -291,6 +306,21 @@ public class ConsoleScript : MonoBehaviour
 							break;
 						}
 					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.standardCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.StandardCommandOperation(ind, para);
+							break;
+						}
+					}
 				}
 				else if (a == ConsoleCommand.CreatureCommand)
 				{
@@ -375,6 +405,21 @@ public class ConsoleScript : MonoBehaviour
 							});
 						}
 					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.creatureCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.CreatureCommandOperation(ind, para);
+							break;
+						}
+					}
 				}
 				else if (a == ConsoleCommand.AgentCommand)
 				{
@@ -408,7 +453,7 @@ public class ConsoleScript : MonoBehaviour
 							});
 						}
 					}
-					else if (num8 < 7)
+					else if (num8 < 7 && num8 != -1)
 					{
 						float num11 = float.Parse(array[3]);
 						long num12 = long.Parse(array[2]);
@@ -423,7 +468,7 @@ public class ConsoleScript : MonoBehaviour
 							});
 						}
 					}
-					else
+					else if (num8 != -1)
 					{
 						string[] para = new string[array.Length - 2];
 						for (int i = 0; i < para.Length; i++)
@@ -431,6 +476,21 @@ public class ConsoleScript : MonoBehaviour
 							para[i] = array[i + 2];
 						}
 						ConsoleCommand.instance.AgentCommandOperation(num8, para);
+					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.agentCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.AgentCommandOperation(ind, para);
+							break;
+						}
 					}
 				}
 				else if (a == ConsoleCommand.OfficerCommand)
@@ -455,6 +515,21 @@ public class ConsoleScript : MonoBehaviour
 							ConsoleCommand.instance.OfficerCommandOperation(num13, para);
 						}
 					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.officerCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.OfficerCommandOperation(ind, para);
+							break;
+						}
+					}
 				}
 				else if (a == ConsoleCommand.BetaCommand)
 				{
@@ -474,6 +549,21 @@ public class ConsoleScript : MonoBehaviour
 								para[i] = array[i + 2];
 							}
 							ConsoleCommand.instance.ConfigCommandOperation(num2, para);
+							break;
+						}
+					}
+					else
+					{
+						foreach (ConsoleCommandsBase commands in ConsoleCommand.instance.moddedCommands)
+						{
+							int ind = commands.configCommand.IndexOf(text);
+							if (ind == -1) continue;
+							string[] para = new string[array.Length - 2];
+							for (int i = 0; i < para.Length; i++)
+							{
+								para[i] = array[i + 2];
+							}
+							commands.ConfigCommandOperation(ind, para);
 							break;
 						}
 					}

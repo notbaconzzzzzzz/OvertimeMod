@@ -46,7 +46,7 @@ namespace NotbaconOvertimeMod
             float num = dmg.result.originDamage / 1.15f * 0.15f;
             if (num > 0)
             {
-                worker.TakeDamage(worker, new DamageInfo(RwbpType.R, num));
+                worker.TakeDamage(null, new DamageInfo(RwbpType.R, num));
                 DamageParticleEffect.Invoker(worker, RwbpType.R, worker);
             }
         }

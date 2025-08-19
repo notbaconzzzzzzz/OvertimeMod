@@ -73,10 +73,7 @@ namespace NotbaconOvertimeMod
         {
             if (oldState == CreatureFeelingState.NORM)
             {
-                if (Prob(50))
-                {
-                    model.SubQliphothCounter();
-                }
+                model.SubQliphothCounter();
 
             }
             else if (oldState == CreatureFeelingState.BAD)

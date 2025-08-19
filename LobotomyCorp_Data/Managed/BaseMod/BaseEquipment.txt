@@ -3970,11 +3970,11 @@
     <require type="P">3</require>
     <require type="level">3</require>
 
-    <damage type="R" min="12" max="14">
+    <damage type="R" min="15" max="18">
       <soundInfo type="damage">creature/RedHood/RedHood_Atk1</soundInfo>
     </damage>
 
-    <damage type="R" min="12" max="14">
+    <damage type="R" min="15" max="18">
       <soundInfo type="damage">creature/RedHood/RedHood_Atk2</soundInfo>
     </damage>
 
@@ -4006,7 +4006,7 @@
     <require type="B">3</require>
     <require type="level">3</require>
 
-    <damage type="R" min="12" max="22">
+    <damage type="R" min="17" max="22">
       <soundInfo type="damage">creature/BigBadWolf/Wolf_Scratch</soundInfo>
     </damage>
     <damage type="R" min="12" max="22">

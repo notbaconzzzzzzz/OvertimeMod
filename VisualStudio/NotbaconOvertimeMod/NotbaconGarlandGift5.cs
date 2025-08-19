@@ -22,15 +22,41 @@ namespace NotbaconOvertimeMod
                 _recoverTimer2.StartTimer(2f);
                 if (worker.GetMovableNode().currentPassage != null)
                 {
+                    List<AgentModel> list = new List<AgentModel>();
                     foreach (MovableObjectNode node in worker.GetMovableNode().currentPassage.GetEnteredTargets())
                     {
                         UnitModel unit = node.GetUnit();
                         if (unit == null || unit == worker || !(unit is AgentModel)) continue;
                         AgentModel agent = unit as AgentModel;
                         if (agent.hp <= (float)agent.maxHp * 0.3f) continue;
-                        agent.hp -= 1f;
-                        worker.RecoverMentalv2(1f);
-                        if (worker.hp >= (float)worker.maxHp * 0.7f) break;
+                        list.Add(agent);
+                    }
+                    if (list.Count > 0)
+                    {
+                        float subAmount = 1f;
+                        float healAmount = 1f * list.Count;
+                        if (list.Count >= 20)
+                        {
+                            healAmount = 1f * 20;
+                            subAmount = 2f * worker.GetHPRecoveryMult(healAmount);
+                        }
+                        else if (list.Count >= 10)
+                        {
+                            subAmount = 2f * worker.GetHPRecoveryMult(healAmount);
+                        }
+                        else if (list.Count > 5)
+                        {
+                            subAmount = ((float)list.Count / 5f) * worker.GetHPRecoveryMult(healAmount);
+                        }
+                        else if (list.Count > 1)
+                        {
+                            subAmount = 1f * worker.GetHPRecoveryMult(healAmount);
+                        }
+                        foreach (AgentModel agent in list)
+                        {
+                            agent.hp -= subAmount;
+                        }
+                        worker.RecoverHPv2(healAmount);
                     }
                 }
             }
