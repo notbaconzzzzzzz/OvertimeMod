@@ -3,11 +3,19 @@
   "WorkspaceRootPath": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtimemod\\visualstudio\\notbaconovertimemod\\notbaconpalehorsemarkedbuf.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconpalehorsemarkedbuf.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtimemod\\visualstudio\\notbaconovertimemod\\notbaconpalehorse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconpalehorse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtimemod\\visualstudio\\notbaconovertimemod\\overtimemodcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:overtimemodcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|c:\\users\\notba\\documents\\lobomod\\new\\overtimemod\\visualstudio\\notbaconovertimemod\\notbaconovertimemod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\notbaconovertimemod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E8A5B509-FEBE-4150-A5C9-828C8CA9F0FB}|NotbaconOvertimeMod.csproj|solutionrelative:notbaconovertimemod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -23,25 +31,51 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "NotbaconPaleHorseMarkedBuf.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorseMarkedBuf.cs",
+              "RelativeDocumentMoniker": "NotbaconPaleHorseMarkedBuf.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorseMarkedBuf.cs",
+              "RelativeToolTip": "NotbaconPaleHorseMarkedBuf.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-21T08:21:32.601Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NotbaconPaleHorse.cs",
+              "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorse.cs",
+              "RelativeDocumentMoniker": "NotbaconPaleHorse.cs",
+              "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconPaleHorse.cs",
+              "RelativeToolTip": "NotbaconPaleHorse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-21T08:20:18.694Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "OvertimeModCommands.cs",
               "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\OvertimeModCommands.cs",
               "RelativeDocumentMoniker": "OvertimeModCommands.cs",
               "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\OvertimeModCommands.cs",
               "RelativeToolTip": "OvertimeModCommands.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-11T20:11:16.336Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "NotbaconOvertimeMod.cs",
               "DocumentMoniker": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconOvertimeMod.cs",
               "RelativeDocumentMoniker": "NotbaconOvertimeMod.cs",
               "ToolTip": "C:\\Users\\notba\\Documents\\LoboMod\\New\\OvertimeMod\\VisualStudio\\NotbaconOvertimeMod\\NotbaconOvertimeMod.cs",
               "RelativeToolTip": "NotbaconOvertimeMod.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-11T19:41:19.648Z",
               "EditorCaption": ""

@@ -11,6 +11,9 @@ namespace NotbaconOvertimeMod
         {
             EquipmentTypeInfo.BossIds.AddRangeToArray(BossIds);
             UnitEGOgiftSpace.exclusiveGifts.AddRangeToArray(exclusiveGifts);
+            OvertimeModCommands commands = new OvertimeModCommands();
+            commands.SetList();
+            ConsoleCommand.instance.moddedCommands.Add(commands);
         }
 
         public static LcId[] BossIds = new LcId[] {

@@ -15,7 +15,7 @@ namespace NotbaconOvertimeMod
 
         public override void OnEnterRoom(UseSkill skill)
         {
-            trigger = true; // trigger = false;
+            trigger = false;
             if (skill.agent.HasUnitBuf(UnitBufType.NOTBACON_PALE_HORSE_MARKED) || skill.agent.hp / skill.agent.maxHp <= 0.25f)
             {
                 trigger = true;

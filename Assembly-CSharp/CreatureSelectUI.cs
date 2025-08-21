@@ -657,7 +657,7 @@ public class CreatureSelectUI : MonoBehaviour, IAnimatorEventCalled
 		}
 		else if (day >= 45 && day < 50)
 		{
-			if (SpecialModeConfig.instance.GetValue<bool>("DoubleAbno") && CreatureGenerateInfo.GetAll(false).Length < 100)
+			if (SpecialModeConfig.instance.GetValue<bool>("DoubleAbno") && CreatureGenerateInfo.GetAll(false).Length + CreatureGenerateInfo.GetAll_Mod(false).Count < 100)
 			{
 				result = false;
 			}

@@ -1246,6 +1246,22 @@ public class CreatureBase
 	{
 		return state;
 	}
+
+	public virtual bool OverloadImmune
+	{
+		get
+		{
+			return false;
+		}
+	}
+
+	public virtual bool IgnoreForOverloadCount
+	{
+		get
+		{
+			return false;
+		}
+	}
 	//<
 
 	// Token: 0x04002086 RID: 8326

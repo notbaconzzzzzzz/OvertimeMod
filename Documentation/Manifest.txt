@@ -852,6 +852,7 @@ Large CreatureBase pass [x]
 	Suppress for Energy
 	Gebura Core Suppression
 	Pale Horse aggro
+	Improper Unscaled Range Fix
 
 Dont Touch Me quick fix
 	DontTouchMe.cs

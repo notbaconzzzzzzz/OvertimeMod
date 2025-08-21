@@ -16,6 +16,7 @@ namespace NotbaconOvertimeMod
 
         public override void FixedUpdate()
         {
+            model.TakeDamage(new DamageInfo(RwbpType.P, 0.1f));
             if (!model.IsAttackTargetable()) return;
             PassageObjectModel passage = model.GetMovableNode().currentPassage;
             if (passage != null && !previousPassage)

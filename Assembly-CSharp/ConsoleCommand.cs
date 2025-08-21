@@ -21,6 +21,7 @@ public class ConsoleCommand
 		this.officerCommand = new List<string>();
 		this.rootCommand = new List<string>();
 		this.configCommand = new List<string>();
+		moddedCommands = new List<ConsoleCommandsBase>();
 		this.SetList();
 	}
 
