@@ -67,6 +67,7 @@ public class StorySceneController : MonoBehaviour
 	// Token: 0x06005144 RID: 20804 RVA: 0x001E0BA8 File Offset: 0x001DEDA8
 	private void SetStoryKether(int day)
 	{
+		MissionManager.beHonest = true;
 		if (PlayerModel.instance.ketherGameOver)
 		{
 			if (day == 47)
@@ -167,6 +168,7 @@ public class StorySceneController : MonoBehaviour
 			this._finaleSefira = SefiraEnum.KETHER;
 			this.OnEndStory();
 		}
+		MissionManager.beHonest = false;
 	}
 
 	// Token: 0x06005145 RID: 20805 RVA: 0x000043E5 File Offset: 0x000025E5

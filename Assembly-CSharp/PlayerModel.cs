@@ -326,6 +326,7 @@ public class PlayerModel
 			DisableOvertimeMode();
 			return false;
 		}
+		MissionManager.beHonest = true;
 		if (day >= 40)
 		{
 			if (!MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.BINAH) ||
@@ -333,6 +334,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Atziluth)";
 				DisableOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -344,6 +346,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Briah)";
 				DisableOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -356,6 +359,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Assiah)";
 				DisableOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -384,9 +388,11 @@ public class PlayerModel
 			{
 				_debug = "Mission : " + sefira.ToString();
 				DisableOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
+		MissionManager.beHonest = false;
 		return true;
     }
 
@@ -399,6 +405,7 @@ public class PlayerModel
 			DisableExtraOvertimeMode();
 			return false;
 		}
+		MissionManager.beHonest = true;
 		if (day >= 40)
 		{
 			if (!MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.BINAH) ||
@@ -406,6 +413,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Atziluth)";
 				DisableExtraOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -417,6 +425,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Briah)";
 				DisableExtraOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -429,6 +438,7 @@ public class PlayerModel
 			{
 				_debug = "Core Suppression (Assiah)";
 				DisableExtraOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
@@ -457,9 +467,11 @@ public class PlayerModel
 			{
 				_debug = "Mission : " + sefira.ToString();
 				DisableExtraOvertimeMode();
+				MissionManager.beHonest = false;
 				return false;
 			}
 		}
+		MissionManager.beHonest = false;
 		return true;
     }
 

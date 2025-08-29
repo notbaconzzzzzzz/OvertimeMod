@@ -546,12 +546,20 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 		{
 			foreach (Mission mission in clearedMissions)
 			{
-				
-				if (mission.metaInfo.sefira_Level % 5 == 4)
+				if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+				{
+					if (mission.metaInfo.sefira_Level % 5 == 1)
+					{
+						MissionManager.instance.CloseClearedMission(mission);
+						continue;
+					}
+				}
+				else if (mission.metaInfo.sefira_Level % 5 == 4)
 				{
 					MissionManager.instance.CloseClearedMission(mission);
+					continue;
 				}
-				else if (mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
+				if (mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
 				{
 					list.Add(mission.sefira_Name);
 				}
@@ -587,6 +595,15 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 		foreach (Mission mission in clearedMissions)
 		{
 			if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
+			{
+				bool isOvertime = mission.metaInfo.sefira_Level > 5;
+				this.researchWindow.Init(SefiraManager.instance.GetSefira(mission.metaInfo.sefira));
+				this.researchWindow.MakeSefiraBossReward(mission.metaInfo.sefira, isOvertime);
+				this.researchWindow.SetActive(true);
+				MissionManager.instance.CloseClearedMission(mission);
+				return true;
+			}
+			if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch") && mission.metaInfo.sefira_Level % 5 == 1)
 			{
 				bool isOvertime = mission.metaInfo.sefira_Level > 5;
 				this.researchWindow.Init(SefiraManager.instance.GetSefira(mission.metaInfo.sefira));

@@ -147,6 +147,31 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 				disposable.Dispose();
 			}
 		}
+		if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+		{
+			Mission mission = MissionManager.instance.GetClearedMissions().Find((Mission x) => x.metaInfo.sefira == CurrentSefira.sefiraEnum && (x.successCondition.condition_Type == ConditionType.DESTROY_CORE || x.metaInfo.sefira_Level % 5 == 1));
+			if (mission != null && mission.successCondition.condition_Type != ConditionType.DESTROY_CORE)
+			{
+				if (isOvertime)
+				{
+					sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), "Mission Penalty");
+					GameObject gameObject3 = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
+					gameObject3.transform.SetParent(this.sefiraBoss_ListParent);
+					gameObject3.transform.localScale = Vector3.one;
+					gameObject3.transform.GetChild(1).GetComponent<Text>().text = "You will no longer be alerted to events happening in the department.";
+					return;
+				}
+				else
+				{
+					sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), "Mission Penalty");
+					GameObject gameObject3 = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
+					gameObject3.transform.SetParent(this.sefiraBoss_ListParent);
+					gameObject3.transform.localScale = Vector3.one;
+					gameObject3.transform.GetChild(1).GetComponent<Text>().text = "The department will now be influenced by Qliphoth Meltdowns.";
+					return;
+				}
+			}
+		}
 		if (SefiraBossManager.Instance.TryGetBossDescCount(sefiraEnum, isOvertime, SefiraBossDescType.REWARD, out num))
 		{
 			this.sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), LocalizeTextDataModel.instance.GetText(isOvertime ? "boss2_common_clear" : "boss_common_clear"));
@@ -170,6 +195,10 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 				}
 			}
 		}
+		if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+		{
+			return;
+		}
 		string text = LocalizeTextDataModel.instance.GetText(isOvertime ? "boss2_common_qliphoth" : "boss_common_qliphoth");
 		GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
 		gameObject2.transform.SetParent(this.sefiraBoss_ListParent);
@@ -188,8 +217,19 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 
 	// Token: 0x06004A43 RID: 19011 RVA: 0x001B8C30 File Offset: 0x001B6E30
 	private int ResearchDataInit()
-	{
+	{ // <Mod>
+		bool isOvertime = false;
+		Mission mission = MissionManager.instance.GetClearedMissions().Find((Mission x) => x.metaInfo.sefira == CurrentSefira.sefiraEnum && x.successCondition.condition_Type != ConditionType.DESTROY_CORE);
+		if (mission != null && mission.metaInfo.sefira_Level > 5) isOvertime = true;
 		List<ResearchItemModel> remainResearchListBySefira = ResearchDataModel.instance.GetRemainResearchListBySefira(this.CurrentSefira.indexString);
+		if (isOvertime)
+		{
+			remainResearchListBySefira = remainResearchListBySefira.FindAll((ResearchItemModel x) => x.info.isOvertime);
+		}
+		else
+		{
+			remainResearchListBySefira = remainResearchListBySefira.FindAll((ResearchItemModel x) => !x.info.isOvertime);
+		}
 		if (remainResearchListBySefira.Count < 0)
 		{
 			Debug.LogError("Shouldn't be opened this research window ui, this area has no researches");

@@ -1144,6 +1144,12 @@ public class SefiraBossManager : IObserver
 	}
 
 	// <Mod>
+	public bool NegateResearch(SefiraEnum sefira)
+	{
+		return false;
+	}
+
+	// <Mod>
 	private Timer _hesitateOverloadTimer = new Timer();
 
 	// <Mod>

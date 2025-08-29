@@ -238,11 +238,12 @@ public class ResearchDataModel
 
 	// Token: 0x060038DE RID: 14558 RVA: 0x0016E50C File Offset: 0x0016C70C
 	public List<ResearchItemModel> GetModelBySefira(string sefira)
-	{
+	{ // <Mod> Filter Overtime Research
 		List<ResearchItemModel> list = new List<ResearchItemModel>();
+		bool includeOvertime = SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions");
 		foreach (ResearchItemModel researchItemModel in this.researchDatas.Values)
 		{
-			if (researchItemModel.info.sephira == sefira)
+			if (researchItemModel.info.sephira == sefira && (includeOvertime || !researchItemModel.info.isOvertime))
 			{
 				list.Add(researchItemModel);
 			}
@@ -260,14 +261,16 @@ public class ResearchDataModel
 	public List<ResearchItemModel> GetRemainResearchListBySefira(string sefira)
 	{ // <Mod> Filter Overtime Research
 		List<ResearchItemModel> list = new List<ResearchItemModel>();
-		int overtimeCheck = 0;
-		bool includeOvertime = SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && MissionManager.instance.ExistsFinishedBossMission(SefiraManager.instance.GetSefira(sefira).sefiraEnum) && MissionManager.instance.GetClearedOrClosedMissionNum(SefiraManager.instance.GetSefira(sefira).sefiraEnum) > 5;
+		// int overtimeCheck = 0;
+		// bool includeOvertime = SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && MissionManager.instance.ExistsFinishedBossMission(SefiraManager.instance.GetSefira(sefira).sefiraEnum) && MissionManager.instance.GetClearedOrClosedMissionNum(SefiraManager.instance.GetSefira(sefira).sefiraEnum) > 5;
+		bool includeOvertime = SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions");
 		foreach (ResearchItemModel researchItemModel in this.researchDatas.Values)
 		{
 			if (researchItemModel.info.sephira == sefira)
 			{
-				overtimeCheck++;
-				if ((includeOvertime || overtimeCheck <= 3) && researchItemModel.curLevel < 1)
+				// overtimeCheck++;
+				// if ((includeOvertime || overtimeCheck <= 3) && researchItemModel.curLevel < 1)
+				if ((includeOvertime || !researchItemModel.info.isOvertime) && researchItemModel.curLevel < 1)
 				{
 					list.Add(researchItemModel);
 				}

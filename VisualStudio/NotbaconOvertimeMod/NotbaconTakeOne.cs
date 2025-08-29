@@ -142,7 +142,7 @@ namespace NotbaconOvertimeMod
             VANILLA,
             PEPPERMINT,
             LICORICE,
-            POISON
+            POISON,
         }
 
         public class CandyBuf : UnitBuf

@@ -187,7 +187,7 @@ public class Mission
 		{
 			return;
 		}
-		if (SefiraBossManager.Instance.IsAnyBossSessionActivated() && this.successCondition.condition_Type != ConditionType.DESTROY_CORE)
+		if (SefiraBossManager.Instance.IsAnyBossSessionActivated() && this.successCondition.condition_Type != ConditionType.DESTROY_CORE && !SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
 		{
 			return;
 		}

@@ -1931,6 +1931,15 @@ public class GameStaticDataLoader
 					string innerText2 = namedItem3.InnerText;
 					researchItemTypeInfo.type = ResearchDataModel.ConvertResearchType(innerText2);
 				}
+				XmlNode namedItem4 = xmlNode.Attributes.GetNamedItem("overtime");
+				if (namedItem4 != null)
+				{
+					string innerText2 = namedItem4.InnerText;
+					if (bool.TryParse(innerText2, out bool isOvertime))
+					{
+						researchItemTypeInfo.isOvertime = isOvertime;
+					}
+				}
 				XmlNode xmlNode2 = xmlNode.SelectSingleNode("prev");
 				if (xmlNode2 != null)
 				{

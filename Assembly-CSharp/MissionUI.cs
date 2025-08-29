@@ -69,7 +69,7 @@ public class MissionUI : MonoBehaviour, IObserver
 				this.missions.Add(component);
 			}
 		}
-		else
+		if (!SefiraBossManager.Instance.IsAnyBossSessionActivated() || SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
 		{
 			for (int i = 0; i < missionsInProgress.Count; i++)
 			{

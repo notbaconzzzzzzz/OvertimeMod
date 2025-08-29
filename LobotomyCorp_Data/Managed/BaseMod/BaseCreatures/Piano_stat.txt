@@ -74,7 +74,7 @@
     
     <equipment level="4" cost="70" equipId="200065" />
     <equipment level="4" cost="60" equipId="300065" />
-    <equipment level="3" prob="0.03" equipId="400065" />
+    <equipment level="3" prob="0.02" equipId="400065" />
     
 
     <observeBonus level="1" type="prob">4</observeBonus>

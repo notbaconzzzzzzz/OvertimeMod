@@ -333,7 +333,14 @@ public class MissionManager : IObserver
 		{
 			return null;
 		}
-		if (this.missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira))
+		if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+		{
+			if (missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type != ConditionType.DESTROY_CORE))
+			{
+				return null;
+			}
+		}
+		else if (this.missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira))
 		{
 			return null;
 		}
@@ -461,11 +468,13 @@ public class MissionManager : IObserver
 		{
 			if (sefira == SefiraEnum.GEBURAH)
 			{
+				beHonest = true;
 				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
 				{
 					int num2 = 5;
 					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
 				}
+				beHonest = false;
 			}
 			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
 			{
@@ -536,7 +545,48 @@ public class MissionManager : IObserver
 		{
 			return null;
 		}
-		if (this.missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira))
+		if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+		{
+			if (!missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE))
+			{
+				List<Mission> list2 = remainMissions.FindAll((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE);
+				Mission mission3 = null;
+				int num4 = 999;
+				foreach (Mission mission2 in list2)
+				{
+					if (mission2.metaInfo.sefira_Level < num4)
+					{
+						mission3 = mission2;
+						num4 = mission2.metaInfo.sefira_Level;
+					}
+				}
+				if (mission3 == null) return null;
+				bool isOvertime2 = mission3.metaInfo.sefira_Level > 5;
+				if (isOvertime2 && !SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions")) return null;
+				isBossMission = true;
+				return mission3;
+			}
+			if (missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira && x.metaInfo.sefira_Level < 5 && x.successCondition.condition_Type != ConditionType.DESTROY_CORE))
+			{
+				if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && !missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira && x.metaInfo.sefira_Level > 5 && x.successCondition.condition_Type != ConditionType.DESTROY_CORE))
+				{
+					List<Mission> list2 = remainMissions.FindAll((Mission x) => x.metaInfo.sefira == sefira && x.metaInfo.sefira_Level > 5 && x.successCondition.condition_Type != ConditionType.DESTROY_CORE);
+					Mission mission3 = null;
+					int num4 = 999;
+					foreach (Mission mission2 in list2)
+					{
+						if (mission2.metaInfo.sefira_Level < num4)
+						{
+							mission3 = mission2;
+							num4 = mission2.metaInfo.sefira_Level;
+						}
+					}
+					if (mission3 != null && mission3.metaInfo.sefira_Level - 5 <= SefiraManager.instance.GetSefiraOpenLevel(sefira)) return mission3;
+				}
+				return null;
+			}
+		}
+		else if (this.missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira))
 		{
 			return null;
 		}
@@ -573,7 +623,7 @@ public class MissionManager : IObserver
 			{
 				return null;
 			}
-			if (!PlayerModel.instance.IsOvertimeMode() && !SpecialModeConfig.instance.GetValue<bool>("JailbreakOvertimeMissions"))
+			if (!PlayerModel.instance.IsOvertimeMode() && !SpecialModeConfig.instance.GetValue<bool>("JailbreakOvertimeMissions") && !SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
 			{
 				requireTextList.Add("Return to Day 1 to enable Overtime Missions");
 				return null;
@@ -664,11 +714,13 @@ public class MissionManager : IObserver
 		{
 			if (sefira == SefiraEnum.GEBURAH)
 			{
+				beHonest = true;
 				if (mission.successCondition.condition_Type == ConditionType.DESTROY_CORE && !this.ExistsBossMission(SefiraEnum.CHESED) && !this.ExistsFinishedBossMission(SefiraEnum.CHESED))
 				{
 					int num2 = 5;
 					requireTextList.Add(string.Format(LocalizeTextDataModel.instance.GetText("MissionConditionOpenLevel_new"), SefiraName.GetLocalizingSefiraName(SefiraEnum.CHESED), num2));
 				}
+				beHonest = false;
 			}
 			else if (sefira == SefiraEnum.CHESED && mission.successCondition.condition_Type == ConditionType.DESTROY_CORE)
 			{
@@ -813,9 +865,9 @@ public class MissionManager : IObserver
 	// Token: 0x060037DA RID: 14298 RVA: 0x0016B590 File Offset: 0x00169790
 	public bool ExistsFinishedBossMission(SefiraEnum sefira)
 	{ // <Mod>
+		bool result;
 		if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
 		{
-			bool result;
 			if (this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) == null)
 			{
 				result = (this.closedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null);
@@ -824,17 +876,25 @@ public class MissionManager : IObserver
 			{
 				result = true;
 			}
-			return result;
 		}
-		return this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null;
+		else
+		{
+			result = this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level <= 5) != null;
+		}
+		if (!beHonest)
+		{
+			if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch")) result = !result;
+			if (SefiraBossManager.Instance.NegateResearch(sefira)) result = false;
+		}
+		return result;
 	}
 
 	// <Mod>
 	public bool ExistsFinishedOvertimeBossMission(SefiraEnum sefira)
 	{
+		bool result;
 		if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
 		{
-			bool result;
 			if (this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) == null)
 			{
 				result = (this.closedMissions.Find((Mission x) => x.metaInfo.sefira == SefiraEnum.TIPERERTH1 && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null);
@@ -843,9 +903,17 @@ public class MissionManager : IObserver
 			{
 				result = true;
 			}
-			return result;
 		}
-		return this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null;
+		else
+		{
+			result = this.clearedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null || this.closedMissions.Find((Mission x) => x.metaInfo.sefira == sefira && x.successCondition.condition_Type == ConditionType.DESTROY_CORE && x.metaInfo.sefira_Level > 5) != null;
+		}
+		if (!beHonest)
+		{
+			if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch") && SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions")) result = !result;
+			if (SefiraBossManager.Instance.NegateResearch(sefira)) result = false;
+		}
+		return result;
 	}
 
 	// Token: 0x060037DB RID: 14299 RVA: 0x000321DA File Offset: 0x000303DA
@@ -932,4 +1000,7 @@ public class MissionManager : IObserver
 
 	// Token: 0x0400333D RID: 13117
 	private List<Mission> closedMissions;
+
+	// <Mod>
+	public static bool beHonest = false;
 }

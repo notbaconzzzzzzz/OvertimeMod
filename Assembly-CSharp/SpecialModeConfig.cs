@@ -942,7 +942,8 @@ public class SpecialModeConfig
 		{"AutoQliphoth", false},
 		{"ControlableClerks", false},
 		{"UnknownAbnos", false},
-		{"Blind", false}
+		{"Blind", false},
+		{"ReverseResearch", false}
 	};
 
 	public bool overtimeModePersistant;
