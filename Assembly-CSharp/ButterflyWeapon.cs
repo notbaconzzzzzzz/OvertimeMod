@@ -53,8 +53,8 @@ public class ButterflyWeapon : EquipmentScriptBase, IObserver
         if (UnityEngine.Random.value * 100f < critChance)
         {
             isCrit = true;
-            float critBoost = 2f;
-            if (critBoostTime > 0f) critBoost = 3f;
+            float critBoost = 3f;
+            if (critBoostTime > 0f) critBoost = 5f;
             dmg.min *= critBoost;
             dmg.max *= critBoost;
         }
@@ -90,7 +90,7 @@ public class ButterflyWeapon : EquipmentScriptBase, IObserver
 			OfficerModel officerModel = param[0] as OfficerModel;
 			if (officerModel == null) return;
 			PassageObjectModel passage = model.owner.GetMovableNode().currentPassage;
-			if (passage == null || officerModel.GetMovableNode().currentPassage != passage) return;
+			if (passage == null || officerModel.DeadType == DeadType.EXECUTION || officerModel.GetMovableNode().currentPassage != passage) return;
             if (!HostileExists(passage)) return;
 			clerkPoints += 1;
 		}
@@ -99,7 +99,7 @@ public class ButterflyWeapon : EquipmentScriptBase, IObserver
 			AgentModel agentModel = param[0] as AgentModel;
 			if (agentModel == null) return;
 			PassageObjectModel passage = model.owner.GetMovableNode().currentPassage;
-			if (passage == null || agentModel.GetMovableNode().currentPassage != passage) return;
+			if (passage == null || agentModel.DeadType == DeadType.EXECUTION || agentModel.GetMovableNode().currentPassage != passage) return;
             if (!HostileExists(passage)) return;
 			agentPoints += agentModel.level;
             critBoostTime += (float)agentModel.level;

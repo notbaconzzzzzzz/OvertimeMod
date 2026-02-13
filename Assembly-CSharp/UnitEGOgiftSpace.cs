@@ -771,12 +771,12 @@ public class UnitEGOgiftSpace
 	{
 		if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions"))
 		{
-			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.BINAH))
-			{
-				return -1;
-			}
 			if (ResearchDataModel.instance.IsUpgradedAbility("gift_stacking"))
 			{
+				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.BINAH))
+				{
+					return -1;
+				}
 				return 2;
 			}
 			return 1;

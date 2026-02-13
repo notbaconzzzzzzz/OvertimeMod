@@ -290,46 +290,6 @@ public class EquipmentTypeInfo
 		new LobotomyBaseMod.LcIdLong(100038L)
 	};
 
-	public static float[] WeaponUpgrade = new float[] {
-		1f,
-		1.6f,
-		1.4f,
-		1.3f,
-		1.25f,
-		1.22f,
-		1.2f,
-	};
-
-	public static float[] WeaponDowngrade = new float[] {
-		1f,
-		0.6f,
-		0.4f,
-		0.24f,
-		0.16f,
-		0.1f,
-		0.06f
-	};
-
-	public static float[] ArmorUpgrade = new float[] {
-		0f,
-		-0.2f,
-		-0.15f,
-		-0.12f,
-		-0.1f,
-		-0.2f / 3f,
-		-0.05f,
-	};
-
-	public static float[] ArmorDowngrade = new float[] {
-		0f,
-		0.1f,
-		0.15f,
-		0.2f,
-		0.25f,
-		0.3f,
-		0.35f
-	};
-
 	public static LobotomyBaseMod.LcId[] NonScaleWeaponIds = new LobotomyBaseMod.LcId[] {
 		new LobotomyBaseMod.LcId(200028),
 		new LobotomyBaseMod.LcId(200020),

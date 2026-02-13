@@ -730,15 +730,16 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 					break;
 			}
 		}
-		if (num >= 60)
+		iOverloadTime += num;
+		if (iOverloadTime >= 60)
 		{
-			num -= overloadReduction;
+			iOverloadTime -= overloadReduction;
 		}
 		else
 		{
-			num -= overloadReduction * num / 60;
+			iOverloadTime -= overloadReduction * num / 60;
 		}
-		this.currentOverloadMaxTime = iOverloadTime + (float)num;
+		this.currentOverloadMaxTime = iOverloadTime;
 		if (overloadType != OverloadType.DEFAULT)
 		{
 			this.Unit.room.SetOverloadAlarmColor(overloadType);
@@ -1419,8 +1420,16 @@ public class CreatureModel : UnitModel, IObserver, ISerializablePlayData, IMouse
 		int num = count;
 		if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.YESOD))
 		{
-			int num2 = (int)Mathf.Max(1f, (float)num * (1f / 3f) + 0.5f);
-			num += num2;
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.YESOD))
+			{
+				int num2 = (int)Mathf.Max(1f, (float)num * (1f / 3f) + 0.5f);
+				num += num2;
+			}
+			else
+			{
+				int num2 = (int)Mathf.Max(1f, (float)num * (1f / 12f) + 0.5f);
+				num += num2;
+			}
 		}
 		else if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.YESOD))
 		{

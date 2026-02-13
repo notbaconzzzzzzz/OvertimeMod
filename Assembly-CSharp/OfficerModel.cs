@@ -822,21 +822,16 @@ public class OfficerModel : WorkerModel
 			return;
 		}
 		base.InitialEncounteredCreature(encountered);
+		int horrorLimit = 2;
 		if (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_defense"))
 		{
-			if (encountered.GetRiskLevel() >= 5)
-			{
-				TakeDamageWithoutEffect(encountered, new DamageInfo(RwbpType.W, (float)(maxMental * 2)));
-			}
+			horrorLimit += 1;
 		}
 		else if (ResearchDataModel.instance.IsUpgradedAbility("resist_horror"))
 		{
-			if (encountered.GetRiskLevel() >= 4)
-			{
-				this.TakeDamageWithoutEffect(encountered, new DamageInfo(RwbpType.W, (float)(this.maxMental * 2)));
-			}
+			horrorLimit += 2;
 		}
-		else if (encountered.GetRiskLevel() >= 2)
+		if (encountered.GetRiskLevel() >= horrorLimit)
 		{
 			this.TakeDamageWithoutEffect(encountered, new DamageInfo(RwbpType.W, (float)(this.maxMental * 2)));
 		}

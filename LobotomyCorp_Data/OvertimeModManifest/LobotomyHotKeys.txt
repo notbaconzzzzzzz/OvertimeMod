@@ -7,6 +7,11 @@ Fixed employee deselection
 Fixed employees receiveing orders while working
 	Now, if you tell an employee to move while they're working, they'll go there after they're done with the work
 
+You can now select employees using the work allocation window
+	Just open the work window for any abnormality, and then click on the small employee portrait on the left
+
+You can now suppress breaching abnormalities by right clicking the containment room
+
 Employee selection add/subtract options
 	Hold [shift] while selecting employees to add them to the current selection
 	Hold [shift]+[alt] while selecting employees to remove them from the current selection

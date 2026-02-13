@@ -77,10 +77,22 @@ public class MagicalGirl_2Weapon : EquipmentScriptBase
 					duplicateType = BufDuplicateType.ONLY_ONE
 				});
 				this.PrintLog("Add buf");
+				if (actor.HasUnitBuf(UnitBufType.MAGICALGIRL_2_WEAPON_DEBUFF))
+				{
+					actor.RemoveUnitBuf(actor.GetUnitBufByType(UnitBufType.MAGICALGIRL_2_WEAPON_DEBUFF));
+				}
+				else
+				{
+					justiceStacks = 0;
+				}
+				justiceStacks++;
+				if (justiceStacks > 50) justiceStacks = 50;
 				actor.AddUnitBuf(new UnitStatBuf(this._DURATION_WORK_DEBUFF, UnitBufType.MAGICALGIRL_2_WEAPON_DEBUFF)
 				{
 					workProb = (int)((float)agentModel.workProb * this._AMOUNT_RATIO_DEBUFF),
 					cubeSpeed = (int)((float)agentModel.workSpeed * this._AMOUNT_RATIO_DEBUFF),
+					attackSpeed = (int)((float)agentModel.attackSpeed * ((float)justiceStacks * 0.01f)),
+					movementSpeed = (int)((float)agentModel.movement * ((float)justiceStacks * 0.01f)),
 					duplicateType = BufDuplicateType.ONLY_ONE
 				});
 			}
@@ -124,8 +136,8 @@ public class MagicalGirl_2Weapon : EquipmentScriptBase
 		DamageInfo dmg = base.GetDamage(actor);
 		if (actor.HasUnitBuf(UnitBufType.MAGICALGIRL_2_WEAPON))
 		{
-			dmg.min += Mathf.Ceil(this._AMOUNT_INCREASE_DMG);
-			dmg.max += Mathf.Floor(this._AMOUNT_INCREASE_DMG);
+			dmg.min += this._AMOUNT_INCREASE_DMG;
+			dmg.max += this._AMOUNT_INCREASE_DMG;
 		}
         return dmg;
     }
@@ -142,6 +154,9 @@ public class MagicalGirl_2Weapon : EquipmentScriptBase
 
 	// <Mod>
 	private int combo = 0;
+
+	// <Mod>
+	private int justiceStacks = 0;
 
 	// <Mod>
 	private Timer comboTimer = new Timer();
@@ -162,10 +177,10 @@ public class MagicalGirl_2Weapon : EquipmentScriptBase
 	private readonly float _COMBO_DURATION = 12f;
 
 	// Token: 0x04003231 RID: 12849
-	private readonly float _AMOUNT_INCREASE_DMG = 1.5f; // <Mod> changed from 5
+	private readonly float _AMOUNT_INCREASE_DMG = 3f; // <Mod> changed from 5
 
 	// <Mod>
-	private readonly float _AMOUNT_INCREASE_SPECIAL_DMG = 15f;
+	private readonly float _AMOUNT_INCREASE_SPECIAL_DMG = 40f;
 
 	// Token: 0x04003232 RID: 12850
 	private readonly float _AMOUNT_RATIO_DEBUFF = -0.5f;

@@ -563,7 +563,7 @@ public class Sefira
 			this._checkPassages.AddRange(this.departPassageList);
 		}
 		this._recoverPassages.AddRange(this._checkPassages);
-		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.NETZACH))
+		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.NETZACH) || MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
 		{
 			foreach (PassageObjectModel passageObjectModel in this.passageList)
 			{
@@ -764,10 +764,24 @@ public class Sefira
 			}
 			else
 			{
-				recoverFactor = 2f;
-				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
+				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.NETZACH))
 				{
-					recoverFactor = 1.5f;
+					if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
+					{
+						recoverFactor = 1.5f;
+					}
+					else
+					{
+						recoverFactor = 2f;
+					}
+				}
+				else if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.NETZACH))
+				{
+					recoverFactor = 3f;
+				}
+				else
+				{
+					recoverFactor = 100f;
 				}
 			}
 			foreach (PassageObjectModel passageObjectModel3 in this._recoverAdditionalPassages)

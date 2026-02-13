@@ -1,0 +1,128 @@
+Added new console commands/modified existing console commands
+	creature meltdown (int)id [(OverloadType)type]
+	standard ordeal (int)level [(char)color]
+	standard justgetonwithit
+	standard littlebabyman
+	standard forge (int)id [(int)count]
+	standard samuraijack (int)day
+	standard bossiscoming (int)sefira [(bool)isOvertime]
+	standard allmine
+	standard trainingarc
+	agent removeallgifts (int)id
+	agent titlebonus (int)id (int)prefix (int)suffix
+	creature replace (int)id (long)metadataId
+	creature swap (int)id (int)id
+	standard agentlist
+	standard creaturelist
+
+
+
+Added config to turn certain preferences on and off
+	Use console commands to turn options on and off
+	Your preferences automatically saved to your file
+	The 'trans'ient version of each command saves it to your current save instead of your profile, so reseting your data will reset them too
+	The 'temp'orary version of each command does not save it at all, so it will be lost when you close the game
+	The 'quiet' version of each command changes the persistant value without wiping the transient value
+	For all of the changemode commands, you can also type the word 'reset' in the place of the value in order to reset it to its default state
+	
+	config changebasicmode [NameOfBasicMode] [value]
+	config changebasicmodetrans [NameOfBasicMode] [value]
+	config changebasicmodetemp [NameOfBasicMode] [value]
+	config changebasicmodequiet [NameOfBasicMode] [value]
+			List of Basic Modes:
+		ControlGroups
+		WorkOrderQueue
+		AddSubtractSelection
+		FreeCustomAppearance
+		RealTimeSuccessRate (3 modes: [percentage, 1, p, po], [percentageandtext, 2, pat, pt], [textonly, 3, to, t])
+		InfoWindowSuccessRate (3 modes: [percentage, 1, p, po], [percentageandtext, 2, pat, pt], [textonly, 3, to, t])
+		RevealEXP
+		RevealOrdeals
+		HpBarStackingAgent
+		HpBarStackingAbnormality
+		HpBarStackingRabbit
+		PseudoRandomTitles
+		WorkCompression (int; default is 2)
+		WorkCompressionOvertime (int; default is 0)
+		WorkCompressionAlways (int; default is 0)
+		SpendPEForEgoGiftChance
+		StackableEgoGifts
+		EgoGiftHelper (off by default)
+		WhiteNightImmobilize
+		PLKeepAbilityWhenWNAbsent (off by default)
+		DisplayAbnoHp (3 modes: [name, 1, n, no], [nameandhp, 2, nah, nh], [hponly, 3, ho, h])
+		MapGraphFix
+	
+	
+	
+	'Special' modes are various cheat or challange modes
+	
+	config changespecialmode [NameOfSpecialMode] [value]
+	config changespecialmodetrans [NameOfSpecialMode] [value]
+	config changespecialmodetemp [NameOfSpecialMode] [value]
+	config changespecialmodequiet [NameOfSpecialMode] [value]
+			List of Special Modes:
+		NoEXP
+		UnstableTT2
+		EarlyOvertimeOverloads
+		EarlyOvertimeOrdeals
+		JailbreakOvertimeMissions
+		DoubleAbno
+		AutoQliphoth
+	
+	
+	
+	'Overtime' modes are a package of optional modes that add more content to the game (THEY ARE OFF BY DEFAULT)
+	overtimetoggle determines whether all the modes are on of off by default; use changeovertimemode to override each mode individually
+	
+	config overtimetoggle [bool]
+	config overtimetoggletrans [bool]
+	config overtimetoggletemp [bool]
+	config overtimetogglequiet [bool]
+	
+	config changeovertimemode [NameOfOvertimeMode] [value]
+	config changeovertimemodetrans [NameOfOvertimeMode] [value]
+	config changeovertimemodetemp [NameOfOvertimeMode] [value]
+	config changeovertimemodequiet [NameOfOvertimeMode] [value]
+	
+			List of Overtime Modes:
+		OvertimeMissions
+		OvertimeOverloads
+		OvertimeOrdeals
+		SecondaryQliphothOverload
+	
+	
+	
+	'Rework' modes are specific abnormality reworks or adjustments
+	(Some of the less obtrusive abnormality adjustments do not have a mode to toggle; consider them Tier 0)
+	They are split into 3 Tiers based off of the extent of how much they change (Tier 2 and 1 modes are ON by default; Tier 3 modes are OFF by default)
+	Use reworktier to change the cutoff for which tiers are on, or use changereworkmode to override each one individually
+	
+	config reworktier [int]
+	config reworktiertrans [int]
+	config reworktiertemp [int]
+	config reworktierquiet [int]
+	
+	config changereworkmode [NameOfOvertimeMode] [value]
+	config changereworkmodetrans [NameOfOvertimeMode] [value]
+	config changereworkmodetemp [NameOfOvertimeMode] [value]
+	config changereworkmodequiet [NameOfOvertimeMode] [value]
+	
+			List of Rework Modes:
+			(Tier 1)
+		FragmentErosion
+		LuminousAndYangForgiveness
+		ShyLookFreeze
+		ParasiteTreeStall
+			(Tier 2)
+		SpiderBudAndBloodbathEnergy
+		CrumblingArmorGift
+			(Tier 3)
+		GreenMidnightRework
+	
+	
+	
+	These commands reset your mode preferances:
+	
+	standard resetmodestransient
+	standard resetmodesall

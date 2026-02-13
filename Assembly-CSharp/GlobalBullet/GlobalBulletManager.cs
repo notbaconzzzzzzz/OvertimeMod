@@ -192,14 +192,16 @@ namespace GlobalBullet
 		{ // <Mod>
 			GlobalBulletWindow currentWindow = GlobalBulletWindow.CurrentWindow;
 			this.maxBullet = this.initialMaxBullet;
+			float bonusBulletFactor = 0f;
 			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1))
 			{
-				maxBullet += (int)Mathf.Round((float)maxBullet * 0.5f);
+				bonusBulletFactor += 0.2f;
 			}
-			else if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.TIPERERTH1))
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.TIPERERTH1))
 			{
-				this.maxBullet += (int)Mathf.Round((float)this.maxBullet * 0.3f);
+				bonusBulletFactor += 0.3f;
 			}
+			maxBullet += (int)Mathf.Round((float)maxBullet * bonusBulletFactor);
 			this.maxBullet += SefiraAbilityValueInfo.chesedOfficerAliveValues[SefiraManager.instance.GetOfficerAliveLevel(SefiraEnum.CHESED)] * (ResearchDataModel.instance.IsUpgradedAbility("upgrade_officer_bonuses") ? 2 : 1);
 			if (SefiraBossManager.Instance.CheckBossActivation(SefiraEnum.NETZACH, true))
 			{
@@ -383,14 +385,16 @@ namespace GlobalBullet
 			targetedBulletMult = 1f;
 			if (num > 0)
 			{
+				float targetedBulletMax = 0f;
 				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.TIPERERTH1))
 				{
-					targetedBulletMult *= 1f + 1f / (float)num;
+					targetedBulletMax += 0.5f;
 				}
-				else if (ResearchDataModel.instance.IsUpgradedAbility("targeted_bullets"))
+				if (ResearchDataModel.instance.IsUpgradedAbility("targeted_bullets"))
 				{
-					targetedBulletMult *= 1f + 0.5f / (float)num;
+					targetedBulletMax += 0.5f;
 				}
+				targetedBulletMult *= 1f + targetedBulletMax / (float)num;
 			}
 			foreach (UnitModel target in targets)
 			{

@@ -28,7 +28,7 @@ public class EGOrealizationManager
     {
         if (armor.LcId == 200015)
         {
-            if (CreatureManager.instance.FindCreature_Mod(new LobotomyBaseMod.LcIdLong(100015L)) == null)
+            if (!SpecialModeConfig.instance.GetValue<bool>("PLKeepAbilityWhenWNAbsent") && CreatureManager.instance.FindCreature_Mod(new LobotomyBaseMod.LcIdLong(100015L)) == null)
             {
                 if (realizationLevel < 5) return 0f;
                 return armorUpgradeValues[4];
@@ -90,5 +90,35 @@ public class EGOrealizationManager
 		0.01f,
 		0.01f,
 		0.01f
+	};
+
+    public static float[][] weaponDowngradeValues = new float[]
+	{
+		new float[] { 1.00f-1f, 1.00f-1f, 1.00f-1f, 1.00f-1f, 1.00f-1f, 0.75f-1f, },
+		new float[] { 1.00f-1f, 1.00f-1f, 1.00f-1f, 1.00f-1f, 0.50f-1f, 0.38f-1f, },
+		new float[] { 1.00f-1f, 1.00f-1f, 1.00f-1f, 0.70f-1f, 0.35f-1f, 0.27f-1f, },
+		new float[] { 1.00f-1f, 1.00f-1f, 0.65f-1f, 0.42f-1f, 0.22f-1f, 0.18f-1f, },
+		new float[] { 1.00f-1f, 0.60f-1f, 0.40f-1f, 0.20f-1f, 0.13f-1f, 0.11f-1f, },
+		new float[] { 0.55f-1f, 0.33f-1f, 0.22f-1f, 0.11f-1f, 0.07f-1f, 0.06f-1f, },
+	};
+
+    public static float[][] armorDowngradeValues = new float[]
+	{
+		new float[] { 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, -0.10f, },
+		new float[] { 0.00f, 0.00f, 0.00f, 0.00f, -0.15f, -0.30f, },
+		new float[] { 0.00f, 0.00f, 0.00f, -0.20f, -0.40f, -0.60f, },
+		new float[] { 0.00f, 0.00f, -0.25f, -0.50f, -0.75f, -1.00f, },
+		new float[] { 0.00f, -0.30f, -0.60f, -0.90f, -1.20f, -1.50f, },
+		new float[] { -0.35f, -0.70f, -1.05f, -1.40f, -1.75f, -2.10f, },
+	};
+
+    public static float[][] giftDowngradeValues = new float[]
+	{
+		new float[] { 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, -0.01f, },
+		new float[] { 0.00f, 0.00f, 0.00f, 0.00f, -0.01f, -0.01f, },
+		new float[] { 0.00f, 0.00f, 0.00f, -0.01f, -0.01f, -0.01f, },
+		new float[] { 0.00f, 0.00f, -0.01f, -0.01f, -0.01f, -0.01f, },
+		new float[] { 0.00f, -0.01f, -0.01f, -0.01f, -0.01f, -0.01f, },
+		new float[] { -0.01f, -0.01f, -0.01f, -0.01f, -0.01f, -0.01f, },
 	};
 }

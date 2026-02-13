@@ -71,24 +71,27 @@ Works initiated during first 2 qliphoth phases result in x2 the energy, EXP gain
 	...
 Re-use Rabbit Team
 Placeholder.
+(after using the Rabbit Team, it becomes available against after reaching the energy quota, an unlimited amount of times per day)
 
 	...
 Adrenaline Bullets
-Placeholder. (Not Implemented)
+Placeholder.
 
 	...
 Suppress For Energy
-Placeholder. (Not Implemented)
+Placeholder.
+(gain some energy when you suppress abnormalities)
 
 
 
 	...
 Bullet Refill
 Placeholder.
+(when you run out of bullets, you can spend energy to fire lower powered bullets, up to an extra amount of your normal bullet maximum)
 
 	...
 Tranquilizer Bullets
-Placeholder. (Not Implemented)
+Placeholder.
 
 	...
 Resist Death Panic
@@ -99,14 +102,17 @@ Improve the chance for an employee to recover before they panic or die from 25% 
 	...
 Clerk Equip E.G.O
 Placeholder. (Not Implemented)
+(clerks can equip EGO Weapons and Armor up to TETH)
 
 	...
 Gift Stacking
 Placeholder.
+(you can have up to 2 gifts that take up the same slot)
 
 	...
 Swap Containment Units
 Placeholder. (Not Implemented)
+(you can spend LOB to move containment units around)
 
 
 

@@ -1,5 +1,6 @@
 /*
 private void ProcessMoveByDistance(float distance) // 
+public static float GetDistance(MovableObjectNode node1, MovableObjectNode node2) // 
 */
 using System;
 using System.Collections.Generic;
@@ -1331,7 +1332,7 @@ public class MovableObjectNode
 
 	// Token: 0x06001B4E RID: 6990 RVA: 0x000E4BF8 File Offset: 0x000E2DF8
 	public static float GetDistance(MovableObjectNode node1, MovableObjectNode node2)
-	{
+	{ // <Mod>
 		if (node1.GetPassage() == null)
 		{
 			return 100000f;
@@ -1340,10 +1341,11 @@ public class MovableObjectNode
 		{
 			return 100000f;
 		}
+		/*
 		if (!MovableObjectNode.CheckConnectedInPassage(node1, node2))
 		{
 			return 100000f;
-		}
+		}*/
 		Vector3 currentViewPosition = node1.GetCurrentViewPosition();
 		Vector3 currentViewPosition2 = node2.GetCurrentViewPosition();
 		return DistanceUnitUtil.UnityToGame(Vector3.Distance(currentViewPosition, currentViewPosition2) / node1.currentScale);

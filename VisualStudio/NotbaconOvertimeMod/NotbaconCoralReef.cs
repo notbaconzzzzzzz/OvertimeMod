@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -43,7 +44,10 @@ namespace NotbaconOvertimeMod
 
         public override void OnFinishWork(UseSkill skill)
         {
-            EnergyModel.instance.AddEnergy((float)(skill.successCount * 2));
+            if (skill.skillTypeInfo.id == 4L)
+            {
+                EnergyModel.instance.AddEnergy((float)(skill.successCount * 2));
+            }
         }
 
         public override CreatureFeelingState ModifyFeelingState(UseSkill skill, CreatureFeelingState state)
@@ -78,7 +82,6 @@ namespace NotbaconOvertimeMod
             }
             else if (oldState == CreatureFeelingState.BAD)
             {
-                badWorkResults++;
                 if (!alreadySub) model.SubQliphothCounter();
                 model.SubQliphothCounter();
                 alreadySub = false;
@@ -165,6 +168,7 @@ namespace NotbaconOvertimeMod
         public override void OnStageRelease()
         {
             SetObserver(false);
+            badWorkResults = 0;
         }
 
         public override void OnStageEnd()
@@ -443,6 +447,20 @@ namespace NotbaconOvertimeMod
                 case CoralReefState.CLAW_ATTACK_2:
                 case CoralReefState.SLAM_ATTACK:
                 case CoralReefState.EAT_ATTACK:
+                    rand = UnityEngine.Random.Range(-leftBias, rightBias);
+                    if (rand < 0f)
+                    {
+                        direction = UnitDirection.LEFT;
+                    }
+                    else if (rand > 0f)
+                    {
+                        direction = UnitDirection.RIGHT;
+                    }
+                    else
+                    {
+                        direction = (forceDirection == UnitDirection.OTHER) ? model.GetDirection() : forceDirection;
+                    }
+                    break;
                 case CoralReefState.HIDING:
                     rand = UnityEngine.Random.Range(-leftBias, rightBias);
                     if (rand < 0f)
@@ -457,6 +475,11 @@ namespace NotbaconOvertimeMod
                     {
                         direction = (forceDirection == UnitDirection.OTHER) ? model.GetDirection() : forceDirection;
                     }
+                    bool canLeft = CheckHideDirection(model.GetMovableNode().currentPassage.GetLeft());
+                    bool canRight = CheckHideDirection(model.GetMovableNode().currentPassage.GetRight());
+                    if (!canLeft && !canRight) return;
+                    if (!canLeft) direction = UnitDirection.RIGHT;
+                    if (!canRight) direction = UnitDirection.LEFT;
                     break;
             }
             if (nextAction != CoralReefState.IDLE)
@@ -668,17 +691,22 @@ namespace NotbaconOvertimeMod
             {
                 if (!hideCooldown.started && UnityEngine.Random.Range(0f, 250f - (float)model.baseMaxHp + model.hp + 200f * hideTimes) < d)
                 {
-                    state = CoralReefState.HIDING;
-                    attackActive = false;
-                    stateTimer = 0f;
-                    model.ClearCommand();
-                    model.GetMovableNode().StopMoving();
                     UnitDirection direction = (forceDirection == UnitDirection.OTHER) ? model.GetDirection() : forceDirection;
+                    bool canLeft = CheckHideDirection(model.GetMovableNode().currentPassage.GetLeft());
+                    bool canRight = CheckHideDirection(model.GetMovableNode().currentPassage.GetRight());
+                    if (!canLeft && !canRight) return;
+                    if (!canLeft) direction = UnitDirection.RIGHT;
+                    if (!canRight) direction = UnitDirection.LEFT;
                     if (direction != UnitDirection.OTHER)
                     {
                         model.GetMovableNode().SetDirection(direction);
                         forceDirection = direction;
                     }
+                    state = CoralReefState.HIDING;
+                    attackActive = false;
+                    stateTimer = 0f;
+                    model.ClearCommand();
+                    model.GetMovableNode().StopMoving();
                     animscript.InitiateAttack(state);
                     hideCooldown.StartTimer(5f);
                     waveTimer.StartTimer(0.6f);
@@ -945,6 +973,11 @@ namespace NotbaconOvertimeMod
             }
             AttackDelay item = new AttackDelay(target, 0.6f);
             attackDelays.Add(item);
+        }
+
+        private bool CheckHideDirection(MapNode farNode)
+        {
+            return farNode.GetEdges().Any(x => x.ConnectedNode(farNode).GetAttachedPassage() != farNode.GetAttachedPassage() && x.ConnectedNode(farNode).GetAttachedPassage().type != PassageType.ISOLATEROOM);
         }
 
         private NotbaconCoralReefAnim animscript;

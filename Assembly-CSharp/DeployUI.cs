@@ -550,7 +550,7 @@ public class DeployUI : MonoBehaviour, IScrollMessageReciever
 				{
 					if (mission.metaInfo.sefira_Level % 5 == 1)
 					{
-						MissionManager.instance.CloseClearedMission(mission);
+						// MissionManager.instance.CloseClearedMission(mission);
 						continue;
 					}
 				}

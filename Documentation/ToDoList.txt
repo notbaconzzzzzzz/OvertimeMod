@@ -26,6 +26,10 @@ Improve the feedback/FX for the Secondary Overload Gauge
 
 Implement more Console Commands for manipulating the state of your facility and save file
 
+Investigate All-Around Helper slowdown
+Fix ending screen level discrepancy
+Investigate Title Bonus customization
+
 Fix Tokens being blocked by HP Bar Stacking
 
 Make the EGO Gift window work properly with multiple Gifts per slot

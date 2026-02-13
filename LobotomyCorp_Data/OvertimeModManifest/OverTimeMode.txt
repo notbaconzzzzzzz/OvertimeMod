@@ -1,47 +1,47 @@
-Buffed Hod Officer/Service Bonuses
-?Buffed Netzach Officer Bonus?
+Buffed Hod Officer/Service Bonuses [~x]
+?Buffed Netzach Officer Bonus? [x]
 Nerfed Hod Suppression Reward
 	+15 instead of +30
-?All Suppression Qliphoth Imunity Rewards During Overtime
+?All Suppression Qliphoth Imunity Rewards During Overtime [x (instead, they're just disabled entirely)]
 		1/2 for number of meltdown calculation
 		1/2 chance to be immune to next meltdown (visably denotated)
 		1/1 chance for each meltdown
 	Overtime Suppressions
 		qliphoth meltdowns scale at 50% speed for +1 meltdown
 		( l<=S Q=L*0.05, Q=L*0.1-S*0.05)
-Buffed Yesod Core Suppression
+Buffed Yesod Core Suppression [x]
 	Phase 1
 	Phase 2
 		observation bonuses for level III and IV disabled
 	Phase 3
 		all observation bonuses disabled
-Buffed Netzach Core Suppression?
-Nurfed/Buffed Tiphereth Core Suppression
+Buffed Netzach Core Suppression? [x]
+Nurfed/Buffed Tiphereth Core Suppression [x]
 	?working on a containment unit under qliphoth meltdown still progresses the meltdown guage (100%?)
-Buffed Briah day 48?
+Buffed Briah day 48? [x]
 	
 Overtime Malkuth Missions [O]
-	
+	________
 		Pass the day with a Qliphoth Meltdown Level of 5 or higher.
-	
+	________
 		Finish the day within the allotted time limit.
-	
+	________
 		Suppress an Abnormality in under 10 seconds.
 	When Dawn Rises
 		Complete an Overtime Dawn Ordeal.
 Overtime Yesod Missions [O]
-	
+	________
 		Complete 10 Repression works.
-	
+	________
 		Complete 10 work processes with tools.
-	
+	________
 		Finish the day without opening any Abnormality's encyclopedia.
-	
+	________
 		End the work day with an equal amount of Good, Normal, and Bad work results.
 Overtime Hod Missions [O]
-	
+	________
 		Use an equal amount of each of the 4 work types.
-	
+	________
 		Finish the day with 4 or more Agents deployed in each department.
 	Training Regimen
 		Promote an Agent from Level 2 to Level 5.
@@ -53,11 +53,11 @@ Overtime Hod Missions [O]
 		Suppress 1 WAW or higher Abnormality
 		without your agents taking more than 200 damage(ignoring armor and shields).
 Overtime Netzach Missions [O]
-	
+	________
 		Recover no more than 100 HP with regenerators
-	
+	________
 		Recover no more than 100 SP with regenerators
-	
+	________
 		Complete the day with 20% or less clerks dead
 	Panic Suppression Drill
 		Restore the sanity of 4 concurrently panicking employees, each with a different panic response type.
@@ -68,50 +68,50 @@ Overtime Netzach Missions [O]
 			W res x1.0 or better
 			(the one with the murder response must have Weapon at least HE)
 Overtime Tiphereth Missions [O]
-	
+	________
 		Produce 200 PE-Boxes after reaching the Energy Quota
-	
+	________
 		Produce 300 PE-Boxes after reaching the Energy Quota
-	
+	________
 		Produce 400 PE-Boxes after reaching the Energy Quota
-	
+	________
 		Resolve 4 different Overtime Qliphoth Meltdowns
 			Overtime Meltdowns show up at Meltdown X and beyond
 Overtime Gebura Missions [O]
-	
+	________
 		Deal a total of 2000 damage to abnormalities of the type they're weakest to. (besides Pale)
-	
+	________
 		Suppress 4 ALEPH Abnormalities.
-	
+	________
 		Complete a Dusk Ordeal within the allotted time limit.
-	
+	________
 		Suppress 75% of all escapable abnormalities in the facility of level HE or higher.
 Overtime Chesed Missions [O]
-	
+	________
 		Recover 800 HP/SP with bullets.
-	
+	________
 		Shield 500 damage with bullets.
-	
+	________
 		Complete the day without using bullets.
-	
+	________
 		Finish the day with only 1 Agent deployed in each department.
 Overtime Binah Missions [O]
-	
+	________
 		Complete the day with 1 or more BOSS E.G.O in possession
-	
+	________
 		Complete the day with at least two employees who have 6 or more E.G.O Gifts.
-	
+	________
 		Complete the day without any ALEPH E.G.O weapons or armor equipped.
-	
+	________
 		Complete an Overtime Noon Ordeal.
 Overtime Hokma Missions [O]
-	
+	________
 		Clear the day with 2 or more employees with every stat at the maximum.
-	
+	________
 		Clear the day with an employee with any stat at 170 or higher.
-	
+	________
 		Finish the day without pausing.
-	
+	________
 		Complete a Midnight Ordeal within the allotted time limit.
 Overtime Malkuth Research
 	0th Research
@@ -124,7 +124,7 @@ Overtime Malkuth Research
 			click	ctrl1-9
 		none	slct	slct
 		shift	add	add
-		alt	---	save
+		alt	clerk	save
 		sftalt	sub	sub
 		control groups 1 to 9 are remembered when you restart the day but forgoten when you close the game or move on to a new day
 		control groups Z to M are remembered between days and even after you close the game
@@ -172,14 +172,14 @@ Overtime Hod Research [O]
 	0th Research
 		Department first time unlock reward (nonOvertime)
 		exp is shown on the employee window
-	
+	________
 		Add 2 extra service bonus levels for reaching 14 days (one for captain and one for everyone else)
-	
+	________
 		employees start in a department with an extra amount of consectutive days equal to
 		total number of days spent in the facility x0.2 (round down, STILL one day upon deployment)
 			after 30 days spent in the facility automatically gain the 7 days needed for captain or level III
 			10 days for level II
-	
+	________
 		Double Clerk bonuses
 	Overtime Suppression Reward
 		Newly hired employees start with an extra +15 to all stats for a total of +35
@@ -193,14 +193,14 @@ Overtime Netzach Research [O]
 		If a regenerator is not being invaded by hostile entities, all employees in the regenerator:
 		Recover (100 - %Hp)% more HP from all sources
 		Recover (100 - %Sp)% more SP from all sources
-	
+	________
 		Gain regenerator speed, meltdown timer, and energy production based on the clerk alive level of each department
 			Regen	Melt	Energy
 		III	-2.5sec	+10sec	3 PE
 		II	-1.5sec	+7sec	2 PE
 		I	-0.5sec	+3sec	1 PE
 		x	-0sec	+0sec	0 PE
-	
+	________
 		Clerk Hp/Sp 15-20 > 25-30
 		Clerk B res x1.5 > x1.0
 		Clerk encounter without panicking HE > WAW
@@ -221,7 +221,7 @@ Overtime Tiphereth Research [O]
 		increases effectiveness of healing and shield bullets the less employees they hit
 		up to +50% for single employees
 			x(1+.5/agentsOnStack)
-			for clerks x(1+0.5/employeesOnStack)
+			for clerks x(1+0.5/employeesOnStack) [x]
 		shield bullets increase block and time
 	Work Compression
 		Non-overloaded works initiated during first 2 qliphoth phases result in:
@@ -237,9 +237,9 @@ Overtime Gebura Research
 		?weapon range and rate data shown in text and number form
 		???weapons show all attacks' damage data (only in ego list)
 		?Display Current HP of abnormalities
-	[O]
+	________ [O]
 		After using the Rabbit team, they become available again after reaching the energy quota, can be triggered any number of times
-	Adrenaline Bullets [~O]
+	Stim Bullets [~O]
 		??Shares the same slot as slow bullets or use the [9] button??
 		Can only hit employees
 		For 10 seconds
@@ -249,16 +249,16 @@ Overtime Gebura Research
 		(Targeted Bullets only affects the amount of time the buf lasts)
 		(Wears off when entering a containment unit just like shields, except does not wear off for tools)
 	Forceful Refinement
-		Gain bonuses for suppressing abnormalities (not including ordeals)
+		Gain energy for suppressing abnormalities (not including ordeals)
 		Abnormalities suppressed within the rabbit team's locked down area do not award energy
 			ZAYIN	TETH	HE	WAW	ALEPH
 		Energy	5	5	15	30	50
-		There are a handful of special exceptions, see spreadsheet "Unstable TT2, Suppression Energy" for a list
+		There are a handful of special exceptions, see spreadsheet "Lobotomy Info Archive, Suppression Energy" for a list
 	Overtime Suppression Reward
 		Improve Slow, Execution, and Adrenaline Bullets
 		Slow Bullets 50% > 66%
 		Execution Bullets shoot at [location] to automatically execute all clerks in that department (consumes 1 bullet per clerk)
-		Hold [alt] when shooting an Adrenaline bullet in order to hit abnormalities
+		Hold [alt] when shooting a Stim bullet in order to hit abnormalities
 			For 30 seconds
 			Increase movement speed by x1.5
 			Increase damage dealt by x1.5
@@ -312,9 +312,9 @@ Overtime Chesed Research
 		?resistance shown with +1 decimal place
 		??more resistance text catagorys
 		???Display Current HP/SP of employees
-	[O]
+	________ [O]
 		After you run out of bullets, you can still fire lower powered bullets at the cost PE
-	Tranquilizer Bullets [~x]
+	Tranquilizer Bullets [almost O]
 		??Shares the same slot as execution bullets or use the [0] button??
 		PAUSES contained abnormality's effects, mood countdowns, and qliphoth meltdowns for
 			ZAYIN	TETH	HE	WAW	ALEPH
@@ -326,7 +326,7 @@ Overtime Chesed Research
 		burst	390	275	180	90	60
 		coolDwn	3	3.33	4	3.33	4
 		stnLock	210	135	75	40.5	24
-	[O]
+	________ [O]
 		Chance to resist death/panic 25% > 40%
 	Overtime Suppression Reward
 		?(some form of employees able to be revived after the day)
@@ -337,13 +337,13 @@ Overtime Binah Research
 		Gain the ability to save and load EGO loadouts
 		?Improved ego list sorting options
 		Can lock and hide ego gifts in the middle of the day
-	
+	________
 		Clerks can equip spare ZAYIN and TETH level EGO
 		Each EGO you equip gets shared between 2 clerks
 		Each ZAYIN EGO you equip gets shared between the whole department
 		Cannot pick EGO with stat/level requirements (you can however, equip Bald)
 		?Will pick randomly if you don't choose
-	[O]
+	________ [O]
 		Employees can have up to 2 EGO gifts occupying the same slot
 		You cannot have more than 1 of the same EGO gift
 		Certain groups of EGO gifts are not allowed to co-exist; those being:
@@ -352,15 +352,15 @@ Overtime Binah Research
 			Pain, Grief, Ruin, and Oblivion with each other
 		Obtaining one of them while you also have another from the same group
 		will cause it to replace the other one (unless that gift has been locked).
-	
+	________
 		Spend LOB to move the positions of containment units
 			Inter-departmental	Cost = 1
-			Extra-departmental	Cost = Risk
-			Cross-layerial		Cost = Risk * (Risk + 1) / 2
+			Extra-departmental	Cost = Risk [1, 2, 3, 4, 5]
+			Cross-layerial		Cost = Risk * (Risk + 1) / 2 [1, 3, 6, 10, 15]
 				(For Tools)
 			Inter-departmental	Cost = 0
 			Extra-departmental	Cost = 1
-			Cross-layerial		Cost = Risk
+			Cross-layerial		Cost = Risk [1, 2, 3, 4, 5]
 	Overtime Suppression Reward
 		Employees can have unlimited EGO gifts occupying the same slot instead of only 2 [O]
 		Clerks can equip up to HE level EGO
@@ -381,11 +381,11 @@ Overtime Hokma Research
 		Day 36-50 the 1st, 2nd, and 3rd most recent imprint days are available
 		Returning to an imprint day will not allow you to then return
 		to an imprint day that wasn't available in the... future? (weird how time travel works)
-	[O]
+	________ [O]
 		Max Fort 130 > 150
-	[O]
+	________ [O]
 		Max Prud 130 > 150
-	[O]
+	________ [O]
 		Max Temp 130 > 150
 	Overtime Suppression Reward
 		Max Fort 150 > 160 [O]
@@ -402,19 +402,18 @@ Overtime Malkuth Core Suppression [O]
 	Phase 1 I-II 2
 		Start of phase shuffle 25% of Elevators
 		Start of phase shuffle 4% of Roads
-		Every other meltdown shuffle 10% of Elevators
+		Other meltdowns shuffle 10% of Elevators
 	Phase 2 III-V 3
 		Start of phase shuffle 50% of Elevators and Roads
 		Start of phase shuffle 10% of Isolate Doors
-		Every other meltdown shuffle 15% of Elevators and Roads
+		Other meltdowns shuffle 15% of Elevators and Roads
 	Phase 3 VI-VII 2
 		Start of phase shuffle 100% of Elevators, Roads, and Isolate Doors
-		Every other meltdown shuffle 30% of Elevators, Roads, and Isolate Doors
+		Other meltdowns shuffle 30% of Elevators, Roads, and Isolate Doors
 	An error in the layout of the facility is detected
 	Energy Quota x1.5, %age energy rewards and %age energy costs / 1.25 (flat costs unaffected)
 	Meltdown VIII and energy refine
 Overtime Yesod Core Suppression [O]
-	?Snap sound played at start of day and every transition between phases
 	Tranquilizer bullets cannot be used? because they would allow you to determain the risk with no effort
 	Containment units are returned to their original positions at the end of the day
 	Phase 1 I-II 2
@@ -661,7 +660,7 @@ day 47 Asyiah
 		Every other meltdown shuffle 15%
 		
 		Start of phase all containment units change places randomly
-		abnormalities have 5 possiblilities shown
+		abnormalities have 6 possiblilities shown
 		The insides of containment units are not visable (only black&red static is shown)
 		Names of abnormalities are replaced with giberish
 		Info screen cannot be opened
@@ -691,8 +690,8 @@ day 47 Asyiah
 		
 		Start of phase all employees recover to full Hp and Sp
 		regenerator healing *-100%
-		healing bullets -50%
 		all other healing *-33%
+		negative healing reduced by 90% when below 5% Hp/Sp
 	Energy Quota x2, %age energy rewards and %age energy costs / 1.5 (flat costs unaffected)
 	Meltdown IX and energy refine
 day 48 Briah
@@ -888,7 +887,7 @@ Overtime Green Noon [O]
 	Lvl 4:	Attacks also deal B damage (also inflicts 'eroded')
 Overtime Green Dusk
 	Spawns 5 instead of 4
-	HP 1000 > 1500 Res 0.8 1.0 1.2 1.0 > 0.6 0.8 1.2 0.9
+	HP 1150 > 1750 Res 0.8 1.0 1.2 1.0 > 0.6 0.8 1.2 0.9
 	
 	Green Dawns and Noons tend to hang out near the Dusks
 	
@@ -972,6 +971,8 @@ Overtime Violet Dawn [O]
 		Reduce the counters of all abno in its department to 0
 		In each other department, reduce the counter of a random abno (whose counter is higher than 0) by 1
 		Deal Boom Damage to all employees in the facility
+	When killed
+		Spawn a Meltdown on a random abnormality in the same department
 Overtime Violet Noon
 	Spawns 1 each in all departments, instead of being capped at 5
 	HP 350 > 1660 Res 0.8 2.0 0.8 1.0 > 0.7 2.0 0.8 0.5
@@ -984,14 +985,16 @@ Overtime Violet Noon
 	
 	When attacked, all employees belonging to the department in which it's located take the damage as well (At a (50 / number of employees)% rate)
 	
-	While using its ability, you must deal 660 total damage to cancel it
+	While using its ability, you must deal 330 total damage to cancel it
 	If successfully used ability
 		lower the counters of all abnormalities in the same department by max counter / 2 (rounded up)
 		lower the counters of all other abnormalities in the facility by 1 at a (20% * counter) chance
+	If canceled
+		Spawn a Meltdown on a random abnormality in the same department
 Overtime Violet Midnight
-	Each of the 4 pillars also have 2 smaller versions of themselves spread across the facility
+	Each of the 4 main pillars also have 2 smaller versions of themselves spread across the facility
 	
-	Extra Red spawn
+	Extra Red spawn (Rushing Hands of Rest)
 		Spawns in Regenerators and other Large Rooms
 		Hands spawn from the floor (or ceiling), and grab employees in the room, they are uncontrollable while grabbed
 		Other employees must suppress the hands to free them
@@ -1005,6 +1008,7 @@ Overtime Violet Midnight
 		Must be suppressed from the rooms adjecent to the hallway
 		Other employees must suppress from outside
 	Extra Pale spawn
+		?Might rework to target containment units?
 		Spawns in the main room of a Department
 		Employees within the department cannot recover HP or SP
 	

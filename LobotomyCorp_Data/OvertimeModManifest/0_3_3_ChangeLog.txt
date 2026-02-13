@@ -1,0 +1,13 @@
+Version 0.3.3
+
+ - Un-nerfed a couple of weapons (CENSORED and Gold Rush); I had apparently been doing the wrong calculations for estimating their DPS, so thought they were better than they actually were
+ - Extra Buffed Gold Rush weapon
+ - Adjusted the values on the Solemn Lament weapon changes
+
+ - Fixed Meltdown of Ruin's meltdown timer reduction
+ - Fixed a typo on Coral Reef's gift
+ - Fixed an issue where Coral Reef was mistakenly counting 2 bad work results per bad work
+ - Fixed a bug with Coral Reef where the qliphoth counter could start the next day already decreased
+ - Made it so that Coral Reef can no longer uses the waves attack into a dead end (NOT WORKING YET)
+
+ - Added ReverseResearch challenge mode

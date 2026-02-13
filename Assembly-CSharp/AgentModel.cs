@@ -1907,7 +1907,7 @@ public class AgentModel : WorkerModel
 	}
 
 	public override void OnDie()
-	{
+	{ // <Mod>
 		if (this.invincible)
 		{
 			return;
@@ -1953,11 +1953,11 @@ public class AgentModel : WorkerModel
 		float num = 1f;
 		if (ResearchDataModel.instance.IsUpgradedAbility("regist_ego_destroy"))
 		{
-			num = 0.75f;
+			num -= 0.25f;
 		}
 		if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.BINAH))
 		{
-			num = 0f;
+			num -= 0.75f;
 		}
 		if (this._equipment.weapon != null && UnityEngine.Random.value <= num)
 		{

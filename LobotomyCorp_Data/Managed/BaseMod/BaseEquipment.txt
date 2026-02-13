@@ -2962,10 +2962,10 @@
     <animation>Attack1</animation>
     <animation>Attack2</animation>
 
-    <damage type="R" min="2" max="5">
+    <damage type="R" min="4" max="6">
       <soundInfo type="damage">Weapons/greed1_1</soundInfo>
     </damage>
-    <damage type="R" min="20" max="35">
+    <damage type="R" min="40" max="60">
       <soundInfo type="damage">Weapons/greed2</soundInfo>
     </damage>
     <range>2</range>
@@ -3740,21 +3740,21 @@
     <animation>Attack1</animation>
     <animation>Attack2</animation>
 
-    <damage type="B" min="11" max="25">
+    <damage type="B" min="15" max="30">
       <soundInfo type="damage">Weapons/Censored1</soundInfo>
     </damage>
 
-    <damage type="B" min="11" max="25">
+    <damage type="B" min="15" max="30">
     </damage>
 
-    <damage type="B" min="11" max="25">
+    <damage type="B" min="15" max="30">
     </damage>
 
-    <damage type="B" min="7" max="10">
+    <damage type="B" min="7" max="11">
       <soundInfo type="damage">Weapons/Censored2_1</soundInfo>
     </damage>
 
-    <damage type="B" min="7" max="10">
+    <damage type="B" min="7" max="11">
       <soundInfo type="damage">Weapons/Censored2_2</soundInfo>
     </damage>
 

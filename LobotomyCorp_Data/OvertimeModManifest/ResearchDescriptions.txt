@@ -28,7 +28,7 @@ Reduces costs by 10%.
 
 	...
 Upgrade Service Bonuses
-Employees gain improved service bonuses for reaching 14 days of continuous service.
+Employees gain an improved service bonus for reaching 14 days of continuous service.
 
 	Cross Department Training Program
 Sooner Service Bonuses
@@ -36,7 +36,7 @@ Employees who are moved into a department start with additional service days for
 
 	...
 Upgrade Clerk Bonuses
-Doubles the effectiveness of the base clerk bonuses for each department.
+Doubles the effectiveness of all Clerk bonuses.
 
 
 
@@ -46,11 +46,11 @@ As long as the regenerator is free of hostile entities: all employees in the reg
 
 	...
 Clerk Department Bonus
-Departments gain regenerator speed, meltdown starting timer, and energy income based on its clerk alive level.
+Departments gain regenerator speed, meltdown starting timer, and passive energy income based on the clerk alive level.
 
 	...
 Upgrade Clerk Defense
-Drastically imporve HP/SP/B-res/Fear-resistance of clerks.
+Drastically imporve HP/SP/B-res/Fear-resistance of Clerks.
 
 
 
@@ -71,42 +71,48 @@ Works initiated during first 2 qliphoth phases result in x2 the energy, EXP gain
 	...
 Re-use Rabbit Team
 Placeholder.
+(after using the Rabbit Team, it becomes available against after reaching the energy quota, an unlimited amount of times per day)
 
 	...
 Adrenaline Bullets
-Placeholder. (Not Implemented)
+Placeholder.
 
 	...
 Suppress For Energy
-Placeholder. (Not Implemented)
+Placeholder.
+(gain some energy when you suppress abnormalities)
 
 
 
 	...
 Bullet Refill
 Placeholder.
+(when you run out of bullets, you can spend energy to fire lower powered bullets, up to an extra amount of your normal bullet maximum)
 
 	...
 Tranquilizer Bullets
-Placeholder. (Not Implemented)
+Placeholder.
 
 	...
 Resist Death Panic
-Placeholder.
+Improve the chance for an employee to recover before they panic or die from 25% to 40%.
 
 
 
 	...
 Clerk Equip E.G.O
 Placeholder. (Not Implemented)
+(clerks can equip EGO Weapons and Armor up to TETH)
 
 	...
 Gift Stacking
 Placeholder.
+(you can have up to 2 gifts that take up the same slot)
 
 	...
 Swap Containment Units
 Placeholder. (Not Implemented)
+(you can spend LOB to move containment units around)
 
 
 

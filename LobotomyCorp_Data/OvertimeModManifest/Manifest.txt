@@ -852,6 +852,7 @@ Large CreatureBase pass [x]
 	Suppress for Energy
 	Gebura Core Suppression
 	Pale Horse aggro
+	Improper Unscaled Range Fix
 
 Dont Touch Me quick fix
 	DontTouchMe.cs
@@ -864,7 +865,27 @@ April Fools
 	CommandWindow.CommandWindow.cs
 	UseSkill.cs
 	CreatureManager.cs
-	
+
+Special Mode ReverseResearch
+	MissionManager.cs
+	SefiraBossManager.cs
+	Mission.cs
+	MissionUI.cs
+	ResearchItemModel.cs
+	ResearchWindow.cs
+	DeployUI.cs
+	StorySceneController.cs
+	SefiraConversationController.cs
+	CreatureOverloadManager.cs
+	AgentModel.cs
+	WorkerPrimaryStat.cs
+	WorkerModel.cs
+	OfficerModel.cs
+	GlobalBullet.GlobalBulletManager.cs
+	UnitEGOgiftSpace.cs
+	Sefira.cs
+	CreatureModel.cs
+
 
 Fixed Silent Orchestra stealing energy on movement 4 instead of finale
 	SilentOrchestra.cs
@@ -999,6 +1020,8 @@ Overtime Research
 	ResearchDesc.xml
 	SefiraBossDesc_en.xml
 	ResearchDataModel.cs
+	ResearchItemTypeInfo.cs
+	GameStaticDataLoader.cs
 	DeployUI.cs
 	Malkuth : 1st[O]/3rd[O]
 		UnitMouseEventManager.cs

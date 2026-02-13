@@ -175,6 +175,14 @@ public class ResearchWindow : MonoBehaviour, IAnimatorEventCalled
 		if (SefiraBossManager.Instance.TryGetBossDescCount(sefiraEnum, isOvertime, SefiraBossDescType.REWARD, out num))
 		{
 			this.sefiraBoss_Prefix.text = string.Format("{0} {1}", SefiraName.GetSefiraCharName(sefiraEnum), LocalizeTextDataModel.instance.GetText(isOvertime ? "boss2_common_clear" : "boss_common_clear"));
+			if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
+			{
+				string empty = "Lose the following effects:";
+				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.sefiraTextUnit);
+				gameObject.transform.SetParent(this.sefiraBoss_ListParent);
+				gameObject.transform.localScale = Vector3.one;
+				gameObject.transform.GetChild(1).GetComponent<Text>().text = empty;
+			}
 			for (int i = 0; i < num; i++)
 			{
 				string empty = string.Empty;

@@ -55,23 +55,40 @@ public class CreatureOverloadManager
 		this.clearedBossMissions = new HashSet<SefiraEnum>();
 		if (GlobalGameManager.instance.gameMode == GameMode.STORY_MODE)
 		{
-			foreach (Mission mission in MissionManager.instance.GetClearedOrClosedBossMissions())
+			if (SpecialModeConfig.instance.GetValue<bool>("ReverseResearch"))
 			{
-				if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && PlayerModel.instance.IsOvertimeMode() && mission.metaInfo.sefira_Level <= 5)
+				foreach (Sefira sefira in SefiraManager.instance.GetOpendSefiraList())
 				{
-					continue;
-				}
-				SefiraEnum sefira = mission.metaInfo.sefira;
-				if (!this.clearedBossMissions.Contains(sefira))
-				{
-					if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
+					if (!MissionManager.instance.GetClearedOrClosedMissions().Exists((Mission x) => x.metaInfo.sefira == sefira.sefiraEnum && x.metaInfo.sefira_Level == 1))
 					{
-						this.clearedBossMissions.Add(SefiraEnum.TIPERERTH1);
-						this.clearedBossMissions.Add(SefiraEnum.TIPERERTH2);
+						clearedBossMissions.Add(sefira.sefiraEnum);
+						if (sefira.sefiraEnum == SefiraEnum.TIPERERTH1)
+						{
+							clearedBossMissions.Add(SefiraEnum.TIPERERTH2);
+						}
 					}
-					else
+				}
+			}
+			else
+			{
+				foreach (Mission mission in MissionManager.instance.GetClearedOrClosedBossMissions())
+				{
+					if (SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions") && PlayerModel.instance.IsOvertimeMode() && mission.metaInfo.sefira_Level <= 5)
 					{
-						this.clearedBossMissions.Add(sefira);
+						continue;
+					}
+					SefiraEnum sefira = mission.metaInfo.sefira;
+					if (!this.clearedBossMissions.Contains(sefira))
+					{
+						if (sefira == SefiraEnum.TIPERERTH1 || sefira == SefiraEnum.TIPERERTH2)
+						{
+							this.clearedBossMissions.Add(SefiraEnum.TIPERERTH1);
+							this.clearedBossMissions.Add(SefiraEnum.TIPERERTH2);
+						}
+						else
+						{
+							this.clearedBossMissions.Add(sefira);
+						}
 					}
 				}
 			}
@@ -130,7 +147,14 @@ public class CreatureOverloadManager
 				num++;
 			}
 		}
-		this.qliphothOverloadIsolateNum = Mathf.Min(num2, (num * this.qliphothOverloadLevel + 9) / 10);
+		if (SpecialModeConfig.instance.GetValue<bool>("DoubleAbno"))
+		{
+			this.qliphothOverloadIsolateNum = Mathf.Min(num2, (num * this.qliphothOverloadLevel / 2 + 9) / 10);
+		}
+		else
+		{
+			this.qliphothOverloadIsolateNum = Mathf.Min(num2, (num * this.qliphothOverloadLevel + 9) / 10);
+		}
 		if (SefiraBossManager.Instance.IsKetherBoss(KetherBossType.E4))
 		{
 			this.qliphothOverloadIsolateNum = 0;

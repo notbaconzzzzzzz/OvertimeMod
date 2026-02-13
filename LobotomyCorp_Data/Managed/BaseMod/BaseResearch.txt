@@ -201,145 +201,145 @@
   
   <!--overtime research-->
   
-  <research id="104" sephira="1" maxLevel="1" icon="Malkut2">
+  <research id="104" sephira="1" maxLevel="1" icon="Malkut2" overtime="true">
     <upgrade>
       <specialAbility>control_groups</specialAbility>
     </upgrade>
   </research>
-  <research id="105" sephira="1" maxLevel="1" icon="Malkut3">
+  <research id="105" sephira="1" maxLevel="1" icon="Malkut3" overtime="true">
     <upgrade>
       <specialAbility>work_order_queue</specialAbility>
     </upgrade>
   </research>
-  <research id="106" sephira="1" maxLevel="1" icon="Yesod2">
+  <research id="106" sephira="1" maxLevel="1" icon="Yesod2" overtime="true">
     <upgrade>
       <specialAbility>add_subtract_selection</specialAbility>
     </upgrade>
   </research>
   
-  <research id="204" sephira="4" maxLevel="1" icon="Binah3">
+  <research id="204" sephira="4" maxLevel="1" icon="Binah3" overtime="true">
     <upgrade>
       <specialAbility>spend_pe_for_gift</specialAbility>
     </upgrade>
   </research>
-  <research id="205" sephira="4" maxLevel="1" icon="Netzach3">
+  <research id="205" sephira="4" maxLevel="1" icon="Netzach3" overtime="true">
     <upgrade>
       <specialAbility>reveal_ordeals</specialAbility>
     </upgrade>
   </research>
-  <research id="206" sephira="4" maxLevel="1" icon="Hod2">
+  <research id="206" sephira="4" maxLevel="1" icon="Hod2" overtime="true">
     <upgrade>
       <specialAbility>energy_discount</specialAbility>
     </upgrade>
   </research>
   
-  <research id="304" sephira="3" maxLevel="1" icon="Hod3">
+  <research id="304" sephira="3" maxLevel="1" icon="Hod3" overtime="true">
     <upgrade>
       <specialAbility>upgrade_service_bonuses</specialAbility>
     </upgrade>
   </research>
-  <research id="305" sephira="3" maxLevel="1" icon="Hod1">
+  <research id="305" sephira="3" maxLevel="1" icon="Hod1" overtime="true">
     <upgrade>
       <specialAbility>sooner_service_bonuses</specialAbility>
     </upgrade>
   </research>
-  <research id="306" sephira="3" maxLevel="1" icon="Binah1">
+  <research id="306" sephira="3" maxLevel="1" icon="Binah1" overtime="true">
     <upgrade>
       <specialAbility>upgrade_officer_bonuses</specialAbility>
     </upgrade>
   </research>
   
-  <research id="404" sephira="2" maxLevel="1" icon="Netzach2">
+  <research id="404" sephira="2" maxLevel="1" icon="Netzach2" overtime="true">
     <upgrade>
       <specialAbility>regenerator_healing_boost</specialAbility>
     </upgrade>
   </research>
-  <research id="405" sephira="2" maxLevel="1" icon="Yesod1">
+  <research id="405" sephira="2" maxLevel="1" icon="Yesod1" overtime="true">
     <upgrade>
       <specialAbility>officer_department_bonus</specialAbility>
     </upgrade>
   </research>
-  <research id="406" sephira="2" maxLevel="1" icon="Chesed3">
+  <research id="406" sephira="2" maxLevel="1" icon="Chesed3" overtime="true">
     <upgrade>
       <specialAbility>upgrade_officer_defense</specialAbility>
     </upgrade>
   </research>
   
-  <research id="504" sephira="5" maxLevel="1" icon="Netzach1">
+  <research id="504" sephira="5" maxLevel="1" icon="Netzach1" overtime="true">
     <upgrade>
       <specialAbility>upgrade_shield_bullet</specialAbility>
     </upgrade>
   </research>
-  <research id="505" sephira="5" maxLevel="1" icon="Binah1">
+  <research id="505" sephira="5" maxLevel="1" icon="Binah1" overtime="true">
     <upgrade>
       <specialAbility>targeted_bullets</specialAbility>
     </upgrade>
   </research>
-  <research id="506" sephira="5" maxLevel="1" icon="Malkut1">
+  <research id="506" sephira="5" maxLevel="1" icon="Malkut1" overtime="true">
     <upgrade>
       <specialAbility>work_compression</specialAbility>
     </upgrade>
   </research>
   
-  <research id="704" sephira="7" maxLevel="1" icon="Rabbit_Protocol" atlas="Icons_7">
+  <research id="704" sephira="7" maxLevel="1" icon="Rabbit_Protocol" atlas="Icons_7" overtime="true">
     <upgrade>
       <specialAbility>reuse_rabbit_team</specialAbility>
     </upgrade>
   </research>
-  <research id="705" sephira="7" maxLevel="1" icon="Malkut1">
+  <research id="705" sephira="7" maxLevel="1" icon="Malkut1" overtime="true">
     <upgrade>
       <bulletAbility>stim</bulletAbility>
     </upgrade>
   </research>
-  <research id="706" sephira="7" maxLevel="1" icon="Bullet_Execution" atlas="Icons_7">
+  <research id="706" sephira="7" maxLevel="1" icon="Bullet_Execution" atlas="Icons_7" overtime="true">
     <upgrade>
       <specialAbility>suppress_for_energy</specialAbility>
     </upgrade>
   </research>
   
-  <research id="804" sephira="8" maxLevel="1" icon="Malkut3">
+  <research id="804" sephira="8" maxLevel="1" icon="Malkut3" overtime="true">
     <upgrade>
       <specialAbility>bullet_refill</specialAbility>
     </upgrade>
   </research>
-  <research id="805" sephira="8" maxLevel="1" icon="Binah1">
+  <research id="805" sephira="8" maxLevel="1" icon="Binah1" overtime="true">
     <upgrade>
       <bulletAbility>tranq</bulletAbility>
     </upgrade>
   </research>
-  <research id="806" sephira="8" maxLevel="1" icon="Chesed3">
+  <research id="806" sephira="8" maxLevel="1" icon="Chesed3" overtime="true">
     <upgrade>
       <specialAbility>resist_death_panic</specialAbility>
     </upgrade>
   </research>
   
-  <research id="904" sephira="9" maxLevel="1" icon="Hod1">
+  <research id="904" sephira="9" maxLevel="1" icon="Hod1" overtime="true">
     <upgrade>
       <specialAbility>officer_equip_ego</specialAbility>
     </upgrade>
   </research>
-  <research id="905" sephira="9" maxLevel="1" icon="Binah3">
+  <research id="905" sephira="9" maxLevel="1" icon="Binah3" overtime="true">
     <upgrade>
       <specialAbility>gift_stacking</specialAbility>
     </upgrade>
   </research>
-  <research id="906" sephira="9" maxLevel="1" icon="Binah2">
+  <research id="906" sephira="9" maxLevel="1" icon="Binah2" overtime="true">
     <upgrade>
       <specialAbility>swap_containment_units</specialAbility>
     </upgrade>
   </research>
   
-  <research id="1004" sephira="10" maxLevel="1" icon="Rstat" atlas="Icons_7">
+  <research id="1004" sephira="10" maxLevel="1" icon="Rstat" atlas="Icons_7" overtime="true">
     <upgrade>
       <specialAbility>stat_max_r_2</specialAbility>
     </upgrade>
   </research>
-  <research id="1005" sephira="10" maxLevel="1" icon="Wstat" atlas="Icons_7">
+  <research id="1005" sephira="10" maxLevel="1" icon="Wstat" atlas="Icons_7" overtime="true">
     <upgrade>
       <specialAbility>stat_max_w_2</specialAbility>
     </upgrade>
   </research>
-  <research id="1006" sephira="10" maxLevel="1" icon="Bstat" atlas="Icons_7">
+  <research id="1006" sephira="10" maxLevel="1" icon="Bstat" atlas="Icons_7" overtime="true">
     <upgrade>
       <specialAbility>stat_max_b_2</specialAbility>
     </upgrade>

@@ -593,18 +593,15 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 			float revivalChance = 0f;
 			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
 			{
-				revivalChance = 1f;
+				revivalChance += 0.6f;
 			}
-			else
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
 			{
-				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
-				{
-					revivalChance += 0.25f;
-				}
-				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
-				{
-					revivalChance += 0.15f;
-				}
+				revivalChance += 0.25f;
+			}
+			if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+			{
+				revivalChance += 0.15f;
 			}
 			if (UnityEngine.Random.value < revivalChance && this.isRealWorker)
 			{
@@ -644,18 +641,15 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 				float revivalChance = 0f;
 				if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
 				{
-					revivalChance = 1f;
+					revivalChance += 0.6f;
 				}
-				else
+				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
 				{
-					if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
-					{
-						revivalChance += 0.25f;
-					}
-					if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
-					{
-						revivalChance += 0.15f;
-					}
+					revivalChance += 0.25f;
+				}
+				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+				{
+					revivalChance += 0.15f;
 				}
 				if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
 				{
@@ -967,18 +961,15 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 			float revivalChance = 0f;
 			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
 			{
-				revivalChance = 1f;
+				revivalChance += 0.6f;
 			}
-			else
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
 			{
-				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
-				{
-					revivalChance += 0.25f;
-				}
-				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
-				{
-					revivalChance += 0.15f;
-				}
+				revivalChance += 0.25f;
+			}
+			if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+			{
+				revivalChance += 0.15f;
 			}
 			if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
 			{
@@ -1016,18 +1007,15 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 			float revivalChance = 0f;
 			if (MissionManager.instance.ExistsFinishedOvertimeBossMission(SefiraEnum.CHESED))
 			{
-				revivalChance = 1f;
+				revivalChance += 0.6f;
 			}
-			else
+			if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
 			{
-				if (MissionManager.instance.ExistsFinishedBossMission(SefiraEnum.CHESED))
-				{
-					revivalChance += 0.25f;
-				}
-				if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
-				{
-					revivalChance += 0.15f;
-				}
+				revivalChance += 0.25f;
+			}
+			if (ResearchDataModel.instance.IsUpgradedAbility("resist_death_panic"))
+			{
+				revivalChance += 0.15f;
 			}
 			if (UnityEngine.Random.value <= revivalChance && this.isRealWorker)
 			{

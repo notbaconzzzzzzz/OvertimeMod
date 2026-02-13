@@ -621,7 +621,7 @@ Overtime Binah Core Suppression
 Overtime Hokma Core Suppression
 	To Turn Back The Clock?
 	Phase 1 I-V 5
-		lose all Alztuth research, suppression rewards, and qliphoth imunnities
+		lose all Atziluth research, suppression rewards, and qliphoth imunnities
 		Hokma : base stats above 100 set to 100 temperaraly
 		Binah : only the highest level gift in each slot stays (prioritizes ones that are locked)
 	Phase 2 VI-X 5
@@ -775,6 +775,8 @@ day 49 Alztuth
 	Phase 3 XIII-XVII 5
 		lose all Asyiah research/rewards and qliphoth imunnities
 		Hod : base stats -35 temperaraly (calculates before Hokma)(recalculate level)
+				base stats above 110 will have the portion above 110 cut in half before the calculation
+				so 160 is required to maintain 100
 		lose all HE ego
 		at meltdown level XVIII An Arbitor can change to phase 3
 	ego replaced with random available equipable ego (prioitize higher ego)
@@ -971,6 +973,8 @@ Overtime Violet Dawn [O]
 		Reduce the counters of all abno in its department to 0
 		In each other department, reduce the counter of a random abno (whose counter is higher than 0) by 1
 		Deal Boom Damage to all employees in the facility
+	When killed
+		Spawn a Meltdown on a random abnormality in the same department
 Overtime Violet Noon
 	Spawns 1 each in all departments, instead of being capped at 5
 	HP 350 > 1660 Res 0.8 2.0 0.8 1.0 > 0.7 2.0 0.8 0.5
@@ -983,10 +987,12 @@ Overtime Violet Noon
 	
 	When attacked, all employees belonging to the department in which it's located take the damage as well (At a (50 / number of employees)% rate)
 	
-	While using its ability, you must deal 660 total damage to cancel it
+	While using its ability, you must deal 330 total damage to cancel it
 	If successfully used ability
 		lower the counters of all abnormalities in the same department by max counter / 2 (rounded up)
 		lower the counters of all other abnormalities in the facility by 1 at a (20% * counter) chance
+	If canceled
+		Spawn a Meltdown on a random abnormality in the same department
 Overtime Violet Midnight
 	Each of the 4 main pillars also have 2 smaller versions of themselves spread across the facility
 	
@@ -1162,7 +1168,7 @@ Teth Abilities
 	overtime- Balloon
 		[spawns balloons]
 	overtime- Coral Reef
-		[spawns balloons]
+		[]
 	20% - All
 		Uses all abilities once at x6 rate
 He Abilities

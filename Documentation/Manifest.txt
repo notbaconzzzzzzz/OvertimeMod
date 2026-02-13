@@ -875,6 +875,16 @@ Special Mode ReverseResearch
 	ResearchWindow.cs
 	DeployUI.cs
 	StorySceneController.cs
+	SefiraConversationController.cs
+	CreatureOverloadManager.cs
+	AgentModel.cs
+	WorkerPrimaryStat.cs
+	WorkerModel.cs
+	OfficerModel.cs
+	GlobalBullet.GlobalBulletManager.cs
+	UnitEGOgiftSpace.cs
+	Sefira.cs
+	CreatureModel.cs
 
 
 Fixed Silent Orchestra stealing energy on movement 4 instead of finale

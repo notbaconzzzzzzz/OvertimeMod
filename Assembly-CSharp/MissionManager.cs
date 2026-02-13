@@ -539,6 +539,7 @@ public class MissionManager : IObserver
 	// Token: 0x060037CD RID: 14285 RVA: 0x0016AF10 File Offset: 0x00169110
 	public Mission GetAvailableMission(SefiraEnum sefira, out List<string> requireTextList, out bool isBossMission)
 	{ // <Mod>
+		LobotomyBaseMod.ModDebug.Log("Mission Check " + sefira.ToString());
 		requireTextList = new List<string>();
 		isBossMission = false;
 		if (sefira != SefiraEnum.MALKUT && !SefiraManager.instance.IsOpened(sefira) && PlayerModel.instance.GetDay() < 40)
@@ -564,6 +565,7 @@ public class MissionManager : IObserver
 				bool isOvertime2 = mission3.metaInfo.sefira_Level > 5;
 				if (isOvertime2 && !SpecialModeConfig.instance.GetValue<bool>("OvertimeMissions")) return null;
 				isBossMission = true;
+				LobotomyBaseMod.ModDebug.Log("Mission Check Success Expedite Core"); //
 				return mission3;
 			}
 			if (missionsInProgress.Exists((Mission x) => x.metaInfo.sefira == sefira && x.metaInfo.sefira_Level < 5 && x.successCondition.condition_Type != ConditionType.DESTROY_CORE))
@@ -581,7 +583,11 @@ public class MissionManager : IObserver
 							num4 = mission2.metaInfo.sefira_Level;
 						}
 					}
-					if (mission3 != null && mission3.metaInfo.sefira_Level - 5 <= SefiraManager.instance.GetSefiraOpenLevel(sefira)) return mission3;
+					if (mission3 != null && mission3.metaInfo.sefira_Level - 5 <= SefiraManager.instance.GetSefiraOpenLevel(sefira))
+					{
+						LobotomyBaseMod.ModDebug.Log("Mission Check Success Expedite Core"); //
+						return mission3;
+					}
 				}
 				return null;
 			}
@@ -611,10 +617,12 @@ public class MissionManager : IObserver
 				nonCount++;
 			}
 		}
+		LobotomyBaseMod.ModDebug.Log("Mission Check Counts? " + nonCount.ToString() + " " + overCount.ToString()); //
 		if (mission == null)
 		{
 			return null;
 		}
+		LobotomyBaseMod.ModDebug.Log("Mission Check Level " + mission.metaInfo.sefira_Level.ToString()); //
 		bool isOvertime = mission.metaInfo.sefira_Level > 5;
 		bool giveEarly = false;
 		if (isOvertime)
@@ -628,14 +636,18 @@ public class MissionManager : IObserver
 				requireTextList.Add("Return to Day 1 to enable Overtime Missions");
 				return null;
 			}
-			giveEarly = 45 - overCount >= PlayerModel.instance.GetDay();
+			giveEarly = 45 - overCount <= PlayerModel.instance.GetDay();
 		}
 		else
 		{
-			giveEarly = 45 - nonCount >= PlayerModel.instance.GetDay();
+			LobotomyBaseMod.ModDebug.Log("Mission Check If " + (45 - nonCount).ToString() + " <= " + PlayerModel.instance.GetDay().ToString()); //
+			giveEarly = 45 - nonCount <= PlayerModel.instance.GetDay();
 		}
+		LobotomyBaseMod.ModDebug.Log("Mission Check Overtime? " + isOvertime.ToString()); //
+		LobotomyBaseMod.ModDebug.Log("Mission Check Early? " + giveEarly.ToString()); //
 		if (!isOvertime && !giveEarly)
 		{
+			LobotomyBaseMod.ModDebug.Log("Mission Check If " + (mission.metaInfo.sefira_Level).ToString() + " > " + SefiraManager.instance.GetSefiraOpenLevel(sefira).ToString()); //
 			if (sefira == SefiraEnum.MALKUT)
 			{
 				if (mission.metaInfo.sefira_Level - 1 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
@@ -650,6 +662,7 @@ public class MissionManager : IObserver
 		}
 		else if (!giveEarly)
 		{
+			LobotomyBaseMod.ModDebug.Log("Mission Check If " + (mission.metaInfo.sefira_Level - 5).ToString() + " > " + SefiraManager.instance.GetSefiraOpenLevel(sefira).ToString()); //
 			if (sefira == SefiraEnum.MALKUT)
 			{
 				if (mission.metaInfo.sefira_Level - 6 > SefiraManager.instance.GetSefiraOpenLevel(sefira))
@@ -752,8 +765,15 @@ public class MissionManager : IObserver
 		}
 		if (requireTextList.Count != 0)
 		{
+			LobotomyBaseMod.ModDebug.Log("Mission Check Fail Standard"); //
 			return null;
 		}
+		string str = ""; //
+		foreach (string s in requireTextList)
+		{
+			str += s + " ";
+		}
+		LobotomyBaseMod.ModDebug.Log("Mission Check Success Standard " + str); //
 		return mission;
 	}
 
@@ -978,6 +998,15 @@ public class MissionManager : IObserver
 		{
 			this.missionsInProgress[i].CheckConditions(notice, param);
 		}
+	}
+
+	// <Mod>
+	public List<Mission> GetClearedOrClosedMissions()
+	{
+		List<Mission> list = new List<Mission>();
+		list.AddRange(closedMissions);
+		list.AddRange(clearedMissions);
+		return list;
 	}
 
 	// Token: 0x060037E2 RID: 14306 RVA: 0x000040A1 File Offset: 0x000022A1
