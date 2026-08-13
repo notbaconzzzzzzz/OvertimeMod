@@ -94,7 +94,7 @@ public class Nothing : CreatureBase
 
 	// Token: 0x060025E2 RID: 9698 RVA: 0x00110D98 File Offset: 0x0010EF98
 	public override void ParamInit()
-	{
+	{ // <Mod>
 		this.spearBindTargets.Clear();
 		this.copiedWorker = null;
 		this.nothingWorker = null;
@@ -114,6 +114,7 @@ public class Nothing : CreatureBase
 		this.remainAttackDelay = 0f;
 		this.spearAttack = false;
 		this.gonnaEscape = false;
+		shootTime = 10f;
 	}
 
 	// Token: 0x060025E3 RID: 9699 RVA: 0x000225FF File Offset: 0x000207FF
@@ -173,7 +174,7 @@ public class Nothing : CreatureBase
 		if (this.snipingTimer.RunTimer())
 		{
 			this.snipe.gameObject.SetActive(true);
-			this.snipe.StartSnipe(this);
+			this.snipe.StartSnipe(this, shootTime);
 			return;
 		}
 	}
@@ -199,7 +200,7 @@ public class Nothing : CreatureBase
 
 	// Token: 0x060025E9 RID: 9705 RVA: 0x00110FC4 File Offset: 0x0010F1C4
 	public override void OnReleaseWork(UseSkill skill)
-	{
+	{ // <Mod>
 		if (GameManager.currentGameManager.state == GameState.STOP)
 		{
 			return;
@@ -232,12 +233,61 @@ public class Nothing : CreatureBase
 				this.changeWorkerRoomTimer.StartTimer(2f);
 				this.animScript.PlayChangeEffectAnimation();
 			}
+			else if (model.feelingState == CreatureFeelingState.NORM && ReworkedVersion)
+			{
+				WorkerModel worker = null;
+				List<WorkerModel> list = new List<WorkerModel>();
+				foreach (MovableObjectNode movable in model.GetEntryNode().GetAttachedPassage().GetEnteredTargets())
+				{
+					UnitModel unit = movable.GetUnit();
+					if (!(unit is OfficerModel)) continue;
+					WorkerModel unit2 = unit as WorkerModel;
+					if (unit2.IsDead() || unit2.invincible) continue;
+					list.Add(unit2);
+				}
+				if (list.Count <= 0)
+				{
+					foreach (OfficerModel unit in OfficerManager.instance.GetOfficerList())
+					{
+						if (unit.IsDead() || unit.invincible) continue;
+						list.Add(unit);
+					}
+				}
+				if (list.Count <= 0)
+				{
+					foreach (OfficerModel unit in OfficerManager.instance.GetOfficerList())
+					{
+						if (!unit.IsDead()) continue;
+						list.Add(unit);
+					}
+				}
+				if (list.Count > 0) worker = list[UnityEngine.Random.Range(0, list.Count)];
+				if (worker != null)
+				{
+					if (!worker.IsDead()) worker.Die();
+					targetChangeWorker = worker;
+					changeWorkerRoomTimer.StartTimer(2f);
+					animScript.PlayChangeEffectAnimation();
+				}
+			}
 		}
-		else if (this.currentForm == Nothing.NothingForm.WORKER_ROOM && (skill.agent.IsPanic() || skill.agent.mental <= 0f))
+		else if (this.currentForm == Nothing.NothingForm.WORKER_ROOM)
 		{
-			skill.agent.Die();
-			this.targetChangeWorker = skill.agent;
-			this.model.SubQliphothCounter();
+			if ((skill.agent.IsPanic() || skill.agent.mental <= 0f))
+			{
+				skill.agent.Die();
+				this.targetChangeWorker = skill.agent;
+				this.model.SubQliphothCounter();
+			}
+			else if (model.feelingState == CreatureFeelingState.NORM && ReworkedVersion)
+			{
+				int num = PlayerModel.instance.GetOpenedAreaList().Length;
+				if (num <= 5) shootTime = 30f;
+				else if (num <= 6) shootTime = 35f;
+				else if (num <= 8) shootTime = 40f;
+				else shootTime = 45f;
+				model.SubQliphothCounter();
+			}
 		}
 		this.currentAgent = null;
 	}
@@ -1034,6 +1084,18 @@ public class Nothing : CreatureBase
 		}
 		workerUnit.gameObject.SetActive(false);
 	}
+
+	// <Mod>
+	public bool ReworkedVersion
+	{
+		get
+		{
+			return SpecialModeConfig.instance.GetValue<bool>("NothingThereRework");
+		}
+	}
+
+	// <Mod>
+	private float shootTime;
 
 	// Token: 0x040024F7 RID: 9463
 	private const int maxHp_lv1 = 2000;

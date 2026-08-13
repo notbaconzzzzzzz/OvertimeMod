@@ -19,9 +19,9 @@
       <prob level="5">0.45</prob>
     </workProb>
     <workProb type="B">
-      <prob level="1">0.65</prob>
+      <prob level="1">0.55</prob>
       <prob level="2">0.55</prob>
-      <prob level="3">0.55</prob>
+      <prob level="3">0.65</prob>
       <prob level="4">0.6</prob>
       <prob level="5">0.55</prob>
     </workProb>
@@ -52,7 +52,7 @@
     </defense>
     <escapeable>true</escapeable>
     <hp>600</hp>
-    <speed>2</speed>
+    <speed>3</speed>
     <observeInfo total="76">
       <observeElement name="stat" cost="16" />
       <observeElement name="defense" cost="16" />

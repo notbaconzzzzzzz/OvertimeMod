@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace NotbaconOvertimeMod
 {
-    public class NotbaconLonelyWraith : CreatureBase
+    public class NotbaconLonelyWraith : NotbaconWraithBase
     {
         public override void OnViewInit(CreatureUnit unit)
         {
@@ -97,7 +99,7 @@ namespace NotbaconOvertimeMod
             }
         }
 
-        public override void OnFinishWork(UseSkill skill)
+        public override void OnSkillGoalComplete(UseSkill skill)
         {
             if (obsession == null && skill.skillTypeInfo.id == 3L)
             {
@@ -105,9 +107,105 @@ namespace NotbaconOvertimeMod
             }
         }
 
+        public override int OnBonusWorkProb()
+        {
+            UseSkill currentSkill = model.currentSkill;
+            if (currentSkill != null)
+            {
+                AgentModel agent = currentSkill.agent;
+                if (agent == obsession)
+                {
+                    return 10;
+                }
+            }
+            return base.OnBonusWorkProb();
+        }
+
+        public override void UniqueEscape()
+        {
+            PassageObjectModel passage = model.GetMovableNode().currentPassage;
+            if (aoeTimer.started)
+            {
+                if (passage == null)
+                {
+                    aoeTimer.StopTimer();
+                }
+                else if (aoeTimer.RunTimer())
+                {
+                    MovableObjectNode[] list = passage.GetEnteredTargetsAsArray();
+                    unitCount = 0;
+                    foreach (MovableObjectNode movable in list)
+                    {
+                        UnitModel unit = movable.GetUnit();
+                        if (unit is WorkerModel)
+                        {
+                            WorkerModel worker = unit as WorkerModel;
+                            if (worker.IsDead()) continue;
+                            unitCount++;
+                        }
+                        else if (unit is CreatureModel)
+                        {
+                            CreatureModel creature = unit as CreatureModel;
+                            if (creature.hp <= 0) continue;
+                            if (creature.script is NotbaconLonelyWraith) continue;
+                            unitCount++;
+                        }
+                        else if (unit is RabbitModel)
+                        {
+                            RabbitModel rabbit = unit as RabbitModel;
+                            if (rabbit.IsDead()) continue;
+                            unitCount++;
+                        }
+                    }
+                    DamageInfo damage = new DamageInfo(RwbpType.P, AoeDmg);
+                    foreach (MovableObjectNode movable in list)
+                    {
+                        UnitModel unit = movable.GetUnit();
+                        if (unit is WorkerModel)
+                        {
+                            WorkerModel worker = unit as WorkerModel;
+                            if (worker.IsDead()) continue;
+                            UnitBuf underAttack = worker.GetUnitBufByType(UnitBufType.UNDERATTACK);
+                            float num = 0f;
+                            if (underAttack != null) num = underAttack.remainTime;
+                            worker.TakeDamage(model, damage);
+                            if (worker == obsession) worker.TakeDamage(model, new DamageInfo(RwbpType.B, AoeDmg));
+                            underAttack = worker.GetUnitBufByType(UnitBufType.UNDERATTACK);
+                            if (underAttack != null)
+                            {
+                                underAttack.remainTime = Mathf.Max(UnderAttackBufOverride, num);
+                            }
+                        }
+                        else if (unit is CreatureModel)
+                        {
+                            CreatureModel creature = unit as CreatureModel;
+                            if (creature.hp <= 0) continue;
+                            if (creature.script is NotbaconLonelyWraith) continue;
+                            creature.TakeDamage(model, damage);
+                        }
+                        else if (unit is RabbitModel)
+                        {
+                            RabbitModel rabbit = unit as RabbitModel;
+                            if (rabbit.IsDead()) continue;
+                            rabbit.TakeDamage(model, damage);
+                        }
+                    }
+                    aoeTimer.StartTimer(1.5f);
+                }
+            }
+            else
+            {
+                if (passage != null)
+                {
+                    aoeTimer.StartTimer(1.5f);
+                }
+            }
+        }
+
         private NotbaconLonelyWraithAnim animscript;
 
         private int unitCount;
         private AgentModel obsession;
+        private Timer aoeTimer = new Timer();
     }
 }

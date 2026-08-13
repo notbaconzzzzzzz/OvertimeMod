@@ -44,7 +44,7 @@
     <specialDamage>
       <damage id="1" type="R" min="4" max="5" />
     </specialDamage>
-    <defense id="1">
+    <defense id="1" default="true">
       <defenseElement type="R">0.7</defenseElement>
       <defenseElement type="W">1</defenseElement>
       <defenseElement type="B">2</defenseElement>

@@ -37,8 +37,8 @@ namespace NotbaconOvertimeMod
             level = 0;
             float hpRatio = worker.hp / (float)worker.maxHp;
             if (hpRatio <= 0.1f) level = 3;
-            if (hpRatio <= 0.5f) level = 2;
-            if (hpRatio <= 0.8f) level = 1;
+            else if (hpRatio <= 0.5f) level = 2;
+            else if (hpRatio <= 0.8f) level = 1;
         }
 
         public float RecoverAmount

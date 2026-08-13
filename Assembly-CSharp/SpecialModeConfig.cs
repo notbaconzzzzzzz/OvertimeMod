@@ -982,7 +982,8 @@ public class SpecialModeConfig
 		{"SpiderBudAndBloodbathEnergy", 2},
 		{"CrumblingArmorGift", 2},
 		{"GreenMidnightRework", 3},
-		{"FuneralRework", 3}
+		{"FuneralRework", 3},
+		{"NothingThereRework", 3}
 	};
 
 	public enum ModeType

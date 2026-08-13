@@ -384,7 +384,7 @@
 
     <animation>Attack1</animation>
 
-    <damage type="W" min="5" max="7">
+    <damage type="W" min="5" max="8">
       <soundInfo type="damage">Weapons/mace1</soundInfo>
     </damage>
     <range>3</range>
@@ -2630,7 +2630,7 @@
 
     <animation>Attack1</animation>
 
-    <damage type="W" min="5" max="7">
+    <damage type="W" min="5" max="8">
       <soundInfo type="damage">Weapons/mace1</soundInfo>
     </damage>
     <range>3</range>
@@ -3657,7 +3657,7 @@
 
     <animation>Attack1</animation>
 
-    <damage type="R" min="5" max="7">
+    <damage type="R" min="5" max="8">
       <soundInfo type="damage">Weapons/mace1</soundInfo>
     </damage>
 

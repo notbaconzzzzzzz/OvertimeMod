@@ -55,7 +55,7 @@
       <defenseElement type="B">0.6</defenseElement>
       <defenseElement type="P">1</defenseElement>
     </defense>
-    <defense id="3">
+    <defense id="3" default="true">
       <defenseElement type="R">0</defenseElement>
       <defenseElement type="W">0.4</defenseElement>
       <defenseElement type="B">0.4</defenseElement>

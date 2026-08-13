@@ -1,8 +1,13 @@
 Version 0.3.3
 
+ - Re-fixed an issue that would cause you to get missions early when you're not supposed to, and not get them early when you're supposed to
+ - Buffed Penitence and Wingbeat
  - Un-nerfed a couple of weapons (CENSORED and Gold Rush); I had apparently been doing the wrong calculations for estimating their DPS, so thought they were better than they actually were
  - Extra Buffed Gold Rush weapon
+ - Changed the way CENSORED's healing ability works; it now gives the healing out gradually over the course of 1 second
  - Adjusted the values on the Solemn Lament weapon changes
+
+ - Added a console command to insert abnormalities into existing departments in case parts of your save get corrupted
 
  - Fixed Meltdown of Ruin's meltdown timer reduction
  - Fixed a typo on Coral Reef's gift

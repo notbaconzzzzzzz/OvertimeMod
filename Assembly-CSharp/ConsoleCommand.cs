@@ -132,6 +132,7 @@ public class ConsoleCommand
 		standardCommand.Add("recyclebin");
 		creatureCommand.Add("workdefault");
 		standardCommand.Add("workdefault");
+		standardCommand.Add("fifoinsert");
 	}
 
 	// Token: 0x06001B6D RID: 7021 RVA: 0x000E4BEC File Offset: 0x000E2DEC
@@ -637,6 +638,37 @@ public class ConsoleCommand
 			condition.impassableAgent = bool.Parse((string)param[ind++]);
 			condition.impassableCreature = bool.Parse((string)param[ind++]);
 			WorkQueuePreferanceManager.instance.SaveDefaultCondition(condition, lcId);
+			break;
+		case 39:
+			if (param.Length >= 3)
+			{
+				AddSefiraCreature((string)param[1], (long)float.Parse((string)param[2]), (string)param[0]);
+			}
+			else
+			{
+				AddSefiraCreature("", (long)float.Parse((string)param[1]), (string)param[0]);
+			}
+			/*
+			if (param.Length >= 4)
+			{
+				AddSefiraCreature((string)param[2], (long)float.Parse((string)param[3]), (string)param[0], (int)float.Parse((string)param[1]));
+			}
+			else if (param.Length >= 3)
+			{
+				float temp;
+				if (float.TryParse((string)param[1], out temp))
+				{
+					AddSefiraCreature("", (long)float.Parse((string)param[2]), (string)param[0], (int)temp);
+				}
+				else
+				{
+					AddSefiraCreature((string)param[1], (long)float.Parse((string)param[2]), (string)param[0]);
+				}
+			}
+			else
+			{
+				AddSefiraCreature("", (long)float.Parse((string)param[1]), (string)param[0]);
+			}*/
 			break;
 		default:
 			return;
@@ -1944,6 +1976,31 @@ public class ConsoleCommand
 		else if (creatureModel.GetWorkspaceNode().GetPosition() - new Vector3(creatureModel.basePosition.x, creatureModel.basePosition.y, 0f) != creatureModel2.GetWorkspaceNode().GetPosition() - new Vector3(creatureModel2.basePosition.x, creatureModel2.basePosition.y, 0f))
 		{
 			// GlobalGameManager.instance.LoadData(SaveType.LASTDAY);
+		}
+	}
+
+	public void AddSefiraCreature(string modid, long id, string sefira, int index = -1)
+	{
+		try
+		{
+			Sefira sefiraModel = SefiraManager.instance.GetSefira(sefira);
+			if (sefiraModel == null) return;
+			SefiraManager.instance.AddCreature_Mod(new LcIdLong[] { new LcIdLong(modid, id) }, sefiraModel);
+			if (index != -1)
+			{
+				int last = sefiraModel.creatureList.Count - 1;
+				CreatureModel creature = sefiraModel.creatureList[last];
+				if (creature.metaInfo.id == id)
+				{
+					sefiraModel.creatureList.RemoveAt(last);
+					sefiraModel.creatureList.Insert(index, creature);
+				}
+			}
+			GlobalGameManager.instance.SaveData(false);
+		}
+		catch (Exception message)
+		{
+			Debug.LogError(message);
 		}
 	}
 	//< <Mod>

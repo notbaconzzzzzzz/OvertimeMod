@@ -5,6 +5,7 @@ public void OnStageStart_first() //
 public void OpenSefira(SefiraEnum sefiraEnum) // Overtime Mode check
 public void OpenSefiraWithCreature(SefiraEnum sefiraEnum) // Overtime Mode check
 private void OnFixedUpdate() // 
+public void AddCreature_Mod(LobotomyBaseMod.LcIdLong[] list, Sefira sefira) // made public
 +private EnergyModel.EnergyIncome energyIncome // 
 */
 using System;
@@ -777,8 +778,8 @@ public class SefiraManager : IObserver
 		}
 	}
 
-	// <Patch>
-	private void AddCreature_Mod(LobotomyBaseMod.LcIdLong[] list, Sefira sefira)
+	// <Patch> <Mod> changed from private to public
+	public void AddCreature_Mod(LobotomyBaseMod.LcIdLong[] list, Sefira sefira)
 	{
 		if (list.Length != 0)
 		{

@@ -727,6 +727,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 				mentalRecover = result.spDamage * percent;
 				if (mentalRecover != 0f) RecoverMentalv2(mentalRecover, false);
 			}
+			//if (hpRecover != 0f || mentalRecover != 0f) AddUnitBuf(new CensoredRegen(hpRecover, mentalRecover));
 		}
 	}
 
@@ -1074,7 +1075,7 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
 				}
 				hpRecover = result.hpDamage * percent;
-				if (hpRecover != 0f) RecoverHPv2(hpRecover, false);
+				//if (hpRecover != 0f) RecoverHPv2(hpRecover, false);
 			}
 			percent = hitRecovery.y / 100f;
 			float mentalRecover = result.spDamage * percent;
@@ -1090,8 +1091,9 @@ public class WorkerModel : UnitModel, IObserver, IMouseCommandTargetModel, IMous
 					percent = percent * recoverMult / (1f + percent * (recoverMult - 1f));
 				}
 				mentalRecover = result.spDamage * percent;
-				if (mentalRecover != 0f) RecoverMentalv2(mentalRecover, false);
+				//if (mentalRecover != 0f) RecoverMentalv2(mentalRecover, false);
 			}
+			if (hpRecover != 0f || mentalRecover != 0f) AddUnitBuf(new CensoredRegen(hpRecover, mentalRecover));
 		}
 	}
 

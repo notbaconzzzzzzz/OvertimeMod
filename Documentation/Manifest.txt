@@ -210,6 +210,9 @@ Modified many EGO stats
 	MagicalGirlWeapon.cs
 	MagicalGirlWeaponProjectile.cs
 	ButterflyWeapon.cs
+	CensoredWeapon.cs
+	WorkerModel.cs
+	+CensoredRegen.cs
 	UnitBufType.cs
 
 Map Graph Fix
@@ -735,6 +738,10 @@ Green Midnight Rework - (Teir 3)
 Funeral of Dead Butterflies rework - (Teir 3)
 	Butterfly.cs
 	Butterfly_stat.txt
+
+Nothing There rework - (Teir 3)
+	Nothing.cs
+	NothingSnipingUI.cs
 
 Fixed an issue that made the game not load modded EGO equipment scripts properly
 	WeaponModel.cs

@@ -283,9 +283,17 @@ namespace NotbaconOvertimeMod
                             {
                                 agent.RecoverHPv2((float)BodyMod * 2f);
                             }
+                            else if (BodyMod < 0)
+                            {
+
+                            }
                             if (MindMod > 0)
                             {
                                 agent.RecoverMentalv2((float)MindMod * 2f);
+                            }
+                            else if (MindMod < 0)
+                            {
+
                             }
                             recoverTimer.StartTimer(4f);
                         }
